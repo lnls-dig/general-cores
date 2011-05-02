@@ -1,0 +1,132 @@
+-- -*- Mode: LUA; tab-width: 2 -*-
+
+peripheral {
+	 name = "Vectored Interrupt Controller (VIC)";
+	 description = "Module implementing a 2 to 32-input prioritized interrupt controller with internal interrupt vector storage support.";
+	 prefix = "VIC";
+	 hdl_entity = "wb_slave_vic";
+
+	 reg {
+			name = "VIC Control Register";
+			prefix = "CTL";
+
+			field {
+				 name = "VIC Enable";
+				 description = "1: enables VIC operation\n0: disables VIC operation";
+				 prefix = "ENABLE";
+				 type = BIT;
+				 access_dev = READ_ONLY;
+				 access_bus = READ_WRITE;
+			};
+
+			field {
+				 name = "VIC output polarity";
+				 description = "1: IRQ output is active high\n0: IRQ output is active low";
+				 prefix = "POL";
+				 type = BIT;
+				 access_dev = READ_ONLY;
+				 access_bus = READ_WRITE;
+			};
+	 };
+
+	 reg {
+			name = "Raw Interrupt Status Register";
+			prefix = "RISR";
+			
+			field {
+				 name = "Raw interrupt status";
+				 description = "Each bit reflects the current state of corresponding IRQ input line.\nread 1: interrupt line is currently active\nread 0: interrupt line is inactive";
+				 type = SLV;
+				 size = 32;
+				 access_dev = WRITE_ONLY;
+				 access_bus = READ_ONLY;
+			};
+	 };
+
+	 reg {
+			name = "Interrupt Enable Register";
+			prefix = "IER";
+			
+			field {
+				 name = "Enable IRQ";
+				 description = "Write 1: enables interrupt associated with written bit\nWrite 0: no effect";
+				 type = PASS_THROUGH;
+				 size = 32;
+			};
+	 };
+
+	 reg {
+			name = "Interrupt Disable Register";
+			prefix = "IDR";
+			
+			field {
+				 name = "Disable IRQ";
+				 description = "Write 1: enables interrupt associated with written bit\nWrite 0: no effect";
+				 type = PASS_THROUGH;
+				 size = 32;
+			};
+	 };
+
+	 reg {
+			name = "Interrupt Mask Register";
+			prefix = "IMR";
+			
+			field {
+				 name = "IRQ disabled/enabled";
+				 description = "Read 1: interrupt associated with bitfield is enabled\nRead 0: interrupt is disabled";
+				 type = SLV;
+				 size = 32;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+	 };
+
+	 reg {
+			name = "Vector Address Register";
+			prefix = "VAR";
+			
+			field {
+				 name = "Vector Address";
+				 description = "Address of pending interrupt vector, read from Interrupt Vector Table";
+				 type = SLV;
+				 size = 32;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+	 };
+
+	 reg {
+			name = "Software Interrupt Register";
+			description = "Writing 1 to one of bits of this register causes a software emulation of the respective interrupt.";
+			prefix = "SWIR";
+			field {
+				 name = "SWI interrupt mask";
+				 type = PASS_THROUGH;
+				 size = 32;
+			};
+	 };
+
+	 reg {
+			name = "End Of Interrupt Acknowledge Register";
+			prefix = "EOIR";
+			
+			field {
+				 name = "End of Interrupt";
+				 description = "Any write operation acknowledges the pending interrupt. Then, VIC advances to another pending interrupt(s).";
+				 type = PASS_THROUGH;
+				 size = 32;
+			};
+	 };
+
+	 ram {
+			name = "Interrupt Vector Table";
+			description = "Vector Address Table. Word at offset N stores the vector address of IRQ N. When interrupt is requested, VIC reads it's vector address from this memory and stores it in VAR register.";
+			prefix = "IVT_RAM";
+			
+			size = 32;
+			width = 32;
+			
+			access_bus = READ_WRITE;
+			access_dev = READ_ONLY;
+	 };
+};
