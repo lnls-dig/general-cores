@@ -1,8 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-library wbgen2;
-
 package wbgen2_pkg is
 
   

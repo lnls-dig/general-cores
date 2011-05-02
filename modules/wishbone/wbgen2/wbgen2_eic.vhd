@@ -3,8 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
-library wbgen2;
-use wbgen2.wbgen2_pkg.all;
+use work.wbgen2_pkg.all;
 
 entity wbgen2_eic is
   
