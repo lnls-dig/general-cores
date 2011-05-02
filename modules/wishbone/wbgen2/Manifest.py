@@ -4,4 +4,4 @@ files = ["wbgen2_dpssram.vhd",
 				"wbgen2_fifo_sync.vhd",
 				"wbgen2_pkg.vhd"]
 
-library = "wbgen2"
+#library = "wbgen2"
