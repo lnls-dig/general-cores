@@ -1,7 +1,7 @@
 modules = {
 	"local" : [
 								"modules/common",
-								"modules/genrams" 
+								"modules/genrams",
 								"modules/wishbone"
 						]
 					}
