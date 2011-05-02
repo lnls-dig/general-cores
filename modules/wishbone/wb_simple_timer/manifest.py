@@ -1,0 +1,1 @@
+files = ["wb_tics.vhd"];
