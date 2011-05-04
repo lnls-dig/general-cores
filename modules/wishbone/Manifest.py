@@ -6,6 +6,7 @@ modules =  { "local" :
 						"wb_simple_timer",
 						"wb_uart",
 						"wb_vic",
+						"wb_spi",
 						"wb_virtual_uart",
 						"wbgen2",
 						 ]};
