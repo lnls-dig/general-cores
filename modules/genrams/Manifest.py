@@ -17,23 +17,11 @@ def __copy_vhdls(cg_dir, dest_dir):
 		flist.append(f.split('/').pop())
 	return flist
 	
-def __import_coregen_files():
-	coregen_path = __os.getenv("XILINX") + "/ISE/coregen/ip/xilinx/primary/com/xilinx/ip/"
-	work_dir = __manifest + "/coregen_ip";
+def __import_coregen_module(path, name, work_dir):
+	__os.mkdir(work_dir+"/"+name);
+	flist = __copy_vhdls(path+"/"+name, work_dir+"/"+name)
 
-
-	if __os.path.isdir(work_dir):
-		return
-		
-	__os.mkdir(work_dir);
-
-	print("[genrams] creating workdir " + work_dir)
-	print("[genrams] copying ISE files...")	
-	flist = []
-	flist.extend(__copy_vhdls(coregen_path+"blk_mem_gen_v6_1", work_dir))
-	flist.extend(__copy_vhdls(coregen_path+"fifo_generator_v6_1", work_dir))
-	
-	f=open(work_dir+"/Manifest.py","w")
+	f=open(work_dir+"/"+name+"/Manifest.py","w")
 
 	f.write("files = [\n")						
 	first=True
@@ -45,7 +33,24 @@ def __import_coregen_files():
 		f.write("\""+fname+"\"")
 
 	f.write("]\n");
+	f.write("library = \"" + name + "\"\n")
 	f.close()
+
+def __import_coregen_files():
+	coregen_path = __os.getenv("XILINX") + "/ISE/coregen/ip/xilinx/primary/com/xilinx/ip/"
+	work_dir = __manifest + "/coregen_ip";
+
+
+	if __os.path.isdir(work_dir):
+		return
+
+	print("[genrams] creating workdir " + work_dir)
+	__os.mkdir(work_dir);
+
+	print("[genrams] copying ISE files...")			
+	__import_coregen_module(coregen_path, "blk_mem_gen_v4_1", work_dir);
+	__import_coregen_module(coregen_path, "fifo_generator_v6_1", work_dir);
+	
 
 ##############################
 ## "Normal" manifest        ##
@@ -54,6 +59,6 @@ if (target == "altera"):
 	modules = {"local" : "altera"}
 elif (target == "xilinx"):
 	__import_coregen_files()
-	modules = {"local" : ["xilinx", "coregen_ip"]}
+	modules = {"local" : ["xilinx", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
 else:
 	modules = {"local" : "altera"}
