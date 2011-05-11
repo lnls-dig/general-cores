@@ -26,7 +26,7 @@ use ieee.std_logic_arith.all;
 library work;
 
 use work.wishbone_pkg.all;
-use work.common_components.all;
+use work.gencores_pkg.all;
 
 entity wb_gpio_port is
   generic(g_num_pins : natural := 8     -- number of GPIO pins
@@ -71,7 +71,7 @@ begin
 
 
   GEN_SYNC_FFS : for i in 0 to g_num_pins-1 generate
-    INPUT_SYNC : sync_ffs
+    INPUT_SYNC : gc_sync_ffs
       generic map (
         g_sync_edge => "positive")
       port map (
