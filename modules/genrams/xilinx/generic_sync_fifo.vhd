@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-03-25
+-- Last update: 2011-05-07
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -143,12 +143,12 @@ architecture syn of generic_sync_fifo is
       backup                   : in  std_logic;
       backup_marker            : in  std_logic;
       din                      : in  std_logic_vector(g_data_width-1 downto 0);
-      prog_empty_thresh        : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
-      prog_empty_thresh_assert : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
-      prog_empty_thresh_negate : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
-      prog_full_thresh         : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
-      prog_full_thresh_assert  : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
-      prog_full_thresh_negate  : in  std_logic_vector(f_log2_size(g_size-1) downto 0);
+      prog_empty_thresh        : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      prog_empty_thresh_assert : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      prog_empty_thresh_negate : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      prog_full_thresh         : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      prog_full_thresh_assert  : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      prog_full_thresh_negate  : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
       rd_clk                   : in  std_logic;
       rd_en                    : in  std_logic;
       rd_rst                   : in  std_logic;
@@ -162,7 +162,7 @@ architecture syn of generic_sync_fifo is
       injectsbiterr            : in  std_logic;
       almost_empty             : out std_logic;
       almost_full              : out std_logic;
-      data_count               : out std_logic_vector(f_log2_size(g_size-1) downto 0);
+      data_count               : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
       dout                     : out std_logic_vector(g_data_width-1 downto 0);
       empty                    : out std_logic;
       full                     : out std_logic;
@@ -170,10 +170,10 @@ architecture syn of generic_sync_fifo is
       prog_empty               : out std_logic;
       prog_full                : out std_logic;
       valid                    : out std_logic;
-      rd_data_count            : out std_logic_vector(f_log2_size(g_size-1) downto 0);
+      rd_data_count            : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
       underflow                : out std_logic;
       wr_ack                   : out std_logic;
-      wr_data_count            : out std_logic_vector(f_log2_size(g_size-1) downto 0);
+      wr_data_count            : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
       sbiterr                  : out std_logic;
       dbiterr                  : out std_logic);
   end component;
