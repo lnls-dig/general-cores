@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-04-10
+-- Last update: 2011-05-10
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -85,6 +85,9 @@ architecture syn of generic_dpram is
   -- Function reads binary file and place the data in a std_logic_vector
   -- Takes parameters
   --   filename : Name of the file from which to read data
+
+
+	
 
   impure function read_meminit_file(
     filename : string

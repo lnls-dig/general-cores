@@ -31,8 +31,9 @@ use ieee.numeric_std.all;
 use ieee.math_real.log2;
 use ieee.math_real.ceil;
 
+
+use work.gencores_pkg.all;
 use work.wishbone_pkg.all;
-use work.common_components.all;
 
 entity wb_cpu_bridge is
   generic (
@@ -117,7 +118,7 @@ begin
 
   gen_sync_chains_nosim : if(g_simulation = 0) generate
 
-    sync_ffs_cs : sync_ffs
+    sync_ffs_cs : gc_sync_ffs
       generic map (
         g_sync_edge => "positive")
       port map
@@ -128,7 +129,7 @@ begin
        npulse_o => open
        );
 
-    sync_ffs_wr : sync_ffs
+    sync_ffs_wr : gc_sync_ffs
       generic map (
         g_sync_edge => "positive")
       port map (
@@ -139,7 +140,7 @@ begin
         npulse_o => wr_pulse
         );
 
-    sync_ffs_rd : sync_ffs
+    sync_ffs_rd : gc_sync_ffs
       generic map (
         g_sync_edge => "positive")
       port map (

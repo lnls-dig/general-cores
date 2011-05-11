@@ -55,6 +55,9 @@ def __import_coregen_files():
 ##############################
 ## "Normal" manifest        ##
 ##############################
+
+print ("[genrams] target = " + target)
+
 if (target == "altera"):
 	modules = {"local" : "altera"}
 elif (target == "xilinx"):
