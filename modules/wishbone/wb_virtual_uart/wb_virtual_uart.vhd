@@ -41,7 +41,7 @@ architecture struct of wb_virtual_uart is
       uart_debug_wr_req_i     : in  std_logic;
       uart_debug_wr_full_o    : out std_logic;
       uart_debug_wr_empty_o   : out std_logic;
-      uart_debug_wr_usedw_o   : out std_logic_vector(7 downto 0);
+      uart_debug_wr_usedw_o   : out std_logic_vector(10 downto 0);
       uart_debug_tx_i         : in  std_logic_vector(7 downto 0);
       uart_debug_dupa_i       : in  std_logic_vector(31 downto 0));
   end component;
