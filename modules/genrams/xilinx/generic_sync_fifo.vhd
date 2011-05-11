@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-05-07
+-- Last update: 2011-05-11
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -170,10 +170,10 @@ architecture syn of generic_sync_fifo is
       prog_empty               : out std_logic;
       prog_full                : out std_logic;
       valid                    : out std_logic;
-      rd_data_count            : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      rd_data_count            : out std_logic_vector(c_rd_data_count_width-1 downto 0);
       underflow                : out std_logic;
       wr_ack                   : out std_logic;
-      wr_data_count            : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      wr_data_count            : out std_logic_vector(c_wr_data_count_width-1 downto 0);
       sbiterr                  : out std_logic;
       dbiterr                  : out std_logic);
   end component;
@@ -201,7 +201,7 @@ architecture syn of generic_sync_fifo is
   signal almost_full   : std_logic;
   signal sclr          : std_logic;
   signal full          : std_logic;
-  signal usedw         : std_logic_vector (f_log2_size(g_size)-1 downto 0);
+  signal usedw         : std_logic_vector(f_log2_size(g_size)-1 downto 0);
   signal s_dummy_zeros : std_logic_vector(f_log2_size(g_size)-1 downto 0);
   
 begin  -- syn
