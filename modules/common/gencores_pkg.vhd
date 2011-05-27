@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2011-04-29
+-- Last update: 2011-05-27
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -58,13 +58,14 @@ package gencores_pkg is
 
   component gc_crc_gen
     generic (
-      g_polynomial : std_logic_vector;
-      g_init_value : std_logic_vector;
-      g_residue    : std_logic_vector;
-      g_data_width : integer range 2 to 256;
-      g_half_width : integer range 2 to 256;
-      g_sync_reset : integer range 0 to 1;
-      g_dual_width : integer range 0 to 1);
+      g_polynomial              : std_logic_vector;
+      g_init_value              : std_logic_vector;
+      g_residue                 : std_logic_vector;
+      g_data_width              : integer range 2 to 256;
+      g_half_width              : integer range 2 to 256;
+      g_sync_reset              : integer range 0 to 1;
+      g_dual_width              : integer range 0 to 1;
+      g_registered_match_output : boolean);
     port (
       clk_i   : in  std_logic;
       rst_i   : in  std_logic;
