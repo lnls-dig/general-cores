@@ -57,20 +57,22 @@ use work.gencores_pkg.all;
 entity gc_crc_gen is
   generic (
 -- polynomial of our CRC generator
-    g_polynomial : std_logic_vector       := x"04C11DB7";
+    g_polynomial              : std_logic_vector       := x"04C11DB7";
 -- initial (after-reset) value of CRC
-    g_init_value : std_logic_vector       := x"ffffffff";
+    g_init_value              : std_logic_vector       := x"ffffffff";
 -- residual value of CRC when matched
-    g_residue    : std_logic_vector       := x"38fb2284";
+    g_residue                 : std_logic_vector       := x"38fb2284";
 -- width of full data input word 
-    g_data_width : integer range 2 to 256 := 16;
+    g_data_width              : integer range 2 to 256 := 16;
 -- width of smaller-than-full data input word
-    g_half_width : integer range 2 to 256 := 8;
+    g_half_width              : integer range 2 to 256 := 8;
 -- use synchronous reset when 1
-    g_sync_reset : integer range 0 to 1   := 0;
+    g_sync_reset              : integer range 0 to 1   := 0;
 -- dual-width mode (g_data_width - wide input word when 1 and g_half_width input
 -- word when 0)
-    g_dual_width : integer range 0 to 1   := 0);  -- use sync./async reset
+    g_dual_width              : integer range 0 to 1   := 0;
+-- if true, match_o output is registered, otherwise it's driven combinatorially
+    g_registered_match_output : boolean                := true); 
   port (
     clk_i  : in std_logic;              -- clock
     rst_i  : in std_logic;              -- reset, active high
@@ -116,9 +118,9 @@ architecture rtl of gc_crc_gen is
   signal half_d0 : std_logic;
   signal crc_tmp : std_logic_vector(31 downto 0);
   signal crc_int : std_logic_vector(31 downto 0);
-    
+  
 
-    
+  
 begin
 
   a <= g_init_value;
@@ -194,10 +196,10 @@ begin
 -- CRC process
   crc_tmp <= f_reverse_vector(not crc);
   crc_int <= crc_tmp(7 downto 0) & crc_tmp(15 downto 8) & crc_tmp(23 downto 16) & crc_tmp(31 downto 24);
-  zero  <= (others => '0');
+  zero    <= (others => '0');
 
   crc_o <= crc_int;
-  
+
   CRCP : process (clk_i, arst)
   begin
     if arst = '1' then                  -- async. reset
@@ -217,30 +219,35 @@ begin
     end if;
   end process;
 
-  match_gen : process (clk_i, arst)
-  begin
-    if arst = '1' then                  -- async. reset
-      match_o <= '0';
-      en_d0 <= '0';
-    elsif rising_edge(clk_i) then
-      if srst = '1' then                -- sync. reset
+  gen_reg_match_output : if(g_registered_match_output) generate
+    
+    match_gen : process (clk_i, arst)
+    begin
+      if arst = '1' then                -- async. reset
         match_o <= '0';
-        en_d0 <= '0';
-      else
-        en_d0 <= en_i;
+        en_d0   <= '0';
+      elsif rising_edge(clk_i) then
+        if srst = '1' then              -- sync. reset
+          match_o <= '0';
+          en_d0   <= '0';
+        else
+          en_d0 <= en_i;
 
-        if(en_d0 = '1') then
-          if crc_int = g_residue then
-            match_o <= '1';
-          else
-            match_o <= '0';
+          if(en_d0 = '1') then
+            if crc_int = g_residue then
+              match_o <= '1';
+            else
+              match_o <= '0';
+            end if;
           end if;
         end if;
       end if;
-    end if;
-  end process;
-  
+    end process;
+    
+  end generate gen_reg_match_output;
 
-  
+  gen_comb_match_output : if (not g_registered_match_output) generate
+    match_o <= '1' when crc_int = g_residue else '0';
+  end generate gen_comb_match_output;
 end rtl;
 
