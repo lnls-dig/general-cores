@@ -58,14 +58,14 @@ package gencores_pkg is
 
   component gc_crc_gen
     generic (
-      g_polynomial              : std_logic_vector;
-      g_init_value              : std_logic_vector;
-      g_residue                 : std_logic_vector;
-      g_data_width              : integer range 2 to 256;
-      g_half_width              : integer range 2 to 256;
-      g_sync_reset              : integer range 0 to 1;
-      g_dual_width              : integer range 0 to 1;
-      g_registered_match_output : boolean);
+      g_polynomial              : std_logic_vector := x"04C11DB7";
+      g_init_value              : std_logic_vector := x"ffffffff";
+      g_residue                 : std_logic_vector := x"38fb2284";
+      g_data_width              : integer range 2 to 256 := 16;
+      g_half_width              : integer range 2 to 256 := 8;
+      g_sync_reset              : integer range 0 to 1 := 1;
+      g_dual_width              : integer range 0 to 1 := 0;
+      g_registered_match_output : boolean := true);
     port (
       clk_i   : in  std_logic;
       rst_i   : in  std_logic;
@@ -137,7 +137,7 @@ package gencores_pkg is
 
   component gc_sync_ffs
     generic (
-      g_sync_edge : string);
+      g_sync_edge : string := "positive");
     port (
       clk_i    : in  std_logic;
       rst_n_i  : in  std_logic;
