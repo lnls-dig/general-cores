@@ -34,7 +34,7 @@ package wishbone_pkg is
 
   subtype t_wishbone_slave_in is t_wishbone_master_out;
 
-  type wishbone_slave_out is record
+  type t_wishbone_slave_out is record
     ack   : std_logic;
     err   : std_logic;
     rty   : std_logic;
