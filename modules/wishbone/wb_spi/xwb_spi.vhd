@@ -54,7 +54,7 @@ architecture rtl of xwb_spi is
 begin  -- rtl
 
   gen_test_mode: if(g_interface_mode /= CLASSIC) generate
-    report "xwb_spi: this module can only work with CLASSIC wishbone interface" severity failure;
+   assert false report "xwb_spi: this module can only work with CLASSIC wishbone interface" severity failure;
   end generate gen_test_mode;
       
   wb_rst <= not rst_n_i;

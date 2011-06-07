@@ -38,7 +38,6 @@ architecture rtl of xwb_gpio_port is
     port (
       clk_sys_i  : in    std_logic;
       rst_n_i    : in    std_logic;
-      wb_sel_i   : in    std_logic;
       wb_cyc_i   : in    std_logic;
       wb_stb_i   : in    std_logic;
       wb_we_i    : in    std_logic;
@@ -55,7 +54,9 @@ architecture rtl of xwb_gpio_port is
 begin  -- rtl
 
   gen_test_mode : if(g_interface_mode /= CLASSIC) generate
-    report "xwb_gpio_port: this module can only work with CLASSIC wishbone interface" severity failure;
+
+    assert false report "xwb_gpio_port: this module can only work with CLASSIC wishbone interface" severity failure;
+
   end generate gen_test_mode;
 
   Wrapped_GPIO : wb_gpio_port
@@ -65,7 +66,6 @@ begin  -- rtl
     port map (
       clk_sys_i => clk_sys_i,
       rst_n_i   => rst_n_i,
-      wb_sel_i  => slave_i.sel,
       wb_cyc_i  => slave_i.cyc,
       wb_stb_i  => slave_i.stb,
       wb_we_i   => slave_i.we,
