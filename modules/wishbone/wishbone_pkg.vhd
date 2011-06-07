@@ -22,7 +22,7 @@ package wishbone_pkg is
     std_logic_vector(1 downto 0);
 
   type t_wishbone_interface_mode is (CLASSIC, PIPELINED);
-  
+
   type t_wishbone_master_out is record
     cyc : std_logic;
     stb : std_logic;
@@ -39,8 +39,26 @@ package wishbone_pkg is
     err   : std_logic;
     rty   : std_logic;
     stall : std_logic;
+    int: std_logic;
     dat   : t_wishbone_data;
   end record t_wishbone_slave_out;
   subtype t_wishbone_master_in is t_wishbone_slave_out;
 
+  type t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
+
+  component xwb_spi
+    generic (
+      g_interface_mode : t_wishbone_interface_mode);
+    port (
+      clk_sys_i  : in  std_logic;
+      rst_n_i    : in  std_logic;
+      slave_i    : in  t_wishbone_slave_in;
+      slave_o    : out t_wishbone_slave_out;
+      desc_o     : out t_wishbone_device_descriptor;
+      pad_cs_o   : out std_logic_vector(7 downto 0);
+      pad_sclk_o : out std_logic;
+      pad_mosi_o : out std_logic;
+      pad_miso_i : in  std_logic);
+  end component;
+  
 end wishbone_pkg;
