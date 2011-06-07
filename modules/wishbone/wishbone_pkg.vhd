@@ -44,7 +44,7 @@ package wishbone_pkg is
   end record t_wishbone_slave_out;
   subtype t_wishbone_master_in is t_wishbone_slave_out;
 
-  type t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
+  subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
   component xwb_spi
     generic (
