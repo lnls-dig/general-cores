@@ -1,6 +1,7 @@
 modules =  { "local" :
 	
-						[ "wb_async_bridge",
+						[ 
+#						"wb_async_bridge",
 						"wb_conmax",
 						"wb_gpio_port",
 						"wb_simple_timer",
