@@ -23,7 +23,7 @@ entity xwb_spi is
     pad_miso_i : in  std_logic
     );
 
-end xwb_spi;
+end xwb_spi;    
 
 architecture rtl of xwb_spi is
 
