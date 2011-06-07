@@ -89,76 +89,78 @@ begin
   end generate GEN_SYNC_FFS;
 
 
-  process (wb_clk_i, sys_rst_n_i)
+  process (clk_sys_i)
   begin
-    if sys_rst_n_i = '0' then
-      dir_reg                          <= (others => '0');
-      out_reg                          <= (others => '0');
-      ack_int                          <= '0';
-      wb_dat_o(g_num_pins-1 downto 0) <= (others => '0');
-    elsif rising_edge(wb_clk_i) then
-      if(ack_int = '1') then
-        ack_int <= '0';
-      elsif(wb_cyc_i = '1') and (wb_sel_i = '1') and (wb_stb_i = '1') then
-        if(wb_we_i = '1') then
-          case wb_adr_i(2 downto 0) is
-            when c_GPIO_REG_SODR =>
-              out_reg <= out_reg or wb_dat_i(g_num_pins-1 downto 0);
-              ack_int <= '1';
-            when c_GPIO_REG_CODR =>
-              out_reg <= out_reg and (not wb_dat_i(g_num_pins-1 downto 0));
-              ack_int <= '1';
-            when c_GPIO_REG_DDR =>
-              dir_reg <= wb_dat_i(g_num_pins-1 downto 0);
-              ack_int <= '1';
-            when others =>
-              ack_int <= '1';
-          end case;
-        else
-          case wb_adr_i(2 downto 0) is
-            when c_GPIO_REG_DDR =>
-              wb_dat_o(g_num_pins-1 downto 0) <= dir_reg;
-              ack_int                          <= '1';
-              
-            when c_GPIO_REG_PSR =>
-              wb_dat_o(g_num_pins-1 downto 0) <= gpio_in_synced;
-              ack_int                          <= '1';
-            when others =>
-              ack_int <= '1';
-          end case;
-        end if;
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        dir_reg                         <= (others => '0');
+        out_reg                         <= (others => '0');
+        ack_int                         <= '0';
+        wb_dat_o(g_num_pins-1 downto 0) <= (others => '0');
       else
-        ack_int <= '0';
+        if(ack_int = '1') then
+          ack_int <= '0';
+        elsif(wb_cyc_i = '1') and (wb_sel_i = '1') and (wb_stb_i = '1') then
+          if(wb_we_i = '1') then
+            case wb_adr_i(2 downto 0) is
+              when c_GPIO_REG_SODR =>
+                out_reg <= out_reg or wb_dat_i(g_num_pins-1 downto 0);
+                ack_int <= '1';
+              when c_GPIO_REG_CODR =>
+                out_reg <= out_reg and (not wb_dat_i(g_num_pins-1 downto 0));
+                ack_int <= '1';
+              when c_GPIO_REG_DDR =>
+                dir_reg <= wb_dat_i(g_num_pins-1 downto 0);
+                ack_int <= '1';
+              when others =>
+                ack_int <= '1';
+            end case;
+          else
+            case wb_adr_i(2 downto 0) is
+              when c_GPIO_REG_DDR =>
+                wb_dat_o(g_num_pins-1 downto 0) <= dir_reg;
+                ack_int                         <= '1';
+                
+              when c_GPIO_REG_PSR =>
+                wb_dat_o(g_num_pins-1 downto 0) <= gpio_in_synced;
+                ack_int                         <= '1';
+              when others =>
+                ack_int <= '1';
+            end case;
+          end if;
+        else
+          ack_int <= '0';
+        end if;
       end if;
     end if;
-  end process;
+    end process;
 
 
-  gen_with_tristates : if(g_with_builtin_tristates) generate
-    
-    gpio_out_tristate : process (out_reg, dir_reg)
-    begin
-      for i in 0 to g_num_pins-1 loop
-        if(dir_reg(i) = '1') then
-          gpio_b(i) <= out_reg(i);
-        else
-          gpio_b(i) <= 'Z';
-        end if;
+      gen_with_tristates : if(g_with_builtin_tristates) generate
         
-      end loop;
-    end process gpio_out_tristate;
+        gpio_out_tristate : process (out_reg, dir_reg)
+        begin
+          for i in 0 to g_num_pins-1 loop
+            if(dir_reg(i) = '1') then
+              gpio_b(i) <= out_reg(i);
+            else
+              gpio_b(i) <= 'Z';
+            end if;
+            
+          end loop;
+        end process gpio_out_tristate;
 
-    gpio_in <= gpio_b;
-    
-  end generate gen_with_tristates;
+        gpio_in <= gpio_b;
+        
+      end generate gen_with_tristates;
 
-  gen_without_tristates : if (not g_with_builtin_tristates) generate
-    gpio_out_o <= out_reg;
-    gpio_in    <= gpio_i;
-    gpio_oen_o <= dir_reg;
-  end generate gen_without_tristates;
+      gen_without_tristates : if (not g_with_builtin_tristates) generate
+        gpio_out_o <= out_reg;
+        gpio_in    <= gpio_in_i;
+        gpio_oen_o <= dir_reg;
+      end generate gen_without_tristates;
 
-  wb_ack_o <= ack_int;
-end behavioral;
+      wb_ack_o <= ack_int;
+    end behavioral;
 
 
