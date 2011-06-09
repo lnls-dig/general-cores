@@ -39,6 +39,7 @@ architecture rtl of xwb_gpio_port is
       clk_sys_i  : in    std_logic;
       rst_n_i    : in    std_logic;
       wb_cyc_i   : in    std_logic;
+      wb_sel_i   : in    std_logic;
       wb_stb_i   : in    std_logic;
       wb_we_i    : in    std_logic;
       wb_adr_i   : in    std_logic_vector(2 downto 0);
@@ -66,6 +67,7 @@ begin  -- rtl
     port map (
       clk_sys_i => clk_sys_i,
       rst_n_i   => rst_n_i,
+		  wb_sel_i  => '1',
       wb_cyc_i  => slave_i.cyc,
       wb_stb_i  => slave_i.stb,
       wb_we_i   => slave_i.we,
