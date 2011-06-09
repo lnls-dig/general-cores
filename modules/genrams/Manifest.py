@@ -37,7 +37,12 @@ def __import_coregen_module(path, name, work_dir):
 	f.close()
 
 def __import_coregen_files():
-	coregen_path = __os.getenv("XILINX") + "/ISE/coregen/ip/xilinx/primary/com/xilinx/ip/"
+	xilinx_dir =  __os.getenv("XILINX");
+	if xilinx_dir == None:
+		print("[genrams] FATAL ERROR: XILINX environment variable not set. Do you have ISE installed?")
+		__os.exit(-1)
+
+	coregen_path = xilinx_dir + "/ISE/coregen/ip/xilinx/primary/com/xilinx/ip/"
 	work_dir = __manifest + "/coregen_ip";
 
 
