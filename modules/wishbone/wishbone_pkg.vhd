@@ -60,5 +60,11 @@ package wishbone_pkg is
       pad_mosi_o : out std_logic;
       pad_miso_i : in  std_logic);
   end component;
+
+  type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
+  type t_wishbone_slave_out_array  is array (natural range <>) of t_wishbone_slave_out;
+  type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
+  type t_wishbone_slave_in_array  is array (natural range <>) of t_wishbone_slave_in;
+
   
 end wishbone_pkg;
