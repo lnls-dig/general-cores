@@ -164,3 +164,82 @@ begin
     end behavioral;
 
 
+f(ddr_wr(i) = '1') then
+            dir_reg(i * 32 + 31 downto i * 32) <= wb_dat_i;
+          end if;
+        end if;
+      end if;
+    end process;
+  end generate gen_banks_wr;
+
+
+  p_wb_reads : process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        wb_dat_o <= (others => '0');
+      else
+        wb_dat_o <= (others => 'X');
+        case wb_adr_i(2 downto 0) is
+          when c_GPIO_REG_DDR =>
+            for i in 0 to c_NUM_BANKS-1 loop
+              if(to_integer(unsigned(wb_adr_i(5 downto 3))) = i) then
+                wb_dat_o <= dir_reg(32 * i + 31 downto 32 * i);
+              end if;
+            end loop;  -- i 
+
+          when c_GPIO_REG_PSR =>
+            for i in 0 to c_NUM_BANKS-1 loop
+              if(to_integer(unsigned(wb_adr_i(5 downto 3))) = i) then
+                wb_dat_o <= gpio_in_synced(32 * i + 31 downto 32 * i);
+              end if;
+            end loop;  -- i 
+          when others => null;
+        end case;
+      end if;
+    end if;
+  end process;
+
+  p_gen_ack : process (clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        ack_int <= '0';
+      else
+        if(ack_int = '1') then
+          ack_int <= '0';
+        elsif(wb_cyc_i = '1') and (wb_sel_i = '1') and (wb_stb_i = '1') then
+          ack_int <= '1';
+        end if;
+      end if;
+    end if;
+  end process;
+
+  gen_with_tristates : if(g_with_builtin_tristates) generate
+    
+    gpio_out_tristate : process (out_reg, dir_reg)
+    begin
+      for i in 0 to g_num_pins-1 loop
+        if(dir_reg(i) = '1') then
+          gpio_b(i) <= out_reg(i);
+        else
+          gpio_b(i) <= 'Z';
+        end if;
+        
+      end loop;
+    end process gpio_out_tristate;
+
+    gpio_in <= gpio_b;
+    
+  end generate gen_with_tristates;
+
+  gen_without_tristates : if (not g_with_builtin_tristates) generate
+    gpio_out_o <= out_reg;
+    gpio_in    <= gpio_in_i;
+    gpio_oen_o <= dir_reg;
+  end generate gen_without_tristates;
+
+  wb_ack_o <= ack_int;
+end behavioral;
+
+
