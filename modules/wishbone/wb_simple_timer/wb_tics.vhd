@@ -6,7 +6,7 @@
 -- Author     : Grzegorz Daniluk
 -- Company    : Elproma
 -- Created    : 2011-04-03
--- Last update: 2011-04-07
+-- Last update: 2011-06-16
 -- Platform   : FPGA-generics
 -- Standard   : VHDL
 -------------------------------------------------------------------------------
@@ -96,13 +96,15 @@ begin
         wb_ack_o  <= '0';
         wb_data_o <= (others => '0');
       else
-        if(wb_stb_i = '1' and wb_cyc_i = '1' and wb_we_i = '0') then
-          case wb_addr_i is
-            when c_TICS_REG =>
-              wb_data_o <= std_logic_vector(cntr_tics);
-            when others =>
-              wb_data_o <= (others => '0');
-          end case;
+        if(wb_stb_i = '1' and wb_cyc_i = '1') then
+          if(wb_we_i = '0') then
+            case wb_addr_i is
+              when c_TICS_REG =>
+                wb_data_o <= std_logic_vector(cntr_tics);
+              when others =>
+                wb_data_o <= (others => '0');
+            end case;
+          end if;
           wb_ack_o <= '1';
         else
           wb_data_o <= (others => '0');
