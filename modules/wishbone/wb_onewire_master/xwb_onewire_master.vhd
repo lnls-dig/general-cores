@@ -42,7 +42,7 @@ architecture rtl of xwb_onewire_master is
       wb_sel_i    : in  std_logic_vector(3 downto 0);
       wb_stb_i    : in  std_logic;
       wb_we_i     : in  std_logic;
-      wb_adr_i    : in  std_logic_vector(1 downto 0);
+      wb_adr_i    : in  std_logic_vector(0 downto 0);
       wb_dat_i    : in  std_logic_vector(31 downto 0);
       wb_dat_o    : out std_logic_vector(31 downto 0);
       wb_ack_o    : out std_logic;
