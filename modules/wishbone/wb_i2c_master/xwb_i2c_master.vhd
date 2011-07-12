@@ -4,6 +4,9 @@ use ieee.std_logic_1164.all;
 use work.wishbone_pkg.all;
 
 entity xwb_i2c_master is
+  generic(
+    g_interface_mode         : t_wishbone_interface_mode := CLASSIC
+    );
   port (
     clk_sys_i : in std_logic;
     rst_n_i   : in std_logic;
@@ -51,6 +54,13 @@ architecture rtl of xwb_i2c_master is
   
 begin  -- rtl
 
+
+  gen_test_mode : if(g_interface_mode /= CLASSIC) generate
+
+    assert false report "xwb_i2c_master: this module can only work with CLASSIC wishbone interface" severity failure;
+
+  end generate gen_test_mode;
+  
   rst <= not rst_n_i;
 
   Wrapped_I2C : i2c_master_top
