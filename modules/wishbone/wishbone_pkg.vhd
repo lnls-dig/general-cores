@@ -119,5 +119,22 @@ package wishbone_pkg is
       master_i  : in  t_wishbone_master_in_array(0 to g_num_outputs-1);
       master_o  : out t_wishbone_master_out_array(0 to g_num_outputs-1));
   end component;
+
+  component xwb_gpio_port
+    generic (
+      g_interface_mode         : t_wishbone_interface_mode := CLASSIC;
+      g_num_pins               : natural := 32;
+      g_with_builtin_tristates : boolean := false);
+    port (
+      clk_sys_i  : in    std_logic;
+      rst_n_i    : in    std_logic;
+      slave_i    : in    t_wishbone_slave_in;
+      slave_o    : out   t_wishbone_slave_out;
+      desc_o     : out   t_wishbone_device_descriptor;
+      gpio_b     : inout std_logic_vector(g_num_pins-1 downto 0);
+      gpio_out_o : out   std_logic_vector(g_num_pins-1 downto 0);
+      gpio_in_i  : in    std_logic_vector(g_num_pins-1 downto 0);
+      gpio_oen_o : out   std_logic_vector(g_num_pins-1 downto 0));
+  end component;
   
 end wishbone_pkg;
