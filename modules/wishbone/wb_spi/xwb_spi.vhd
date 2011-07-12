@@ -5,7 +5,7 @@ use work.wishbone_pkg.all;
 
 entity xwb_spi is
   generic(
-    g_interface_mode : t_wishbone_interface_mode
+    g_interface_mode : t_wishbone_interface_mode := CLASSIC
     );
 
   port(
