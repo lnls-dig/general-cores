@@ -46,9 +46,38 @@ package wishbone_pkg is
 
   subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
+ 
+
+  type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
+  type t_wishbone_slave_out_array  is array (natural range <>) of t_wishbone_slave_out;
+  type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
+  type t_wishbone_slave_in_array  is array (natural range <>) of t_wishbone_slave_in;
+
+------------------------------------------------------------------------------
+-- Components declaration
+-------------------------------------------------------------------------------
+  
+
+  component xwb_i2c_master
+    generic (
+      g_interface_mode : t_wishbone_interface_mode := CLASSIC);
+    port (
+      clk_sys_i    : in  std_logic;
+      rst_n_i      : in  std_logic;
+      slave_i      : in  t_wishbone_slave_in;
+      slave_o      : out t_wishbone_slave_out;
+      desc_o       : out t_wishbone_device_descriptor;
+      scl_pad_i    : in  std_logic;
+      scl_pad_o    : out std_logic;
+      scl_padoen_o : out std_logic;
+      sda_pad_i    : in  std_logic;
+      sda_pad_o    : out std_logic;
+      sda_padoen_o : out std_logic);
+  end component;
+
   component xwb_spi
     generic (
-      g_interface_mode : t_wishbone_interface_mode);
+      g_interface_mode : t_wishbone_interface_mode := CLASSIC);
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
@@ -61,10 +90,34 @@ package wishbone_pkg is
       pad_miso_i : in  std_logic);
   end component;
 
-  type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
-  type t_wishbone_slave_out_array  is array (natural range <>) of t_wishbone_slave_out;
-  type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
-  type t_wishbone_slave_in_array  is array (natural range <>) of t_wishbone_slave_in;
+  component xwb_onewire_master
+    generic (
+      g_interface_mode   : t_wishbone_interface_mode := CLASSIC;
+      g_num_ports        : integer := 1;
+      g_ow_btp_normal    : string := "5.0";
+      g_ow_btp_overdrive : string := "1.0");
+    port (
+      clk_sys_i   : in  std_logic;
+      rst_n_i     : in  std_logic;
+      slave_i     : in  t_wishbone_slave_in;
+      slave_o     : out t_wishbone_slave_out;
+      desc_o      : out t_wishbone_device_descriptor;
+      owr_pwren_o : out std_logic_vector(g_num_ports -1 downto 0);
+      owr_en_o    : out std_logic_vector(g_num_ports -1 downto 0);
+      owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
+  end component;
 
+  component xwb_bus_fanout
+    generic (
+      g_num_outputs    : natural;
+      g_bits_per_slave : integer := 14);
+    port (
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
+      master_i  : in  t_wishbone_master_in_array(0 to g_num_outputs-1);
+      master_o  : out t_wishbone_master_out_array(0 to g_num_outputs-1));
+  end component;
   
 end wishbone_pkg;
