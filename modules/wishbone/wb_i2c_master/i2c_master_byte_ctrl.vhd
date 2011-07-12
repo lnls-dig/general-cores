@@ -158,6 +158,8 @@ architecture structural of i2c_master_byte_ctrl is
 	signal go, host_ack : std_logic;
 	signal dcnt : unsigned(2 downto 0); -- data counter
 	signal cnt_done : std_logic;
+	    type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
+	    signal c_state : states;
 
 begin
 	-- hookup bit_controller
@@ -229,8 +231,6 @@ begin
 	-- state machine
 	--
 	statemachine : block
-	    type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
-	    signal c_state : states;
 	begin
 	    --
 	    -- command interpreter, translate complex commands into simpler I2C commands
