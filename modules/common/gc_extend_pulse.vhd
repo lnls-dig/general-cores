@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2011-04-29
+-- Last update: 2011-07-18
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -65,26 +65,28 @@ end gc_extend_pulse;
 architecture rtl of gc_extend_pulse is
 
   signal cntr : unsigned(31 downto 0);
+  signal extended_int : std_logic;
   
 begin  -- rtl
 
   extend : process (clk_i, rst_n_i)
   begin  -- process extend
     if rst_n_i = '0' then                   -- asynchronous reset (active low)
-      extended_o <= '0';
+      extended_int <= '0';
       cntr       <= (others => '0');
     elsif clk_i'event and clk_i = '1' then  -- rising clock edge
       if(pulse_i = '1') then
-        extended_o <= '1';
-        cntr       <= to_unsigned(g_width, cntr'length);
+        extended_int <= '1';
+        cntr       <= to_unsigned(g_width - 2, cntr'length);
       elsif cntr /= to_unsigned(0, cntr'length) then
         cntr <= cntr - 1;
       else
-        extended_o <= '0';
+        extended_int <= '0';
       end if;
     end if;
   end process extend;
-  
+
+  extended_o <= extended_i or extended_int;
 
 end rtl;
 
