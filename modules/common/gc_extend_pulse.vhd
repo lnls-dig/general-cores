@@ -86,7 +86,7 @@ begin  -- rtl
     end if;
   end process extend;
 
-  extended_o <= extended_i or extended_int;
+  extended_o <= pulse_i or extended_int;
 
 end rtl;
 
