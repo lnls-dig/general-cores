@@ -222,9 +222,9 @@ begin
   end generate gen_with_tristates;
 
   gen_without_tristates : if (not g_with_builtin_tristates) generate
-    gpio_out_o <= out_reg;
-    gpio_in    <= gpio_in_i;
-    gpio_oen_o <= dir_reg;
+    gpio_out_o <= out_reg(g_num_pins-1 downto 0);
+    gpio_in(g_num_pins-1 downto 0)    <= gpio_in_i;
+    gpio_oen_o <= dir_reg(g_num_pins-1 downto 0);
   end generate gen_without_tristates;
 
   wb_ack_o <= ack_int;
