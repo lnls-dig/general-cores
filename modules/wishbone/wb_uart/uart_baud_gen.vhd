@@ -23,7 +23,7 @@ architecture behavioral of uart_baud_gen is
   signal Baud8GeneratorInc : unsigned(g_baud_acc_width downto 0);
   signal Baud8GeneratorAcc : unsigned(g_baud_acc_width downto 0);
   signal Baud8Tick         : std_logic;
-  signal Baud_sreg         : std_logic_vector(7 downto 0);
+  signal Baud_sreg         : std_logic_vector(7 downto 0) := "10000000";
   
   
 begin  -- behavioral
