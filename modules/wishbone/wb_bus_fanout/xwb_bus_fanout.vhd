@@ -30,8 +30,8 @@ architecture rtl of xwb_bus_fanout is
   signal periph_addr     : std_logic_vector(c_periph_addr_bits - 1 downto 0);
   signal periph_addr_reg : std_logic_vector(c_periph_addr_bits - 1 downto 0);
 
-  signal periph_sel     : std_logic_vector(g_num_outputs - 1 downto 0);
-  signal periph_sel_reg : std_logic_vector(g_num_outputs - 1 downto 0);
+  signal periph_sel     : std_logic_vector(2**c_periph_addr_bits-1 downto 0);
+  signal periph_sel_reg : std_logic_vector(2**c_periph_addr_bits-1 downto 0);
 
   signal ack_muxed     : std_logic;
   signal data_in_muxed : std_logic_vector(31 downto 0);
@@ -85,7 +85,6 @@ begin  -- rtl
   begin
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
-        slave_o.ack       <= '0';
         cycle_in_progress <= '0';
         ack_prev <= '0';
         periph_addr_reg <= (others => '0');
@@ -101,7 +100,7 @@ begin  -- rtl
           ack_prev <= '0';
         else
           slave_o.dat <= data_in_muxed;
-          slave_o.ack <= ack_muxed;
+--          ack <= ack_muxed;
           ack_prev <= ack_muxed;
           if(ack_muxed = '1') then
             cycle_in_progress <= '0';
@@ -111,6 +110,8 @@ begin  -- rtl
     end if;
   end process;
 
+  slave_o.ack <= ack_prev and slave_i.stb;
+  
   gen_outputs : for i in 0 to g_num_outputs-1 generate
     master_o(i).cyc <= slave_i.cyc and periph_sel(i);
     master_o(i).adr <= slave_i.adr;
