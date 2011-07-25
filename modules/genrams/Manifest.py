@@ -61,12 +61,14 @@ def __import_coregen_files():
 ## "Normal" manifest        ##
 ##############################
 
-print ("[genrams] target = " + target)
+print ("[genrams] action = " + action + ", target = " + target)
 
 if (target == "altera"):
 	modules = {"local" : "altera"}
-elif (target == "xilinx"):
+elif (target == "xilinx" and action == "synthesis"):
 	__import_coregen_files()
 	modules = {"local" : ["xilinx", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
+elif (target == "xilinx" and action == "simulation"):
+	modules = {"local" : ["xilinx", "xilinx/sim_stub"]}
 else:
 	modules = {"local" : "altera"}
