@@ -10,8 +10,8 @@ files = [	"generated/xwb_lm32.vhd",
 					"src/lm32_shifter.v"];
 					
 if(target == "altera"):
-	files.append(["altera/jtag_tap.v"]);
+	files.extend(["platform/generic/lm32_multiplier.v", "platform/altera/jtag_tap.v"]);
 elif (target == "xilinx"):
-	files.append(["platform/xilinx/lm32_multiplier.v", "platform/xilinx/jtag_tap.v"])
+	files.extend(["platform/xilinx/lm32_multiplier.v", "platform/xilinx/jtag_tap.v"])
 else:
-	files.append(["platform/generic/lm32_multiplier.v"]);
+	files.extend(["platform/generic/lm32_multiplier.v", "platform/generic/jtag_tap.v"]);

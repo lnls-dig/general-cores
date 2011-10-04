@@ -34,7 +34,7 @@
 `define LM32_INCLUDE_V
 
 // Configuration options
-`include "system_conf.v"
+//`include "system_conf.v"
 
 `ifdef TRUE
 `else
