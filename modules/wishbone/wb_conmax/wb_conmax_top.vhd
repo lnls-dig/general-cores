@@ -6,7 +6,7 @@
 -- Author     : Grzegorz Daniluk
 -- Company    : Elproma
 -- Created    : 2011-02-12
--- Last update: 2010-02-16
+-- Last update: 2011-09-14
 -- Platform   : FPGA-generics
 -- Standard   : VHDL
 -------------------------------------------------------------------------------
@@ -106,8 +106,9 @@ architecture struct of wb_conmax_top is
   end component;
 
 
-  signal intwb_s15_i  : t_wb_o;
-  signal intwb_s15_o  : t_wb_i;
+  signal intwb_s15_i  : t_wishbone_master_in;
+  signal intwb_s15_o  : t_wishbone_master_out;
+  
 
   --M0Sx
   signal m0_slaves_i : t_conmax_slaves_i;

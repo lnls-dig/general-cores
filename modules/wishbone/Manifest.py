@@ -5,7 +5,7 @@ modules =  { "local" :
 						"wb_onewire_master",
 						"wb_i2c_master",
 						"wb_bus_fanout",
-						"wb_conmax",
+#						"wb_conmax",
 						"wb_dpram",
 						"wb_gpio_port",
 						"wb_simple_timer",
