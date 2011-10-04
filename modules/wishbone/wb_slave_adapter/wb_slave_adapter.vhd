@@ -177,7 +177,13 @@ begin  -- rtl
       end if;
       slave_out.stall <= '0';
     elsif(g_slave_mode = CLASSIC and g_master_mode = PIPELINED) then
-      master_out.stb <= slave_in.stb;
+
+      if(fsm_state = WAIT4ACK) then
+        master_out.stb <= '1';
+      else
+        master_out.stb <= slave_in.stb;
+      end if;
+      
       if(master_out.cyc = '1') then
         slave_out.stall <= '0';
       else
@@ -189,7 +195,7 @@ begin  -- rtl
     end if;
   end process;
 
-  master_out.dat <= slave_in.adr;
+  master_out.dat <= slave_in.dat;
   master_out.cyc <= slave_in.cyc;
   master_out.sel <= slave_in.sel;
   master_out.we  <= slave_in.we;
