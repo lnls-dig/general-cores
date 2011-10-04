@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-09-21
+-- Last update: 2011-09-23
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ entity wb_async_bridge is
   generic (
     g_simulation          : integer := 0;
     g_interface_mode      : t_wishbone_interface_mode;
-    g_address_granularity : t_wishbone_address_granularity);
+    g_address_granularity : t_wishbone_address_granularity;
+    g_cpu_address_width   : integer := 32);
   port(
     rst_n_i   : in std_logic;           -- global reset
     clk_sys_i : in std_logic;           -- system clock
@@ -57,7 +58,7 @@ entity wb_async_bridge is
     cpu_bs_n_i : in std_logic_vector(3 downto 0);
 
 -- address input
-    cpu_addr_i : in std_logic_vector(c_cpu_addr_width-1 downto 0);
+    cpu_addr_i : in std_logic_vector(g_cpu_address_width-1 downto 0);
 
 -- data bus (bidirectional)
     cpu_data_b : inout std_logic_vector(31 downto 0);
@@ -70,7 +71,7 @@ entity wb_async_bridge is
 -------------------------------------------------------------------------------
 
 -- wishbone master address output (m->s, common for all slaves)
-    wb_adr_o : out std_logic_vector(c_wishbone_addr_width - 1 downto 0);
+    wb_adr_o : out std_logic_vector(c_wishbone_address_width - 1 downto 0);
 -- wishbone master data output (m->s common for all slaves)
     wb_dat_o : out std_logic_vector(31 downto 0);
 -- wishbone cycle strobe (m->s, common for all slaves)
@@ -80,13 +81,13 @@ entity wb_async_bridge is
 -- wishbone byte select output (m->s, common for all slaves)
     wb_sel_o : out std_logic_vector(3 downto 0);
 
--- wishbone cycle select (m->s, individual)
-    wb_cyc_o : out std_logic_vector (c_wishbone_addr_width - 1 downto 0);
--- wishbone master data input (s->m, individual)
-    wb_dat_i : in  std_logic_vector (32 * g_wishbone_num_masters-1 downto 0);
--- wishbone ACK input (s->m, individual)
-    wb_ack_i : in  std_logic_vector(g_wishbone_num_masters-1 downto 0)
-
+-- wishbone cycle select (m->s)
+    wb_cyc_o   : out std_logic;
+-- wishbone master data input (s->m)
+    wb_dat_i   : in  std_logic_vector (c_wishbone_data_width-1 downto 0);
+-- wishbone ACK input (s->m)
+    wb_ack_i   : in  std_logic;
+    wb_stall_i : in  std_logic
     );
 
 end wb_async_bridge;
@@ -97,7 +98,6 @@ architecture behavioral of wb_async_bridge is
   signal cpu_data_reg                                             : std_logic_vector(31 downto 0);
   signal long_cycle                                               : std_logic;
 
-
   signal wb_in  : t_wishbone_master_in;
   signal wb_out : t_wishbone_master_out;
 begin
@@ -105,24 +105,25 @@ begin
   U_Adapter : wb_slave_adapter
     generic map (
       g_master_use_struct  => false,
-      g_master_mode        => g_interface_mode
+      g_master_mode        => g_interface_mode,
       g_master_granularity => g_address_granularity,
       g_slave_use_struct   => true,
       g_slave_mode         => CLASSIC,
       g_slave_granularity  => WORD)
     port map (
-      clk_sys_i => clk_sys_i,
-      rst_n_i   => rst_n_i,
-      slave_i   => wb_out,
-      slave_o   => wb_in,
-      ma_adr_o  => wb_adr_o,
-      ma_dat_o  => wb_dat_o,
-      ma_sel_o  => wb_sel_o,
-      ma_cyc_o  => wb_cyc_o,
-      ma_stb_o  => wb_stb_o,
-      ma_we_o   => wb_we_o,
-      ma_dat_i  => wb_dat_i,
-      ma_ack_i  => wb_ack_i);
+      clk_sys_i  => clk_sys_i,
+      rst_n_i    => rst_n_i,
+      slave_i    => wb_out,
+      slave_o    => wb_in,
+      ma_adr_o   => wb_adr_o,
+      ma_dat_o   => wb_dat_o,
+      ma_sel_o   => wb_sel_o,
+      ma_cyc_o   => wb_cyc_o,
+      ma_stb_o   => wb_stb_o,
+      ma_we_o    => wb_we_o,
+      ma_dat_i   => wb_dat_i,
+      ma_ack_i   => wb_ack_i,
+      ma_stall_i => wb_stall_i);
 
   gen_sync_chains_nosim : if(g_simulation = 0) generate
 
@@ -177,20 +178,18 @@ begin
         cpu_nwait_o       <= '1';
         long_cycle        <= '0';
 
-        wb_addr_o <= (others => '0');
-        wb_data_o <= (others => '0');
-        wb_sel_o  <= (others => '1');
-        wb_stb_o  <= '0';
-        wb_we_o   <= '0';
-        wb_cyc_o  <= '0';
+        wb_out.adr <= (others => '0');
+        wb_out.dat <= (others => '0');
+        wb_out.sel <= (others => '1');
+        wb_out.stb <= '0';
+        wb_out.we  <= '0';
+        wb_out.cyc <= '0';
 
-        periph_sel_reg  <= (others => '0');
-        periph_addr_reg <= (others => '0');
       else
 
         if(cs_synced = '0') then
 
-          wb_out.adr <= resize(cpu_addr_i, c_wishbone_addr_width);
+          wb_out.adr <= std_logic_vector(resize(unsigned(cpu_addr_i), c_wishbone_address_width));
 
           if(cycle_in_progress = '1') then
             if(wb_in.ack = '1') then
@@ -200,10 +199,10 @@ begin
               end if;
 
               cycle_in_progress <= '0';
-              wb_o.cyc          <= '0';
-              wb_o.sel          <= (others => '1');
-              wb_o.stb          <= '0';
-              wb_o.we           <= '0';
+              wb_out.cyc          <= '0';
+              wb_out.sel          <= (others => '1');
+              wb_out.stb          <= '0';
+              wb_out.we           <= '0';
               cpu_nwait_o       <= '1';
               long_cycle        <= '0';
               
@@ -213,9 +212,9 @@ begin
             end if;
             
           elsif(rd_pulse = '1' or wr_pulse = '1') then
-            wb_o.cyc <= '1';
-            wb_o.stb <= '1';
-            wb_o.we <= wr_pulse;
+            wb_out.cyc <= '1';
+            wb_out.stb <= '1';
+            wb_out.we  <= wr_pulse;
 
             long_cycle <= '0';
             rw_sel     <= wr_pulse;
