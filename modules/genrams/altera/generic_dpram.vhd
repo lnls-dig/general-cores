@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-04-12
+-- Last update: 2011-09-26
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ use ieee.numeric_std.all;
 
 library work;
 use work.genram_pkg.all;
+use work.memory_loader_pkg.all;
 
 entity generic_dpram is
 
@@ -40,7 +41,8 @@ entity generic_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string := "read_first";
     g_init_file                : string := "";
-    g_dual_clock               : boolean := true
+    g_dual_clock               : boolean := true;
+    g_fail_if_file_not_found : boolean := true
     );
 
   port (
@@ -73,8 +75,52 @@ architecture syn of generic_dpram is
   type t_ram_word_bs is array (0 to 7) of std_logic_vector(7 downto 0);
   type t_ram_type_bs is array (0 to g_size - 1) of t_ram_word_bs;
 
-  shared variable ram    : t_ram_type;
-  shared variable ram_bs : t_ram_type_bs;
+  function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
+    variable tmp    : t_ram_type;
+    variable n, pos : integer;
+  begin
+    pos := 0;
+    while(pos < g_size)loop
+      n := 0;
+      -- avoid ISE loop iteration limit
+      while (pos < g_size and n < 4096) loop
+        for i in 0 to g_data_width-1 loop
+          tmp(pos)(i) := arr(pos, i);
+        end loop;  -- i
+        n := n+1;
+        pos := pos + 1;
+      end loop;
+      pos := pos + 1;
+    end loop;
+    return tmp;
+  end f_memarray_to_ramtype;
+
+  function f_memarray_to_ramtype_bs(arr : t_meminit_array) return t_ram_type_bs is
+    variable tmp    : t_ram_type_bs;
+    variable n, pos : integer;
+  begin
+    pos := 0;
+    while(pos < g_size)loop
+      n := 0;
+      -- avoid ISE loop iteration limit
+      while (pos < g_size and n < 4096) loop
+        for i in 0 to g_data_width-1 loop
+          tmp(pos)(i/8)(i mod 8) := arr(pos, i);
+        end loop;  -- i
+        n := n+1;
+        pos := pos + 1;
+      end loop;
+      pos := pos + 1;
+    end loop;
+    return tmp;
+  end f_memarray_to_ramtype_bs;
+
+
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(
+    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
+
+  shared variable ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(
+    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
   signal q_local_a       : t_ram_word_bs;
   signal q_local_b       : t_ram_word_bs;
 
@@ -85,8 +131,6 @@ architecture syn of generic_dpram is
   signal clkb_int : std_logic;
   
 begin
-  assert (g_init_file = "")
-    report "generic_dpram: Memory initialization files not supported yet. Sorry :(" severity failure;
   assert (g_addr_conflict_resolution = "read_first")
     report "generic_dpram: Altera template supports only read-first mode." severity failure;
   assert (((g_data_width / 8) * 8) = g_data_width) or (g_with_byte_enable = false)

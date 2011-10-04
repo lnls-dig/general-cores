@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-05-10
+-- Last update: 2011-09-26
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -33,6 +33,7 @@ use std.textio.all;
 
 library work;
 use work.genram_pkg.all;
+use work.memory_loader_pkg.all;
 
 entity generic_dpram is
 
@@ -45,8 +46,9 @@ entity generic_dpram is
 
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
-    g_init_file                : string  := "/home/grzegorz/tst_sw/hello.ram";
+    g_init_file                : string  := "";
     g_dual_clock               : boolean := true
+    g_fail_if_file_not_found   : boolean := true
     );
 
   port (
@@ -74,108 +76,34 @@ end generic_dpram;
 
 
 architecture syn of generic_dpram is
-  
 
   constant c_num_bytes : integer := g_data_width/8;
 
+
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-  type t_string_file_type is file of string;
-  type t_bin_file_type is file of integer;
 
-  -- Function reads binary file and place the data in a std_logic_vector
-  -- Takes parameters
-  --   filename : Name of the file from which to read data
-
-
-	
-
-  impure function read_meminit_file(
-    filename : string
-    ) return t_ram_type is                                                                    
-    file meminitfile   : text;
-    variable init_line : line;
-    variable char      : character;
-    variable index     : integer;
-    variable word      : integer;
-    variable word_temp : std_logic_vector(31 downto 0);
-    variable i, j      : integer;
-    variable stop      : boolean;
-    variable mem       : t_ram_type;
-
+  function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
+    variable tmp    : t_ram_type;
+    variable n, pos : integer;
   begin
-    if(g_init_file = "") then
-      mem := (others => (others => '0'));
-      return mem;
-    end if;
-
-    file_open(meminitfile, filename, read_mode);
-    j    := 0;
-    stop := false;
-    while(j < 4) loop
-      i := 0;
-      while(i < 4096) loop
-        if(stop = false) then
-          
-          
-          readline(meminitfile, init_line);
-
-          read(init_line, char);
-          while(char /= '=') loop
-            read(init_line, char);
-          end loop;
-          read(init_line, char);        -- '>'
-          read(init_line, char);        -- ' '
-          read(init_line, char);        -- 'x'
-          read(init_line, char);        -- '"'
-
-
-          for index in 7 downto 0 loop
-            read(init_line, char);
-            report "char: " & char severity warning;
-
-            case char is
-              when '0'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0000";
-              when '1'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0001";
-              when '2'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0010";
-              when '3'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0011";
-              when '4'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0100";
-              when '5'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0101";
-              when '6'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0110";
-              when '7'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "0111";
-              when '8'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1000";
-              when '9'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1001";
-              when 'a'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1010";
-              when 'A'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1010";
-              when 'b'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1011";
-              when 'B'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1011";
-              when 'c'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1100";
-              when 'C'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1100";
-              when 'd'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1101";
-              when 'D'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1101";
-              when 'e'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1110";
-              when 'E'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1110";
-              when 'f'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1111";
-              when 'F'    => mem(j*4096+i)((index+1)*4-1 downto index*4) := "1111";
-              when others => mem(j*4096+i)((index+1)*4-1 downto index*4) := "XXXX";
-            end case;
-          end loop;
-        else
-          mem(j*4096+i) := (others => '0');
-        end if;
-
-        i := i+1;
-        if(endfile(meminitfile)) then
-          stop := true;
-        end if;
+    pos := 0;
+    while(pos < g_size)loop
+      n := 0;
+      -- avoid ISE loop iteration limit
+      while (pos < g_size and n < 4096) loop
+        for i in 0 to g_data_width-1 loop
+          tmp(pos)(i) := arr(pos, i);
+        end loop;  -- i
+        n := n+1;
+        pos := pos + 1;
       end loop;
-      j := j+1;
+      pos := pos + 1;
     end loop;
-    file_close(meminitfile);
+    return tmp;
+  end f_memarray_to_ramtype;
 
-    return mem;
-  end read_meminit_file;
-
-  shared variable ram : t_ram_type := read_meminit_file(g_init_file);
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(
+    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
@@ -186,8 +114,7 @@ architecture syn of generic_dpram is
   signal clkb_int : std_logic;
 
   signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
-  
-  
+
 begin
 
   gen_single_clock : if(g_dual_clock = false) generate

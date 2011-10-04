@@ -4,7 +4,7 @@
 import os as __os
 import shutil as __shutil
 
-files = ["genram_pkg.vhd"]
+files = ["genram_pkg.vhd", "memory_loader_pkg.vhd"]
 
 def __copy_vhdls(cg_dir, dest_dir):
 	f = open(cg_dir+"/analyze_order.txt","r")
