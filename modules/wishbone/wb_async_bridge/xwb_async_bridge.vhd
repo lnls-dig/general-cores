@@ -6,7 +6,8 @@ entity xwb_async_bridge is
   generic (
     g_simulation          : integer := 0;
     g_interface_mode      : t_wishbone_interface_mode;
-    g_address_granularity : t_wishbone_address_granularity);
+    g_address_granularity : t_wishbone_address_granularity;
+    g_cpu_address_width: integer := 32);
   port(
     rst_n_i   : in std_logic;           -- global reset
     clk_sys_i : in std_logic;           -- system clock
@@ -25,7 +26,7 @@ entity xwb_async_bridge is
     cpu_bs_n_i : in std_logic_vector(3 downto 0);
 
 -- address input
-    cpu_addr_i : in std_logic_vector(c_cpu_addr_width-1 downto 0);
+    cpu_addr_i : in std_logic_vector(g_cpu_address_width-1 downto 0);
 
 -- data bus (bidirectional)
     cpu_data_b : inout std_logic_vector(31 downto 0);
@@ -50,7 +51,8 @@ begin
     generic map (
       g_simulation          => g_simulation,
       g_interface_mode      => g_interface_mode,
-      g_address_granularity => g_address_granularity)
+      g_address_granularity => g_address_granularity,
+      g_cpu_address_width => g_cpu_address_width)
     port map (
       rst_n_i     => rst_n_i,
       clk_sys_i   => clk_sys_i,
