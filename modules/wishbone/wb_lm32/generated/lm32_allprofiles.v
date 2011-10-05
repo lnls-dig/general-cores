@@ -29,50 +29,6 @@
 
 
   
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
-
-
-
-  
 `line 1 "/tmp/lm32-customizer/system_conf.v"
 
 `line 1 "/tmp/lm32-customizer/system_conf.v"
@@ -162,7 +118,52 @@
 `line 33 "/tmp/lm32-customizer/system_conf.v"
 
 
+`line 34 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
 `line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -728,71 +729,77 @@
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_full (
+module lm32_top_full (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
+  
+    
+    
+
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
 `line 49 "/tmp/lm32-customizer/tmp.v"
 
-    divide_d,
-    modulus_d,
- 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
-  
     
-
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
+    
     
     
     
 
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
-`line 65 "/tmp/lm32-customizer/tmp.v"
-
-    divide_by_zero_x,
- 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -801,267 +808,313 @@ module lm32_mc_arithmetic_full (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-`line 79 "/tmp/lm32-customizer/tmp.v"
 
-input divide_d;                                 
-input modulus_d;                                
- 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
+`line 106 "/tmp/lm32-customizer/tmp.v"
+    
 
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
   
-`line 100 "/tmp/lm32-customizer/tmp.v"
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-output divide_by_zero_x;                        
-reg    divide_by_zero_x;
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
  
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
 
 
 
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
-  
-`line 114 "/tmp/lm32-customizer/tmp.v"
 
-wire [32:0] t;
- 
-`line 116 "/tmp/lm32-customizer/tmp.v"
-
-
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
 
   
                                
-                                 
+   
+       
+     
+           
+    
+           
+    
 
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
 `line 133 "/tmp/lm32-customizer/tmp.v"
 
 
-assign t = {p[ 32-2:0], a[ 32-1]} - b;
+  
+`line 135 "/tmp/lm32-customizer/tmp.v"
+
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
  
-`line 136 "/tmp/lm32-customizer/tmp.v"
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
 
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
 
-       
-
-`line 141 "/tmp/lm32-customizer/tmp.v"
 
 
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 159 "/tmp/lm32-customizer/tmp.v"
-
-        divide_by_zero_x <=  1'b0;
  
-`line 161 "/tmp/lm32-customizer/tmp.v"
-
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
   
-`line 167 "/tmp/lm32-customizer/tmp.v"
 
-        divide_by_zero_x <=  1'b0;
+  
+  
  
-`line 169 "/tmp/lm32-customizer/tmp.v"
-
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
   
-`line 179 "/tmp/lm32-customizer/tmp.v"
-
-                if (divide_d ==  1'b1)
-                    state <=  3'b011 ;
-                if (modulus_d ==  1'b1)
-                    state <=  3'b010   ;
+  
  
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
-  
-                   
-                      
+ 
 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
   
+
+                     
+                             
+                            
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
-
-`line 206 "/tmp/lm32-customizer/tmp.v"
-
-            end            
-        end
-  
-`line 209 "/tmp/lm32-customizer/tmp.v"
-
-         3'b011 :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= a;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
-         3'b010   :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= p;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
+                                 
  
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
+                                 
 
-`line 265 "/tmp/lm32-customizer/tmp.v"
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_full cpu (
+    
+    .clk_i                 (clk_i),
+  
+                   
+
+`line 218 "/tmp/lm32-customizer/tmp.v"
+
+    .rst_i                 (rst_i),
+    
+  
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
+               
+             
+
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
+    
                   
-                
-        
-        
                
-               
-              
-                   
-                  
                 
-        
+           
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+                
+           
+
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  		   
 
+  
+    
+                     
+                
+    
+                
+                     
+                
+                      
+                     
+    
+
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -1133,7 +1186,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -1416,77 +1469,71 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_full (
+
+module lm32_mc_arithmetic_full (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
-    
-    
+`line 357 "/tmp/lm32-customizer/tmp.v"
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
-  
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
+    divide_d,
+    modulus_d,
  
-`line 342 "/tmp/lm32-customizer/tmp.v"
+`line 360 "/tmp/lm32-customizer/tmp.v"
 
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
-    
-
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
+
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
+  
+    
+    
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+`line 373 "/tmp/lm32-customizer/tmp.v"
+
+    divide_by_zero_x,
  
-`line 366 "/tmp/lm32-customizer/tmp.v"
+`line 375 "/tmp/lm32-customizer/tmp.v"
 
-    
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    stall_request_x
     );
 
 
@@ -1495,313 +1542,267 @@ module lm32_top_full (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+`line 387 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] interrupt;          
-
+input divide_d;                                 
+input modulus_d;                                
+ 
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
+`line 398 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
+
+
+
+
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+`line 408 "/tmp/lm32-customizer/tmp.v"
+
+output divide_by_zero_x;                        
+reg    divide_by_zero_x;
  
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 411 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+output stall_request_x;                         
+wire   stall_request_x;
 
 
 
 
 
-  
-                               
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
   
 `line 422 "/tmp/lm32-customizer/tmp.v"
 
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
+wire [32:0] t;
  
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
+
+  
+                               
+                                 
+
+`line 432 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+assign stall_request_x = state !=  3'b000;
+
+  
 `line 441 "/tmp/lm32-customizer/tmp.v"
 
 
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
+assign t = {p[ 32-2:0], a[ 32-1]} - b;
  
-  
+`line 444 "/tmp/lm32-customizer/tmp.v"
+
 
   
-  
- 
-  
-  
- 
- 
 
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 467 "/tmp/lm32-customizer/tmp.v"
+
+        divide_by_zero_x <=  1'b0;
+ 
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
 `line 475 "/tmp/lm32-customizer/tmp.v"
 
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
+        divide_by_zero_x <=  1'b0;
  
-                                 
+`line 477 "/tmp/lm32-customizer/tmp.v"
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
   
-`line 1 "src/lm32_functions.v"
+`line 487 "/tmp/lm32-customizer/tmp.v"
 
-`line 1 "src/lm32_functions.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_full cpu (
-    
-    .clk_i                 (clk_i),
+                if (divide_d ==  1'b1)
+                    state <=  3'b011 ;
+                if (modulus_d ==  1'b1)
+                    state <=  3'b010   ;
+ 
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
   
                    
+                      
 
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-    
-                  
-               
-                
-           
-
-`line 522 "/tmp/lm32-customizer/tmp.v"
+`line 496 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-                
-           
-
-`line 549 "/tmp/lm32-customizer/tmp.v"
-
-      
-                
-               
-            
-            
-
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  		   
-
-  
-    
-                     
-                
-    
-                
-                     
+                   
                 
                       
-                     
-    
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
+`line 517 "/tmp/lm32-customizer/tmp.v"
+
+         3'b011 :
+        begin
+            if (t[32] == 1'b0)
+            begin
+                p <= t[31:0];
+                a <= {a[ 32-2:0], 1'b1};
+            end
+            else 
+            begin
+                p <= {p[ 32-2:0], a[ 32-1]};
+                a <= {a[ 32-2:0], 1'b0};
+            end
+            result_x <= a;
+            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
+            begin
+                
+                divide_by_zero_x <= b == { 32{1'b0}};
+                state <=  3'b000;
+            end
+            cycles <= cycles - 1'b1;
+        end
+         3'b010   :
+        begin
+            if (t[32] == 1'b0)
+            begin
+                p <= t[31:0];
+                a <= {a[ 32-2:0], 1'b1};
+            end
+            else 
+            begin
+                p <= {p[ 32-2:0], a[ 32-1]};
+                a <= {a[ 32-2:0], 1'b0};
+            end
+            result_x <= p;
+            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
+            begin
+                
+                divide_by_zero_x <= b == { 32{1'b0}};
+                state <=  3'b000;
+            end
+            cycles <= cycles - 1'b1;
+        end
+ 
+`line 560 "/tmp/lm32-customizer/tmp.v"
         
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -1909,7 +1910,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -2203,23 +2204,23 @@ module lm32_cpu_full (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
     
@@ -2228,10 +2229,10 @@ module lm32_cpu_full (
     
     
 
-`line 688 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 689 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -2239,7 +2240,7 @@ module lm32_cpu_full (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -2257,13 +2258,13 @@ module lm32_cpu_full (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -2271,10 +2272,10 @@ module lm32_cpu_full (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -2287,7 +2288,7 @@ module lm32_cpu_full (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -2309,11 +2310,11 @@ parameter eba_reset =  32'h00000000;
   
                             
 
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 755 "/tmp/lm32-customizer/tmp.v"
+`line 756 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity =  1;     
 parameter icache_sets =  256;                       
@@ -2327,11 +2328,11 @@ parameter icache_limit =  32'h7fffffff;
          
                        
 
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 769 "/tmp/lm32-customizer/tmp.v"
+`line 770 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity =  1;     
 parameter dcache_sets =  256;                       
@@ -2345,36 +2346,36 @@ parameter dcache_limit =  32'h7fffffff;
          
                        
 
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
                           
 
-`line 785 "/tmp/lm32-customizer/tmp.v"
+`line 786 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints = 0;
  
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -2385,23 +2386,23 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
@@ -2410,18 +2411,18 @@ input [ (32-1):0] interrupt;
                 
   
 
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -2449,7 +2450,7 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -2458,7 +2459,7 @@ input D_RTY_I;
   
     
 
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -2471,11 +2472,11 @@ input D_RTY_I;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -2496,7 +2497,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -2525,11 +2526,11 @@ wire   [ (2-1):0] D_BTE_O;
 
 
   
-`line 923 "/tmp/lm32-customizer/tmp.v"
+`line 924 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_a;                                    
  
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -2574,26 +2575,26 @@ wire [ 1:0] d_result_sel_1_d;
 wire x_result_sel_csr_d;                        
 reg x_result_sel_csr_x;
   
-`line 968 "/tmp/lm32-customizer/tmp.v"
+`line 969 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_mc_arith_d;                   
 reg x_result_sel_mc_arith_x;
  
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -2601,7 +2602,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -2609,27 +2610,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -2661,7 +2662,7 @@ reg [ (3-1):0] condition_x;
                                     
                                      
 
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -2672,7 +2673,7 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
                                      
@@ -2683,7 +2684,7 @@ reg eret_m;
  
 
 
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -2691,18 +2692,18 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1061 "/tmp/lm32-customizer/tmp.v"
+`line 1062 "/tmp/lm32-customizer/tmp.v"
 
 wire bus_error_d;                               
 reg bus_error_x;
 reg data_bus_error_exception_m;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] memop_pc_w;
  
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -2719,7 +2720,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -2727,15 +2728,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -2765,32 +2766,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -2798,32 +2799,32 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1157 "/tmp/lm32-customizer/tmp.v"
+`line 1158 "/tmp/lm32-customizer/tmp.v"
 
 wire divide_d;                                  
 wire divide_q_d;
@@ -2831,33 +2832,33 @@ wire modulus_d;
 wire modulus_q_d;
 wire divide_by_zero_x;                          
  
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1166 "/tmp/lm32-customizer/tmp.v"
+`line 1167 "/tmp/lm32-customizer/tmp.v"
 
 wire mc_stall_request_x;                        
 wire [ (32-1):0] mc_result_x;
  
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -2870,20 +2871,20 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
 wire [ (32-1):0] instruction_d;     
   
-`line 1197 "/tmp/lm32-customizer/tmp.v"
+`line 1198 "/tmp/lm32-customizer/tmp.v"
 
 wire iflush;                                    
 wire icache_stall_request;                      
@@ -2891,7 +2892,7 @@ wire icache_restart_request;
 wire icache_refill_request;                     
 wire icache_refilling;                          
  
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -2900,12 +2901,12 @@ wire icache_refilling;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1213 "/tmp/lm32-customizer/tmp.v"
+`line 1214 "/tmp/lm32-customizer/tmp.v"
 
 wire dflush_x;                                  
 reg dflush_m;                                    
@@ -2914,7 +2915,7 @@ wire dcache_restart_request;
 wire dcache_refill_request;                     
 wire dcache_refilling;                          
  
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
@@ -2940,7 +2941,7 @@ wire stall_wb_load;
                                  
 
 
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -2959,11 +2960,11 @@ wire cmp_carry_n;
 reg condition_met_x;                            
 reg condition_met_m;
   
-`line 1261 "/tmp/lm32-customizer/tmp.v"
+`line 1262 "/tmp/lm32-customizer/tmp.v"
     
 wire branch_taken_x;                            
  
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -2977,14 +2978,14 @@ reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] eba;
   
                   
 
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -3003,14 +3004,14 @@ reg [ (3-1):0] eid_x;
  
  
 
-`line 1297 "/tmp/lm32-customizer/tmp.v"
+`line 1298 "/tmp/lm32-customizer/tmp.v"
 
 wire exception_x;                               
 reg exception_m;
 reg exception_w;
 wire exception_q_w;
  
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -3018,44 +3019,44 @@ wire exception_q_w;
                             
 
 
-`line 1308 "/tmp/lm32-customizer/tmp.v"
+`line 1309 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1309 "/tmp/lm32-customizer/tmp.v"
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
                        
                        
 
-`line 1315 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 1316 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1317 "/tmp/lm32-customizer/tmp.v"
 
 wire instruction_bus_error_exception;           
 wire data_bus_error_exception;                  
  
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1320 "/tmp/lm32-customizer/tmp.v"
+`line 1321 "/tmp/lm32-customizer/tmp.v"
 
 wire divide_by_zero_exception;                  
  
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
-`line 1325 "/tmp/lm32-customizer/tmp.v"
+`line 1326 "/tmp/lm32-customizer/tmp.v"
 
 reg data_bus_error_seen;                        
  
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -3146,42 +3147,42 @@ lm32_instruction_unit_full #(
     .branch_predict_taken_d (branch_predict_taken_d),
     .branch_predict_address_d (branch_predict_address_d),
   
-`line 1361 "/tmp/lm32-customizer/tmp.v"
+`line 1362 "/tmp/lm32-customizer/tmp.v"
     
     .branch_taken_x         (branch_taken_x),
     .branch_target_x        (branch_target_x),
  
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
     .branch_mispredict_taken_m (branch_mispredict_taken_m),
     .branch_target_m        (branch_target_m),
   
-`line 1369 "/tmp/lm32-customizer/tmp.v"
+`line 1370 "/tmp/lm32-customizer/tmp.v"
 
     .iflush                 (iflush),
  
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1377 "/tmp/lm32-customizer/tmp.v"
+`line 1378 "/tmp/lm32-customizer/tmp.v"
 
     .dcache_restart_request (dcache_restart_request),
     .dcache_refill_request  (dcache_refill_request),
     .dcache_refilling       (dcache_refilling),
  
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -3189,7 +3190,7 @@ lm32_instruction_unit_full #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
            
@@ -3197,7 +3198,7 @@ lm32_instruction_unit_full #(
             
                
 
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -3207,22 +3208,22 @@ lm32_instruction_unit_full #(
     .pc_m                   (pc_m),
     .pc_w                   (pc_w),
   
-`line 1402 "/tmp/lm32-customizer/tmp.v"
+`line 1403 "/tmp/lm32-customizer/tmp.v"
 
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
  
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -3235,27 +3236,27 @@ lm32_instruction_unit_full #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
              
        
 
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1427 "/tmp/lm32-customizer/tmp.v"
+`line 1428 "/tmp/lm32-customizer/tmp.v"
 
     .bus_error_d            (bus_error_d),
  
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -3269,46 +3270,46 @@ lm32_decoder_full decoder (
     .d_result_sel_1         (d_result_sel_1_d),
     .x_result_sel_csr       (x_result_sel_csr_d),
   
-`line 1444 "/tmp/lm32-customizer/tmp.v"
+`line 1445 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_mc_arith  (x_result_sel_mc_arith_d),
  
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -3327,30 +3328,30 @@ lm32_decoder_full decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1492 "/tmp/lm32-customizer/tmp.v"
+`line 1493 "/tmp/lm32-customizer/tmp.v"
 
     .divide                 (divide_d),
     .modulus                (modulus_d),
  
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -3360,19 +3361,19 @@ lm32_decoder_full decoder (
   
                
 
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
                        
 
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -3408,16 +3409,16 @@ lm32_load_store_unit_full #(
     .sign_extend_x          (sign_extend_x),
     .size_x                 (size_x),
   
-`line 1545 "/tmp/lm32-customizer/tmp.v"
+`line 1546 "/tmp/lm32-customizer/tmp.v"
 
     .dflush                 (dflush_m),
  
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -3427,14 +3428,14 @@ lm32_load_store_unit_full #(
     
     
   
-`line 1558 "/tmp/lm32-customizer/tmp.v"
+`line 1559 "/tmp/lm32-customizer/tmp.v"
 
     .dcache_refill_request  (dcache_refill_request),
     .dcache_restart_request (dcache_restart_request),
     .dcache_stall_request   (dcache_stall_request),
     .dcache_refilling       (dcache_refilling),
  
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -3442,7 +3443,7 @@ lm32_load_store_unit_full #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -3483,7 +3484,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -3499,11 +3500,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -3518,11 +3519,11 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1639 "/tmp/lm32-customizer/tmp.v"
+`line 1640 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_mc_arithmetic_full mc_arithmetic (
@@ -3532,44 +3533,44 @@ lm32_mc_arithmetic_full mc_arithmetic (
     .stall_d                (stall_d),
     .kill_x                 (kill_x),
   
-`line 1647 "/tmp/lm32-customizer/tmp.v"
+`line 1648 "/tmp/lm32-customizer/tmp.v"
                   
     .divide_d               (divide_q_d),
     .modulus_d              (modulus_q_d),
  
-`line 1650 "/tmp/lm32-customizer/tmp.v"
+`line 1651 "/tmp/lm32-customizer/tmp.v"
 
           
                  
 
-`line 1653 "/tmp/lm32-customizer/tmp.v"
+`line 1654 "/tmp/lm32-customizer/tmp.v"
 
   
                
               
               
 
-`line 1658 "/tmp/lm32-customizer/tmp.v"
+`line 1659 "/tmp/lm32-customizer/tmp.v"
     
     .operand_0_d            (d_result_0),
     .operand_1_d            (d_result_1),
     
     .result_x               (mc_result_x),
   
-`line 1663 "/tmp/lm32-customizer/tmp.v"
+`line 1664 "/tmp/lm32-customizer/tmp.v"
                   
     .divide_by_zero_x       (divide_by_zero_x),
  
-`line 1665 "/tmp/lm32-customizer/tmp.v"
+`line 1666 "/tmp/lm32-customizer/tmp.v"
 
     .stall_request_x        (mc_stall_request_x)
     );
  
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_full interrupt_unit (
@@ -3584,17 +3585,17 @@ lm32_interrupt_full interrupt_unit (
          
             
 
-`line 1683 "/tmp/lm32-customizer/tmp.v"
+`line 1684 "/tmp/lm32-customizer/tmp.v"
 
     .exception              (exception_q_w), 
  
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
                    
 
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -3605,7 +3606,7 @@ lm32_interrupt_full interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -3657,7 +3658,7 @@ lm32_interrupt_full interrupt_unit (
             
     
 
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -3700,13 +3701,13 @@ lm32_interrupt_full interrupt_unit (
                    
     
 
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -3825,7 +3826,7 @@ lm32_interrupt_full interrupt_unit (
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -3895,7 +3896,7 @@ lm32_interrupt_full interrupt_unit (
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -3904,23 +3905,23 @@ lm32_interrupt_full interrupt_unit (
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -4010,25 +4011,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -4057,28 +4058,28 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2131 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2132 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_mc_arith_x ? mc_result_x
  
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -4088,11 +4089,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -4102,17 +4103,17 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
 
   
-`line 2157 "/tmp/lm32-customizer/tmp.v"
+`line 2158 "/tmp/lm32-customizer/tmp.v"
     
 
 assign branch_taken_x =      (stall_x ==  1'b0)
@@ -4122,7 +4123,7 @@ assign branch_taken_x =      (stall_x ==  1'b0)
                               && (branch_predict_x ==  1'b0)
                              ); 
  
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -4166,75 +4167,75 @@ assign kill_f =    (   (valid_d ==  1'b1)
 		   )
                 || (branch_taken_m ==  1'b1) 
   
-`line 2207 "/tmp/lm32-customizer/tmp.v"
+`line 2208 "/tmp/lm32-customizer/tmp.v"
     
                 || (branch_taken_x ==  1'b1)
  
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2210 "/tmp/lm32-customizer/tmp.v"
+`line 2211 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1) 
  
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2213 "/tmp/lm32-customizer/tmp.v"
+`line 2214 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
   
-`line 2218 "/tmp/lm32-customizer/tmp.v"
+`line 2219 "/tmp/lm32-customizer/tmp.v"
     
                 || (branch_taken_x ==  1'b1)
  
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2221 "/tmp/lm32-customizer/tmp.v"
+`line 2222 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1)     
  
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
   
-`line 2224 "/tmp/lm32-customizer/tmp.v"
+`line 2225 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
   
-`line 2229 "/tmp/lm32-customizer/tmp.v"
+`line 2230 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
   
-`line 2234 "/tmp/lm32-customizer/tmp.v"
+`line 2235 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
   
-`line 2239 "/tmp/lm32-customizer/tmp.v"
+`line 2240 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
@@ -4251,41 +4252,41 @@ assign kill_w =     1'b0
 
                               
 
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2262 "/tmp/lm32-customizer/tmp.v"
+`line 2263 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_bus_error_exception = (   (bus_error_x ==  1'b1)
                                           && (valid_x ==  1'b1)
                                          );
 assign data_bus_error_exception = data_bus_error_seen ==  1'b1;
  
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2269 "/tmp/lm32-customizer/tmp.v"
+`line 2270 "/tmp/lm32-customizer/tmp.v"
 
 assign divide_by_zero_exception = divide_by_zero_x ==  1'b1;
  
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
-`line 2274 "/tmp/lm32-customizer/tmp.v"
+`line 2275 "/tmp/lm32-customizer/tmp.v"
 
                                 && (valid_x ==  1'b1)
  
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
@@ -4320,48 +4321,48 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 
          
 
-`line 2309 "/tmp/lm32-customizer/tmp.v"
+`line 2310 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_x =           (system_call_exception ==  1'b1)
   
-`line 2311 "/tmp/lm32-customizer/tmp.v"
+`line 2312 "/tmp/lm32-customizer/tmp.v"
 
                             || (instruction_bus_error_exception ==  1'b1)
                             || (data_bus_error_exception ==  1'b1)
  
-`line 2314 "/tmp/lm32-customizer/tmp.v"
+`line 2315 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2315 "/tmp/lm32-customizer/tmp.v"
+`line 2316 "/tmp/lm32-customizer/tmp.v"
 
                             || (divide_by_zero_exception ==  1'b1)
  
-`line 2317 "/tmp/lm32-customizer/tmp.v"
+`line 2318 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2318 "/tmp/lm32-customizer/tmp.v"
+`line 2319 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
                                    
 
-`line 2322 "/tmp/lm32-customizer/tmp.v"
+`line 2323 "/tmp/lm32-customizer/tmp.v"
                             
   
-`line 2323 "/tmp/lm32-customizer/tmp.v"
+`line 2324 "/tmp/lm32-customizer/tmp.v"
 
  				&& (store_q_m ==  1'b0)
 				&& (D_CYC_O ==  1'b0)
  
-`line 2326 "/tmp/lm32-customizer/tmp.v"
+`line 2327 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2328 "/tmp/lm32-customizer/tmp.v"
+`line 2329 "/tmp/lm32-customizer/tmp.v"
 
                             ;
  
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -4382,10 +4383,10 @@ begin
           
     
 
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2350 "/tmp/lm32-customizer/tmp.v"
+`line 2351 "/tmp/lm32-customizer/tmp.v"
 
          if (data_bus_error_exception ==  1'b1)
         eid_x =  3'h4;
@@ -4394,38 +4395,38 @@ begin
         eid_x =  3'h2;
     else
  
-`line 2357 "/tmp/lm32-customizer/tmp.v"
+`line 2358 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
      
 
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2363 "/tmp/lm32-customizer/tmp.v"
+`line 2364 "/tmp/lm32-customizer/tmp.v"
 
          if (divide_by_zero_exception ==  1'b1)
         eid_x =  3'h5;
     else
  
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
                 
 
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -4443,11 +4444,11 @@ assign stall_d =   (stall_x ==  1'b1)
 		|| (   (   (eret_d ==  1'b1)
 			|| (scall_d ==  1'b1)
   
-`line 2392 "/tmp/lm32-customizer/tmp.v"
+`line 2393 "/tmp/lm32-customizer/tmp.v"
 
 			|| (bus_error_d ==  1'b1)
  
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -4471,7 +4472,7 @@ assign stall_d =   (stall_x ==  1'b1)
                        
 		   
 
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -4480,13 +4481,13 @@ assign stall_d =   (stall_x ==  1'b1)
                 
 assign stall_x =    (stall_m ==  1'b1)
   
-`line 2423 "/tmp/lm32-customizer/tmp.v"
+`line 2424 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (mc_stall_request_x ==  1'b1)
                      && (kill_x ==  1'b0)
                     ) 
  
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -4497,7 +4498,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -4505,7 +4506,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -4523,28 +4524,28 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
-`line 2466 "/tmp/lm32-customizer/tmp.v"
+`line 2467 "/tmp/lm32-customizer/tmp.v"
 
                  || (dcache_stall_request ==  1'b1)     
  
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
-`line 2469 "/tmp/lm32-customizer/tmp.v"
+`line 2470 "/tmp/lm32-customizer/tmp.v"
 
                  || (icache_stall_request ==  1'b1)     
                  || ((I_CYC_O ==  1'b1) && ((branch_m ==  1'b1) || (exception_m ==  1'b1))) 
@@ -4553,43 +4554,43 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                                 
 
 
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
 
   
-`line 2485 "/tmp/lm32-customizer/tmp.v"
+`line 2486 "/tmp/lm32-customizer/tmp.v"
 
 assign q_d = (valid_d ==  1'b1) && (kill_d ==  1'b0);
  
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2495 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2496 "/tmp/lm32-customizer/tmp.v"
 
 assign divide_q_d = (divide_d ==  1'b1) && (q_d ==  1'b1);
 assign modulus_q_d = (modulus_d ==  1'b1) && (q_d ==  1'b1);
  
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
@@ -4597,14 +4598,14 @@ assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
          
 
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
                   
 
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
@@ -4612,13 +4613,13 @@ assign store_q_x = (store_x ==  1'b1)
   
                   
 
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
@@ -4627,11 +4628,11 @@ assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
          
                  
 
-`line 2526 "/tmp/lm32-customizer/tmp.v"
+`line 2527 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_q_w = ((exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -4649,110 +4650,110 @@ assign cfg = {
   
               
 
-`line 2544 "/tmp/lm32-customizer/tmp.v"
+`line 2545 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
+`line 2552 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2554 "/tmp/lm32-customizer/tmp.v"
+`line 2555 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2556 "/tmp/lm32-customizer/tmp.v"
+`line 2557 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2559 "/tmp/lm32-customizer/tmp.v"
+`line 2560 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2561 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2562 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2563 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2566 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2567 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2568 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2592 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2593 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -4761,26 +4762,26 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
 
   
-`line 2619 "/tmp/lm32-customizer/tmp.v"
+`line 2620 "/tmp/lm32-customizer/tmp.v"
 
 assign iflush = (   (csr_write_enable_d ==  1'b1) 
                  && (csr_d ==  3'h3)
@@ -4793,14 +4794,14 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
                      
 		    
 
-`line 2630 "/tmp/lm32-customizer/tmp.v"
+`line 2631 "/tmp/lm32-customizer/tmp.v"
 
 		 ;
  
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
-`line 2633 "/tmp/lm32-customizer/tmp.v"
+`line 2634 "/tmp/lm32-customizer/tmp.v"
 
 assign dflush_x = (   (csr_write_enable_q_x ==  1'b1) 
                    && (csr_x ==  3'h4))
@@ -4810,11 +4811,11 @@ assign dflush_x = (   (csr_write_enable_q_x ==  1'b1)
                        
 		      
 
-`line 2641 "/tmp/lm32-customizer/tmp.v"
+`line 2642 "/tmp/lm32-customizer/tmp.v"
 
 		   ;
  
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -4825,31 +4826,31 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      3'h0,
      3'h1,
      3'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      3'h6:  csr_read_data_x = cfg;
      3'h7:  csr_read_data_x = {eba, 8'h00};
   
         
 
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
           
         
 
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      3'ha: csr_read_data_x = cfg2;
       
@@ -4874,7 +4875,7 @@ begin
                
               
 
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
@@ -4896,7 +4897,7 @@ end
     
 
 
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -4909,11 +4910,11 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2724 "/tmp/lm32-customizer/tmp.v"
+`line 2725 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -4931,16 +4932,16 @@ begin
     end
 end
  
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
 
   
-`line 2744 "/tmp/lm32-customizer/tmp.v"
+`line 2745 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2745 "/tmp/lm32-customizer/tmp.v"
+`line 2746 "/tmp/lm32-customizer/tmp.v"
 
 always @(*)
 begin
@@ -4966,7 +4967,7 @@ end
           
  
 
-`line 2769 "/tmp/lm32-customizer/tmp.v"
+`line 2770 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -4981,7 +4982,7 @@ end
  
 
 
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -4998,13 +4999,13 @@ begin
     begin    
         if ((kill_f ==  1'b1) || (stall_a ==  1'b0))
   
-`line 2797 "/tmp/lm32-customizer/tmp.v"
+`line 2798 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <= valid_a;    
  
               
 
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -5045,7 +5046,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -5053,46 +5054,46 @@ begin
         branch_target_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};        
         x_result_sel_csr_x <=  1'b0;
   
-`line 2846 "/tmp/lm32-customizer/tmp.v"
+`line 2847 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_mc_arith_x <=  1'b0;
  
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -5107,17 +5108,17 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
@@ -5126,41 +5127,41 @@ begin
   
           
 
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
           
 
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2899 "/tmp/lm32-customizer/tmp.v"
+`line 2900 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_x <=  1'b0;
         data_bus_error_exception_m <=  1'b0;
  
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -5170,36 +5171,36 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
   
-`line 2927 "/tmp/lm32-customizer/tmp.v"
+`line 2928 "/tmp/lm32-customizer/tmp.v"
 
         dflush_m <=  1'b0;
  
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
           
                   
 
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
@@ -5207,18 +5208,18 @@ begin
           
                   
 
-`line 2944 "/tmp/lm32-customizer/tmp.v"
+`line 2945 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <=  1'b0;
  
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2947 "/tmp/lm32-customizer/tmp.v"
+`line 2948 "/tmp/lm32-customizer/tmp.v"
 
         memop_pc_w <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
  
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -5230,7 +5231,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -5238,46 +5239,46 @@ begin
             branch_target_x <= branch_reg_d ==  1'b1 ? bypass_data_0[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] : branch_target_d;            
             x_result_sel_csr_x <= x_result_sel_csr_d;
   
-`line 2965 "/tmp/lm32-customizer/tmp.v"
+`line 2966 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_mc_arith_x <= x_result_sel_mc_arith_d;
  
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -5294,37 +5295,37 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
               
 
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
-`line 3013 "/tmp/lm32-customizer/tmp.v"
+`line 3014 "/tmp/lm32-customizer/tmp.v"
 
             bus_error_x <= bus_error_d;
  
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
                
 
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -5336,46 +5337,46 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
   
-`line 3052 "/tmp/lm32-customizer/tmp.v"
+`line 3053 "/tmp/lm32-customizer/tmp.v"
     
             branch_m <= branch_x && !branch_taken_x;
  
@@ -5383,7 +5384,7 @@ begin
 	      
 	      
 
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
 	   
@@ -5398,14 +5399,14 @@ begin
              
                   
 
-`line 3071 "/tmp/lm32-customizer/tmp.v"
+`line 3072 "/tmp/lm32-customizer/tmp.v"
 
             if (exception_x ==  1'b1)
                 write_idx_m <=  5'd30;
             else 
                 write_idx_m <= write_idx_x;
  
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
@@ -5419,36 +5420,36 @@ begin
 	   
 	       
 
-`line 3088 "/tmp/lm32-customizer/tmp.v"
+`line 3089 "/tmp/lm32-customizer/tmp.v"
 
             branch_target_m <= exception_x ==  1'b1 ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
  
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3094 "/tmp/lm32-customizer/tmp.v"
+`line 3095 "/tmp/lm32-customizer/tmp.v"
 
             dflush_m <= dflush_x;
  
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
                
 
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
               
                       
 
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -5460,37 +5461,37 @@ begin
             else 
                 exception_m <=  1'b0;
   
-`line 3115 "/tmp/lm32-customizer/tmp.v"
+`line 3116 "/tmp/lm32-customizer/tmp.v"
 
 	   data_bus_error_exception_m <=    (data_bus_error_exception ==  1'b1) 
   
 					    
 
-`line 3119 "/tmp/lm32-customizer/tmp.v"
+`line 3120 "/tmp/lm32-customizer/tmp.v"
 
 					 ;
  
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
         
   
-`line 3125 "/tmp/lm32-customizer/tmp.v"
+`line 3126 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? (data_bus_error_exception_m ? {memop_pc_w, 2'b00} : {pc_m, 2'b00}) : m_result;
  
                  
 
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -5500,21 +5501,21 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
           
           
 
-`line 3146 "/tmp/lm32-customizer/tmp.v"
+`line 3147 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <= exception_m;
  
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3149 "/tmp/lm32-customizer/tmp.v"
+`line 3150 "/tmp/lm32-customizer/tmp.v"
 
         if (   (stall_m ==  1'b0)
             && (   (load_q_m ==  1'b1) 
@@ -5523,13 +5524,13 @@ begin
 	   )
           memop_pc_w <= pc_m;
  
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -5561,11 +5562,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -5611,7 +5612,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -5675,7 +5676,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -5688,14 +5689,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -5785,7 +5786,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -6097,16 +6098,16 @@ module lm32_load_store_unit_full (
     sign_extend_x,
     size_x,
   
-`line 3390 "/tmp/lm32-customizer/tmp.v"
+`line 3391 "/tmp/lm32-customizer/tmp.v"
 
     dflush,
  
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -6116,14 +6117,14 @@ module lm32_load_store_unit_full (
     
     
   
-`line 3403 "/tmp/lm32-customizer/tmp.v"
+`line 3404 "/tmp/lm32-customizer/tmp.v"
 
     dcache_refill_request,
     dcache_restart_request,
     dcache_stall_request,
     dcache_refilling,
  
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -6131,7 +6132,7 @@ module lm32_load_store_unit_full (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -6190,17 +6191,17 @@ input sign_extend_x;
 input [ 1:0] size_x;                          
 
   
-`line 3471 "/tmp/lm32-customizer/tmp.v"
+`line 3472 "/tmp/lm32-customizer/tmp.v"
 
 input dflush;                                           
  
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -6213,7 +6214,7 @@ input d_rty_i;
 
 
   
-`line 3488 "/tmp/lm32-customizer/tmp.v"
+`line 3489 "/tmp/lm32-customizer/tmp.v"
 
 output dcache_refill_request;                           
 wire   dcache_refill_request;
@@ -6224,7 +6225,7 @@ wire   dcache_stall_request;
 output dcache_refilling;
 wire   dcache_refilling;
  
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -6237,7 +6238,7 @@ wire   dcache_refilling;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -6281,7 +6282,7 @@ wire [ (32-1):0] data_m;
 reg [ (32-1):0] data_w;
 
   
-`line 3550 "/tmp/lm32-customizer/tmp.v"
+`line 3551 "/tmp/lm32-customizer/tmp.v"
 
 wire dcache_select_x;                                   
 reg dcache_select_m;
@@ -6293,7 +6294,7 @@ wire [ (3-1):0] next_cycle_type;
 wire last_word;                                         
 wire [ (32-1):0] first_address;                    
  
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -6304,14 +6305,14 @@ wire [ (32-1):0] first_address;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -6465,11 +6466,11 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3673 "/tmp/lm32-customizer/tmp.v"
+`line 3674 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_dcache_full #(
@@ -6503,7 +6504,7 @@ lm32_dcache_full #(
     .load_data              (dcache_data_m)
     );
  
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -6515,53 +6516,53 @@ lm32_dcache_full #(
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
-`line 3722 "/tmp/lm32-customizer/tmp.v"
+`line 3723 "/tmp/lm32-customizer/tmp.v"
 
    assign dcache_select_x =    (load_store_address_x >=  32'h0) 
                             && (load_store_address_x <=  32'h7fffffff)
   
                                
 
-`line 3727 "/tmp/lm32-customizer/tmp.v"
+`line 3728 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 3730 "/tmp/lm32-customizer/tmp.v"
+`line 3731 "/tmp/lm32-customizer/tmp.v"
 
                      ;
  
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
-`line 3735 "/tmp/lm32-customizer/tmp.v"
+`line 3736 "/tmp/lm32-customizer/tmp.v"
 
                         && !dcache_select_x 
  
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -6598,7 +6599,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -6608,7 +6609,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -6631,11 +6632,11 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
-`line 3809 "/tmp/lm32-customizer/tmp.v"
+`line 3810 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -6656,7 +6657,7 @@ end
                       
   
  
-`line 3828 "/tmp/lm32-customizer/tmp.v"
+`line 3829 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -6666,17 +6667,17 @@ end
                       
                       
   
-`line 3836 "/tmp/lm32-customizer/tmp.v"
+`line 3837 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_select_m ==  1'b1 
                    ? wb_data_m 
                    : dcache_data_m;
    
-`line 3841 "/tmp/lm32-customizer/tmp.v"
+`line 3842 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3842 "/tmp/lm32-customizer/tmp.v"
+`line 3843 "/tmp/lm32-customizer/tmp.v"
 
  
   
@@ -6705,7 +6706,7 @@ end
   
  
 
-`line 3869 "/tmp/lm32-customizer/tmp.v"
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -6727,7 +6728,7 @@ end
 assign d_bte_o =  2'b00;
 
   
-`line 3889 "/tmp/lm32-customizer/tmp.v"
+`line 3890 "/tmp/lm32-customizer/tmp.v"
                 
 
 generate 
@@ -6756,7 +6757,7 @@ assign first_address = {dcache_refill_address[ 32-1:addr_offset_msb+1], {addr_of
     endcase
 endgenerate
  
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -6780,22 +6781,22 @@ begin
         wb_load_complete <=  1'b0;
         stall_wb_load <=  1'b0;
   
-`line 3938 "/tmp/lm32-customizer/tmp.v"
+`line 3939 "/tmp/lm32-customizer/tmp.v"
                 
         dcache_refill_ready <=  1'b0;
  
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
     begin
   
-`line 3944 "/tmp/lm32-customizer/tmp.v"
+`line 3945 "/tmp/lm32-customizer/tmp.v"
  
         
         dcache_refill_ready <=  1'b0;
  
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -6804,7 +6805,7 @@ begin
             if ((d_ack_i ==  1'b1) || (d_err_i ==  1'b1))
             begin
   
-`line 3954 "/tmp/lm32-customizer/tmp.v"
+`line 3955 "/tmp/lm32-customizer/tmp.v"
                 
                 if ((dcache_refilling ==  1'b1) && (!last_word))
                 begin
@@ -6813,7 +6814,7 @@ begin
                 end
                 else
  
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -6822,13 +6823,13 @@ begin
                     d_lock_o <=  1'b0;
                 end
   
-`line 3968 "/tmp/lm32-customizer/tmp.v"
+`line 3969 "/tmp/lm32-customizer/tmp.v"
     
                 d_cti_o <= next_cycle_type;
                 
                 dcache_refill_ready <= dcache_refilling;
  
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -6843,7 +6844,7 @@ begin
         else
         begin
   
-`line 3985 "/tmp/lm32-customizer/tmp.v"
+`line 3986 "/tmp/lm32-customizer/tmp.v"
                 
             if (dcache_refill_request ==  1'b1)
             begin
@@ -6858,19 +6859,19 @@ begin
             end
             else 
  
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -6923,21 +6924,21 @@ begin
         byte_enable_m <=  1'b0;
         store_data_m <= { 32{1'b0}};
   
-`line 4057 "/tmp/lm32-customizer/tmp.v"
+`line 4058 "/tmp/lm32-customizer/tmp.v"
 
         dcache_select_m <=  1'b0;
  
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -6950,21 +6951,21 @@ begin
             byte_enable_m <= byte_enable_x;    
             store_data_m <= store_data_x;
   
-`line 4076 "/tmp/lm32-customizer/tmp.v"
+`line 4077 "/tmp/lm32-customizer/tmp.v"
 
             dcache_select_m <= dcache_select_x;
  
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -7085,7 +7086,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -7371,15 +7372,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -7513,6 +7511,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -7526,46 +7527,46 @@ module lm32_decoder_full (
     d_result_sel_1,        
     x_result_sel_csr,
   
-`line 4226 "/tmp/lm32-customizer/tmp.v"
+`line 4227 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_mc_arith,
  
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -7584,30 +7585,30 @@ module lm32_decoder_full (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4274 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4275 "/tmp/lm32-customizer/tmp.v"
 
     divide,
     modulus,
  
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -7617,19 +7618,19 @@ module lm32_decoder_full (
   
     
 
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
     
 
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -7651,26 +7652,26 @@ reg    [ 1:0] d_result_sel_1;
 output x_result_sel_csr;
 reg    x_result_sel_csr;
   
-`line 4313 "/tmp/lm32-customizer/tmp.v"
+`line 4314 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_mc_arith;
 reg    x_result_sel_mc_arith;
  
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -7678,29 +7679,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -7735,12 +7736,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -7748,23 +7749,23 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4391 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4392 "/tmp/lm32-customizer/tmp.v"
 
 output divide;
 wire   divide;
 output modulus;
 wire   modulus;
  
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -7780,7 +7781,7 @@ wire bi_unconditional;
  
    
 
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
@@ -7790,13 +7791,13 @@ wire   eret;
  
    
 
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -7899,11 +7900,11 @@ assign op_cmpgeu = instruction[ 30:26] ==  5'b11100;
 assign op_cmpgu  = instruction[ 30:26] ==  5'b11101;
 assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
-`line 4468 "/tmp/lm32-customizer/tmp.v"
+`line 4469 "/tmp/lm32-customizer/tmp.v"
 
 assign op_divu   = instruction[ 31:26] ==  6'b100011;
  
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -7911,18 +7912,18 @@ assign op_lh     = instruction[ 31:26] ==  6'b000111;
 assign op_lhu    = instruction[ 31:26] ==  6'b001011;
 assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
-`line 4476 "/tmp/lm32-customizer/tmp.v"
+`line 4477 "/tmp/lm32-customizer/tmp.v"
 
 assign op_modu   = instruction[ 31:26] ==  6'b110001;
  
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -7931,20 +7932,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -7964,44 +7965,44 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4529 "/tmp/lm32-customizer/tmp.v"
+`line 4530 "/tmp/lm32-customizer/tmp.v"
 
 assign divide = op_divu; 
 assign modulus = op_modu;
  
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -8023,72 +8024,72 @@ begin
     
     x_result_sel_csr =  1'b0;
   
-`line 4552 "/tmp/lm32-customizer/tmp.v"
+`line 4553 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_mc_arith =  1'b0;
  
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
         x_result_sel_csr =  1'b1;
   
-`line 4568 "/tmp/lm32-customizer/tmp.v"
+`line 4569 "/tmp/lm32-customizer/tmp.v"
     
   
          
           
 
-`line 4572 "/tmp/lm32-customizer/tmp.v"
+`line 4573 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4573 "/tmp/lm32-customizer/tmp.v"
+`line 4574 "/tmp/lm32-customizer/tmp.v"
 
     else if (divide | modulus)
         x_result_sel_mc_arith =  1'b1;        
  
-`line 4576 "/tmp/lm32-customizer/tmp.v"
+`line 4577 "/tmp/lm32-customizer/tmp.v"
 
   
       
                       
 
-`line 4580 "/tmp/lm32-customizer/tmp.v"
+`line 4581 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -8096,7 +8097,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -8105,21 +8106,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -8130,48 +8131,48 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4623 "/tmp/lm32-customizer/tmp.v"
+`line 4624 "/tmp/lm32-customizer/tmp.v"
 
                         | divide
                         | modulus
  
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -8198,12 +8199,12 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
@@ -8212,20 +8213,20 @@ assign condition = instruction[28:26];
   
      
 
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
        
 
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -8328,7 +8329,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -8613,11 +8614,8 @@ endmodule
 
 
   
-`line 4748 "/tmp/lm32-customizer/tmp.v"
+`line 4749 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 4750 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 4751 "/tmp/lm32-customizer/tmp.v"
@@ -8628,9 +8626,9 @@ endmodule
   
 `line 4753 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4755 "/tmp/lm32-customizer/tmp.v"
+`line 4754 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4756 "/tmp/lm32-customizer/tmp.v"
@@ -8641,9 +8639,9 @@ endmodule
   
 `line 4758 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4760 "/tmp/lm32-customizer/tmp.v"
+`line 4759 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4761 "/tmp/lm32-customizer/tmp.v"
@@ -8654,9 +8652,9 @@ endmodule
   
 `line 4763 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4765 "/tmp/lm32-customizer/tmp.v"
+`line 4764 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4766 "/tmp/lm32-customizer/tmp.v"
@@ -8669,6 +8667,9 @@ endmodule
 
   
 `line 4769 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4770 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -8690,7 +8691,7 @@ module lm32_icache_full (
   
     
 
-`line 4789 "/tmp/lm32-customizer/tmp.v"
+`line 4790 "/tmp/lm32-customizer/tmp.v"
 
     valid_d,
     branch_predict_taken_d,
@@ -8747,7 +8748,7 @@ input iflush;
   
                                       
 
-`line 4844 "/tmp/lm32-customizer/tmp.v"
+`line 4845 "/tmp/lm32-customizer/tmp.v"
 
    
 
@@ -9053,7 +9054,7 @@ begin
                   
 	      
 
-`line 5093 "/tmp/lm32-customizer/tmp.v"
+`line 5094 "/tmp/lm32-customizer/tmp.v"
 
 		state <=  4'b0100;
 	   
@@ -9131,7 +9132,7 @@ endgenerate
 endmodule
 
  
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -9206,7 +9207,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -9491,11 +9492,8 @@ endmodule
 
 
   
-`line 5203 "/tmp/lm32-customizer/tmp.v"
+`line 5204 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 5205 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 5206 "/tmp/lm32-customizer/tmp.v"
@@ -9506,9 +9504,9 @@ endmodule
   
 `line 5208 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5210 "/tmp/lm32-customizer/tmp.v"
+`line 5209 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5211 "/tmp/lm32-customizer/tmp.v"
@@ -9519,9 +9517,9 @@ endmodule
   
 `line 5213 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5215 "/tmp/lm32-customizer/tmp.v"
+`line 5214 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5216 "/tmp/lm32-customizer/tmp.v"
@@ -9532,9 +9530,9 @@ endmodule
   
 `line 5218 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5220 "/tmp/lm32-customizer/tmp.v"
+`line 5219 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5221 "/tmp/lm32-customizer/tmp.v"
@@ -9544,6 +9542,9 @@ endmodule
 
   
 `line 5223 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 5224 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -10052,7 +10053,7 @@ endgenerate
 endmodule
 
  
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -10128,7 +10129,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -10727,7 +10728,7 @@ endmodule
 
 
 
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -10817,7 +10818,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -11121,42 +11122,42 @@ module lm32_instruction_unit_full (
     branch_predict_taken_d,
     branch_predict_address_d,
   
-`line 6092 "/tmp/lm32-customizer/tmp.v"
+`line 6093 "/tmp/lm32-customizer/tmp.v"
     
     branch_taken_x,
     branch_target_x,
  
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
     branch_mispredict_taken_m,
     branch_target_m,
   
-`line 6100 "/tmp/lm32-customizer/tmp.v"
+`line 6101 "/tmp/lm32-customizer/tmp.v"
 
     iflush,
  
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6103 "/tmp/lm32-customizer/tmp.v"
+`line 6104 "/tmp/lm32-customizer/tmp.v"
 
     dcache_restart_request,
     dcache_refill_request,
     dcache_refilling,
  
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -11164,7 +11165,7 @@ module lm32_instruction_unit_full (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
     
@@ -11172,7 +11173,7 @@ module lm32_instruction_unit_full (
     
     
 
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -11182,22 +11183,22 @@ module lm32_instruction_unit_full (
     pc_m,
     pc_w,
   
-`line 6133 "/tmp/lm32-customizer/tmp.v"
+`line 6134 "/tmp/lm32-customizer/tmp.v"
 
     icache_stall_request,
     icache_restart_request,
     icache_refill_request,
     icache_refilling,
  
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -11210,27 +11211,27 @@ module lm32_instruction_unit_full (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 6157 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 6158 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 6159 "/tmp/lm32-customizer/tmp.v"
 
     bus_error_d,
  
-`line 6160 "/tmp/lm32-customizer/tmp.v"
+`line 6161 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6161 "/tmp/lm32-customizer/tmp.v"
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -11270,12 +11271,12 @@ input branch_predict_taken_d;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_predict_address_d;          
    
   
-`line 6201 "/tmp/lm32-customizer/tmp.v"
+`line 6202 "/tmp/lm32-customizer/tmp.v"
     
 input branch_taken_x;                                   
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_x;                   
  
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -11283,20 +11284,20 @@ input branch_mispredict_taken_m;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_m;                   
 
   
-`line 6210 "/tmp/lm32-customizer/tmp.v"
+`line 6211 "/tmp/lm32-customizer/tmp.v"
 
 input iflush;                                           
  
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6213 "/tmp/lm32-customizer/tmp.v"
+`line 6214 "/tmp/lm32-customizer/tmp.v"
 
 input dcache_restart_request;                           
 input dcache_refill_request;                            
 input dcache_refilling;
  
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -11304,18 +11305,18 @@ input dcache_refilling;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -11324,7 +11325,7 @@ input i_rty_i;
                    
                       
 
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -11343,7 +11344,7 @@ output [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 reg    [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 
   
-`line 6254 "/tmp/lm32-customizer/tmp.v"
+`line 6255 "/tmp/lm32-customizer/tmp.v"
 
 output icache_stall_request;                            
 wire   icache_stall_request;
@@ -11354,28 +11355,28 @@ wire   icache_refill_request;
 output icache_refilling;                                
 wire   icache_refilling;
  
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
      
 
-`line 6274 "/tmp/lm32-customizer/tmp.v"
+`line 6275 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (32-1):0] i_dat_o;
  
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -11385,11 +11386,11 @@ output [ (4-1):0] i_sel_o;
   
      
 
-`line 6284 "/tmp/lm32-customizer/tmp.v"
+`line 6285 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (4-1):0] i_sel_o;
  
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
@@ -11397,11 +11398,11 @@ output i_we_o;
   
     
 
-`line 6292 "/tmp/lm32-customizer/tmp.v"
+`line 6293 "/tmp/lm32-customizer/tmp.v"
 
 wire   i_we_o;
  
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -11410,7 +11411,7 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -11419,24 +11420,24 @@ wire   [ (2-1):0] i_bte_o;
                              
    
 
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6310 "/tmp/lm32-customizer/tmp.v"
+`line 6311 "/tmp/lm32-customizer/tmp.v"
 
 output bus_error_d;                                     
 reg    bus_error_d;
  
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -11448,15 +11449,15 @@ reg    [ (32-1):0] instruction_d;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_a;                                
 
   
-`line 6327 "/tmp/lm32-customizer/tmp.v"
+`line 6328 "/tmp/lm32-customizer/tmp.v"
 
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] restart_address;                     
  
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6331 "/tmp/lm32-customizer/tmp.v"
+`line 6332 "/tmp/lm32-customizer/tmp.v"
 
 wire icache_read_enable_f;                              
 wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] icache_refill_address;              
@@ -11472,35 +11473,35 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                     
 
 
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6355 "/tmp/lm32-customizer/tmp.v"
+`line 6356 "/tmp/lm32-customizer/tmp.v"
 
 reg bus_error_f;                                        
  
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                          
 
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -11616,11 +11617,11 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
-`line 6422 "/tmp/lm32-customizer/tmp.v"
+`line 6423 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_icache_full #(
@@ -11652,7 +11653,7 @@ lm32_icache_full #(
     .inst                   (icache_data_f)
     );
  
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -11660,26 +11661,26 @@ lm32_icache_full #(
 
 
   
-`line 6458 "/tmp/lm32-customizer/tmp.v"
+`line 6459 "/tmp/lm32-customizer/tmp.v"
 
 
 assign icache_read_enable_f =    (valid_f ==  1'b1)
                               && (kill_f ==  1'b0)
   
-`line 6462 "/tmp/lm32-customizer/tmp.v"
+`line 6463 "/tmp/lm32-customizer/tmp.v"
 
                               && (dcache_restart_request ==  1'b0)
  
-`line 6464 "/tmp/lm32-customizer/tmp.v"
+`line 6465 "/tmp/lm32-customizer/tmp.v"
                          
    
                                  
 
-`line 6467 "/tmp/lm32-customizer/tmp.v"
+`line 6468 "/tmp/lm32-customizer/tmp.v"
        
                               ;
  
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -11687,13 +11688,13 @@ always @(*)
 begin
     
   
-`line 6475 "/tmp/lm32-customizer/tmp.v"
+`line 6476 "/tmp/lm32-customizer/tmp.v"
 
     if (dcache_restart_request ==  1'b1)
         pc_a = restart_address;
     else 
  
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -11701,25 +11702,25 @@ begin
 	else
           pc_a = branch_target_m;
   
-`line 6485 "/tmp/lm32-customizer/tmp.v"
+`line 6486 "/tmp/lm32-customizer/tmp.v"
     
       else if (branch_taken_x ==  1'b1)
         pc_a = branch_target_x;
  
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
 	  pc_a = branch_predict_address_d;
 	else
   
-`line 6493 "/tmp/lm32-customizer/tmp.v"
+`line 6494 "/tmp/lm32-customizer/tmp.v"
 
           if (icache_restart_request ==  1'b1)
             pc_a = restart_address;
 	  else 
  
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -11728,21 +11729,21 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
   
-`line 6507 "/tmp/lm32-customizer/tmp.v"
+`line 6508 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 6510 "/tmp/lm32-customizer/tmp.v"
+`line 6511 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = icache_data_f;
  
-`line 6512 "/tmp/lm32-customizer/tmp.v"
+`line 6513 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -11755,30 +11756,30 @@ assign instruction_f = icache_data_f;
    
 
 
-`line 6523 "/tmp/lm32-customizer/tmp.v"
+`line 6524 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 6526 "/tmp/lm32-customizer/tmp.v"
+`line 6527 "/tmp/lm32-customizer/tmp.v"
 
   
 
-`line 6528 "/tmp/lm32-customizer/tmp.v"
+`line 6529 "/tmp/lm32-customizer/tmp.v"
 
 assign i_dat_o = 32'd0;
 assign i_we_o =  1'b0;
 assign i_sel_o = 4'b1111;
  
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6536 "/tmp/lm32-customizer/tmp.v"
+`line 6537 "/tmp/lm32-customizer/tmp.v"
 
 
 generate
@@ -11807,7 +11808,7 @@ assign first_address = {icache_refill_address[ (clogb2(32'h7fffffff-32'h0)-2)+2-
     endcase
 endgenerate
  
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -11840,7 +11841,7 @@ begin
 end
 
   
-`line 6594 "/tmp/lm32-customizer/tmp.v"
+`line 6595 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -11850,10 +11851,10 @@ begin
     else
     begin
   
-`line 6602 "/tmp/lm32-customizer/tmp.v"
+`line 6603 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6603 "/tmp/lm32-customizer/tmp.v"
+`line 6604 "/tmp/lm32-customizer/tmp.v"
         
             
             if (dcache_refill_request ==  1'b1)
@@ -11864,7 +11865,7 @@ begin
                
                   
 
-`line 6612 "/tmp/lm32-customizer/tmp.v"
+`line 6613 "/tmp/lm32-customizer/tmp.v"
 
  
          
@@ -11872,12 +11873,12 @@ begin
                   
 
 
-`line 6618 "/tmp/lm32-customizer/tmp.v"
+`line 6619 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -11893,7 +11894,7 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -11908,15 +11909,15 @@ end
      
 
 
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6652 "/tmp/lm32-customizer/tmp.v"
+`line 6653 "/tmp/lm32-customizer/tmp.v"
                 
 always @(posedge clk_i  )
 begin
@@ -11930,18 +11931,18 @@ begin
         icache_refill_data <= { 32{1'b0}};
         icache_refill_ready <=  1'b0;
   
-`line 6664 "/tmp/lm32-customizer/tmp.v"
+`line 6665 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_f <=  1'b0;
  
-`line 6666 "/tmp/lm32-customizer/tmp.v"
+`line 6667 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
           
 
-`line 6671 "/tmp/lm32-customizer/tmp.v"
+`line 6672 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -11963,7 +11964,7 @@ begin
                 
                 
 
-`line 6691 "/tmp/lm32-customizer/tmp.v"
+`line 6692 "/tmp/lm32-customizer/tmp.v"
 
                 begin
                     if (last_word ==  1'b1)
@@ -11982,7 +11983,7 @@ begin
                 end
             end
   
-`line 6708 "/tmp/lm32-customizer/tmp.v"
+`line 6709 "/tmp/lm32-customizer/tmp.v"
 
             if (i_err_i ==  1'b1)
             begin
@@ -11990,7 +11991,7 @@ begin
                 $display ("Instruction bus error. Address: %x", i_adr_o);
             end
  
-`line 6714 "/tmp/lm32-customizer/tmp.v"
+`line 6715 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -12001,7 +12002,7 @@ begin
        
                   
 
-`line 6723 "/tmp/lm32-customizer/tmp.v"
+`line 6724 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -12009,11 +12010,11 @@ begin
                 i_cti_o <= first_cycle_type;
                 
   
-`line 6729 "/tmp/lm32-customizer/tmp.v"
+`line 6730 "/tmp/lm32-customizer/tmp.v"
 
                 bus_error_f <=  1'b0;
  
-`line 6731 "/tmp/lm32-customizer/tmp.v"
+`line 6732 "/tmp/lm32-customizer/tmp.v"
 
             end
   
@@ -12037,25 +12038,25 @@ begin
                 
              
 
-`line 6753 "/tmp/lm32-customizer/tmp.v"
+`line 6754 "/tmp/lm32-customizer/tmp.v"
                     
   
-`line 6754 "/tmp/lm32-customizer/tmp.v"
+`line 6755 "/tmp/lm32-customizer/tmp.v"
 
             
             
   
-`line 6757 "/tmp/lm32-customizer/tmp.v"
+`line 6758 "/tmp/lm32-customizer/tmp.v"
     
             if (branch_taken_x ==  1'b1)
                 bus_error_f <=  1'b0;
  
-`line 6760 "/tmp/lm32-customizer/tmp.v"
+`line 6761 "/tmp/lm32-customizer/tmp.v"
 
             if (branch_taken_m ==  1'b1)
                 bus_error_f <=  1'b0;
  
-`line 6763 "/tmp/lm32-customizer/tmp.v"
+`line 6764 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -12134,10 +12135,10 @@ end
     
 
 
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -12147,11 +12148,11 @@ begin
     begin
         instruction_d <= { 32{1'b0}};
   
-`line 6849 "/tmp/lm32-customizer/tmp.v"
+`line 6850 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_d <=  1'b0;
  
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -12160,11 +12161,11 @@ begin
         begin
             instruction_d <= instruction_f;
   
-`line 6858 "/tmp/lm32-customizer/tmp.v"
+`line 6859 "/tmp/lm32-customizer/tmp.v"
 
             bus_error_d <= bus_error_f;
  
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -12241,7 +12242,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -12964,7 +12965,7 @@ endmodule
 
 
 
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -13036,7 +13037,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -13336,17 +13337,17 @@ module lm32_interrupt_full (
     
     
 
-`line 7380 "/tmp/lm32-customizer/tmp.v"
+`line 7381 "/tmp/lm32-customizer/tmp.v"
 
     exception,
  
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
     
 
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -13378,17 +13379,17 @@ input stall_x;
                        
                            
 
-`line 7416 "/tmp/lm32-customizer/tmp.v"
+`line 7417 "/tmp/lm32-customizer/tmp.v"
 
 input exception;                                
  
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
                                   
 
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (3-1):0] csr;                      
@@ -13420,7 +13421,7 @@ reg eie;
   
                                          
 
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -13442,11 +13443,11 @@ assign ie_csr_read_data = {{ 32-3{1'b0}},
   
                            
 
-`line 7472 "/tmp/lm32-customizer/tmp.v"
+`line 7473 "/tmp/lm32-customizer/tmp.v"
 
                            1'b0,
  
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -13464,11 +13465,11 @@ begin
   
                                     
 
-`line 7490 "/tmp/lm32-customizer/tmp.v"
+`line 7491 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                     
  
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -13489,11 +13490,11 @@ begin
   
                                      
 
-`line 7511 "/tmp/lm32-customizer/tmp.v"
+`line 7512 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                    
  
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -13510,7 +13511,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -13530,7 +13531,7 @@ always @(posedge clk_i  )
   
                            
 
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -13555,7 +13556,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7569 "/tmp/lm32-customizer/tmp.v"
+`line 7570 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -13564,7 +13565,7 @@ always @(posedge clk_i  )
             ie               <=  1'b0;
         end
  
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -13587,7 +13588,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -13599,7 +13600,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h1)
@@ -13623,7 +13624,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -13646,7 +13647,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7650 "/tmp/lm32-customizer/tmp.v"
+`line 7651 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -13655,7 +13656,7 @@ always @(posedge clk_i  )
             ie          <=  1'b0;
         end
  
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -13676,7 +13677,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -13688,7 +13689,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h2)
@@ -13730,50 +13731,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -13884,7 +13841,52 @@ endmodule
 `line 34 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 35 "src/lm32_include.v"
+`line 35 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -14478,71 +14480,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_full_debug (
+module lm32_top_full_debug (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
+  
+    
+    
+
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
 `line 49 "/tmp/lm32-customizer/tmp.v"
 
-    divide_d,
-    modulus_d,
- 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
-  
     
-
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
+    
     
     
     
 
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
-`line 65 "/tmp/lm32-customizer/tmp.v"
-
-    divide_by_zero_x,
- 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -14551,267 +14559,321 @@ module lm32_mc_arithmetic_full_debug (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-`line 79 "/tmp/lm32-customizer/tmp.v"
 
-input divide_d;                                 
-input modulus_d;                                
- 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
+`line 106 "/tmp/lm32-customizer/tmp.v"
+    
 
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
   
-`line 100 "/tmp/lm32-customizer/tmp.v"
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-output divide_by_zero_x;                        
-reg    divide_by_zero_x;
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
  
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
 
 
 
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
-  
-`line 114 "/tmp/lm32-customizer/tmp.v"
 
-wire [32:0] t;
- 
-`line 116 "/tmp/lm32-customizer/tmp.v"
-
-
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
 
   
                                
-                                 
+   
+       
+     
+           
+    
+           
+    
 
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
 `line 133 "/tmp/lm32-customizer/tmp.v"
 
 
-assign t = {p[ 32-2:0], a[ 32-1]} - b;
+  
+`line 135 "/tmp/lm32-customizer/tmp.v"
+
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
  
-`line 136 "/tmp/lm32-customizer/tmp.v"
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
 
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
 
-       
-
-`line 141 "/tmp/lm32-customizer/tmp.v"
 
 
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 159 "/tmp/lm32-customizer/tmp.v"
-
-        divide_by_zero_x <=  1'b0;
  
-`line 161 "/tmp/lm32-customizer/tmp.v"
-
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
-  
-`line 167 "/tmp/lm32-customizer/tmp.v"
-
-        divide_by_zero_x <=  1'b0;
- 
-`line 169 "/tmp/lm32-customizer/tmp.v"
-
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
   
 `line 179 "/tmp/lm32-customizer/tmp.v"
 
-                if (divide_d ==  1'b1)
-                    state <=  3'b011 ;
-                if (modulus_d ==  1'b1)
-                    state <=  3'b010   ;
- 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
-  
-                   
-                      
 
+wire [ 7:0] jtag_reg_d;
+wire [ 7:0] jtag_reg_q;
+wire jtag_update;
+wire [2:0] jtag_reg_addr_d;
+wire [2:0] jtag_reg_addr_q;
+wire jtck;
+wire jrstn;
+ 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
   
+
+                     
+                             
+                            
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
-
-`line 206 "/tmp/lm32-customizer/tmp.v"
-
-            end            
-        end
-  
-`line 209 "/tmp/lm32-customizer/tmp.v"
-
-         3'b011 :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= a;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
-         3'b010   :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= p;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
+                                 
  
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
+                                 
 
-`line 265 "/tmp/lm32-customizer/tmp.v"
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_full_debug cpu (
+    
+    .clk_i                 (clk_i),
+  
+                   
+
+`line 218 "/tmp/lm32-customizer/tmp.v"
+
+    .rst_i                 (rst_i),
+    
+  
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
+               
+             
+
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
-                  
-                
-        
-        
-               
-               
-              
-                   
-                  
-                
-        
+`line 229 "/tmp/lm32-customizer/tmp.v"
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+    
+    .jtag_clk              (jtck),
+    .jtag_update           (jtag_update),
+    .jtag_reg_q            (jtag_reg_q),
+    .jtag_reg_addr_q       (jtag_reg_addr_q),
+ 
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 259 "/tmp/lm32-customizer/tmp.v"
+
+    .jtag_reg_d            (jtag_reg_d),
+    .jtag_reg_addr_d       (jtag_reg_addr_d),
+ 
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  
+`line 293 "/tmp/lm32-customizer/tmp.v"
+		   
 
+jtag_cores jtag_cores (
+    
+    .reg_d                 (jtag_reg_d),
+    .reg_addr_d            (jtag_reg_addr_d),
+    
+    .reg_update            (jtag_update),
+    .reg_q                 (jtag_reg_q),
+    .reg_addr_q            (jtag_reg_addr_q),
+    .jtck                  (jtck),
+    .jrstn                 (jrstn)
+    );
+ 
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -14883,7 +14945,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -15166,77 +15228,71 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_full_debug (
+
+module lm32_mc_arithmetic_full_debug (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
-    
-    
+`line 357 "/tmp/lm32-customizer/tmp.v"
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
-  
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
+    divide_d,
+    modulus_d,
  
-`line 342 "/tmp/lm32-customizer/tmp.v"
+`line 360 "/tmp/lm32-customizer/tmp.v"
 
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
-    
-
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
+
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
+  
+    
+    
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+`line 373 "/tmp/lm32-customizer/tmp.v"
+
+    divide_by_zero_x,
  
-`line 366 "/tmp/lm32-customizer/tmp.v"
+`line 375 "/tmp/lm32-customizer/tmp.v"
 
-    
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    stall_request_x
     );
 
 
@@ -15245,321 +15301,267 @@ module lm32_top_full_debug (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+`line 387 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] interrupt;          
-
+input divide_d;                                 
+input modulus_d;                                
+ 
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
+`line 398 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
+
+
+
+
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+`line 408 "/tmp/lm32-customizer/tmp.v"
+
+output divide_by_zero_x;                        
+reg    divide_by_zero_x;
  
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 411 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+output stall_request_x;                         
+wire   stall_request_x;
 
 
 
 
 
-  
-                               
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
   
 `line 422 "/tmp/lm32-customizer/tmp.v"
 
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
+wire [32:0] t;
  
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
+
+  
+                               
+                                 
+
+`line 432 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+assign stall_request_x = state !=  3'b000;
+
+  
 `line 441 "/tmp/lm32-customizer/tmp.v"
 
 
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
+assign t = {p[ 32-2:0], a[ 32-1]} - b;
  
+`line 444 "/tmp/lm32-customizer/tmp.v"
+
+
   
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
 `line 466 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 467 "/tmp/lm32-customizer/tmp.v"
 
-wire [ 7:0] jtag_reg_d;
-wire [ 7:0] jtag_reg_q;
-wire jtag_update;
-wire [2:0] jtag_reg_addr_d;
-wire [2:0] jtag_reg_addr_q;
-wire jtck;
-wire jrstn;
+        divide_by_zero_x <=  1'b0;
  
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
 `line 475 "/tmp/lm32-customizer/tmp.v"
 
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
+        divide_by_zero_x <=  1'b0;
  
-                                 
+`line 477 "/tmp/lm32-customizer/tmp.v"
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
   
-`line 1 "src/lm32_functions.v"
+`line 487 "/tmp/lm32-customizer/tmp.v"
 
-`line 1 "src/lm32_functions.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_full_debug cpu (
-    
-    .clk_i                 (clk_i),
+                if (divide_d ==  1'b1)
+                    state <=  3'b011 ;
+                if (modulus_d ==  1'b1)
+                    state <=  3'b010   ;
+ 
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
   
                    
+                      
 
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-`line 516 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .jtag_clk              (jtck),
-    .jtag_update           (jtag_update),
-    .jtag_reg_q            (jtag_reg_q),
-    .jtag_reg_addr_q       (jtag_reg_addr_q),
- 
-`line 522 "/tmp/lm32-customizer/tmp.v"
+`line 496 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
+                   
                 
- 
+                      
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
                 
 
+`line 514 "/tmp/lm32-customizer/tmp.v"
 
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
+            end            
+        end
   
-`line 546 "/tmp/lm32-customizer/tmp.v"
+`line 517 "/tmp/lm32-customizer/tmp.v"
 
-    .jtag_reg_d            (jtag_reg_d),
-    .jtag_reg_addr_d       (jtag_reg_addr_d),
- 
-`line 549 "/tmp/lm32-customizer/tmp.v"
-
-      
+         3'b011 :
+        begin
+            if (t[32] == 1'b0)
+            begin
+                p <= t[31:0];
+                a <= {a[ 32-2:0], 1'b1};
+            end
+            else 
+            begin
+                p <= {p[ 32-2:0], a[ 32-1]};
+                a <= {a[ 32-2:0], 1'b0};
+            end
+            result_x <= a;
+            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
+            begin
                 
-               
-            
-            
-
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  
-`line 580 "/tmp/lm32-customizer/tmp.v"
-		   
-
-jtag_cores jtag_cores (
-    
-    .reg_d                 (jtag_reg_d),
-    .reg_addr_d            (jtag_reg_addr_d),
-    
-    .reg_update            (jtag_update),
-    .reg_q                 (jtag_reg_q),
-    .reg_addr_q            (jtag_reg_addr_q),
-    .jtck                  (jtck),
-    .jrstn                 (jrstn)
-    );
+                divide_by_zero_x <= b == { 32{1'b0}};
+                state <=  3'b000;
+            end
+            cycles <= cycles - 1'b1;
+        end
+         3'b010   :
+        begin
+            if (t[32] == 1'b0)
+            begin
+                p <= t[31:0];
+                a <= {a[ 32-2:0], 1'b1};
+            end
+            else 
+            begin
+                p <= {p[ 32-2:0], a[ 32-1]};
+                a <= {a[ 32-2:0], 1'b0};
+            end
+            result_x <= p;
+            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
+            begin
+                
+                divide_by_zero_x <= b == { 32{1'b0}};
+                state <=  3'b000;
+            end
+            cycles <= cycles - 1'b1;
+        end
  
-`line 593 "/tmp/lm32-customizer/tmp.v"
+`line 560 "/tmp/lm32-customizer/tmp.v"
         
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -15667,7 +15669,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -15961,26 +15963,26 @@ module lm32_cpu_full_debug (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
-`line 682 "/tmp/lm32-customizer/tmp.v"
+`line 683 "/tmp/lm32-customizer/tmp.v"
 
     
     jtag_clk,
@@ -15988,10 +15990,10 @@ module lm32_cpu_full_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
  
-`line 688 "/tmp/lm32-customizer/tmp.v"
+`line 689 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 689 "/tmp/lm32-customizer/tmp.v"
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -15999,7 +16001,7 @@ module lm32_cpu_full_debug (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -16017,15 +16019,15 @@ module lm32_cpu_full_debug (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 712 "/tmp/lm32-customizer/tmp.v"
+`line 713 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d,
  
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -16033,10 +16035,10 @@ module lm32_cpu_full_debug (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -16049,7 +16051,7 @@ module lm32_cpu_full_debug (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -16069,15 +16071,15 @@ module lm32_cpu_full_debug (
 
 parameter eba_reset =  32'h00000000;                           
   
-`line 751 "/tmp/lm32-customizer/tmp.v"
+`line 752 "/tmp/lm32-customizer/tmp.v"
 
 parameter deba_reset =  32'h10000000;                         
  
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 755 "/tmp/lm32-customizer/tmp.v"
+`line 756 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity =  1;     
 parameter icache_sets =  256;                       
@@ -16091,11 +16093,11 @@ parameter icache_limit =  32'h7fffffff;
          
                        
 
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 769 "/tmp/lm32-customizer/tmp.v"
+`line 770 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity =  1;     
 parameter dcache_sets =  256;                       
@@ -16109,36 +16111,36 @@ parameter dcache_limit =  32'h7fffffff;
          
                        
 
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 783 "/tmp/lm32-customizer/tmp.v"
+`line 784 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints =  32'h4;                       
  
    
 
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -16149,45 +16151,45 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
-`line 819 "/tmp/lm32-customizer/tmp.v"
+`line 820 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
 input [2:0] jtag_reg_addr_q;
  
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -16215,18 +16217,18 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 859 "/tmp/lm32-customizer/tmp.v"
+`line 860 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 wire   [ 7:0] jtag_reg_d;
 output [2:0] jtag_reg_addr_d;
 wire   [2:0] jtag_reg_addr_d;
  
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -16239,11 +16241,11 @@ wire   [2:0] jtag_reg_addr_d;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -16264,7 +16266,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -16293,11 +16295,11 @@ wire   [ (2-1):0] D_BTE_O;
 
 
   
-`line 923 "/tmp/lm32-customizer/tmp.v"
+`line 924 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_a;                                    
  
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -16342,26 +16344,26 @@ wire [ 1:0] d_result_sel_1_d;
 wire x_result_sel_csr_d;                        
 reg x_result_sel_csr_x;
   
-`line 968 "/tmp/lm32-customizer/tmp.v"
+`line 969 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_mc_arith_d;                   
 reg x_result_sel_mc_arith_x;
  
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -16369,7 +16371,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -16377,27 +16379,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -16426,12 +16428,12 @@ reg  [ (5-1):0] csr_x;
 wire [ (3-1):0] condition_d;         
 reg [ (3-1):0] condition_x;          
   
-`line 1032 "/tmp/lm32-customizer/tmp.v"
+`line 1033 "/tmp/lm32-customizer/tmp.v"
 
 wire break_d;                                   
 reg break_x;                                    
  
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -16442,10 +16444,10 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1045 "/tmp/lm32-customizer/tmp.v"
+`line 1046 "/tmp/lm32-customizer/tmp.v"
 
 wire bret_d;                                    
 reg bret_x;
@@ -16454,10 +16456,10 @@ reg bret_m;
   
  
 
-`line 1052 "/tmp/lm32-customizer/tmp.v"
+`line 1053 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -16465,18 +16467,18 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1061 "/tmp/lm32-customizer/tmp.v"
+`line 1062 "/tmp/lm32-customizer/tmp.v"
 
 wire bus_error_d;                               
 reg bus_error_x;
 reg data_bus_error_exception_m;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] memop_pc_w;
  
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -16493,7 +16495,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -16501,15 +16503,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -16539,32 +16541,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -16572,32 +16574,32 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1157 "/tmp/lm32-customizer/tmp.v"
+`line 1158 "/tmp/lm32-customizer/tmp.v"
 
 wire divide_d;                                  
 wire divide_q_d;
@@ -16605,33 +16607,33 @@ wire modulus_d;
 wire modulus_q_d;
 wire divide_by_zero_x;                          
  
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1166 "/tmp/lm32-customizer/tmp.v"
+`line 1167 "/tmp/lm32-customizer/tmp.v"
 
 wire mc_stall_request_x;                        
 wire [ (32-1):0] mc_result_x;
  
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -16644,20 +16646,20 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
 wire [ (32-1):0] instruction_d;     
   
-`line 1197 "/tmp/lm32-customizer/tmp.v"
+`line 1198 "/tmp/lm32-customizer/tmp.v"
 
 wire iflush;                                    
 wire icache_stall_request;                      
@@ -16665,7 +16667,7 @@ wire icache_restart_request;
 wire icache_refill_request;                     
 wire icache_refilling;                          
  
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -16674,12 +16676,12 @@ wire icache_refilling;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1213 "/tmp/lm32-customizer/tmp.v"
+`line 1214 "/tmp/lm32-customizer/tmp.v"
 
 wire dflush_x;                                  
 reg dflush_m;                                    
@@ -16688,25 +16690,25 @@ wire dcache_restart_request;
 wire dcache_refill_request;                     
 wire dcache_refilling;                          
  
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
 
 
   
-`line 1225 "/tmp/lm32-customizer/tmp.v"
+`line 1226 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1226 "/tmp/lm32-customizer/tmp.v"
+`line 1227 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] jtx_csr_read_data;        
 wire [ (32-1):0] jrx_csr_read_data;        
  
-`line 1229 "/tmp/lm32-customizer/tmp.v"
+`line 1230 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1230 "/tmp/lm32-customizer/tmp.v"
+`line 1231 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_csr_write_enable;                     
 wire [ (32-1):0] jtag_csr_write_data;      
@@ -16718,17 +16720,17 @@ wire [ 7:0] jtag_write_data;
 wire [ (32-1):0] jtag_address;
 wire jtag_access_complete;
  
-`line 1240 "/tmp/lm32-customizer/tmp.v"
+`line 1241 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1241 "/tmp/lm32-customizer/tmp.v"
+`line 1242 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_break;                                
  
-`line 1243 "/tmp/lm32-customizer/tmp.v"
+`line 1244 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -16747,11 +16749,11 @@ wire cmp_carry_n;
 reg condition_met_x;                            
 reg condition_met_m;
   
-`line 1261 "/tmp/lm32-customizer/tmp.v"
+`line 1262 "/tmp/lm32-customizer/tmp.v"
     
 wire branch_taken_x;                            
  
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -16763,29 +16765,29 @@ wire kill_w;
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] eba;                 
   
-`line 1273 "/tmp/lm32-customizer/tmp.v"
+`line 1274 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] deba;                
  
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1282 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1283 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 1284 "/tmp/lm32-customizer/tmp.v"
+
 wire dc_ss;                                     
  
-`line 1285 "/tmp/lm32-customizer/tmp.v"
+`line 1286 "/tmp/lm32-customizer/tmp.v"
 
 wire dc_re;                                     
 wire exception_x;                               
@@ -16804,60 +16806,60 @@ wire non_debug_exception_q_w;
  
  
 
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1304 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1305 "/tmp/lm32-customizer/tmp.v"
 
-wire reset_exception;                           
- 
-`line 1307 "/tmp/lm32-customizer/tmp.v"
+  
+`line 1306 "/tmp/lm32-customizer/tmp.v"
 
+wire reset_exception;                           
  
 `line 1308 "/tmp/lm32-customizer/tmp.v"
 
-  
+ 
 `line 1309 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1312 "/tmp/lm32-customizer/tmp.v"
+`line 1313 "/tmp/lm32-customizer/tmp.v"
 
 wire breakpoint_exception;                      
 wire watchpoint_exception;                      
  
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1316 "/tmp/lm32-customizer/tmp.v"
+`line 1317 "/tmp/lm32-customizer/tmp.v"
 
 wire instruction_bus_error_exception;           
 wire data_bus_error_exception;                  
  
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1320 "/tmp/lm32-customizer/tmp.v"
+`line 1321 "/tmp/lm32-customizer/tmp.v"
 
 wire divide_by_zero_exception;                  
  
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
-`line 1325 "/tmp/lm32-customizer/tmp.v"
+`line 1326 "/tmp/lm32-customizer/tmp.v"
 
 reg data_bus_error_seen;                        
  
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -16948,42 +16950,42 @@ lm32_instruction_unit_full_debug #(
     .branch_predict_taken_d (branch_predict_taken_d),
     .branch_predict_address_d (branch_predict_address_d),
   
-`line 1361 "/tmp/lm32-customizer/tmp.v"
+`line 1362 "/tmp/lm32-customizer/tmp.v"
     
     .branch_taken_x         (branch_taken_x),
     .branch_target_x        (branch_target_x),
  
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
     .branch_mispredict_taken_m (branch_mispredict_taken_m),
     .branch_target_m        (branch_target_m),
   
-`line 1369 "/tmp/lm32-customizer/tmp.v"
+`line 1370 "/tmp/lm32-customizer/tmp.v"
 
     .iflush                 (iflush),
  
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1377 "/tmp/lm32-customizer/tmp.v"
+`line 1378 "/tmp/lm32-customizer/tmp.v"
 
     .dcache_restart_request (dcache_restart_request),
     .dcache_refill_request  (dcache_refill_request),
     .dcache_refilling       (dcache_refilling),
  
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -16991,17 +16993,17 @@ lm32_instruction_unit_full_debug #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1389 "/tmp/lm32-customizer/tmp.v"
+`line 1390 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_enable       (jtag_read_enable),
     .jtag_write_enable      (jtag_write_enable),
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -17011,22 +17013,22 @@ lm32_instruction_unit_full_debug #(
     .pc_m                   (pc_m),
     .pc_w                   (pc_w),
   
-`line 1402 "/tmp/lm32-customizer/tmp.v"
+`line 1403 "/tmp/lm32-customizer/tmp.v"
 
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
  
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -17039,29 +17041,29 @@ lm32_instruction_unit_full_debug #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1423 "/tmp/lm32-customizer/tmp.v"
+`line 1424 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1427 "/tmp/lm32-customizer/tmp.v"
+`line 1428 "/tmp/lm32-customizer/tmp.v"
 
     .bus_error_d            (bus_error_d),
  
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -17075,46 +17077,46 @@ lm32_decoder_full_debug decoder (
     .d_result_sel_1         (d_result_sel_1_d),
     .x_result_sel_csr       (x_result_sel_csr_d),
   
-`line 1444 "/tmp/lm32-customizer/tmp.v"
+`line 1445 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_mc_arith  (x_result_sel_mc_arith_d),
  
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -17133,30 +17135,30 @@ lm32_decoder_full_debug decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1492 "/tmp/lm32-customizer/tmp.v"
+`line 1493 "/tmp/lm32-customizer/tmp.v"
 
     .divide                 (divide_d),
     .modulus                (modulus_d),
  
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -17164,25 +17166,25 @@ lm32_decoder_full_debug decoder (
     .branch_reg             (branch_reg_d),
     .condition              (condition_d),
   
-`line 1501 "/tmp/lm32-customizer/tmp.v"
+`line 1502 "/tmp/lm32-customizer/tmp.v"
 
     .break_opcode           (break_d),
  
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
-`line 1506 "/tmp/lm32-customizer/tmp.v"
+`line 1507 "/tmp/lm32-customizer/tmp.v"
 
     .bret                   (bret_d),
  
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -17218,16 +17220,16 @@ lm32_load_store_unit_full_debug #(
     .sign_extend_x          (sign_extend_x),
     .size_x                 (size_x),
   
-`line 1545 "/tmp/lm32-customizer/tmp.v"
+`line 1546 "/tmp/lm32-customizer/tmp.v"
 
     .dflush                 (dflush_m),
  
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -17237,14 +17239,14 @@ lm32_load_store_unit_full_debug #(
     
     
   
-`line 1558 "/tmp/lm32-customizer/tmp.v"
+`line 1559 "/tmp/lm32-customizer/tmp.v"
 
     .dcache_refill_request  (dcache_refill_request),
     .dcache_restart_request (dcache_restart_request),
     .dcache_stall_request   (dcache_stall_request),
     .dcache_refilling       (dcache_refilling),
  
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -17252,7 +17254,7 @@ lm32_load_store_unit_full_debug #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -17293,7 +17295,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -17309,11 +17311,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -17328,11 +17330,11 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1639 "/tmp/lm32-customizer/tmp.v"
+`line 1640 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_mc_arithmetic_full_debug mc_arithmetic (
@@ -17342,44 +17344,44 @@ lm32_mc_arithmetic_full_debug mc_arithmetic (
     .stall_d                (stall_d),
     .kill_x                 (kill_x),
   
-`line 1647 "/tmp/lm32-customizer/tmp.v"
+`line 1648 "/tmp/lm32-customizer/tmp.v"
                   
     .divide_d               (divide_q_d),
     .modulus_d              (modulus_q_d),
  
-`line 1650 "/tmp/lm32-customizer/tmp.v"
+`line 1651 "/tmp/lm32-customizer/tmp.v"
 
           
                  
 
-`line 1653 "/tmp/lm32-customizer/tmp.v"
+`line 1654 "/tmp/lm32-customizer/tmp.v"
 
   
                
               
               
 
-`line 1658 "/tmp/lm32-customizer/tmp.v"
+`line 1659 "/tmp/lm32-customizer/tmp.v"
     
     .operand_0_d            (d_result_0),
     .operand_1_d            (d_result_1),
     
     .result_x               (mc_result_x),
   
-`line 1663 "/tmp/lm32-customizer/tmp.v"
+`line 1664 "/tmp/lm32-customizer/tmp.v"
                   
     .divide_by_zero_x       (divide_by_zero_x),
  
-`line 1665 "/tmp/lm32-customizer/tmp.v"
+`line 1666 "/tmp/lm32-customizer/tmp.v"
 
     .stall_request_x        (mc_stall_request_x)
     );
  
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_full_debug interrupt_unit (
@@ -17391,22 +17393,22 @@ lm32_interrupt_full_debug interrupt_unit (
     
     .stall_x                (stall_x),
   
-`line 1680 "/tmp/lm32-customizer/tmp.v"
+`line 1681 "/tmp/lm32-customizer/tmp.v"
 
     .non_debug_exception    (non_debug_exception_q_w), 
     .debug_exception        (debug_exception_q_w),
  
                    
 
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
-`line 1687 "/tmp/lm32-customizer/tmp.v"
+`line 1688 "/tmp/lm32-customizer/tmp.v"
 
     .bret_q_x               (bret_q_x),
  
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -17417,11 +17419,11 @@ lm32_interrupt_full_debug interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1700 "/tmp/lm32-customizer/tmp.v"
+`line 1701 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_jtag_full_debug jtag (
@@ -17435,42 +17437,42 @@ lm32_jtag_full_debug jtag (
     .jtag_reg_addr_q        (jtag_reg_addr_q),
     
   
-`line 1712 "/tmp/lm32-customizer/tmp.v"
+`line 1713 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
     .csr_write_enable       (csr_write_enable_q_x),
     .stall_x                (stall_x),
  
-`line 1717 "/tmp/lm32-customizer/tmp.v"
+`line 1718 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1718 "/tmp/lm32-customizer/tmp.v"
+`line 1719 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1721 "/tmp/lm32-customizer/tmp.v"
+`line 1722 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1722 "/tmp/lm32-customizer/tmp.v"
+`line 1723 "/tmp/lm32-customizer/tmp.v"
 
     .exception_q_w          (debug_exception_q_w || non_debug_exception_q_w),
  
-`line 1724 "/tmp/lm32-customizer/tmp.v"
+`line 1725 "/tmp/lm32-customizer/tmp.v"
     
     
     
   
-`line 1727 "/tmp/lm32-customizer/tmp.v"
+`line 1728 "/tmp/lm32-customizer/tmp.v"
 
     .jtx_csr_read_data      (jtx_csr_read_data),
     .jrx_csr_read_data      (jrx_csr_read_data),
  
-`line 1730 "/tmp/lm32-customizer/tmp.v"
+`line 1731 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1731 "/tmp/lm32-customizer/tmp.v"
+`line 1732 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
@@ -17480,26 +17482,26 @@ lm32_jtag_full_debug jtag (
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1739 "/tmp/lm32-customizer/tmp.v"
+`line 1740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1740 "/tmp/lm32-customizer/tmp.v"
+`line 1741 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_break             (jtag_break),
     .jtag_reset             (reset_exception),
  
-`line 1743 "/tmp/lm32-customizer/tmp.v"
+`line 1744 "/tmp/lm32-customizer/tmp.v"
 
     
     .jtag_reg_d             (jtag_reg_d),
     .jtag_reg_addr_d        (jtag_reg_addr_d)
     );
  
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1750 "/tmp/lm32-customizer/tmp.v"
+`line 1751 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_debug_full_debug #(
@@ -17517,16 +17519,16 @@ lm32_debug_full_debug #(
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
   
-`line 1766 "/tmp/lm32-customizer/tmp.v"
+`line 1767 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
  
-`line 1770 "/tmp/lm32-customizer/tmp.v"
+`line 1771 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1771 "/tmp/lm32-customizer/tmp.v"
+`line 1772 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
     .bret_q_x               (bret_q_x),
@@ -17534,35 +17536,35 @@ lm32_debug_full_debug #(
     .exception_x            (exception_x),
     .q_x                    (q_x),
   
-`line 1777 "/tmp/lm32-customizer/tmp.v"
+`line 1778 "/tmp/lm32-customizer/tmp.v"
 
     .dcache_refill_request  (dcache_refill_request),
  
-`line 1779 "/tmp/lm32-customizer/tmp.v"
+`line 1780 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1780 "/tmp/lm32-customizer/tmp.v"
+`line 1781 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 1782 "/tmp/lm32-customizer/tmp.v"
+`line 1783 "/tmp/lm32-customizer/tmp.v"
 
     .dc_ss                  (dc_ss),
  
-`line 1784 "/tmp/lm32-customizer/tmp.v"
+`line 1785 "/tmp/lm32-customizer/tmp.v"
 
     .dc_re                  (dc_re),
     .bp_match               (bp_match),
     .wp_match               (wp_match)
     );
  
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -17681,7 +17683,7 @@ lm32_debug_full_debug #(
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -17751,7 +17753,7 @@ lm32_debug_full_debug #(
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -17760,23 +17762,23 @@ lm32_debug_full_debug #(
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -17866,25 +17868,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -17913,28 +17915,28 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2131 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2132 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_mc_arith_x ? mc_result_x
  
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -17944,11 +17946,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -17958,17 +17960,17 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
 
   
-`line 2157 "/tmp/lm32-customizer/tmp.v"
+`line 2158 "/tmp/lm32-customizer/tmp.v"
     
 
 assign branch_taken_x =      (stall_x ==  1'b0)
@@ -17978,7 +17980,7 @@ assign branch_taken_x =      (stall_x ==  1'b0)
                               && (branch_predict_x ==  1'b0)
                              ); 
  
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -18022,82 +18024,82 @@ assign kill_f =    (   (valid_d ==  1'b1)
 		   )
                 || (branch_taken_m ==  1'b1) 
   
-`line 2207 "/tmp/lm32-customizer/tmp.v"
+`line 2208 "/tmp/lm32-customizer/tmp.v"
     
                 || (branch_taken_x ==  1'b1)
  
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2210 "/tmp/lm32-customizer/tmp.v"
+`line 2211 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1) 
  
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2213 "/tmp/lm32-customizer/tmp.v"
+`line 2214 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
   
-`line 2218 "/tmp/lm32-customizer/tmp.v"
+`line 2219 "/tmp/lm32-customizer/tmp.v"
     
                 || (branch_taken_x ==  1'b1)
  
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2221 "/tmp/lm32-customizer/tmp.v"
+`line 2222 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1)     
  
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
   
-`line 2224 "/tmp/lm32-customizer/tmp.v"
+`line 2225 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
   
-`line 2229 "/tmp/lm32-customizer/tmp.v"
+`line 2230 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
   
-`line 2234 "/tmp/lm32-customizer/tmp.v"
+`line 2235 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
   
-`line 2239 "/tmp/lm32-customizer/tmp.v"
+`line 2240 "/tmp/lm32-customizer/tmp.v"
                 
                 || (dcache_refill_request ==  1'b1)
  
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
 
 
   
-`line 2246 "/tmp/lm32-customizer/tmp.v"
+`line 2247 "/tmp/lm32-customizer/tmp.v"
 
 assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				      || (bp_match ==  1'b1)
@@ -18105,56 +18107,56 @@ assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				  && (valid_x ==  1'b1)
 				 )
   
-`line 2252 "/tmp/lm32-customizer/tmp.v"
+`line 2253 "/tmp/lm32-customizer/tmp.v"
 
                               || (jtag_break ==  1'b1)
  
-`line 2254 "/tmp/lm32-customizer/tmp.v"
+`line 2255 "/tmp/lm32-customizer/tmp.v"
 
                               ;
  
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2258 "/tmp/lm32-customizer/tmp.v"
+`line 2259 "/tmp/lm32-customizer/tmp.v"
 
 assign watchpoint_exception = wp_match ==  1'b1;
  
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2262 "/tmp/lm32-customizer/tmp.v"
+`line 2263 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_bus_error_exception = (   (bus_error_x ==  1'b1)
                                           && (valid_x ==  1'b1)
                                          );
 assign data_bus_error_exception = data_bus_error_seen ==  1'b1;
  
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2269 "/tmp/lm32-customizer/tmp.v"
+`line 2270 "/tmp/lm32-customizer/tmp.v"
 
 assign divide_by_zero_exception = divide_by_zero_x ==  1'b1;
  
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
-`line 2274 "/tmp/lm32-customizer/tmp.v"
+`line 2275 "/tmp/lm32-customizer/tmp.v"
 
                                 && (valid_x ==  1'b1)
  
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
   
-`line 2279 "/tmp/lm32-customizer/tmp.v"
+`line 2280 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_x =  (breakpoint_exception ==  1'b1)
                          || (watchpoint_exception ==  1'b1)
@@ -18162,49 +18164,49 @@ assign debug_exception_x =  (breakpoint_exception ==  1'b1)
 
 assign non_debug_exception_x = (system_call_exception ==  1'b1)
   
-`line 2285 "/tmp/lm32-customizer/tmp.v"
+`line 2286 "/tmp/lm32-customizer/tmp.v"
 
                             || (reset_exception ==  1'b1)
  
-`line 2287 "/tmp/lm32-customizer/tmp.v"
+`line 2288 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2288 "/tmp/lm32-customizer/tmp.v"
+`line 2289 "/tmp/lm32-customizer/tmp.v"
 
                             || (instruction_bus_error_exception ==  1'b1)
                             || (data_bus_error_exception ==  1'b1)
  
-`line 2291 "/tmp/lm32-customizer/tmp.v"
+`line 2292 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2292 "/tmp/lm32-customizer/tmp.v"
+`line 2293 "/tmp/lm32-customizer/tmp.v"
 
                             || (divide_by_zero_exception ==  1'b1)
  
-`line 2294 "/tmp/lm32-customizer/tmp.v"
+`line 2295 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2295 "/tmp/lm32-customizer/tmp.v"
+`line 2296 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
-`line 2297 "/tmp/lm32-customizer/tmp.v"
+`line 2298 "/tmp/lm32-customizer/tmp.v"
 
                                 && (dc_ss ==  1'b0)
  
-`line 2299 "/tmp/lm32-customizer/tmp.v"
+`line 2300 "/tmp/lm32-customizer/tmp.v"
                             
   
-`line 2300 "/tmp/lm32-customizer/tmp.v"
+`line 2301 "/tmp/lm32-customizer/tmp.v"
 
  				&& (store_q_m ==  1'b0)
 				&& (D_CYC_O ==  1'b0)
  
-`line 2303 "/tmp/lm32-customizer/tmp.v"
+`line 2304 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2305 "/tmp/lm32-customizer/tmp.v"
+`line 2306 "/tmp/lm32-customizer/tmp.v"
 
                             ;
 
@@ -18231,41 +18233,41 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
                             
 
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
 always @(*)
 begin
   
-`line 2335 "/tmp/lm32-customizer/tmp.v"
+`line 2336 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2336 "/tmp/lm32-customizer/tmp.v"
+`line 2337 "/tmp/lm32-customizer/tmp.v"
 
     if (reset_exception ==  1'b1)
         eid_x =  3'h0;
     else
  
-`line 2340 "/tmp/lm32-customizer/tmp.v"
+`line 2341 "/tmp/lm32-customizer/tmp.v"
      
   
-`line 2341 "/tmp/lm32-customizer/tmp.v"
+`line 2342 "/tmp/lm32-customizer/tmp.v"
 
          if (data_bus_error_exception ==  1'b1)
         eid_x =  3'h4;
     else
  
-`line 2345 "/tmp/lm32-customizer/tmp.v"
+`line 2346 "/tmp/lm32-customizer/tmp.v"
 
          if (breakpoint_exception ==  1'b1)
         eid_x =  3'd1;
     else
  
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2350 "/tmp/lm32-customizer/tmp.v"
+`line 2351 "/tmp/lm32-customizer/tmp.v"
 
          if (data_bus_error_exception ==  1'b1)
         eid_x =  3'h4;
@@ -18274,42 +18276,42 @@ begin
         eid_x =  3'h2;
     else
  
-`line 2357 "/tmp/lm32-customizer/tmp.v"
+`line 2358 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2358 "/tmp/lm32-customizer/tmp.v"
+`line 2359 "/tmp/lm32-customizer/tmp.v"
 
          if (watchpoint_exception ==  1'b1)
         eid_x =  3'd3;
     else 
  
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2363 "/tmp/lm32-customizer/tmp.v"
+`line 2364 "/tmp/lm32-customizer/tmp.v"
 
          if (divide_by_zero_exception ==  1'b1)
         eid_x =  3'h5;
     else
  
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
-`line 2370 "/tmp/lm32-customizer/tmp.v"
+`line 2371 "/tmp/lm32-customizer/tmp.v"
 
              && (dc_ss ==  1'b0)
  
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -18327,11 +18329,11 @@ assign stall_d =   (stall_x ==  1'b1)
 		|| (   (   (eret_d ==  1'b1)
 			|| (scall_d ==  1'b1)
   
-`line 2392 "/tmp/lm32-customizer/tmp.v"
+`line 2393 "/tmp/lm32-customizer/tmp.v"
 
 			|| (bus_error_d ==  1'b1)
  
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -18343,7 +18345,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
   
-`line 2404 "/tmp/lm32-customizer/tmp.v"
+`line 2405 "/tmp/lm32-customizer/tmp.v"
 
 		|| (   (   (break_d ==  1'b1)
 			|| (bret_d ==  1'b1)
@@ -18357,7 +18359,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
  
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -18366,13 +18368,13 @@ assign stall_d =   (stall_x ==  1'b1)
                 
 assign stall_x =    (stall_m ==  1'b1)
   
-`line 2423 "/tmp/lm32-customizer/tmp.v"
+`line 2424 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (mc_stall_request_x ==  1'b1)
                      && (kill_x ==  1'b0)
                     ) 
  
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -18383,7 +18385,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -18391,7 +18393,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -18409,28 +18411,28 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
-`line 2466 "/tmp/lm32-customizer/tmp.v"
+`line 2467 "/tmp/lm32-customizer/tmp.v"
 
                  || (dcache_stall_request ==  1'b1)     
  
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
-`line 2469 "/tmp/lm32-customizer/tmp.v"
+`line 2470 "/tmp/lm32-customizer/tmp.v"
 
                  || (icache_stall_request ==  1'b1)     
                  || ((I_CYC_O ==  1'b1) && ((branch_m ==  1'b1) || (exception_m ==  1'b1))) 
@@ -18439,91 +18441,91 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                                 
 
 
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
 
   
-`line 2485 "/tmp/lm32-customizer/tmp.v"
+`line 2486 "/tmp/lm32-customizer/tmp.v"
 
 assign q_d = (valid_d ==  1'b1) && (kill_d ==  1'b0);
  
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2495 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2496 "/tmp/lm32-customizer/tmp.v"
 
 assign divide_q_d = (divide_d ==  1'b1) && (q_d ==  1'b1);
 assign modulus_q_d = (modulus_d ==  1'b1) && (q_d ==  1'b1);
  
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
 assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
-`line 2502 "/tmp/lm32-customizer/tmp.v"
+`line 2503 "/tmp/lm32-customizer/tmp.v"
 
 assign bret_q_x = (bret_x ==  1'b1) && (q_x ==  1'b1);
  
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2507 "/tmp/lm32-customizer/tmp.v"
+`line 2508 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2513 "/tmp/lm32-customizer/tmp.v"
+`line 2514 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
 assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
   
-`line 2523 "/tmp/lm32-customizer/tmp.v"
+`line 2524 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_q_w = ((debug_exception_w ==  1'b1) && (valid_w ==  1'b1));
 assign non_debug_exception_q_w = ((non_debug_exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
                  
 
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -18539,112 +18541,112 @@ assign cfg = {
               breakpoints[3:0],
               interrupts[5:0],
   
-`line 2542 "/tmp/lm32-customizer/tmp.v"
+`line 2543 "/tmp/lm32-customizer/tmp.v"
 
                1'b1,
  
               
 
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2552 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2553 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2556 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2557 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2558 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2561 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2562 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2563 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2566 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2567 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2568 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2592 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2593 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -18653,26 +18655,26 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
 
   
-`line 2619 "/tmp/lm32-customizer/tmp.v"
+`line 2620 "/tmp/lm32-customizer/tmp.v"
 
 assign iflush = (   (csr_write_enable_d ==  1'b1) 
                  && (csr_d ==  5'h3)
@@ -18681,36 +18683,36 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
                  && (valid_d ==  1'b1))
 
   
-`line 2626 "/tmp/lm32-customizer/tmp.v"
+`line 2627 "/tmp/lm32-customizer/tmp.v"
 
              ||
                 (   (jtag_csr_write_enable ==  1'b1)
 		 && (jtag_csr ==  5'h3))
  
-`line 2630 "/tmp/lm32-customizer/tmp.v"
+`line 2631 "/tmp/lm32-customizer/tmp.v"
 
 		 ;
  
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
-`line 2633 "/tmp/lm32-customizer/tmp.v"
+`line 2634 "/tmp/lm32-customizer/tmp.v"
 
 assign dflush_x = (   (csr_write_enable_q_x ==  1'b1) 
                    && (csr_x ==  5'h4))
 
   
-`line 2637 "/tmp/lm32-customizer/tmp.v"
+`line 2638 "/tmp/lm32-customizer/tmp.v"
 
                ||
                   (   (jtag_csr_write_enable ==  1'b1)
 		   && (jtag_csr ==  5'h4))
  
-`line 2641 "/tmp/lm32-customizer/tmp.v"
+`line 2642 "/tmp/lm32-customizer/tmp.v"
 
 		   ;
  
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -18721,35 +18723,35 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      5'h0,
      5'h1,
      5'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      5'h6:  csr_read_data_x = cfg;
      5'h7:  csr_read_data_x = {eba, 8'h00};
   
-`line 2662 "/tmp/lm32-customizer/tmp.v"
+`line 2663 "/tmp/lm32-customizer/tmp.v"
 
      5'h9: csr_read_data_x = {deba, 8'h00};
  
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2665 "/tmp/lm32-customizer/tmp.v"
+`line 2666 "/tmp/lm32-customizer/tmp.v"
 
      5'he:  csr_read_data_x = jtx_csr_read_data;  
      5'hf:  csr_read_data_x = jrx_csr_read_data;
  
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      5'ha: csr_read_data_x = cfg2;
       
@@ -18771,18 +18773,18 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2688 "/tmp/lm32-customizer/tmp.v"
+`line 2689 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
             eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 2695 "/tmp/lm32-customizer/tmp.v"
+`line 2696 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -18794,17 +18796,17 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2705 "/tmp/lm32-customizer/tmp.v"
+`line 2706 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
             deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2708 "/tmp/lm32-customizer/tmp.v"
+`line 2709 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -18817,11 +18819,11 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2724 "/tmp/lm32-customizer/tmp.v"
+`line 2725 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -18839,16 +18841,16 @@ begin
     end
 end
  
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
 
   
-`line 2744 "/tmp/lm32-customizer/tmp.v"
+`line 2745 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2745 "/tmp/lm32-customizer/tmp.v"
+`line 2746 "/tmp/lm32-customizer/tmp.v"
 
 always @(*)
 begin
@@ -18874,7 +18876,7 @@ end
           
  
 
-`line 2769 "/tmp/lm32-customizer/tmp.v"
+`line 2770 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -18889,7 +18891,7 @@ end
  
 
 
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -18906,13 +18908,13 @@ begin
     begin    
         if ((kill_f ==  1'b1) || (stall_a ==  1'b0))
   
-`line 2797 "/tmp/lm32-customizer/tmp.v"
+`line 2798 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <= valid_a;    
  
               
 
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -18953,7 +18955,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -18961,46 +18963,46 @@ begin
         branch_target_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};        
         x_result_sel_csr_x <=  1'b0;
   
-`line 2846 "/tmp/lm32-customizer/tmp.v"
+`line 2847 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_mc_arith_x <=  1'b0;
  
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -19015,64 +19017,64 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
         branch_predict_taken_x <=  1'b0;
         condition_x <=  3'b000;
   
-`line 2891 "/tmp/lm32-customizer/tmp.v"
+`line 2892 "/tmp/lm32-customizer/tmp.v"
 
         break_x <=  1'b0;
  
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
-`line 2896 "/tmp/lm32-customizer/tmp.v"
+`line 2897 "/tmp/lm32-customizer/tmp.v"
 
         bret_x <=  1'b0;
  
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2899 "/tmp/lm32-customizer/tmp.v"
+`line 2900 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_x <=  1'b0;
         data_bus_error_exception_m <=  1'b0;
  
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -19082,57 +19084,57 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
   
-`line 2927 "/tmp/lm32-customizer/tmp.v"
+`line 2928 "/tmp/lm32-customizer/tmp.v"
 
         dflush_m <=  1'b0;
  
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2930 "/tmp/lm32-customizer/tmp.v"
+`line 2931 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_m <=  1'b0;
         non_debug_exception_m <=  1'b0;        
  
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
   
-`line 2941 "/tmp/lm32-customizer/tmp.v"
+`line 2942 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <=  1'b0;
         non_debug_exception_w <=  1'b0;        
  
           
 
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2947 "/tmp/lm32-customizer/tmp.v"
+`line 2948 "/tmp/lm32-customizer/tmp.v"
 
         memop_pc_w <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
  
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -19144,7 +19146,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -19152,46 +19154,46 @@ begin
             branch_target_x <= branch_reg_d ==  1'b1 ? bypass_data_0[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] : branch_target_d;            
             x_result_sel_csr_x <= x_result_sel_csr_d;
   
-`line 2965 "/tmp/lm32-customizer/tmp.v"
+`line 2966 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_mc_arith_x <= x_result_sel_mc_arith_d;
  
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -19208,41 +19210,41 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
-`line 3009 "/tmp/lm32-customizer/tmp.v"
+`line 3010 "/tmp/lm32-customizer/tmp.v"
 
             break_x <= break_d;
  
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
-`line 3013 "/tmp/lm32-customizer/tmp.v"
+`line 3014 "/tmp/lm32-customizer/tmp.v"
 
             bus_error_x <= bus_error_d;
  
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
-`line 3017 "/tmp/lm32-customizer/tmp.v"
+`line 3018 "/tmp/lm32-customizer/tmp.v"
 
             bret_x <= bret_d; 
  
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -19254,46 +19256,46 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
   
-`line 3052 "/tmp/lm32-customizer/tmp.v"
+`line 3053 "/tmp/lm32-customizer/tmp.v"
     
             branch_m <= branch_x && !branch_taken_x;
  
@@ -19301,10 +19303,10 @@ begin
 	      
 	      
 
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3059 "/tmp/lm32-customizer/tmp.v"
+`line 3060 "/tmp/lm32-customizer/tmp.v"
 
 	   
 	   
@@ -19323,11 +19325,11 @@ begin
              
                   
 
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
-`line 3078 "/tmp/lm32-customizer/tmp.v"
+`line 3079 "/tmp/lm32-customizer/tmp.v"
 
 	   if (exception_x ==  1'b1)
 	     if ((dc_re ==  1'b1)
@@ -19341,36 +19343,36 @@ begin
  
                       
 
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3094 "/tmp/lm32-customizer/tmp.v"
+`line 3095 "/tmp/lm32-customizer/tmp.v"
 
             dflush_m <= dflush_x;
  
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
-`line 3098 "/tmp/lm32-customizer/tmp.v"
+`line 3099 "/tmp/lm32-customizer/tmp.v"
 
             bret_m <= bret_q_x; 
  
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
-`line 3102 "/tmp/lm32-customizer/tmp.v"
+`line 3103 "/tmp/lm32-customizer/tmp.v"
 
             debug_exception_m <= debug_exception_x;
             non_debug_exception_m <= non_debug_exception_x;        
  
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -19382,39 +19384,39 @@ begin
             else 
                 exception_m <=  1'b0;
   
-`line 3115 "/tmp/lm32-customizer/tmp.v"
+`line 3116 "/tmp/lm32-customizer/tmp.v"
 
 	   data_bus_error_exception_m <=    (data_bus_error_exception ==  1'b1) 
   
-`line 3117 "/tmp/lm32-customizer/tmp.v"
+`line 3118 "/tmp/lm32-customizer/tmp.v"
 
 					 && (reset_exception ==  1'b0)
  
-`line 3119 "/tmp/lm32-customizer/tmp.v"
+`line 3120 "/tmp/lm32-customizer/tmp.v"
 
 					 ;
  
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
         
   
-`line 3125 "/tmp/lm32-customizer/tmp.v"
+`line 3126 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? (data_bus_error_exception_m ? {memop_pc_w, 2'b00} : {pc_m, 2'b00}) : m_result;
  
                  
 
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -19424,21 +19426,21 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
-`line 3143 "/tmp/lm32-customizer/tmp.v"
+`line 3144 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <= debug_exception_m;
         non_debug_exception_w <= non_debug_exception_m;
  
           
 
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3149 "/tmp/lm32-customizer/tmp.v"
+`line 3150 "/tmp/lm32-customizer/tmp.v"
 
         if (   (stall_m ==  1'b0)
             && (   (load_q_m ==  1'b1) 
@@ -19447,13 +19449,13 @@ begin
 	   )
           memop_pc_w <= pc_m;
  
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -19485,11 +19487,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -19535,7 +19537,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -19599,7 +19601,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -19612,14 +19614,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -19709,7 +19711,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -20021,16 +20023,16 @@ module lm32_load_store_unit_full_debug (
     sign_extend_x,
     size_x,
   
-`line 3390 "/tmp/lm32-customizer/tmp.v"
+`line 3391 "/tmp/lm32-customizer/tmp.v"
 
     dflush,
  
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -20040,14 +20042,14 @@ module lm32_load_store_unit_full_debug (
     
     
   
-`line 3403 "/tmp/lm32-customizer/tmp.v"
+`line 3404 "/tmp/lm32-customizer/tmp.v"
 
     dcache_refill_request,
     dcache_restart_request,
     dcache_stall_request,
     dcache_refilling,
  
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -20055,7 +20057,7 @@ module lm32_load_store_unit_full_debug (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -20114,17 +20116,17 @@ input sign_extend_x;
 input [ 1:0] size_x;                          
 
   
-`line 3471 "/tmp/lm32-customizer/tmp.v"
+`line 3472 "/tmp/lm32-customizer/tmp.v"
 
 input dflush;                                           
  
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -20137,7 +20139,7 @@ input d_rty_i;
 
 
   
-`line 3488 "/tmp/lm32-customizer/tmp.v"
+`line 3489 "/tmp/lm32-customizer/tmp.v"
 
 output dcache_refill_request;                           
 wire   dcache_refill_request;
@@ -20148,7 +20150,7 @@ wire   dcache_stall_request;
 output dcache_refilling;
 wire   dcache_refilling;
  
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -20161,7 +20163,7 @@ wire   dcache_refilling;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -20205,7 +20207,7 @@ wire [ (32-1):0] data_m;
 reg [ (32-1):0] data_w;
 
   
-`line 3550 "/tmp/lm32-customizer/tmp.v"
+`line 3551 "/tmp/lm32-customizer/tmp.v"
 
 wire dcache_select_x;                                   
 reg dcache_select_m;
@@ -20217,7 +20219,7 @@ wire [ (3-1):0] next_cycle_type;
 wire last_word;                                         
 wire [ (32-1):0] first_address;                    
  
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -20228,14 +20230,14 @@ wire [ (32-1):0] first_address;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -20389,11 +20391,11 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3673 "/tmp/lm32-customizer/tmp.v"
+`line 3674 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_dcache_full_debug #(
@@ -20427,7 +20429,7 @@ lm32_dcache_full_debug #(
     .load_data              (dcache_data_m)
     );
  
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -20439,53 +20441,53 @@ lm32_dcache_full_debug #(
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
-`line 3722 "/tmp/lm32-customizer/tmp.v"
+`line 3723 "/tmp/lm32-customizer/tmp.v"
 
    assign dcache_select_x =    (load_store_address_x >=  32'h0) 
                             && (load_store_address_x <=  32'h7fffffff)
   
                                
 
-`line 3727 "/tmp/lm32-customizer/tmp.v"
+`line 3728 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 3730 "/tmp/lm32-customizer/tmp.v"
+`line 3731 "/tmp/lm32-customizer/tmp.v"
 
                      ;
  
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
-`line 3735 "/tmp/lm32-customizer/tmp.v"
+`line 3736 "/tmp/lm32-customizer/tmp.v"
 
                         && !dcache_select_x 
  
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -20522,7 +20524,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -20532,7 +20534,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -20555,11 +20557,11 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
-`line 3809 "/tmp/lm32-customizer/tmp.v"
+`line 3810 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -20580,7 +20582,7 @@ end
                       
   
  
-`line 3828 "/tmp/lm32-customizer/tmp.v"
+`line 3829 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -20590,17 +20592,17 @@ end
                       
                       
   
-`line 3836 "/tmp/lm32-customizer/tmp.v"
+`line 3837 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_select_m ==  1'b1 
                    ? wb_data_m 
                    : dcache_data_m;
    
-`line 3841 "/tmp/lm32-customizer/tmp.v"
+`line 3842 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3842 "/tmp/lm32-customizer/tmp.v"
+`line 3843 "/tmp/lm32-customizer/tmp.v"
 
  
   
@@ -20629,7 +20631,7 @@ end
   
  
 
-`line 3869 "/tmp/lm32-customizer/tmp.v"
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -20651,7 +20653,7 @@ end
 assign d_bte_o =  2'b00;
 
   
-`line 3889 "/tmp/lm32-customizer/tmp.v"
+`line 3890 "/tmp/lm32-customizer/tmp.v"
                 
 
 generate 
@@ -20680,7 +20682,7 @@ assign first_address = {dcache_refill_address[ 32-1:addr_offset_msb+1], {addr_of
     endcase
 endgenerate
  
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -20704,22 +20706,22 @@ begin
         wb_load_complete <=  1'b0;
         stall_wb_load <=  1'b0;
   
-`line 3938 "/tmp/lm32-customizer/tmp.v"
+`line 3939 "/tmp/lm32-customizer/tmp.v"
                 
         dcache_refill_ready <=  1'b0;
  
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
     begin
   
-`line 3944 "/tmp/lm32-customizer/tmp.v"
+`line 3945 "/tmp/lm32-customizer/tmp.v"
  
         
         dcache_refill_ready <=  1'b0;
  
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -20728,7 +20730,7 @@ begin
             if ((d_ack_i ==  1'b1) || (d_err_i ==  1'b1))
             begin
   
-`line 3954 "/tmp/lm32-customizer/tmp.v"
+`line 3955 "/tmp/lm32-customizer/tmp.v"
                 
                 if ((dcache_refilling ==  1'b1) && (!last_word))
                 begin
@@ -20737,7 +20739,7 @@ begin
                 end
                 else
  
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -20746,13 +20748,13 @@ begin
                     d_lock_o <=  1'b0;
                 end
   
-`line 3968 "/tmp/lm32-customizer/tmp.v"
+`line 3969 "/tmp/lm32-customizer/tmp.v"
     
                 d_cti_o <= next_cycle_type;
                 
                 dcache_refill_ready <= dcache_refilling;
  
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -20767,7 +20769,7 @@ begin
         else
         begin
   
-`line 3985 "/tmp/lm32-customizer/tmp.v"
+`line 3986 "/tmp/lm32-customizer/tmp.v"
                 
             if (dcache_refill_request ==  1'b1)
             begin
@@ -20782,19 +20784,19 @@ begin
             end
             else 
  
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -20847,21 +20849,21 @@ begin
         byte_enable_m <=  1'b0;
         store_data_m <= { 32{1'b0}};
   
-`line 4057 "/tmp/lm32-customizer/tmp.v"
+`line 4058 "/tmp/lm32-customizer/tmp.v"
 
         dcache_select_m <=  1'b0;
  
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -20874,21 +20876,21 @@ begin
             byte_enable_m <= byte_enable_x;    
             store_data_m <= store_data_x;
   
-`line 4076 "/tmp/lm32-customizer/tmp.v"
+`line 4077 "/tmp/lm32-customizer/tmp.v"
 
             dcache_select_m <= dcache_select_x;
  
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -21009,7 +21011,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -21295,15 +21297,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -21437,6 +21436,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -21450,46 +21452,46 @@ module lm32_decoder_full_debug (
     d_result_sel_1,        
     x_result_sel_csr,
   
-`line 4226 "/tmp/lm32-customizer/tmp.v"
+`line 4227 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_mc_arith,
  
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -21508,30 +21510,30 @@ module lm32_decoder_full_debug (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4274 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4275 "/tmp/lm32-customizer/tmp.v"
 
     divide,
     modulus,
  
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -21539,25 +21541,25 @@ module lm32_decoder_full_debug (
     bi_conditional,
     bi_unconditional,
   
-`line 4283 "/tmp/lm32-customizer/tmp.v"
+`line 4284 "/tmp/lm32-customizer/tmp.v"
 
     break_opcode,
  
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
-`line 4288 "/tmp/lm32-customizer/tmp.v"
+`line 4289 "/tmp/lm32-customizer/tmp.v"
 
     bret,
  
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -21579,26 +21581,26 @@ reg    [ 1:0] d_result_sel_1;
 output x_result_sel_csr;
 reg    x_result_sel_csr;
   
-`line 4313 "/tmp/lm32-customizer/tmp.v"
+`line 4314 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_mc_arith;
 reg    x_result_sel_mc_arith;
  
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -21606,29 +21608,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -21663,12 +21665,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -21676,23 +21678,23 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4391 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4392 "/tmp/lm32-customizer/tmp.v"
 
 output divide;
 wire   divide;
 output modulus;
 wire   modulus;
  
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -21705,30 +21707,30 @@ wire bi_conditional;
 output bi_unconditional;
 wire bi_unconditional;
   
-`line 4407 "/tmp/lm32-customizer/tmp.v"
+`line 4408 "/tmp/lm32-customizer/tmp.v"
 
 output break_opcode;
 wire   break_opcode;
  
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
 output eret;
 wire   eret;
   
-`line 4415 "/tmp/lm32-customizer/tmp.v"
+`line 4416 "/tmp/lm32-customizer/tmp.v"
 
 output bret;
 wire   bret;
  
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -21831,11 +21833,11 @@ assign op_cmpgeu = instruction[ 30:26] ==  5'b11100;
 assign op_cmpgu  = instruction[ 30:26] ==  5'b11101;
 assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
-`line 4468 "/tmp/lm32-customizer/tmp.v"
+`line 4469 "/tmp/lm32-customizer/tmp.v"
 
 assign op_divu   = instruction[ 31:26] ==  6'b100011;
  
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -21843,18 +21845,18 @@ assign op_lh     = instruction[ 31:26] ==  6'b000111;
 assign op_lhu    = instruction[ 31:26] ==  6'b001011;
 assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
-`line 4476 "/tmp/lm32-customizer/tmp.v"
+`line 4477 "/tmp/lm32-customizer/tmp.v"
 
 assign op_modu   = instruction[ 31:26] ==  6'b110001;
  
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -21863,20 +21865,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -21896,44 +21898,44 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4529 "/tmp/lm32-customizer/tmp.v"
+`line 4530 "/tmp/lm32-customizer/tmp.v"
 
 assign divide = op_divu; 
 assign modulus = op_modu;
  
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -21955,72 +21957,72 @@ begin
     
     x_result_sel_csr =  1'b0;
   
-`line 4552 "/tmp/lm32-customizer/tmp.v"
+`line 4553 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_mc_arith =  1'b0;
  
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
         x_result_sel_csr =  1'b1;
   
-`line 4568 "/tmp/lm32-customizer/tmp.v"
+`line 4569 "/tmp/lm32-customizer/tmp.v"
     
   
          
           
 
-`line 4572 "/tmp/lm32-customizer/tmp.v"
+`line 4573 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4573 "/tmp/lm32-customizer/tmp.v"
+`line 4574 "/tmp/lm32-customizer/tmp.v"
 
     else if (divide | modulus)
         x_result_sel_mc_arith =  1'b1;        
  
-`line 4576 "/tmp/lm32-customizer/tmp.v"
+`line 4577 "/tmp/lm32-customizer/tmp.v"
 
   
       
                       
 
-`line 4580 "/tmp/lm32-customizer/tmp.v"
+`line 4581 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -22028,7 +22030,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -22037,21 +22039,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -22062,48 +22064,48 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4623 "/tmp/lm32-customizer/tmp.v"
+`line 4624 "/tmp/lm32-customizer/tmp.v"
 
                         | divide
                         | modulus
  
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -22130,38 +22132,38 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
 assign branch_reg = op_call | op_b;
 assign condition = instruction[28:26];      
   
-`line 4675 "/tmp/lm32-customizer/tmp.v"
+`line 4676 "/tmp/lm32-customizer/tmp.v"
 
 assign break_opcode = op_raise & ~instruction[2];
  
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
-`line 4680 "/tmp/lm32-customizer/tmp.v"
+`line 4681 "/tmp/lm32-customizer/tmp.v"
 
 assign bret = op_b & (instruction[25:21] == 5'd31);
  
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -22264,7 +22266,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -22549,11 +22551,8 @@ endmodule
 
 
   
-`line 4748 "/tmp/lm32-customizer/tmp.v"
+`line 4749 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 4750 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 4751 "/tmp/lm32-customizer/tmp.v"
@@ -22564,9 +22563,9 @@ endmodule
   
 `line 4753 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4755 "/tmp/lm32-customizer/tmp.v"
+`line 4754 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4756 "/tmp/lm32-customizer/tmp.v"
@@ -22577,9 +22576,9 @@ endmodule
   
 `line 4758 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4760 "/tmp/lm32-customizer/tmp.v"
+`line 4759 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4761 "/tmp/lm32-customizer/tmp.v"
@@ -22590,9 +22589,9 @@ endmodule
   
 `line 4763 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4765 "/tmp/lm32-customizer/tmp.v"
+`line 4764 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4766 "/tmp/lm32-customizer/tmp.v"
@@ -22605,6 +22604,9 @@ endmodule
 
   
 `line 4769 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4770 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -22626,7 +22628,7 @@ module lm32_icache_full_debug (
   
     
 
-`line 4789 "/tmp/lm32-customizer/tmp.v"
+`line 4790 "/tmp/lm32-customizer/tmp.v"
 
     valid_d,
     branch_predict_taken_d,
@@ -22683,7 +22685,7 @@ input iflush;
   
                                       
 
-`line 4844 "/tmp/lm32-customizer/tmp.v"
+`line 4845 "/tmp/lm32-customizer/tmp.v"
 
    
 
@@ -22989,7 +22991,7 @@ begin
                   
 	      
 
-`line 5093 "/tmp/lm32-customizer/tmp.v"
+`line 5094 "/tmp/lm32-customizer/tmp.v"
 
 		state <=  4'b0100;
 	   
@@ -23067,7 +23069,7 @@ endgenerate
 endmodule
 
  
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -23142,7 +23144,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -23427,11 +23429,8 @@ endmodule
 
 
   
-`line 5203 "/tmp/lm32-customizer/tmp.v"
+`line 5204 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 5205 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 5206 "/tmp/lm32-customizer/tmp.v"
@@ -23442,9 +23441,9 @@ endmodule
   
 `line 5208 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5210 "/tmp/lm32-customizer/tmp.v"
+`line 5209 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5211 "/tmp/lm32-customizer/tmp.v"
@@ -23455,9 +23454,9 @@ endmodule
   
 `line 5213 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5215 "/tmp/lm32-customizer/tmp.v"
+`line 5214 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5216 "/tmp/lm32-customizer/tmp.v"
@@ -23468,9 +23467,9 @@ endmodule
   
 `line 5218 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 5220 "/tmp/lm32-customizer/tmp.v"
+`line 5219 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 5221 "/tmp/lm32-customizer/tmp.v"
@@ -23480,6 +23479,9 @@ endmodule
 
   
 `line 5223 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 5224 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -23988,7 +23990,7 @@ endgenerate
 endmodule
 
  
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24064,7 +24066,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -24349,12 +24351,9 @@ endmodule
 
 
   
-`line 5710 "/tmp/lm32-customizer/tmp.v"
+`line 5711 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 5713 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 5714 "/tmp/lm32-customizer/tmp.v"
@@ -24370,6 +24369,9 @@ endmodule
 
   
 `line 5718 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 5719 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24388,16 +24390,16 @@ module lm32_debug_full_debug (
     csr_write_data,
     csr_x,
   
-`line 5735 "/tmp/lm32-customizer/tmp.v"
+`line 5736 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
-`line 5739 "/tmp/lm32-customizer/tmp.v"
+`line 5740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5740 "/tmp/lm32-customizer/tmp.v"
+`line 5741 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
     bret_q_x,
@@ -24405,22 +24407,22 @@ module lm32_debug_full_debug (
     exception_x,
     q_x,
   
-`line 5746 "/tmp/lm32-customizer/tmp.v"
+`line 5747 "/tmp/lm32-customizer/tmp.v"
 
     dcache_refill_request,
  
-`line 5748 "/tmp/lm32-customizer/tmp.v"
+`line 5749 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5749 "/tmp/lm32-customizer/tmp.v"
+`line 5750 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 5751 "/tmp/lm32-customizer/tmp.v"
+`line 5752 "/tmp/lm32-customizer/tmp.v"
 
     dc_ss,
  
-`line 5753 "/tmp/lm32-customizer/tmp.v"
+`line 5754 "/tmp/lm32-customizer/tmp.v"
 
     dc_re,
     bp_match,
@@ -24449,16 +24451,16 @@ input csr_write_enable_x;
 input [ (32-1):0] csr_write_data;          
 input [ (5-1):0] csr_x;                    
   
-`line 5780 "/tmp/lm32-customizer/tmp.v"
+`line 5781 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
-`line 5784 "/tmp/lm32-customizer/tmp.v"
+`line 5785 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5785 "/tmp/lm32-customizer/tmp.v"
+`line 5786 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
 input bret_q_x;                                 
@@ -24466,14 +24468,14 @@ input stall_x;
 input exception_x;                              
 input q_x;                                      
   
-`line 5791 "/tmp/lm32-customizer/tmp.v"
+`line 5792 "/tmp/lm32-customizer/tmp.v"
 
 input dcache_refill_request;                    
  
-`line 5793 "/tmp/lm32-customizer/tmp.v"
+`line 5794 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5794 "/tmp/lm32-customizer/tmp.v"
+`line 5795 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24481,12 +24483,12 @@ input dcache_refill_request;
 
 
   
-`line 5800 "/tmp/lm32-customizer/tmp.v"
+`line 5801 "/tmp/lm32-customizer/tmp.v"
 
 output dc_ss;                                   
 reg    dc_ss;
  
-`line 5803 "/tmp/lm32-customizer/tmp.v"
+`line 5804 "/tmp/lm32-customizer/tmp.v"
 
 output dc_re;                                   
 reg    dc_re;
@@ -24516,13 +24518,13 @@ wire [ (32-1):0] debug_csr_write_data;
 wire [ (5-1):0] debug_csr;                 
 
   
-`line 5831 "/tmp/lm32-customizer/tmp.v"
+`line 5832 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 2:0] state;           
 
  
-`line 5835 "/tmp/lm32-customizer/tmp.v"
+`line 5836 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24599,7 +24601,7 @@ assign bp_match_n[i] = ((bp_a[i] == pc_x) && (bp_e[i] ==  1'b1));
 endgenerate
 generate 
   
-`line 5855 "/tmp/lm32-customizer/tmp.v"
+`line 5856 "/tmp/lm32-customizer/tmp.v"
 
     if (breakpoints > 0) 
 assign bp_match = (|bp_match_n) || (state ==  3'b011);
@@ -24611,7 +24613,7 @@ assign bp_match = state ==  3'b011;
     
    
 
-`line 5865 "/tmp/lm32-customizer/tmp.v"
+`line 5866 "/tmp/lm32-customizer/tmp.v"
 
 endgenerate    
                
@@ -24630,7 +24632,7 @@ assign wp_match =  1'b0;
 endgenerate
                 
   
-`line 5882 "/tmp/lm32-customizer/tmp.v"
+`line 5883 "/tmp/lm32-customizer/tmp.v"
                 
 
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
@@ -24641,7 +24643,7 @@ assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
    
    
 
-`line 5891 "/tmp/lm32-customizer/tmp.v"
+`line 5892 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24709,7 +24711,7 @@ begin
 end    
 
   
-`line 5957 "/tmp/lm32-customizer/tmp.v"
+`line 5958 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -24750,13 +24752,13 @@ begin
         begin
             
   
-`line 5996 "/tmp/lm32-customizer/tmp.v"
+`line 5997 "/tmp/lm32-customizer/tmp.v"
 
             if (dcache_refill_request ==  1'b1)
                 state <=  3'b010;
             else 
  
-`line 6000 "/tmp/lm32-customizer/tmp.v"
+`line 6001 "/tmp/lm32-customizer/tmp.v"
 
                  if ((exception_x ==  1'b1) && (q_x ==  1'b1) && (stall_x ==  1'b0))
             begin
@@ -24768,13 +24770,13 @@ begin
         begin
             
   
-`line 6010 "/tmp/lm32-customizer/tmp.v"
+`line 6011 "/tmp/lm32-customizer/tmp.v"
 
             if (dcache_refill_request ==  1'b1)
                 state <=  3'b010;
             else 
  
-`line 6014 "/tmp/lm32-customizer/tmp.v"
+`line 6015 "/tmp/lm32-customizer/tmp.v"
 
                 state <=  3'b000;
         end
@@ -24782,13 +24784,13 @@ begin
     end
 end
  
-`line 6020 "/tmp/lm32-customizer/tmp.v"
+`line 6021 "/tmp/lm32-customizer/tmp.v"
 
 
 endmodule
 
  
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -24878,7 +24880,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -25182,42 +25184,42 @@ module lm32_instruction_unit_full_debug (
     branch_predict_taken_d,
     branch_predict_address_d,
   
-`line 6092 "/tmp/lm32-customizer/tmp.v"
+`line 6093 "/tmp/lm32-customizer/tmp.v"
     
     branch_taken_x,
     branch_target_x,
  
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
     branch_mispredict_taken_m,
     branch_target_m,
   
-`line 6100 "/tmp/lm32-customizer/tmp.v"
+`line 6101 "/tmp/lm32-customizer/tmp.v"
 
     iflush,
  
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6103 "/tmp/lm32-customizer/tmp.v"
+`line 6104 "/tmp/lm32-customizer/tmp.v"
 
     dcache_restart_request,
     dcache_refill_request,
     dcache_refilling,
  
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -25225,17 +25227,17 @@ module lm32_instruction_unit_full_debug (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6120 "/tmp/lm32-customizer/tmp.v"
+`line 6121 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_enable,
     jtag_write_enable,
     jtag_write_data,
     jtag_address,
  
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -25245,22 +25247,22 @@ module lm32_instruction_unit_full_debug (
     pc_m,
     pc_w,
   
-`line 6133 "/tmp/lm32-customizer/tmp.v"
+`line 6134 "/tmp/lm32-customizer/tmp.v"
 
     icache_stall_request,
     icache_restart_request,
     icache_refill_request,
     icache_refilling,
  
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -25273,29 +25275,29 @@ module lm32_instruction_unit_full_debug (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6154 "/tmp/lm32-customizer/tmp.v"
+`line 6155 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6158 "/tmp/lm32-customizer/tmp.v"
+`line 6159 "/tmp/lm32-customizer/tmp.v"
 
     bus_error_d,
  
-`line 6160 "/tmp/lm32-customizer/tmp.v"
+`line 6161 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6161 "/tmp/lm32-customizer/tmp.v"
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -25335,12 +25337,12 @@ input branch_predict_taken_d;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_predict_address_d;          
    
   
-`line 6201 "/tmp/lm32-customizer/tmp.v"
+`line 6202 "/tmp/lm32-customizer/tmp.v"
     
 input branch_taken_x;                                   
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_x;                   
  
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -25348,20 +25350,20 @@ input branch_mispredict_taken_m;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_m;                   
 
   
-`line 6210 "/tmp/lm32-customizer/tmp.v"
+`line 6211 "/tmp/lm32-customizer/tmp.v"
 
 input iflush;                                           
  
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6213 "/tmp/lm32-customizer/tmp.v"
+`line 6214 "/tmp/lm32-customizer/tmp.v"
 
 input dcache_restart_request;                           
 input dcache_refill_request;                            
 input dcache_refilling;
  
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -25369,29 +25371,29 @@ input dcache_refilling;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6232 "/tmp/lm32-customizer/tmp.v"
+`line 6233 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_read_enable;                                 
 input jtag_write_enable;                                
 input [ 7:0] jtag_write_data;                 
 input [ (32-1):0] jtag_address;                    
  
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -25410,7 +25412,7 @@ output [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 reg    [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 
   
-`line 6254 "/tmp/lm32-customizer/tmp.v"
+`line 6255 "/tmp/lm32-customizer/tmp.v"
 
 output icache_stall_request;                            
 wire   icache_stall_request;
@@ -25421,28 +25423,28 @@ wire   icache_refill_request;
 output icache_refilling;                                
 wire   icache_refilling;
  
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
-`line 6272 "/tmp/lm32-customizer/tmp.v"
+`line 6273 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (32-1):0] i_dat_o;
  
     
 
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -25450,25 +25452,25 @@ output i_cyc_o;
 reg    i_cyc_o; 
 output [ (4-1):0] i_sel_o;                 
   
-`line 6282 "/tmp/lm32-customizer/tmp.v"
+`line 6283 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (4-1):0] i_sel_o;
  
     
 
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
 output i_we_o;                                          
   
-`line 6290 "/tmp/lm32-customizer/tmp.v"
+`line 6291 "/tmp/lm32-customizer/tmp.v"
 
 reg    i_we_o;
  
    
 
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -25477,35 +25479,35 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6303 "/tmp/lm32-customizer/tmp.v"
+`line 6304 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_read_data;                 
 reg    [ 7:0] jtag_read_data;
 output jtag_access_complete;                            
 wire   jtag_access_complete;
  
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6310 "/tmp/lm32-customizer/tmp.v"
+`line 6311 "/tmp/lm32-customizer/tmp.v"
 
 output bus_error_d;                                     
 reg    bus_error_d;
  
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -25517,15 +25519,15 @@ reg    [ (32-1):0] instruction_d;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_a;                                
 
   
-`line 6327 "/tmp/lm32-customizer/tmp.v"
+`line 6328 "/tmp/lm32-customizer/tmp.v"
 
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] restart_address;                     
  
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6331 "/tmp/lm32-customizer/tmp.v"
+`line 6332 "/tmp/lm32-customizer/tmp.v"
 
 wire icache_read_enable_f;                              
 wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] icache_refill_address;              
@@ -25541,37 +25543,37 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                     
 
 
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6355 "/tmp/lm32-customizer/tmp.v"
+`line 6356 "/tmp/lm32-customizer/tmp.v"
 
 reg bus_error_f;                                        
  
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6359 "/tmp/lm32-customizer/tmp.v"
+`line 6360 "/tmp/lm32-customizer/tmp.v"
 
 reg jtag_access;                                        
  
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -25687,11 +25689,11 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
-`line 6422 "/tmp/lm32-customizer/tmp.v"
+`line 6423 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_icache_full_debug #(
@@ -25723,7 +25725,7 @@ lm32_icache_full_debug #(
     .inst                   (icache_data_f)
     );
  
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -25731,26 +25733,26 @@ lm32_icache_full_debug #(
 
 
   
-`line 6458 "/tmp/lm32-customizer/tmp.v"
+`line 6459 "/tmp/lm32-customizer/tmp.v"
 
 
 assign icache_read_enable_f =    (valid_f ==  1'b1)
                               && (kill_f ==  1'b0)
   
-`line 6462 "/tmp/lm32-customizer/tmp.v"
+`line 6463 "/tmp/lm32-customizer/tmp.v"
 
                               && (dcache_restart_request ==  1'b0)
  
-`line 6464 "/tmp/lm32-customizer/tmp.v"
+`line 6465 "/tmp/lm32-customizer/tmp.v"
                          
    
                                  
 
-`line 6467 "/tmp/lm32-customizer/tmp.v"
+`line 6468 "/tmp/lm32-customizer/tmp.v"
        
                               ;
  
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -25758,13 +25760,13 @@ always @(*)
 begin
     
   
-`line 6475 "/tmp/lm32-customizer/tmp.v"
+`line 6476 "/tmp/lm32-customizer/tmp.v"
 
     if (dcache_restart_request ==  1'b1)
         pc_a = restart_address;
     else 
  
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -25772,25 +25774,25 @@ begin
 	else
           pc_a = branch_target_m;
   
-`line 6485 "/tmp/lm32-customizer/tmp.v"
+`line 6486 "/tmp/lm32-customizer/tmp.v"
     
       else if (branch_taken_x ==  1'b1)
         pc_a = branch_target_x;
  
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
 	  pc_a = branch_predict_address_d;
 	else
   
-`line 6493 "/tmp/lm32-customizer/tmp.v"
+`line 6494 "/tmp/lm32-customizer/tmp.v"
 
           if (icache_restart_request ==  1'b1)
             pc_a = restart_address;
 	  else 
  
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -25799,21 +25801,21 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
   
-`line 6507 "/tmp/lm32-customizer/tmp.v"
+`line 6508 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 6510 "/tmp/lm32-customizer/tmp.v"
+`line 6511 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = icache_data_f;
  
-`line 6512 "/tmp/lm32-customizer/tmp.v"
+`line 6513 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -25826,30 +25828,30 @@ assign instruction_f = icache_data_f;
    
 
 
-`line 6523 "/tmp/lm32-customizer/tmp.v"
+`line 6524 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 6526 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6527 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6528 "/tmp/lm32-customizer/tmp.v"
+
  
    
    
    
 
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6536 "/tmp/lm32-customizer/tmp.v"
+`line 6537 "/tmp/lm32-customizer/tmp.v"
 
 
 generate
@@ -25878,7 +25880,7 @@ assign first_address = {icache_refill_address[ (clogb2(32'h7fffffff-32'h0)-2)+2-
     endcase
 endgenerate
  
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -25911,7 +25913,7 @@ begin
 end
 
   
-`line 6594 "/tmp/lm32-customizer/tmp.v"
+`line 6595 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -25921,10 +25923,10 @@ begin
     else
     begin
   
-`line 6602 "/tmp/lm32-customizer/tmp.v"
+`line 6603 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6603 "/tmp/lm32-customizer/tmp.v"
+`line 6604 "/tmp/lm32-customizer/tmp.v"
         
             
             if (dcache_refill_request ==  1'b1)
@@ -25935,7 +25937,7 @@ begin
                
                   
 
-`line 6612 "/tmp/lm32-customizer/tmp.v"
+`line 6613 "/tmp/lm32-customizer/tmp.v"
 
  
          
@@ -25943,12 +25945,12 @@ begin
                   
 
 
-`line 6618 "/tmp/lm32-customizer/tmp.v"
+`line 6619 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -25964,11 +25966,11 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6637 "/tmp/lm32-customizer/tmp.v"
+`line 6638 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
@@ -25981,15 +25983,15 @@ begin
     endcase 
 end
  
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6652 "/tmp/lm32-customizer/tmp.v"
+`line 6653 "/tmp/lm32-customizer/tmp.v"
                 
 always @(posedge clk_i  )
 begin
@@ -26003,20 +26005,20 @@ begin
         icache_refill_data <= { 32{1'b0}};
         icache_refill_ready <=  1'b0;
   
-`line 6664 "/tmp/lm32-customizer/tmp.v"
+`line 6665 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_f <=  1'b0;
  
-`line 6666 "/tmp/lm32-customizer/tmp.v"
+`line 6667 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6667 "/tmp/lm32-customizer/tmp.v"
+`line 6668 "/tmp/lm32-customizer/tmp.v"
 
         i_we_o <=  1'b0;
         i_sel_o <= 4'b1111;
         jtag_access <=  1'b0;
  
-`line 6671 "/tmp/lm32-customizer/tmp.v"
+`line 6672 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -26029,7 +26031,7 @@ begin
             if ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1))
             begin
   
-`line 6682 "/tmp/lm32-customizer/tmp.v"
+`line 6683 "/tmp/lm32-customizer/tmp.v"
 
                 if (jtag_access ==  1'b1)
                 begin
@@ -26040,7 +26042,7 @@ begin
                 end
                 else
  
-`line 6691 "/tmp/lm32-customizer/tmp.v"
+`line 6692 "/tmp/lm32-customizer/tmp.v"
 
                 begin
                     if (last_word ==  1'b1)
@@ -26059,7 +26061,7 @@ begin
                 end
             end
   
-`line 6708 "/tmp/lm32-customizer/tmp.v"
+`line 6709 "/tmp/lm32-customizer/tmp.v"
 
             if (i_err_i ==  1'b1)
             begin
@@ -26067,7 +26069,7 @@ begin
                 $display ("Instruction bus error. Address: %x", i_adr_o);
             end
  
-`line 6714 "/tmp/lm32-customizer/tmp.v"
+`line 6715 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -26076,11 +26078,11 @@ begin
             begin
                 
   
-`line 6721 "/tmp/lm32-customizer/tmp.v"
+`line 6722 "/tmp/lm32-customizer/tmp.v"
      
                 i_sel_o <= 4'b1111;
  
-`line 6723 "/tmp/lm32-customizer/tmp.v"
+`line 6724 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -26088,15 +26090,15 @@ begin
                 i_cti_o <= first_cycle_type;
                 
   
-`line 6729 "/tmp/lm32-customizer/tmp.v"
+`line 6730 "/tmp/lm32-customizer/tmp.v"
 
                 bus_error_f <=  1'b0;
  
-`line 6731 "/tmp/lm32-customizer/tmp.v"
+`line 6732 "/tmp/lm32-customizer/tmp.v"
 
             end
   
-`line 6733 "/tmp/lm32-customizer/tmp.v"
+`line 6734 "/tmp/lm32-customizer/tmp.v"
 
             else
             begin
@@ -26118,25 +26120,25 @@ begin
                 end
             end 
  
-`line 6753 "/tmp/lm32-customizer/tmp.v"
+`line 6754 "/tmp/lm32-customizer/tmp.v"
                     
   
-`line 6754 "/tmp/lm32-customizer/tmp.v"
+`line 6755 "/tmp/lm32-customizer/tmp.v"
 
             
             
   
-`line 6757 "/tmp/lm32-customizer/tmp.v"
+`line 6758 "/tmp/lm32-customizer/tmp.v"
     
             if (branch_taken_x ==  1'b1)
                 bus_error_f <=  1'b0;
  
-`line 6760 "/tmp/lm32-customizer/tmp.v"
+`line 6761 "/tmp/lm32-customizer/tmp.v"
 
             if (branch_taken_m ==  1'b1)
                 bus_error_f <=  1'b0;
  
-`line 6763 "/tmp/lm32-customizer/tmp.v"
+`line 6764 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -26215,10 +26217,10 @@ end
     
 
 
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -26228,11 +26230,11 @@ begin
     begin
         instruction_d <= { 32{1'b0}};
   
-`line 6849 "/tmp/lm32-customizer/tmp.v"
+`line 6850 "/tmp/lm32-customizer/tmp.v"
 
         bus_error_d <=  1'b0;
  
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -26241,11 +26243,11 @@ begin
         begin
             instruction_d <= instruction_f;
   
-`line 6858 "/tmp/lm32-customizer/tmp.v"
+`line 6859 "/tmp/lm32-customizer/tmp.v"
 
             bus_error_d <= bus_error_f;
  
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -26322,7 +26324,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -26607,11 +26609,8 @@ endmodule
 
 
   
-`line 6896 "/tmp/lm32-customizer/tmp.v"
+`line 6897 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 6898 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6899 "/tmp/lm32-customizer/tmp.v"
@@ -26619,10 +26618,10 @@ endmodule
   
 `line 6900 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6903 "/tmp/lm32-customizer/tmp.v"
+`line 6901 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6904 "/tmp/lm32-customizer/tmp.v"
@@ -26645,10 +26644,10 @@ endmodule
   
 `line 6910 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6913 "/tmp/lm32-customizer/tmp.v"
+`line 6911 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6914 "/tmp/lm32-customizer/tmp.v"
@@ -26677,6 +26676,9 @@ endmodule
   
 `line 6922 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6923 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -26691,41 +26693,41 @@ module lm32_jtag_full_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
   
-`line 6936 "/tmp/lm32-customizer/tmp.v"
+`line 6937 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_enable,
     csr_write_data,
     stall_x,
  
-`line 6941 "/tmp/lm32-customizer/tmp.v"
+`line 6942 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6942 "/tmp/lm32-customizer/tmp.v"
+`line 6943 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6945 "/tmp/lm32-customizer/tmp.v"
+`line 6946 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6946 "/tmp/lm32-customizer/tmp.v"
+`line 6947 "/tmp/lm32-customizer/tmp.v"
 
     exception_q_w,
  
-`line 6948 "/tmp/lm32-customizer/tmp.v"
+`line 6949 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 6950 "/tmp/lm32-customizer/tmp.v"
+`line 6951 "/tmp/lm32-customizer/tmp.v"
 
     jtx_csr_read_data,
     jrx_csr_read_data,
  
-`line 6953 "/tmp/lm32-customizer/tmp.v"
+`line 6954 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6954 "/tmp/lm32-customizer/tmp.v"
+`line 6955 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
@@ -26735,15 +26737,15 @@ module lm32_jtag_full_debug (
     jtag_write_data,
     jtag_address,
  
-`line 6962 "/tmp/lm32-customizer/tmp.v"
+`line 6963 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6963 "/tmp/lm32-customizer/tmp.v"
+`line 6964 "/tmp/lm32-customizer/tmp.v"
 
     jtag_break,
     jtag_reset,
  
-`line 6966 "/tmp/lm32-customizer/tmp.v"
+`line 6967 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d
@@ -26762,29 +26764,29 @@ input [ 7:0] jtag_reg_q;
 input [2:0] jtag_reg_addr_q;                            
 
   
-`line 6983 "/tmp/lm32-customizer/tmp.v"
+`line 6984 "/tmp/lm32-customizer/tmp.v"
 
 input [ (5-1):0] csr;                              
 input csr_write_enable;                                 
 input [ (32-1):0] csr_write_data;                  
 input stall_x;                                          
  
-`line 6988 "/tmp/lm32-customizer/tmp.v"
+`line 6989 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6989 "/tmp/lm32-customizer/tmp.v"
+`line 6990 "/tmp/lm32-customizer/tmp.v"
 
 input [ 7:0] jtag_read_data;                  
 input jtag_access_complete;                             
  
-`line 6992 "/tmp/lm32-customizer/tmp.v"
+`line 6993 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6993 "/tmp/lm32-customizer/tmp.v"
+`line 6994 "/tmp/lm32-customizer/tmp.v"
 
 input exception_q_w;                                    
  
-`line 6995 "/tmp/lm32-customizer/tmp.v"
+`line 6996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -26792,17 +26794,17 @@ input exception_q_w;
 
        
   
-`line 7001 "/tmp/lm32-customizer/tmp.v"
+`line 7002 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] jtx_csr_read_data;              
 wire   [ (32-1):0] jtx_csr_read_data;
 output [ (32-1):0] jrx_csr_read_data;              
 wire   [ (32-1):0] jrx_csr_read_data;
  
-`line 7006 "/tmp/lm32-customizer/tmp.v"
+`line 7007 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7007 "/tmp/lm32-customizer/tmp.v"
+`line 7008 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_csr_write_enable;                           
 reg    jtag_csr_write_enable;
@@ -26819,17 +26821,17 @@ wire   [ 7:0] jtag_write_data;
 output [ (32-1):0] jtag_address;                   
 wire   [ (32-1):0] jtag_address;
  
-`line 7022 "/tmp/lm32-customizer/tmp.v"
+`line 7023 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7023 "/tmp/lm32-customizer/tmp.v"
+`line 7024 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_break;                                      
 reg    jtag_break;
 output jtag_reset;                                      
 reg    jtag_reset;
  
-`line 7028 "/tmp/lm32-customizer/tmp.v"
+`line 7029 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 reg    [ 7:0] jtag_reg_d;
@@ -26851,19 +26853,19 @@ wire [ 7:0] rx_byte;
 wire [2:0] rx_addr;
 
   
-`line 7048 "/tmp/lm32-customizer/tmp.v"
+`line 7049 "/tmp/lm32-customizer/tmp.v"
                  
 reg [ 7:0] uart_tx_byte;      
 reg uart_tx_valid;                      
 reg [ 7:0] uart_rx_byte;      
 reg uart_rx_valid;                      
  
-`line 7053 "/tmp/lm32-customizer/tmp.v"
+`line 7054 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] command;             
   
-`line 7056 "/tmp/lm32-customizer/tmp.v"
+`line 7057 "/tmp/lm32-customizer/tmp.v"
 
 reg [ 7:0] jtag_byte_0;       
 reg [ 7:0] jtag_byte_1;
@@ -26872,7 +26874,7 @@ reg [ 7:0] jtag_byte_3;
 reg [ 7:0] jtag_byte_4;
 reg processing;                         
  
-`line 7063 "/tmp/lm32-customizer/tmp.v"
+`line 7064 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] state;       
@@ -26882,43 +26884,43 @@ reg [ 3:0] state;
 
 
   
-`line 7071 "/tmp/lm32-customizer/tmp.v"
+`line 7072 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_csr_write_data = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_csr = jtag_byte_4[ (5-1):0];
 assign jtag_address = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_write_data = jtag_byte_4;
  
-`line 7076 "/tmp/lm32-customizer/tmp.v"
+`line 7077 "/tmp/lm32-customizer/tmp.v"
 
                  
 
   
-`line 7079 "/tmp/lm32-customizer/tmp.v"
+`line 7080 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtag_reg_addr_d[1:0] = {uart_rx_valid, uart_tx_valid};         
  
    
 
-`line 7083 "/tmp/lm32-customizer/tmp.v"
+`line 7084 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7084 "/tmp/lm32-customizer/tmp.v"
+`line 7085 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_reg_addr_d[2] = processing;
  
    
 
-`line 7088 "/tmp/lm32-customizer/tmp.v"
+`line 7089 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 7090 "/tmp/lm32-customizer/tmp.v"
+`line 7091 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtx_csr_read_data = {{ 32-9{1'b0}}, uart_tx_valid, 8'h00};
 assign jrx_csr_read_data = {{ 32-9{1'b0}}, uart_rx_valid, uart_rx_byte};
  
-`line 7093 "/tmp/lm32-customizer/tmp.v"
+`line 7094 "/tmp/lm32-customizer/tmp.v"
          
                  
 
@@ -26957,38 +26959,38 @@ begin
         command <= 4'b0000;
         jtag_reg_d <= 8'h00;
   
-`line 7130 "/tmp/lm32-customizer/tmp.v"
+`line 7131 "/tmp/lm32-customizer/tmp.v"
 
         processing <=  1'b0;
         jtag_csr_write_enable <=  1'b0;
         jtag_read_enable <=  1'b0;
         jtag_write_enable <=  1'b0;
  
-`line 7135 "/tmp/lm32-customizer/tmp.v"
+`line 7136 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7136 "/tmp/lm32-customizer/tmp.v"
+`line 7137 "/tmp/lm32-customizer/tmp.v"
 
         jtag_break <=  1'b0;
         jtag_reset <=  1'b0;
  
-`line 7139 "/tmp/lm32-customizer/tmp.v"
+`line 7140 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7140 "/tmp/lm32-customizer/tmp.v"
+`line 7141 "/tmp/lm32-customizer/tmp.v"
                  
         uart_tx_byte <= 8'h00;
         uart_tx_valid <=  1'b0;
         uart_rx_byte <= 8'h00;
         uart_rx_valid <=  1'b0;
  
-`line 7145 "/tmp/lm32-customizer/tmp.v"
+`line 7146 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
     begin
   
-`line 7149 "/tmp/lm32-customizer/tmp.v"
+`line 7150 "/tmp/lm32-customizer/tmp.v"
                  
         if ((csr_write_enable ==  1'b1) && (stall_x ==  1'b0))
         begin
@@ -27007,10 +27009,10 @@ begin
             endcase
         end
  
-`line 7166 "/tmp/lm32-customizer/tmp.v"
+`line 7167 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7167 "/tmp/lm32-customizer/tmp.v"
+`line 7168 "/tmp/lm32-customizer/tmp.v"
 
         
         if (exception_q_w ==  1'b1)
@@ -27019,7 +27021,7 @@ begin
             jtag_reset <=  1'b0;
         end
  
-`line 7174 "/tmp/lm32-customizer/tmp.v"
+`line 7175 "/tmp/lm32-customizer/tmp.v"
 
         case (state)
          4'h0:
@@ -27030,13 +27032,13 @@ begin
                 command <= rx_byte[7:4];                
                 case (rx_addr)
   
-`line 7183 "/tmp/lm32-customizer/tmp.v"
+`line 7184 "/tmp/lm32-customizer/tmp.v"
 
                  3'b000:
                 begin
                     case (rx_byte[7:4])
   
-`line 7187 "/tmp/lm32-customizer/tmp.v"
+`line 7188 "/tmp/lm32-customizer/tmp.v"
 
                      4'b0001:
                         state <=  4'h1;
@@ -27055,39 +27057,39 @@ begin
                      4'b0101:
                         state <=  4'h1;
  
-`line 7204 "/tmp/lm32-customizer/tmp.v"
+`line 7205 "/tmp/lm32-customizer/tmp.v"
                     
                      4'b0110:
                     begin
   
-`line 7207 "/tmp/lm32-customizer/tmp.v"
+`line 7208 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7210 "/tmp/lm32-customizer/tmp.v"
+`line 7211 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_break <=  1'b1;
                     end
                      4'b0111:
                     begin
   
-`line 7215 "/tmp/lm32-customizer/tmp.v"
+`line 7216 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7218 "/tmp/lm32-customizer/tmp.v"
+`line 7219 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_reset <=  1'b1;
                     end
                     endcase                               
                 end
  
-`line 7223 "/tmp/lm32-customizer/tmp.v"
+`line 7224 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7224 "/tmp/lm32-customizer/tmp.v"
+`line 7225 "/tmp/lm32-customizer/tmp.v"
                  
                  3'b001:
                 begin
@@ -27100,7 +27102,7 @@ begin
                     uart_tx_valid <=  1'b0;
                 end
  
-`line 7235 "/tmp/lm32-customizer/tmp.v"
+`line 7236 "/tmp/lm32-customizer/tmp.v"
 
                 default:
                     ;
@@ -27108,7 +27110,7 @@ begin
             end
         end
   
-`line 7241 "/tmp/lm32-customizer/tmp.v"
+`line 7242 "/tmp/lm32-customizer/tmp.v"
 
          4'h1:
         begin
@@ -27196,7 +27198,7 @@ begin
             state <=  4'h0;
         end    
  
-`line 7327 "/tmp/lm32-customizer/tmp.v"
+`line 7328 "/tmp/lm32-customizer/tmp.v"
 
         endcase
     end
@@ -27205,7 +27207,7 @@ end
 endmodule
 
  
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -27277,7 +27279,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -27574,22 +27576,22 @@ module lm32_interrupt_full_debug (
     
     stall_x,
   
-`line 7377 "/tmp/lm32-customizer/tmp.v"
+`line 7378 "/tmp/lm32-customizer/tmp.v"
 
     non_debug_exception,
     debug_exception,
  
     
 
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
-`line 7384 "/tmp/lm32-customizer/tmp.v"
+`line 7385 "/tmp/lm32-customizer/tmp.v"
 
     bret_q_x,
  
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -27618,22 +27620,22 @@ input [interrupts-1:0] interrupt;
 input stall_x;                                  
 
   
-`line 7413 "/tmp/lm32-customizer/tmp.v"
+`line 7414 "/tmp/lm32-customizer/tmp.v"
 
 input non_debug_exception;                      
 input debug_exception;                          
  
                                  
 
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
-`line 7420 "/tmp/lm32-customizer/tmp.v"
+`line 7421 "/tmp/lm32-customizer/tmp.v"
 
 input bret_q_x;                                 
  
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (5-1):0] csr;                      
@@ -27663,11 +27665,11 @@ wire [interrupts-1:0] interrupt_n_exception;
 reg ie;                                         
 reg eie;                                        
   
-`line 7450 "/tmp/lm32-customizer/tmp.v"
+`line 7451 "/tmp/lm32-customizer/tmp.v"
 
 reg bie;                                        
  
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -27687,13 +27689,13 @@ assign asserted = ip | interrupt;
        
 assign ie_csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7470 "/tmp/lm32-customizer/tmp.v"
+`line 7471 "/tmp/lm32-customizer/tmp.v"
 
                            bie,
  
                            
 
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -27709,13 +27711,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7488 "/tmp/lm32-customizer/tmp.v"
+`line 7489 "/tmp/lm32-customizer/tmp.v"
 
                                     bie,
  
                                                                          
 
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -27734,13 +27736,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7509 "/tmp/lm32-customizer/tmp.v"
+`line 7510 "/tmp/lm32-customizer/tmp.v"
 
                                     bie, 
  
                                                                         
 
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -27757,7 +27759,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -27775,11 +27777,11 @@ always @(posedge clk_i  )
         ie                   <=  1'b0;
         eie                  <=  1'b0;
   
-`line 7544 "/tmp/lm32-customizer/tmp.v"
+`line 7545 "/tmp/lm32-customizer/tmp.v"
 
         bie                  <=  1'b0;
  
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -27791,7 +27793,7 @@ always @(posedge clk_i  )
         
         ip                   <= asserted;
   
-`line 7556 "/tmp/lm32-customizer/tmp.v"
+`line 7557 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -27813,7 +27815,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -27832,13 +27834,13 @@ always @(posedge clk_i  )
                       
            
   
-`line 7593 "/tmp/lm32-customizer/tmp.v"
+`line 7594 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -27848,11 +27850,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7605 "/tmp/lm32-customizer/tmp.v"
+`line 7606 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h1)
@@ -27874,11 +27876,11 @@ always @(posedge clk_i  )
         ie              <=  1'b0;
         eie             <=  1'b0;
   
-`line 7627 "/tmp/lm32-customizer/tmp.v"
+`line 7628 "/tmp/lm32-customizer/tmp.v"
 
         bie             <=  1'b0;
  
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -27888,7 +27890,7 @@ always @(posedge clk_i  )
         
         ip              <= asserted;
   
-`line 7637 "/tmp/lm32-customizer/tmp.v"
+`line 7638 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -27910,7 +27912,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -27927,13 +27929,13 @@ always @(posedge clk_i  )
              end
            
   
-`line 7672 "/tmp/lm32-customizer/tmp.v"
+`line 7673 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -27943,11 +27945,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7684 "/tmp/lm32-customizer/tmp.v"
+`line 7685 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h2)
@@ -27989,50 +27991,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -28111,7 +28069,52 @@ endmodule
 `line 28 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 29 "src/lm32_include.v"
+`line 29 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -28677,67 +28680,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_medium (
+module lm32_top_medium (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
   
     
     
 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
-    
+`line 49 "/tmp/lm32-customizer/tmp.v"
 
+    
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
     
     
     
-
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
     
 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -28746,251 +28759,313 @@ module lm32_mc_arithmetic_medium (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-                                  
-                                 
 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
-
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
-  
-                         
+`line 106 "/tmp/lm32-customizer/tmp.v"
     
 
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
-
-
-
-
-
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
   
-  
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-`line 116 "/tmp/lm32-customizer/tmp.v"
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
+ 
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
+
+
+
+
 
   
                                
-                                 
-
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
-
-      
-
-`line 136 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-
+   
        
+     
+           
+    
+           
+    
 
-`line 141 "/tmp/lm32-customizer/tmp.v"
+`line 133 "/tmp/lm32-customizer/tmp.v"
 
-
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
 
   
-          
+`line 135 "/tmp/lm32-customizer/tmp.v"
 
-`line 161 "/tmp/lm32-customizer/tmp.v"
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
+ 
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
+
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
-          
 
-`line 169 "/tmp/lm32-customizer/tmp.v"
 
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
+
+ 
   
-                   
-                      
-                   
-                      
 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
   
-                   
-                      
+  
+ 
+  
+  
+ 
+ 
 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
+  
+
+                     
+                             
+                            
+                   
+                                 
+ 
+                                 
+
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_medium cpu (
+    
+    .clk_i                 (clk_i),
   
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
 
-`line 206 "/tmp/lm32-customizer/tmp.v"
+`line 218 "/tmp/lm32-customizer/tmp.v"
 
-            end            
-        end
+    .rst_i                 (rst_i),
+    
   
-        
-        
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
                
-            
-                  
-                   
-            
              
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
-        
-        
-               
-            
-                  
-                   
-            
-             
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
 
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
-
-`line 265 "/tmp/lm32-customizer/tmp.v"
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
+    
                   
-                
-        
-        
                
-               
-              
-                   
-                  
                 
-        
+           
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+                
+           
+
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  		   
 
+  
+    
+                     
+                
+    
+                
+                     
+                
+                      
+                     
+    
+
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -29062,7 +29137,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -29345,77 +29420,67 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_medium (
+
+module lm32_mc_arithmetic_medium (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
     
     
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
+`line 360 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
- 
-`line 342 "/tmp/lm32-customizer/tmp.v"
-
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
     
 
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
- 
-`line 366 "/tmp/lm32-customizer/tmp.v"
-
     
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+    
+
+`line 375 "/tmp/lm32-customizer/tmp.v"
+
+    stall_request_x
     );
 
 
@@ -29424,135 +29489,65 @@ module lm32_top_medium (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+                                  
+                                 
 
-
-input [ (32-1):0] interrupt;          
-
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
- 
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 398 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
 
 
 
 
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+                         
+    
+
+`line 411 "/tmp/lm32-customizer/tmp.v"
+
+output stall_request_x;                         
+wire   stall_request_x;
+
+
+
+
+
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
+  
+  
+
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
 
   
                                
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-`line 422 "/tmp/lm32-customizer/tmp.v"
-
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
- 
-`line 441 "/tmp/lm32-customizer/tmp.v"
-
-
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
- 
-  
-
-  
-  
- 
-  
-  
- 
- 
-
-`line 475 "/tmp/lm32-customizer/tmp.v"
-
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
- 
                                  
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-  
-`line 1 "src/lm32_functions.v"
-
-`line 1 "src/lm32_functions.v"
+`line 432 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -29560,177 +29555,185 @@ wire   [ (2-1):0] D_BTE_O;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_medium cpu (
-    
-    .clk_i                 (clk_i),
-  
-                   
-
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-    
-                  
-               
-                
-           
-
-`line 522 "/tmp/lm32-customizer/tmp.v"
+assign stall_request_x = state !=  3'b000;
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-                
-           
-
-`line 549 "/tmp/lm32-customizer/tmp.v"
 
       
-                
-               
-            
-            
 
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
+`line 444 "/tmp/lm32-customizer/tmp.v"
 
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  		   
 
   
-    
-                     
-                
-    
-                
-                     
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+          
+
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
+          
+
+`line 477 "/tmp/lm32-customizer/tmp.v"
+
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
+  
+                   
+                      
+                   
+                      
+
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
+  
+                   
+                      
+
+`line 496 "/tmp/lm32-customizer/tmp.v"
+
+  
+                   
                 
                       
-                     
-    
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
         
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+
+`line 560 "/tmp/lm32-customizer/tmp.v"
+        
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -29838,7 +29841,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -30132,23 +30135,23 @@ module lm32_cpu_medium (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
     
@@ -30157,10 +30160,10 @@ module lm32_cpu_medium (
     
     
 
-`line 688 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 689 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -30168,7 +30171,7 @@ module lm32_cpu_medium (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -30186,13 +30189,13 @@ module lm32_cpu_medium (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -30200,10 +30203,10 @@ module lm32_cpu_medium (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -30216,7 +30219,7 @@ module lm32_cpu_medium (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -30238,7 +30241,7 @@ parameter eba_reset =  32'h00000000;
   
                             
 
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30248,7 +30251,7 @@ parameter eba_reset =  32'h00000000;
           
                         
 
-`line 761 "/tmp/lm32-customizer/tmp.v"
+`line 762 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity = 1;    
 parameter icache_sets = 512;                      
@@ -30256,7 +30259,7 @@ parameter icache_bytes_per_line = 16;
 parameter icache_base_address = 0;      
 parameter icache_limit = 0;                    
  
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30266,7 +30269,7 @@ parameter icache_limit = 0;
           
                         
 
-`line 775 "/tmp/lm32-customizer/tmp.v"
+`line 776 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity = 1;    
 parameter dcache_sets = 512;                      
@@ -30274,36 +30277,36 @@ parameter dcache_bytes_per_line = 16;
 parameter dcache_base_address = 0;      
 parameter dcache_limit = 0;                    
  
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
                           
 
-`line 785 "/tmp/lm32-customizer/tmp.v"
+`line 786 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints = 0;
  
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30314,23 +30317,23 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
@@ -30339,18 +30342,18 @@ input [ (32-1):0] interrupt;
                 
   
 
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -30378,7 +30381,7 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30387,7 +30390,7 @@ input D_RTY_I;
   
     
 
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30400,11 +30403,11 @@ input D_RTY_I;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -30425,7 +30428,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -30456,7 +30459,7 @@ wire   [ (2-1):0] D_BTE_O;
   
                                      
 
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -30504,21 +30507,21 @@ reg x_result_sel_csr_x;
                     
  
 
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -30526,7 +30529,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -30534,27 +30537,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -30586,7 +30589,7 @@ reg [ (3-1):0] condition_x;
                                     
                                      
 
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -30597,7 +30600,7 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
                                      
@@ -30608,7 +30611,7 @@ reg eret_m;
  
 
 
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -30616,7 +30619,7 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30625,7 +30628,7 @@ wire csr_write_enable_q_x;
  
   
 
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -30642,7 +30645,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -30650,15 +30653,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -30688,32 +30691,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -30721,27 +30724,27 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30752,7 +30755,7 @@ wire [ (32-1):0] multiplier_result_w;
  
                            
 
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30760,23 +30763,23 @@ wire [ (32-1):0] multiplier_result_w;
                          
   
 
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -30789,14 +30792,14 @@ wire [ ((32-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30808,7 +30811,7 @@ wire [ (32-1):0] instruction_d;
                       
                            
 
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -30817,7 +30820,7 @@ wire [ (32-1):0] instruction_d;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30829,7 +30832,7 @@ wire [ (32-1):0] instruction_d;
                       
                            
 
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
@@ -30855,7 +30858,7 @@ wire stall_wb_load;
                                  
 
 
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -30876,7 +30879,7 @@ reg condition_met_m;
       
                              
 
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -30890,14 +30893,14 @@ reg [ (32-2)+2-1:8] eba;
   
                   
 
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30916,14 +30919,14 @@ reg [ (3-1):0] eid_x;
  
  
 
-`line 1297 "/tmp/lm32-customizer/tmp.v"
+`line 1298 "/tmp/lm32-customizer/tmp.v"
 
 wire exception_x;                               
 reg exception_m;
 reg exception_w;
 wire exception_q_w;
  
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -30931,38 +30934,38 @@ wire exception_q_w;
                             
 
 
-`line 1308 "/tmp/lm32-customizer/tmp.v"
+`line 1309 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1309 "/tmp/lm32-customizer/tmp.v"
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
                        
                        
 
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
             
                    
 
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
                          
 
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -31056,7 +31059,7 @@ lm32_instruction_unit_medium #(
              
             
 
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
@@ -31065,24 +31068,24 @@ lm32_instruction_unit_medium #(
   
                      
 
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
      
       
            
 
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -31090,7 +31093,7 @@ lm32_instruction_unit_medium #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
            
@@ -31098,7 +31101,7 @@ lm32_instruction_unit_medium #(
             
                
 
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -31113,15 +31116,15 @@ lm32_instruction_unit_medium #(
       
            
 
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -31134,25 +31137,25 @@ lm32_instruction_unit_medium #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
              
        
 
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -31168,42 +31171,42 @@ lm32_decoder_medium decoder (
   
       
 
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -31222,28 +31225,28 @@ lm32_decoder_medium decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
                      
                     
 
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -31253,19 +31256,19 @@ lm32_decoder_medium decoder (
   
                
 
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
                        
 
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -31303,12 +31306,12 @@ lm32_load_store_unit_medium #(
   
                      
 
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -31323,7 +31326,7 @@ lm32_load_store_unit_medium #(
        
            
 
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -31331,7 +31334,7 @@ lm32_load_store_unit_medium #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -31372,7 +31375,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -31388,11 +31391,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -31407,7 +31410,7 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -31440,11 +31443,11 @@ lm32_multiplier multiplier (
             
     
 
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_medium interrupt_unit (
@@ -31459,17 +31462,17 @@ lm32_interrupt_medium interrupt_unit (
          
             
 
-`line 1683 "/tmp/lm32-customizer/tmp.v"
+`line 1684 "/tmp/lm32-customizer/tmp.v"
 
     .exception              (exception_q_w), 
  
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
                    
 
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -31480,7 +31483,7 @@ lm32_interrupt_medium interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -31532,7 +31535,7 @@ lm32_interrupt_medium interrupt_unit (
             
     
 
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -31575,13 +31578,13 @@ lm32_interrupt_medium interrupt_unit (
                    
     
 
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -31700,7 +31703,7 @@ lm32_interrupt_medium interrupt_unit (
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -31770,7 +31773,7 @@ lm32_interrupt_medium interrupt_unit (
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -31779,23 +31782,23 @@ lm32_interrupt_medium interrupt_unit (
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -31885,25 +31888,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -31932,26 +31935,26 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
+`line 2131 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -31961,11 +31964,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -31975,11 +31978,11 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
@@ -31993,7 +31996,7 @@ end
                                  
                               
 
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -32039,55 +32042,55 @@ assign kill_f =    (   (valid_d ==  1'b1)
       
                    
 
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
                     
 
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
                   
                    
 
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
       
                    
 
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
                         
 
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
                   
                    
 
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
                   
                    
 
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
                   
                    
 
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
                   
                    
 
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
@@ -32104,13 +32107,13 @@ assign kill_w =     1'b0
 
                               
 
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -32119,20 +32122,20 @@ assign kill_w =     1'b0
                                          
      
 
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
                                    
 
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
@@ -32167,42 +32170,42 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 
          
 
-`line 2309 "/tmp/lm32-customizer/tmp.v"
+`line 2310 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_x =           (system_call_exception ==  1'b1)
   
                                
                                
 
-`line 2314 "/tmp/lm32-customizer/tmp.v"
+`line 2315 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 2317 "/tmp/lm32-customizer/tmp.v"
+`line 2318 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2318 "/tmp/lm32-customizer/tmp.v"
+`line 2319 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
                                    
 
-`line 2322 "/tmp/lm32-customizer/tmp.v"
+`line 2323 "/tmp/lm32-customizer/tmp.v"
                             
   
  				   
 				   
 
-`line 2326 "/tmp/lm32-customizer/tmp.v"
+`line 2327 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2328 "/tmp/lm32-customizer/tmp.v"
+`line 2329 "/tmp/lm32-customizer/tmp.v"
 
                             ;
  
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -32223,7 +32226,7 @@ begin
           
     
 
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
             
@@ -32233,36 +32236,36 @@ begin
           
     
 
-`line 2357 "/tmp/lm32-customizer/tmp.v"
+`line 2358 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
      
 
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
     
 
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
                 
 
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -32282,7 +32285,7 @@ assign stall_d =   (stall_x ==  1'b1)
   
 			   
 
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -32306,7 +32309,7 @@ assign stall_d =   (stall_x ==  1'b1)
                        
 		   
 
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -32319,7 +32322,7 @@ assign stall_x =    (stall_m ==  1'b1)
                         
                      
 
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -32330,7 +32333,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -32338,7 +32341,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -32356,46 +32359,46 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
                          
 
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
                          
                              
 
-`line 2472 "/tmp/lm32-customizer/tmp.v"
+`line 2473 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2473 "/tmp/lm32-customizer/tmp.v"
+`line 2474 "/tmp/lm32-customizer/tmp.v"
 
                  || (I_CYC_O ==  1'b1)            
  
-`line 2475 "/tmp/lm32-customizer/tmp.v"
+`line 2476 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
@@ -32403,24 +32406,24 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
          
 
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
+`line 2495 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
@@ -32428,14 +32431,14 @@ assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
          
 
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
                   
 
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
@@ -32443,13 +32446,13 @@ assign store_q_x = (store_x ==  1'b1)
   
                   
 
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
@@ -32458,11 +32461,11 @@ assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
          
                  
 
-`line 2526 "/tmp/lm32-customizer/tmp.v"
+`line 2527 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_q_w = ((exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -32480,110 +32483,110 @@ assign cfg = {
   
               
 
-`line 2544 "/tmp/lm32-customizer/tmp.v"
+`line 2545 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
+`line 2552 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2554 "/tmp/lm32-customizer/tmp.v"
+`line 2555 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2556 "/tmp/lm32-customizer/tmp.v"
+`line 2557 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2559 "/tmp/lm32-customizer/tmp.v"
+`line 2560 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2561 "/tmp/lm32-customizer/tmp.v"
+`line 2562 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2564 "/tmp/lm32-customizer/tmp.v"
+`line 2565 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2566 "/tmp/lm32-customizer/tmp.v"
+`line 2567 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2569 "/tmp/lm32-customizer/tmp.v"
+`line 2570 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
+`line 2592 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2594 "/tmp/lm32-customizer/tmp.v"
+`line 2595 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -32592,20 +32595,20 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
@@ -32624,7 +32627,7 @@ assign cfg2 = {
 
 		 
 
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
          
@@ -32637,7 +32640,7 @@ assign cfg2 = {
 
 		   
 
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -32648,31 +32651,31 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      3'h0,
      3'h1,
      3'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      3'h6:  csr_read_data_x = cfg;
      3'h7:  csr_read_data_x = {eba, 8'h00};
   
         
 
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
           
         
 
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      3'ha: csr_read_data_x = cfg2;
       
@@ -32697,7 +32700,7 @@ begin
                
               
 
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
@@ -32719,7 +32722,7 @@ end
     
 
 
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -32732,7 +32735,7 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -32752,7 +32755,7 @@ end
     
 
 
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -32784,7 +32787,7 @@ end
  
 
 
-`line 2770 "/tmp/lm32-customizer/tmp.v"
+`line 2771 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -32797,10 +32800,10 @@ end
           
  
 
-`line 2781 "/tmp/lm32-customizer/tmp.v"
+`line 2782 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -32819,11 +32822,11 @@ begin
   
                   
 
-`line 2799 "/tmp/lm32-customizer/tmp.v"
+`line 2800 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <=  1'b1;
  
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -32864,7 +32867,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -32874,42 +32877,42 @@ begin
   
           
 
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -32924,17 +32927,17 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
@@ -32943,39 +32946,39 @@ begin
   
           
 
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
           
 
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
 
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (32-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -32985,11 +32988,11 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
@@ -32997,22 +33000,22 @@ begin
   
           
 
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
           
                   
 
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
@@ -33020,16 +33023,16 @@ begin
           
                   
 
-`line 2944 "/tmp/lm32-customizer/tmp.v"
+`line 2945 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <=  1'b0;
  
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -33041,7 +33044,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -33051,42 +33054,42 @@ begin
   
               
 
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -33103,35 +33106,35 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
               
 
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
               
 
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
                
 
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -33143,54 +33146,54 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
       
                 
 
-`line 3054 "/tmp/lm32-customizer/tmp.v"
+`line 3055 "/tmp/lm32-customizer/tmp.v"
 
             branch_m <= branch_x;
 	    branch_predict_m <= branch_predict_x;
 	    branch_predict_taken_m <= branch_predict_taken_x;
  
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
 	   
@@ -33205,14 +33208,14 @@ begin
              
                   
 
-`line 3071 "/tmp/lm32-customizer/tmp.v"
+`line 3072 "/tmp/lm32-customizer/tmp.v"
 
             if (exception_x ==  1'b1)
                 write_idx_m <=  5'd30;
             else 
                 write_idx_m <= write_idx_x;
  
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
@@ -33226,34 +33229,34 @@ begin
 	   
 	       
 
-`line 3088 "/tmp/lm32-customizer/tmp.v"
+`line 3089 "/tmp/lm32-customizer/tmp.v"
 
             branch_target_m <= exception_x ==  1'b1 ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
  
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
                
 
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
               
                       
 
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -33271,7 +33274,7 @@ begin
 
 					 
 
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
@@ -33279,19 +33282,19 @@ begin
   
                       
 
-`line 3127 "/tmp/lm32-customizer/tmp.v"
+`line 3128 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
  
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -33301,18 +33304,18 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
           
           
 
-`line 3146 "/tmp/lm32-customizer/tmp.v"
+`line 3147 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <= exception_m;
  
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
               
@@ -33322,13 +33325,13 @@ begin
 	   
             
 
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -33360,11 +33363,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -33410,7 +33413,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -33474,7 +33477,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -33487,14 +33490,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -33584,7 +33587,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -33898,12 +33901,12 @@ module lm32_load_store_unit_medium (
   
     
 
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -33918,7 +33921,7 @@ module lm32_load_store_unit_medium (
     
     
 
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -33926,7 +33929,7 @@ module lm32_load_store_unit_medium (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -33987,13 +33990,13 @@ input [ 1:0] size_x;
   
                                             
 
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -34015,7 +34018,7 @@ input d_rty_i;
  
    
 
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -34028,7 +34031,7 @@ input d_rty_i;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -34082,7 +34085,7 @@ reg [ (32-1):0] data_w;
                                           
                       
 
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -34093,14 +34096,14 @@ reg [ (32-1):0] data_w;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -34254,7 +34257,7 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -34290,7 +34293,7 @@ endfunction
                   
     
 
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -34302,14 +34305,14 @@ endfunction
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -34323,24 +34326,24 @@ endfunction
 
                      
 
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
                           
 
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -34377,7 +34380,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -34387,7 +34390,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -34410,7 +34413,7 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -34448,7 +34451,7 @@ end
   
  
 
-`line 3843 "/tmp/lm32-customizer/tmp.v"
+`line 3844 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -34465,7 +34468,7 @@ end
                     
   
  
-`line 3858 "/tmp/lm32-customizer/tmp.v"
+`line 3859 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -34473,18 +34476,18 @@ end
                      
                     
   
-`line 3864 "/tmp/lm32-customizer/tmp.v"
+`line 3865 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_data_m;
    
-`line 3867 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 3868 "/tmp/lm32-customizer/tmp.v"
 
- 
+  
 `line 3869 "/tmp/lm32-customizer/tmp.v"
+
+ 
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -34533,7 +34536,7 @@ assign d_bte_o =  2'b00;
     
 
 
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -34559,7 +34562,7 @@ begin
                   
           
 
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
@@ -34568,7 +34571,7 @@ begin
         
           
 
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -34584,7 +34587,7 @@ begin
                 
                 
 
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -34597,7 +34600,7 @@ begin
                 
                   
 
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -34625,19 +34628,19 @@ begin
             
              
 
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -34692,17 +34695,17 @@ begin
   
           
 
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -34717,17 +34720,17 @@ begin
   
               
 
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -34848,7 +34851,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -35134,15 +35137,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -35276,6 +35276,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -35291,42 +35294,42 @@ module lm32_decoder_medium (
   
     
 
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -35345,28 +35348,28 @@ module lm32_decoder_medium (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
+`line 4274 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -35376,19 +35379,19 @@ module lm32_decoder_medium (
   
     
 
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
     
 
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -35413,21 +35416,21 @@ reg    x_result_sel_csr;
  
     
 
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -35435,29 +35438,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -35492,12 +35495,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -35505,13 +35508,13 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
+`line 4391 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -35519,7 +35522,7 @@ wire   direction;
  
    
 
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -35535,7 +35538,7 @@ wire bi_unconditional;
  
    
 
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
@@ -35545,13 +35548,13 @@ wire   eret;
  
    
 
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -35656,7 +35659,7 @@ assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
        
 
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -35666,14 +35669,14 @@ assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
        
 
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -35682,20 +35685,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -35715,42 +35718,42 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
     
    
 
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -35774,25 +35777,25 @@ begin
   
       
 
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
@@ -35811,21 +35814,21 @@ begin
                       
 
 
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -35833,7 +35836,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -35842,21 +35845,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -35867,46 +35870,46 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
                          
                          
 
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -35933,12 +35936,12 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
@@ -35947,20 +35950,20 @@ assign condition = instruction[28:26];
   
      
 
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
        
 
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -36063,7 +36066,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -36769,7 +36772,7 @@ endmodule
 
 
 
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -36844,7 +36847,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -37601,7 +37604,7 @@ endmodule
 
 
 
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -37677,7 +37680,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -38276,7 +38279,7 @@ endmodule
 
 
 
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -38366,7 +38369,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -38673,7 +38676,7 @@ module lm32_instruction_unit_medium (
     
     
 
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
@@ -38682,24 +38685,24 @@ module lm32_instruction_unit_medium (
   
     
 
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
     
 
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -38707,7 +38710,7 @@ module lm32_instruction_unit_medium (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
     
@@ -38715,7 +38718,7 @@ module lm32_instruction_unit_medium (
     
     
 
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -38730,15 +38733,15 @@ module lm32_instruction_unit_medium (
     
     
 
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -38751,25 +38754,25 @@ module lm32_instruction_unit_medium (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6160 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 6161 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -38812,7 +38815,7 @@ input [ ((32-2)+2-1):2] branch_predict_address_d;
                                     
                      
 
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -38822,14 +38825,14 @@ input [ ((32-2)+2-1):2] branch_target_m;
   
                                             
 
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
                             
                              
  
 
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -38837,18 +38840,18 @@ input [ ((32-2)+2-1):2] branch_target_m;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -38857,7 +38860,7 @@ input i_rty_i;
                    
                       
 
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -38885,28 +38888,28 @@ reg    [ ((32-2)+2-1):2] pc_w;
                                  
    
 
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
      
 
-`line 6274 "/tmp/lm32-customizer/tmp.v"
+`line 6275 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (32-1):0] i_dat_o;
  
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -38916,11 +38919,11 @@ output [ (4-1):0] i_sel_o;
   
      
 
-`line 6284 "/tmp/lm32-customizer/tmp.v"
+`line 6285 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (4-1):0] i_sel_o;
  
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
@@ -38928,11 +38931,11 @@ output i_we_o;
   
     
 
-`line 6292 "/tmp/lm32-customizer/tmp.v"
+`line 6293 "/tmp/lm32-customizer/tmp.v"
 
 wire   i_we_o;
  
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -38941,7 +38944,7 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -38950,22 +38953,22 @@ wire   [ (2-1):0] i_bte_o;
                              
    
 
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                       
     
 
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -38979,7 +38982,7 @@ reg [ ((32-2)+2-1):2] pc_a;
   
                        
 
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -38993,43 +38996,43 @@ reg [ ((32-2)+2-1):2] pc_a;
                                           
                         
 
-`line 6341 "/tmp/lm32-customizer/tmp.v"
+`line 6342 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6342 "/tmp/lm32-customizer/tmp.v"
+`line 6343 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] wb_data_f;                  
  
-`line 6344 "/tmp/lm32-customizer/tmp.v"
+`line 6345 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
                                          
 
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                          
 
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -39145,7 +39148,7 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
@@ -39179,7 +39182,7 @@ endfunction
                        
     
 
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -39198,7 +39201,7 @@ endfunction
        
                               
 
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -39210,7 +39213,7 @@ begin
           
      
 
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -39221,7 +39224,7 @@ begin
           
           
 
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
@@ -39232,7 +39235,7 @@ begin
               
 	   
 
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -39241,7 +39244,7 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -39252,7 +39255,7 @@ end
    
 
 
-`line 6513 "/tmp/lm32-customizer/tmp.v"
+`line 6514 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -39261,33 +39264,33 @@ end
    
 
 
-`line 6520 "/tmp/lm32-customizer/tmp.v"
+`line 6521 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = wb_data_f;
  
-`line 6522 "/tmp/lm32-customizer/tmp.v"
-
- 
 `line 6523 "/tmp/lm32-customizer/tmp.v"
 
+ 
+`line 6524 "/tmp/lm32-customizer/tmp.v"
+
 
 
   
-`line 6526 "/tmp/lm32-customizer/tmp.v"
+`line 6527 "/tmp/lm32-customizer/tmp.v"
 
   
 
-`line 6528 "/tmp/lm32-customizer/tmp.v"
+`line 6529 "/tmp/lm32-customizer/tmp.v"
 
 assign i_dat_o = 32'd0;
 assign i_we_o =  1'b0;
 assign i_sel_o = 4'b1111;
  
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -39318,7 +39321,7 @@ assign i_bte_o =  2'b00;
     
 
 
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -39378,7 +39381,7 @@ end
     
 
 
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -39394,7 +39397,7 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -39409,11 +39412,11 @@ end
      
 
 
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
                   
@@ -39532,7 +39535,7 @@ end
     
 
 
-`line 6767 "/tmp/lm32-customizer/tmp.v"
+`line 6768 "/tmp/lm32-customizer/tmp.v"
 
 always @(posedge clk_i  )
 begin
@@ -39547,7 +39550,7 @@ begin
   
           
 
-`line 6780 "/tmp/lm32-customizer/tmp.v"
+`line 6781 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -39571,7 +39574,7 @@ begin
                   
             
 
-`line 6802 "/tmp/lm32-customizer/tmp.v"
+`line 6803 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -39581,7 +39584,7 @@ begin
    
                    
 
-`line 6810 "/tmp/lm32-customizer/tmp.v"
+`line 6811 "/tmp/lm32-customizer/tmp.v"
        
                )
             begin
@@ -39589,7 +39592,7 @@ begin
        
                   
 
-`line 6816 "/tmp/lm32-customizer/tmp.v"
+`line 6817 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {pc_a, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -39597,7 +39600,7 @@ begin
   
                   
 
-`line 6822 "/tmp/lm32-customizer/tmp.v"
+`line 6823 "/tmp/lm32-customizer/tmp.v"
 
             end
 	    else
@@ -39606,14 +39609,14 @@ begin
    
 		       
 
-`line 6829 "/tmp/lm32-customizer/tmp.v"
+`line 6830 "/tmp/lm32-customizer/tmp.v"
        
 	           )
 		begin
   
 		      
 
-`line 6834 "/tmp/lm32-customizer/tmp.v"
+`line 6835 "/tmp/lm32-customizer/tmp.v"
 
 		end
 	    end
@@ -39621,10 +39624,10 @@ begin
     end
 end
  
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -39636,7 +39639,7 @@ begin
   
           
 
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -39647,7 +39650,7 @@ begin
   
               
 
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -39724,7 +39727,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -40447,7 +40450,7 @@ endmodule
 
 
 
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -40519,7 +40522,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -40819,17 +40822,17 @@ module lm32_interrupt_medium (
     
     
 
-`line 7380 "/tmp/lm32-customizer/tmp.v"
+`line 7381 "/tmp/lm32-customizer/tmp.v"
 
     exception,
  
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
     
 
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -40861,17 +40864,17 @@ input stall_x;
                        
                            
 
-`line 7416 "/tmp/lm32-customizer/tmp.v"
+`line 7417 "/tmp/lm32-customizer/tmp.v"
 
 input exception;                                
  
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
                                   
 
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (3-1):0] csr;                      
@@ -40903,7 +40906,7 @@ reg eie;
   
                                          
 
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -40925,11 +40928,11 @@ assign ie_csr_read_data = {{ 32-3{1'b0}},
   
                            
 
-`line 7472 "/tmp/lm32-customizer/tmp.v"
+`line 7473 "/tmp/lm32-customizer/tmp.v"
 
                            1'b0,
  
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -40947,11 +40950,11 @@ begin
   
                                     
 
-`line 7490 "/tmp/lm32-customizer/tmp.v"
+`line 7491 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                     
  
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -40972,11 +40975,11 @@ begin
   
                                      
 
-`line 7511 "/tmp/lm32-customizer/tmp.v"
+`line 7512 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                    
  
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -40993,7 +40996,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -41013,7 +41016,7 @@ always @(posedge clk_i  )
   
                            
 
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -41038,7 +41041,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7569 "/tmp/lm32-customizer/tmp.v"
+`line 7570 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -41047,7 +41050,7 @@ always @(posedge clk_i  )
             ie               <=  1'b0;
         end
  
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -41070,7 +41073,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -41082,7 +41085,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h1)
@@ -41106,7 +41109,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -41129,7 +41132,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7650 "/tmp/lm32-customizer/tmp.v"
+`line 7651 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -41138,7 +41141,7 @@ always @(posedge clk_i  )
             ie          <=  1'b0;
         end
  
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -41159,7 +41162,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -41171,7 +41174,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h2)
@@ -41213,50 +41216,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -41355,7 +41314,52 @@ endmodule
 `line 30 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 31 "src/lm32_include.v"
+`line 31 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -41945,67 +41949,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_medium_debug (
+module lm32_top_medium_debug (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
   
     
     
 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
-    
+`line 49 "/tmp/lm32-customizer/tmp.v"
 
+    
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
     
     
     
-
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
     
 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -42014,251 +42028,321 @@ module lm32_mc_arithmetic_medium_debug (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-                                  
-                                 
 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
-
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
-  
-                         
+`line 106 "/tmp/lm32-customizer/tmp.v"
     
 
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
-
-
-
-
-
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
   
-  
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-`line 116 "/tmp/lm32-customizer/tmp.v"
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
+ 
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
+
+
+
+
 
   
                                
-                                 
-
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
-
-      
-
-`line 136 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-
+   
        
+     
+           
+    
+           
+    
 
-`line 141 "/tmp/lm32-customizer/tmp.v"
+`line 133 "/tmp/lm32-customizer/tmp.v"
 
-
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
 
   
-          
+`line 135 "/tmp/lm32-customizer/tmp.v"
 
-`line 161 "/tmp/lm32-customizer/tmp.v"
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
+ 
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
+
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
-          
 
-`line 169 "/tmp/lm32-customizer/tmp.v"
 
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
+
+ 
   
-                   
-                      
-                   
-                      
+`line 179 "/tmp/lm32-customizer/tmp.v"
 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
-  
-                   
-                      
 
+wire [ 7:0] jtag_reg_d;
+wire [ 7:0] jtag_reg_q;
+wire jtag_update;
+wire [2:0] jtag_reg_addr_d;
+wire [2:0] jtag_reg_addr_q;
+wire jtck;
+wire jrstn;
+ 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
+  
+
+                     
+                             
+                            
+                   
+                                 
+ 
+                                 
+
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_medium_debug cpu (
+    
+    .clk_i                 (clk_i),
   
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
 
-`line 206 "/tmp/lm32-customizer/tmp.v"
+`line 218 "/tmp/lm32-customizer/tmp.v"
 
-            end            
-        end
+    .rst_i                 (rst_i),
+    
   
-        
-        
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
                
-            
-                  
-                   
-            
              
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
-        
-        
-               
-            
-                  
-                   
-            
-             
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
 
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
-
-`line 265 "/tmp/lm32-customizer/tmp.v"
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
-                  
-                
-        
-        
-               
-               
-              
-                   
-                  
-                
-        
+`line 229 "/tmp/lm32-customizer/tmp.v"
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+    
+    .jtag_clk              (jtck),
+    .jtag_update           (jtag_update),
+    .jtag_reg_q            (jtag_reg_q),
+    .jtag_reg_addr_q       (jtag_reg_addr_q),
+ 
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 259 "/tmp/lm32-customizer/tmp.v"
+
+    .jtag_reg_d            (jtag_reg_d),
+    .jtag_reg_addr_d       (jtag_reg_addr_d),
+ 
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  
+`line 293 "/tmp/lm32-customizer/tmp.v"
+		   
 
+jtag_cores jtag_cores (
+    
+    .reg_d                 (jtag_reg_d),
+    .reg_addr_d            (jtag_reg_addr_d),
+    
+    .reg_update            (jtag_update),
+    .reg_q                 (jtag_reg_q),
+    .reg_addr_q            (jtag_reg_addr_q),
+    .jtck                  (jtck),
+    .jrstn                 (jrstn)
+    );
+ 
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -42330,7 +42414,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -42613,77 +42697,67 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_medium_debug (
+
+module lm32_mc_arithmetic_medium_debug (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
     
     
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
+`line 360 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
- 
-`line 342 "/tmp/lm32-customizer/tmp.v"
-
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
     
 
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
- 
-`line 366 "/tmp/lm32-customizer/tmp.v"
-
     
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+    
+
+`line 375 "/tmp/lm32-customizer/tmp.v"
+
+    stall_request_x
     );
 
 
@@ -42692,137 +42766,65 @@ module lm32_top_medium_debug (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+                                  
+                                 
 
-
-input [ (32-1):0] interrupt;          
-
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
- 
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 398 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
 
 
 
 
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+                         
+    
+
+`line 411 "/tmp/lm32-customizer/tmp.v"
+
+output stall_request_x;                         
+wire   stall_request_x;
+
+
+
+
+
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
+  
+  
+
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
 
   
                                
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-`line 422 "/tmp/lm32-customizer/tmp.v"
-
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
- 
-`line 441 "/tmp/lm32-customizer/tmp.v"
-
-
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
- 
-  
-`line 466 "/tmp/lm32-customizer/tmp.v"
-
-
-wire [ 7:0] jtag_reg_d;
-wire [ 7:0] jtag_reg_q;
-wire jtag_update;
-wire [2:0] jtag_reg_addr_d;
-wire [2:0] jtag_reg_addr_q;
-wire jtck;
-wire jrstn;
- 
-`line 475 "/tmp/lm32-customizer/tmp.v"
-
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
- 
                                  
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-  
-`line 1 "src/lm32_functions.v"
-
-`line 1 "src/lm32_functions.v"
+`line 432 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -42830,183 +42832,185 @@ wire jrstn;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_medium_debug cpu (
-    
-    .clk_i                 (clk_i),
-  
-                   
-
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-`line 516 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .jtag_clk              (jtck),
-    .jtag_update           (jtag_update),
-    .jtag_reg_q            (jtag_reg_q),
-    .jtag_reg_addr_q       (jtag_reg_addr_q),
- 
-`line 522 "/tmp/lm32-customizer/tmp.v"
+assign stall_request_x = state !=  3'b000;
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 546 "/tmp/lm32-customizer/tmp.v"
-
-    .jtag_reg_d            (jtag_reg_d),
-    .jtag_reg_addr_d       (jtag_reg_addr_d),
- 
-`line 549 "/tmp/lm32-customizer/tmp.v"
 
       
+
+`line 444 "/tmp/lm32-customizer/tmp.v"
+
+
+  
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+          
+
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
+          
+
+`line 477 "/tmp/lm32-customizer/tmp.v"
+
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
+  
+                   
+                      
+                   
+                      
+
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
+  
+                   
+                      
+
+`line 496 "/tmp/lm32-customizer/tmp.v"
+
+  
+                   
                 
+                      
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
+
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
+        
+        
                
             
+                  
+                   
             
-
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  
-`line 580 "/tmp/lm32-customizer/tmp.v"
-		   
-
-jtag_cores jtag_cores (
-    
-    .reg_d                 (jtag_reg_d),
-    .reg_addr_d            (jtag_reg_addr_d),
-    
-    .reg_update            (jtag_update),
-    .reg_q                 (jtag_reg_q),
-    .reg_addr_q            (jtag_reg_addr_q),
-    .jtck                  (jtck),
-    .jrstn                 (jrstn)
-    );
- 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
         
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+
+`line 560 "/tmp/lm32-customizer/tmp.v"
+        
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -43114,7 +43118,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -43408,26 +43412,26 @@ module lm32_cpu_medium_debug (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
-`line 682 "/tmp/lm32-customizer/tmp.v"
+`line 683 "/tmp/lm32-customizer/tmp.v"
 
     
     jtag_clk,
@@ -43435,10 +43439,10 @@ module lm32_cpu_medium_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
  
-`line 688 "/tmp/lm32-customizer/tmp.v"
+`line 689 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 689 "/tmp/lm32-customizer/tmp.v"
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -43446,7 +43450,7 @@ module lm32_cpu_medium_debug (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -43464,15 +43468,15 @@ module lm32_cpu_medium_debug (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 712 "/tmp/lm32-customizer/tmp.v"
+`line 713 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d,
  
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -43480,10 +43484,10 @@ module lm32_cpu_medium_debug (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -43496,7 +43500,7 @@ module lm32_cpu_medium_debug (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -43516,15 +43520,15 @@ module lm32_cpu_medium_debug (
 
 parameter eba_reset =  32'h00000000;                           
   
-`line 751 "/tmp/lm32-customizer/tmp.v"
+`line 752 "/tmp/lm32-customizer/tmp.v"
 
 parameter deba_reset =  32'h10000000;                         
  
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 755 "/tmp/lm32-customizer/tmp.v"
+`line 756 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity =  1;     
 parameter icache_sets =  256;                       
@@ -43538,7 +43542,7 @@ parameter icache_limit =  32'h7fffffff;
          
                        
 
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -43548,7 +43552,7 @@ parameter icache_limit =  32'h7fffffff;
           
                         
 
-`line 775 "/tmp/lm32-customizer/tmp.v"
+`line 776 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity = 1;    
 parameter dcache_sets = 512;                      
@@ -43556,36 +43560,36 @@ parameter dcache_bytes_per_line = 16;
 parameter dcache_base_address = 0;      
 parameter dcache_limit = 0;                    
  
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 783 "/tmp/lm32-customizer/tmp.v"
+`line 784 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints =  32'h4;                       
  
    
 
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -43596,45 +43600,45 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
-`line 819 "/tmp/lm32-customizer/tmp.v"
+`line 820 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
 input [2:0] jtag_reg_addr_q;
  
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -43662,18 +43666,18 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 859 "/tmp/lm32-customizer/tmp.v"
+`line 860 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 wire   [ 7:0] jtag_reg_d;
 output [2:0] jtag_reg_addr_d;
 wire   [2:0] jtag_reg_addr_d;
  
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -43686,11 +43690,11 @@ wire   [2:0] jtag_reg_addr_d;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -43711,7 +43715,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -43740,11 +43744,11 @@ wire   [ (2-1):0] D_BTE_O;
 
 
   
-`line 923 "/tmp/lm32-customizer/tmp.v"
+`line 924 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_a;                                    
  
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -43792,21 +43796,21 @@ reg x_result_sel_csr_x;
                     
  
 
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -43814,7 +43818,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -43822,27 +43826,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -43871,12 +43875,12 @@ reg  [ (5-1):0] csr_x;
 wire [ (3-1):0] condition_d;         
 reg [ (3-1):0] condition_x;          
   
-`line 1032 "/tmp/lm32-customizer/tmp.v"
+`line 1033 "/tmp/lm32-customizer/tmp.v"
 
 wire break_d;                                   
 reg break_x;                                    
  
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -43887,10 +43891,10 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1045 "/tmp/lm32-customizer/tmp.v"
+`line 1046 "/tmp/lm32-customizer/tmp.v"
 
 wire bret_d;                                    
 reg bret_x;
@@ -43899,10 +43903,10 @@ reg bret_m;
   
  
 
-`line 1052 "/tmp/lm32-customizer/tmp.v"
+`line 1053 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -43910,7 +43914,7 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -43919,7 +43923,7 @@ wire csr_write_enable_q_x;
  
   
 
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -43936,7 +43940,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -43944,15 +43948,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -43982,32 +43986,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -44015,27 +44019,27 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -44046,7 +44050,7 @@ wire [ (32-1):0] multiplier_result_w;
  
                            
 
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -44054,23 +44058,23 @@ wire [ (32-1):0] multiplier_result_w;
                          
   
 
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -44083,20 +44087,20 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
 wire [ (32-1):0] instruction_d;     
   
-`line 1197 "/tmp/lm32-customizer/tmp.v"
+`line 1198 "/tmp/lm32-customizer/tmp.v"
 
 wire iflush;                                    
 wire icache_stall_request;                      
@@ -44104,7 +44108,7 @@ wire icache_restart_request;
 wire icache_refill_request;                     
 wire icache_refilling;                          
  
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -44113,7 +44117,7 @@ wire icache_refilling;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -44125,25 +44129,25 @@ wire icache_refilling;
                       
                            
 
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
 
 
   
-`line 1225 "/tmp/lm32-customizer/tmp.v"
+`line 1226 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1226 "/tmp/lm32-customizer/tmp.v"
+`line 1227 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] jtx_csr_read_data;        
 wire [ (32-1):0] jrx_csr_read_data;        
  
-`line 1229 "/tmp/lm32-customizer/tmp.v"
+`line 1230 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1230 "/tmp/lm32-customizer/tmp.v"
+`line 1231 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_csr_write_enable;                     
 wire [ (32-1):0] jtag_csr_write_data;      
@@ -44155,17 +44159,17 @@ wire [ 7:0] jtag_write_data;
 wire [ (32-1):0] jtag_address;
 wire jtag_access_complete;
  
-`line 1240 "/tmp/lm32-customizer/tmp.v"
+`line 1241 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1241 "/tmp/lm32-customizer/tmp.v"
+`line 1242 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_break;                                
  
-`line 1243 "/tmp/lm32-customizer/tmp.v"
+`line 1244 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -44186,7 +44190,7 @@ reg condition_met_m;
       
                              
 
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -44198,29 +44202,29 @@ wire kill_w;
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] eba;                 
   
-`line 1273 "/tmp/lm32-customizer/tmp.v"
+`line 1274 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] deba;                
  
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1282 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1283 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 1284 "/tmp/lm32-customizer/tmp.v"
+
 wire dc_ss;                                     
  
-`line 1285 "/tmp/lm32-customizer/tmp.v"
+`line 1286 "/tmp/lm32-customizer/tmp.v"
 
 wire dc_re;                                     
 wire exception_x;                               
@@ -44239,54 +44243,54 @@ wire non_debug_exception_q_w;
  
  
 
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1304 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1305 "/tmp/lm32-customizer/tmp.v"
 
-wire reset_exception;                           
- 
-`line 1307 "/tmp/lm32-customizer/tmp.v"
+  
+`line 1306 "/tmp/lm32-customizer/tmp.v"
 
+wire reset_exception;                           
  
 `line 1308 "/tmp/lm32-customizer/tmp.v"
 
-  
+ 
 `line 1309 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1312 "/tmp/lm32-customizer/tmp.v"
+`line 1313 "/tmp/lm32-customizer/tmp.v"
 
 wire breakpoint_exception;                      
 wire watchpoint_exception;                      
  
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
             
                    
 
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
                          
 
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -44380,35 +44384,35 @@ lm32_instruction_unit_medium_debug #(
              
             
 
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
     .branch_mispredict_taken_m (branch_mispredict_taken_m),
     .branch_target_m        (branch_target_m),
   
-`line 1369 "/tmp/lm32-customizer/tmp.v"
+`line 1370 "/tmp/lm32-customizer/tmp.v"
 
     .iflush                 (iflush),
  
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
      
       
            
 
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -44416,17 +44420,17 @@ lm32_instruction_unit_medium_debug #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1389 "/tmp/lm32-customizer/tmp.v"
+`line 1390 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_enable       (jtag_read_enable),
     .jtag_write_enable      (jtag_write_enable),
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -44436,22 +44440,22 @@ lm32_instruction_unit_medium_debug #(
     .pc_m                   (pc_m),
     .pc_w                   (pc_w),
   
-`line 1402 "/tmp/lm32-customizer/tmp.v"
+`line 1403 "/tmp/lm32-customizer/tmp.v"
 
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
  
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -44464,27 +44468,27 @@ lm32_instruction_unit_medium_debug #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1423 "/tmp/lm32-customizer/tmp.v"
+`line 1424 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -44500,42 +44504,42 @@ lm32_decoder_medium_debug decoder (
   
       
 
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -44554,28 +44558,28 @@ lm32_decoder_medium_debug decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
                      
                     
 
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -44583,25 +44587,25 @@ lm32_decoder_medium_debug decoder (
     .branch_reg             (branch_reg_d),
     .condition              (condition_d),
   
-`line 1501 "/tmp/lm32-customizer/tmp.v"
+`line 1502 "/tmp/lm32-customizer/tmp.v"
 
     .break_opcode           (break_d),
  
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
-`line 1506 "/tmp/lm32-customizer/tmp.v"
+`line 1507 "/tmp/lm32-customizer/tmp.v"
 
     .bret                   (bret_d),
  
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -44639,12 +44643,12 @@ lm32_load_store_unit_medium_debug #(
   
                      
 
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -44659,7 +44663,7 @@ lm32_load_store_unit_medium_debug #(
        
            
 
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -44667,7 +44671,7 @@ lm32_load_store_unit_medium_debug #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -44708,7 +44712,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -44724,11 +44728,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -44743,7 +44747,7 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -44776,11 +44780,11 @@ lm32_multiplier multiplier (
             
     
 
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_medium_debug interrupt_unit (
@@ -44792,22 +44796,22 @@ lm32_interrupt_medium_debug interrupt_unit (
     
     .stall_x                (stall_x),
   
-`line 1680 "/tmp/lm32-customizer/tmp.v"
+`line 1681 "/tmp/lm32-customizer/tmp.v"
 
     .non_debug_exception    (non_debug_exception_q_w), 
     .debug_exception        (debug_exception_q_w),
  
                    
 
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
-`line 1687 "/tmp/lm32-customizer/tmp.v"
+`line 1688 "/tmp/lm32-customizer/tmp.v"
 
     .bret_q_x               (bret_q_x),
  
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -44818,11 +44822,11 @@ lm32_interrupt_medium_debug interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1700 "/tmp/lm32-customizer/tmp.v"
+`line 1701 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_jtag_medium_debug jtag (
@@ -44836,42 +44840,42 @@ lm32_jtag_medium_debug jtag (
     .jtag_reg_addr_q        (jtag_reg_addr_q),
     
   
-`line 1712 "/tmp/lm32-customizer/tmp.v"
+`line 1713 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
     .csr_write_enable       (csr_write_enable_q_x),
     .stall_x                (stall_x),
  
-`line 1717 "/tmp/lm32-customizer/tmp.v"
+`line 1718 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1718 "/tmp/lm32-customizer/tmp.v"
+`line 1719 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1721 "/tmp/lm32-customizer/tmp.v"
+`line 1722 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1722 "/tmp/lm32-customizer/tmp.v"
+`line 1723 "/tmp/lm32-customizer/tmp.v"
 
     .exception_q_w          (debug_exception_q_w || non_debug_exception_q_w),
  
-`line 1724 "/tmp/lm32-customizer/tmp.v"
+`line 1725 "/tmp/lm32-customizer/tmp.v"
     
     
     
   
-`line 1727 "/tmp/lm32-customizer/tmp.v"
+`line 1728 "/tmp/lm32-customizer/tmp.v"
 
     .jtx_csr_read_data      (jtx_csr_read_data),
     .jrx_csr_read_data      (jrx_csr_read_data),
  
-`line 1730 "/tmp/lm32-customizer/tmp.v"
+`line 1731 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1731 "/tmp/lm32-customizer/tmp.v"
+`line 1732 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
@@ -44881,26 +44885,26 @@ lm32_jtag_medium_debug jtag (
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1739 "/tmp/lm32-customizer/tmp.v"
+`line 1740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1740 "/tmp/lm32-customizer/tmp.v"
+`line 1741 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_break             (jtag_break),
     .jtag_reset             (reset_exception),
  
-`line 1743 "/tmp/lm32-customizer/tmp.v"
+`line 1744 "/tmp/lm32-customizer/tmp.v"
 
     
     .jtag_reg_d             (jtag_reg_d),
     .jtag_reg_addr_d        (jtag_reg_addr_d)
     );
  
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1750 "/tmp/lm32-customizer/tmp.v"
+`line 1751 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_debug_medium_debug #(
@@ -44918,16 +44922,16 @@ lm32_debug_medium_debug #(
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
   
-`line 1766 "/tmp/lm32-customizer/tmp.v"
+`line 1767 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
  
-`line 1770 "/tmp/lm32-customizer/tmp.v"
+`line 1771 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1771 "/tmp/lm32-customizer/tmp.v"
+`line 1772 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
     .bret_q_x               (bret_q_x),
@@ -44937,31 +44941,31 @@ lm32_debug_medium_debug #(
   
       
 
-`line 1779 "/tmp/lm32-customizer/tmp.v"
+`line 1780 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1780 "/tmp/lm32-customizer/tmp.v"
+`line 1781 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 1782 "/tmp/lm32-customizer/tmp.v"
+`line 1783 "/tmp/lm32-customizer/tmp.v"
 
     .dc_ss                  (dc_ss),
  
-`line 1784 "/tmp/lm32-customizer/tmp.v"
+`line 1785 "/tmp/lm32-customizer/tmp.v"
 
     .dc_re                  (dc_re),
     .bp_match               (bp_match),
     .wp_match               (wp_match)
     );
  
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -45080,7 +45084,7 @@ lm32_debug_medium_debug #(
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -45150,7 +45154,7 @@ lm32_debug_medium_debug #(
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -45159,23 +45163,23 @@ lm32_debug_medium_debug #(
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -45265,25 +45269,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -45312,26 +45316,26 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
+`line 2131 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -45341,11 +45345,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -45355,11 +45359,11 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
@@ -45373,7 +45377,7 @@ end
                                  
                               
 
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -45419,66 +45423,66 @@ assign kill_f =    (   (valid_d ==  1'b1)
       
                    
 
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2210 "/tmp/lm32-customizer/tmp.v"
+`line 2211 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1) 
  
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
                   
                    
 
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
       
                    
 
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2221 "/tmp/lm32-customizer/tmp.v"
+`line 2222 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1)     
  
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
                   
                    
 
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
                   
                    
 
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
                   
                    
 
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
                   
                    
 
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
 
 
   
-`line 2246 "/tmp/lm32-customizer/tmp.v"
+`line 2247 "/tmp/lm32-customizer/tmp.v"
 
 assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				      || (bp_match ==  1'b1)
@@ -45486,23 +45490,23 @@ assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				  && (valid_x ==  1'b1)
 				 )
   
-`line 2252 "/tmp/lm32-customizer/tmp.v"
+`line 2253 "/tmp/lm32-customizer/tmp.v"
 
                               || (jtag_break ==  1'b1)
  
-`line 2254 "/tmp/lm32-customizer/tmp.v"
+`line 2255 "/tmp/lm32-customizer/tmp.v"
 
                               ;
  
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2258 "/tmp/lm32-customizer/tmp.v"
+`line 2259 "/tmp/lm32-customizer/tmp.v"
 
 assign watchpoint_exception = wp_match ==  1'b1;
  
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -45511,25 +45515,25 @@ assign watchpoint_exception = wp_match ==  1'b1;
                                          
      
 
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
                                    
 
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
   
-`line 2279 "/tmp/lm32-customizer/tmp.v"
+`line 2280 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_x =  (breakpoint_exception ==  1'b1)
                          || (watchpoint_exception ==  1'b1)
@@ -45537,43 +45541,43 @@ assign debug_exception_x =  (breakpoint_exception ==  1'b1)
 
 assign non_debug_exception_x = (system_call_exception ==  1'b1)
   
-`line 2285 "/tmp/lm32-customizer/tmp.v"
+`line 2286 "/tmp/lm32-customizer/tmp.v"
 
                             || (reset_exception ==  1'b1)
  
-`line 2287 "/tmp/lm32-customizer/tmp.v"
+`line 2288 "/tmp/lm32-customizer/tmp.v"
 
   
                                
                                
 
-`line 2291 "/tmp/lm32-customizer/tmp.v"
+`line 2292 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 2294 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2295 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2296 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
-`line 2297 "/tmp/lm32-customizer/tmp.v"
+`line 2298 "/tmp/lm32-customizer/tmp.v"
 
                                 && (dc_ss ==  1'b0)
  
-`line 2299 "/tmp/lm32-customizer/tmp.v"
+`line 2300 "/tmp/lm32-customizer/tmp.v"
                             
   
  				   
 				   
 
-`line 2303 "/tmp/lm32-customizer/tmp.v"
+`line 2304 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2305 "/tmp/lm32-customizer/tmp.v"
+`line 2306 "/tmp/lm32-customizer/tmp.v"
 
                             ;
 
@@ -45600,36 +45604,36 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
                             
 
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
 always @(*)
 begin
   
-`line 2335 "/tmp/lm32-customizer/tmp.v"
+`line 2336 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2336 "/tmp/lm32-customizer/tmp.v"
+`line 2337 "/tmp/lm32-customizer/tmp.v"
 
     if (reset_exception ==  1'b1)
         eid_x =  3'h0;
     else
  
-`line 2340 "/tmp/lm32-customizer/tmp.v"
+`line 2341 "/tmp/lm32-customizer/tmp.v"
      
   
             
           
     
 
-`line 2345 "/tmp/lm32-customizer/tmp.v"
+`line 2346 "/tmp/lm32-customizer/tmp.v"
 
          if (breakpoint_exception ==  1'b1)
         eid_x =  3'd1;
     else
  
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
             
@@ -45639,40 +45643,40 @@ begin
           
     
 
-`line 2357 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2358 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2359 "/tmp/lm32-customizer/tmp.v"
 
          if (watchpoint_exception ==  1'b1)
         eid_x =  3'd3;
     else 
  
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
     
 
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
-`line 2370 "/tmp/lm32-customizer/tmp.v"
+`line 2371 "/tmp/lm32-customizer/tmp.v"
 
              && (dc_ss ==  1'b0)
  
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -45692,7 +45696,7 @@ assign stall_d =   (stall_x ==  1'b1)
   
 			   
 
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -45704,7 +45708,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
   
-`line 2404 "/tmp/lm32-customizer/tmp.v"
+`line 2405 "/tmp/lm32-customizer/tmp.v"
 
 		|| (   (   (break_d ==  1'b1)
 			|| (bret_d ==  1'b1)
@@ -45718,7 +45722,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
  
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -45731,7 +45735,7 @@ assign stall_x =    (stall_m ==  1'b1)
                         
                      
 
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -45742,7 +45746,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -45750,7 +45754,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -45768,26 +45772,26 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
                          
 
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
-`line 2469 "/tmp/lm32-customizer/tmp.v"
+`line 2470 "/tmp/lm32-customizer/tmp.v"
 
                  || (icache_stall_request ==  1'b1)     
                  || ((I_CYC_O ==  1'b1) && ((branch_m ==  1'b1) || (exception_m ==  1'b1))) 
@@ -45796,14 +45800,14 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                                 
 
 
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
@@ -45811,72 +45815,72 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
          
 
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
+`line 2495 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
 assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
-`line 2502 "/tmp/lm32-customizer/tmp.v"
+`line 2503 "/tmp/lm32-customizer/tmp.v"
 
 assign bret_q_x = (bret_x ==  1'b1) && (q_x ==  1'b1);
  
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2507 "/tmp/lm32-customizer/tmp.v"
+`line 2508 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2513 "/tmp/lm32-customizer/tmp.v"
+`line 2514 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
 assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
   
-`line 2523 "/tmp/lm32-customizer/tmp.v"
+`line 2524 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_q_w = ((debug_exception_w ==  1'b1) && (valid_w ==  1'b1));
 assign non_debug_exception_q_w = ((non_debug_exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
                  
 
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -45892,112 +45896,112 @@ assign cfg = {
               breakpoints[3:0],
               interrupts[5:0],
   
-`line 2542 "/tmp/lm32-customizer/tmp.v"
+`line 2543 "/tmp/lm32-customizer/tmp.v"
 
                1'b1,
  
               
 
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2552 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2553 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2556 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2557 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2558 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2561 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2562 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2563 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2566 "/tmp/lm32-customizer/tmp.v"
+`line 2567 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2569 "/tmp/lm32-customizer/tmp.v"
+`line 2570 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
+`line 2592 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2594 "/tmp/lm32-customizer/tmp.v"
+`line 2595 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -46006,26 +46010,26 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
 
   
-`line 2619 "/tmp/lm32-customizer/tmp.v"
+`line 2620 "/tmp/lm32-customizer/tmp.v"
 
 assign iflush = (   (csr_write_enable_d ==  1'b1) 
                  && (csr_d ==  5'h3)
@@ -46034,17 +46038,17 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
                  && (valid_d ==  1'b1))
 
   
-`line 2626 "/tmp/lm32-customizer/tmp.v"
+`line 2627 "/tmp/lm32-customizer/tmp.v"
 
              ||
                 (   (jtag_csr_write_enable ==  1'b1)
 		 && (jtag_csr ==  5'h3))
  
-`line 2630 "/tmp/lm32-customizer/tmp.v"
+`line 2631 "/tmp/lm32-customizer/tmp.v"
 
 		 ;
  
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
          
@@ -46057,7 +46061,7 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
 
 		   
 
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -46068,35 +46072,35 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      5'h0,
      5'h1,
      5'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      5'h6:  csr_read_data_x = cfg;
      5'h7:  csr_read_data_x = {eba, 8'h00};
   
-`line 2662 "/tmp/lm32-customizer/tmp.v"
+`line 2663 "/tmp/lm32-customizer/tmp.v"
 
      5'h9: csr_read_data_x = {deba, 8'h00};
  
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2665 "/tmp/lm32-customizer/tmp.v"
+`line 2666 "/tmp/lm32-customizer/tmp.v"
 
      5'he:  csr_read_data_x = jtx_csr_read_data;  
      5'hf:  csr_read_data_x = jrx_csr_read_data;
  
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      5'ha: csr_read_data_x = cfg2;
       
@@ -46118,18 +46122,18 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2688 "/tmp/lm32-customizer/tmp.v"
+`line 2689 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
             eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 2695 "/tmp/lm32-customizer/tmp.v"
+`line 2696 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -46141,17 +46145,17 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2705 "/tmp/lm32-customizer/tmp.v"
+`line 2706 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
             deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2708 "/tmp/lm32-customizer/tmp.v"
+`line 2709 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -46164,7 +46168,7 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -46184,13 +46188,13 @@ end
     
 
 
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
 
   
-`line 2744 "/tmp/lm32-customizer/tmp.v"
+`line 2745 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -46207,7 +46211,7 @@ end
             
  
 
-`line 2759 "/tmp/lm32-customizer/tmp.v"
+`line 2760 "/tmp/lm32-customizer/tmp.v"
 
 always @(*)
 begin
@@ -46219,7 +46223,7 @@ begin
         valid_a = !icache_refilling;
 end 
  
-`line 2769 "/tmp/lm32-customizer/tmp.v"
+`line 2770 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -46234,7 +46238,7 @@ end
  
 
 
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -46251,13 +46255,13 @@ begin
     begin    
         if ((kill_f ==  1'b1) || (stall_a ==  1'b0))
   
-`line 2797 "/tmp/lm32-customizer/tmp.v"
+`line 2798 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <= valid_a;    
  
               
 
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -46298,7 +46302,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -46308,42 +46312,42 @@ begin
   
           
 
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -46358,62 +46362,62 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
         branch_predict_taken_x <=  1'b0;
         condition_x <=  3'b000;
   
-`line 2891 "/tmp/lm32-customizer/tmp.v"
+`line 2892 "/tmp/lm32-customizer/tmp.v"
 
         break_x <=  1'b0;
  
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
-`line 2896 "/tmp/lm32-customizer/tmp.v"
+`line 2897 "/tmp/lm32-customizer/tmp.v"
 
         bret_x <=  1'b0;
  
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
 
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -46423,11 +46427,11 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
@@ -46435,41 +46439,41 @@ begin
   
           
 
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2930 "/tmp/lm32-customizer/tmp.v"
+`line 2931 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_m <=  1'b0;
         non_debug_exception_m <=  1'b0;        
  
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
   
-`line 2941 "/tmp/lm32-customizer/tmp.v"
+`line 2942 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <=  1'b0;
         non_debug_exception_w <=  1'b0;        
  
           
 
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -46481,7 +46485,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -46491,42 +46495,42 @@ begin
   
               
 
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -46543,39 +46547,39 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
-`line 3009 "/tmp/lm32-customizer/tmp.v"
+`line 3010 "/tmp/lm32-customizer/tmp.v"
 
             break_x <= break_d;
  
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
               
 
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
-`line 3017 "/tmp/lm32-customizer/tmp.v"
+`line 3018 "/tmp/lm32-customizer/tmp.v"
 
             bret_x <= bret_d; 
  
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -46587,57 +46591,57 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
       
                 
 
-`line 3054 "/tmp/lm32-customizer/tmp.v"
+`line 3055 "/tmp/lm32-customizer/tmp.v"
 
             branch_m <= branch_x;
 	    branch_predict_m <= branch_predict_x;
 	    branch_predict_taken_m <= branch_predict_taken_x;
  
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3059 "/tmp/lm32-customizer/tmp.v"
+`line 3060 "/tmp/lm32-customizer/tmp.v"
 
 	   
 	   
@@ -46656,11 +46660,11 @@ begin
              
                   
 
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
-`line 3078 "/tmp/lm32-customizer/tmp.v"
+`line 3079 "/tmp/lm32-customizer/tmp.v"
 
 	   if (exception_x ==  1'b1)
 	     if ((dc_re ==  1'b1)
@@ -46674,34 +46678,34 @@ begin
  
                       
 
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
-`line 3098 "/tmp/lm32-customizer/tmp.v"
+`line 3099 "/tmp/lm32-customizer/tmp.v"
 
             bret_m <= bret_q_x; 
  
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
-`line 3102 "/tmp/lm32-customizer/tmp.v"
+`line 3103 "/tmp/lm32-customizer/tmp.v"
 
             debug_exception_m <= debug_exception_x;
             non_debug_exception_m <= non_debug_exception_x;        
  
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -46719,7 +46723,7 @@ begin
 
 					 
 
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
@@ -46727,19 +46731,19 @@ begin
   
                       
 
-`line 3127 "/tmp/lm32-customizer/tmp.v"
+`line 3128 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
  
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -46749,18 +46753,18 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
-`line 3143 "/tmp/lm32-customizer/tmp.v"
+`line 3144 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <= debug_exception_m;
         non_debug_exception_w <= non_debug_exception_m;
  
           
 
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
               
@@ -46770,13 +46774,13 @@ begin
 	   
             
 
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -46808,11 +46812,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -46858,7 +46862,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -46922,7 +46926,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -46935,14 +46939,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -47032,7 +47036,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -47346,12 +47350,12 @@ module lm32_load_store_unit_medium_debug (
   
     
 
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -47366,7 +47370,7 @@ module lm32_load_store_unit_medium_debug (
     
     
 
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -47374,7 +47378,7 @@ module lm32_load_store_unit_medium_debug (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -47435,13 +47439,13 @@ input [ 1:0] size_x;
   
                                             
 
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -47463,7 +47467,7 @@ input d_rty_i;
  
    
 
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -47476,7 +47480,7 @@ input d_rty_i;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -47530,7 +47534,7 @@ reg [ (32-1):0] data_w;
                                           
                       
 
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -47541,14 +47545,14 @@ reg [ (32-1):0] data_w;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -47702,7 +47706,7 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -47738,7 +47742,7 @@ endfunction
                   
     
 
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -47750,14 +47754,14 @@ endfunction
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -47771,24 +47775,24 @@ endfunction
 
                      
 
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
                           
 
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -47825,7 +47829,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -47835,7 +47839,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -47858,7 +47862,7 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -47896,7 +47900,7 @@ end
   
  
 
-`line 3843 "/tmp/lm32-customizer/tmp.v"
+`line 3844 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -47913,7 +47917,7 @@ end
                     
   
  
-`line 3858 "/tmp/lm32-customizer/tmp.v"
+`line 3859 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -47921,18 +47925,18 @@ end
                      
                     
   
-`line 3864 "/tmp/lm32-customizer/tmp.v"
+`line 3865 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_data_m;
    
-`line 3867 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 3868 "/tmp/lm32-customizer/tmp.v"
 
- 
+  
 `line 3869 "/tmp/lm32-customizer/tmp.v"
+
+ 
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -47981,7 +47985,7 @@ assign d_bte_o =  2'b00;
     
 
 
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -48007,7 +48011,7 @@ begin
                   
           
 
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
@@ -48016,7 +48020,7 @@ begin
         
           
 
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -48032,7 +48036,7 @@ begin
                 
                 
 
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -48045,7 +48049,7 @@ begin
                 
                   
 
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -48073,19 +48077,19 @@ begin
             
              
 
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -48140,17 +48144,17 @@ begin
   
           
 
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -48165,17 +48169,17 @@ begin
   
               
 
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -48296,7 +48300,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -48582,15 +48586,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -48724,6 +48725,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -48739,42 +48743,42 @@ module lm32_decoder_medium_debug (
   
     
 
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -48793,28 +48797,28 @@ module lm32_decoder_medium_debug (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
+`line 4274 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -48822,25 +48826,25 @@ module lm32_decoder_medium_debug (
     bi_conditional,
     bi_unconditional,
   
-`line 4283 "/tmp/lm32-customizer/tmp.v"
+`line 4284 "/tmp/lm32-customizer/tmp.v"
 
     break_opcode,
  
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
-`line 4288 "/tmp/lm32-customizer/tmp.v"
+`line 4289 "/tmp/lm32-customizer/tmp.v"
 
     bret,
  
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -48865,21 +48869,21 @@ reg    x_result_sel_csr;
  
     
 
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -48887,29 +48891,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -48944,12 +48948,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -48957,13 +48961,13 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
+`line 4391 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -48971,7 +48975,7 @@ wire   direction;
  
    
 
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -48984,30 +48988,30 @@ wire bi_conditional;
 output bi_unconditional;
 wire bi_unconditional;
   
-`line 4407 "/tmp/lm32-customizer/tmp.v"
+`line 4408 "/tmp/lm32-customizer/tmp.v"
 
 output break_opcode;
 wire   break_opcode;
  
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
 output eret;
 wire   eret;
   
-`line 4415 "/tmp/lm32-customizer/tmp.v"
+`line 4416 "/tmp/lm32-customizer/tmp.v"
 
 output bret;
 wire   bret;
  
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -49112,7 +49116,7 @@ assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
        
 
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -49122,14 +49126,14 @@ assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
        
 
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -49138,20 +49142,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -49171,42 +49175,42 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
     
    
 
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -49230,25 +49234,25 @@ begin
   
       
 
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
@@ -49267,21 +49271,21 @@ begin
                       
 
 
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -49289,7 +49293,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -49298,21 +49302,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -49323,46 +49327,46 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
                          
                          
 
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -49389,38 +49393,38 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
 assign branch_reg = op_call | op_b;
 assign condition = instruction[28:26];      
   
-`line 4675 "/tmp/lm32-customizer/tmp.v"
+`line 4676 "/tmp/lm32-customizer/tmp.v"
 
 assign break_opcode = op_raise & ~instruction[2];
  
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
-`line 4680 "/tmp/lm32-customizer/tmp.v"
+`line 4681 "/tmp/lm32-customizer/tmp.v"
 
 assign bret = op_b & (instruction[25:21] == 5'd31);
  
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -49523,7 +49527,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -49808,11 +49812,8 @@ endmodule
 
 
   
-`line 4748 "/tmp/lm32-customizer/tmp.v"
+`line 4749 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 4750 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 4751 "/tmp/lm32-customizer/tmp.v"
@@ -49823,9 +49824,9 @@ endmodule
   
 `line 4753 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4755 "/tmp/lm32-customizer/tmp.v"
+`line 4754 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4756 "/tmp/lm32-customizer/tmp.v"
@@ -49836,9 +49837,9 @@ endmodule
   
 `line 4758 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4760 "/tmp/lm32-customizer/tmp.v"
+`line 4759 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4761 "/tmp/lm32-customizer/tmp.v"
@@ -49849,9 +49850,9 @@ endmodule
   
 `line 4763 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4765 "/tmp/lm32-customizer/tmp.v"
+`line 4764 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4766 "/tmp/lm32-customizer/tmp.v"
@@ -49864,6 +49865,9 @@ endmodule
 
   
 `line 4769 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4770 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -49885,7 +49889,7 @@ module lm32_icache_medium_debug (
   
     
 
-`line 4789 "/tmp/lm32-customizer/tmp.v"
+`line 4790 "/tmp/lm32-customizer/tmp.v"
 
     valid_d,
     branch_predict_taken_d,
@@ -49942,7 +49946,7 @@ input iflush;
   
                                       
 
-`line 4844 "/tmp/lm32-customizer/tmp.v"
+`line 4845 "/tmp/lm32-customizer/tmp.v"
 
    
 
@@ -50248,7 +50252,7 @@ begin
                   
 	      
 
-`line 5093 "/tmp/lm32-customizer/tmp.v"
+`line 5094 "/tmp/lm32-customizer/tmp.v"
 
 		state <=  4'b0100;
 	   
@@ -50326,7 +50330,7 @@ endgenerate
 endmodule
 
  
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -50401,7 +50405,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -51158,7 +51162,7 @@ endmodule
 
 
 
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -51234,7 +51238,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -51519,12 +51523,9 @@ endmodule
 
 
   
-`line 5710 "/tmp/lm32-customizer/tmp.v"
+`line 5711 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 5713 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 5714 "/tmp/lm32-customizer/tmp.v"
@@ -51540,6 +51541,9 @@ endmodule
 
   
 `line 5718 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 5719 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -51558,16 +51562,16 @@ module lm32_debug_medium_debug (
     csr_write_data,
     csr_x,
   
-`line 5735 "/tmp/lm32-customizer/tmp.v"
+`line 5736 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
-`line 5739 "/tmp/lm32-customizer/tmp.v"
+`line 5740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5740 "/tmp/lm32-customizer/tmp.v"
+`line 5741 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
     bret_q_x,
@@ -51577,18 +51581,18 @@ module lm32_debug_medium_debug (
   
     
 
-`line 5748 "/tmp/lm32-customizer/tmp.v"
+`line 5749 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5749 "/tmp/lm32-customizer/tmp.v"
+`line 5750 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 5751 "/tmp/lm32-customizer/tmp.v"
+`line 5752 "/tmp/lm32-customizer/tmp.v"
 
     dc_ss,
  
-`line 5753 "/tmp/lm32-customizer/tmp.v"
+`line 5754 "/tmp/lm32-customizer/tmp.v"
 
     dc_re,
     bp_match,
@@ -51617,16 +51621,16 @@ input csr_write_enable_x;
 input [ (32-1):0] csr_write_data;          
 input [ (5-1):0] csr_x;                    
   
-`line 5780 "/tmp/lm32-customizer/tmp.v"
+`line 5781 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
-`line 5784 "/tmp/lm32-customizer/tmp.v"
+`line 5785 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5785 "/tmp/lm32-customizer/tmp.v"
+`line 5786 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
 input bret_q_x;                                 
@@ -51636,10 +51640,10 @@ input q_x;
   
                      
 
-`line 5793 "/tmp/lm32-customizer/tmp.v"
+`line 5794 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5794 "/tmp/lm32-customizer/tmp.v"
+`line 5795 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -51647,12 +51651,12 @@ input q_x;
 
 
   
-`line 5800 "/tmp/lm32-customizer/tmp.v"
+`line 5801 "/tmp/lm32-customizer/tmp.v"
 
 output dc_ss;                                   
 reg    dc_ss;
  
-`line 5803 "/tmp/lm32-customizer/tmp.v"
+`line 5804 "/tmp/lm32-customizer/tmp.v"
 
 output dc_re;                                   
 reg    dc_re;
@@ -51682,13 +51686,13 @@ wire [ (32-1):0] debug_csr_write_data;
 wire [ (5-1):0] debug_csr;                 
 
   
-`line 5831 "/tmp/lm32-customizer/tmp.v"
+`line 5832 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 2:0] state;           
 
  
-`line 5835 "/tmp/lm32-customizer/tmp.v"
+`line 5836 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -51765,7 +51769,7 @@ assign bp_match_n[i] = ((bp_a[i] == pc_x) && (bp_e[i] ==  1'b1));
 endgenerate
 generate 
   
-`line 5855 "/tmp/lm32-customizer/tmp.v"
+`line 5856 "/tmp/lm32-customizer/tmp.v"
 
     if (breakpoints > 0) 
 assign bp_match = (|bp_match_n) || (state ==  3'b011);
@@ -51777,7 +51781,7 @@ assign bp_match = state ==  3'b011;
     
    
 
-`line 5865 "/tmp/lm32-customizer/tmp.v"
+`line 5866 "/tmp/lm32-customizer/tmp.v"
 
 endgenerate    
                
@@ -51796,7 +51800,7 @@ assign wp_match =  1'b0;
 endgenerate
                 
   
-`line 5882 "/tmp/lm32-customizer/tmp.v"
+`line 5883 "/tmp/lm32-customizer/tmp.v"
                 
 
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
@@ -51807,7 +51811,7 @@ assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
    
    
 
-`line 5891 "/tmp/lm32-customizer/tmp.v"
+`line 5892 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -51875,7 +51879,7 @@ begin
 end    
 
   
-`line 5957 "/tmp/lm32-customizer/tmp.v"
+`line 5958 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -51920,7 +51924,7 @@ begin
                   
              
 
-`line 6000 "/tmp/lm32-customizer/tmp.v"
+`line 6001 "/tmp/lm32-customizer/tmp.v"
 
                  if ((exception_x ==  1'b1) && (q_x ==  1'b1) && (stall_x ==  1'b0))
             begin
@@ -51936,7 +51940,7 @@ begin
                   
              
 
-`line 6014 "/tmp/lm32-customizer/tmp.v"
+`line 6015 "/tmp/lm32-customizer/tmp.v"
 
                 state <=  3'b000;
         end
@@ -51944,13 +51948,13 @@ begin
     end
 end
  
-`line 6020 "/tmp/lm32-customizer/tmp.v"
+`line 6021 "/tmp/lm32-customizer/tmp.v"
 
 
 endmodule
 
  
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -52040,7 +52044,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -52347,35 +52351,35 @@ module lm32_instruction_unit_medium_debug (
     
     
 
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
     branch_mispredict_taken_m,
     branch_target_m,
   
-`line 6100 "/tmp/lm32-customizer/tmp.v"
+`line 6101 "/tmp/lm32-customizer/tmp.v"
 
     iflush,
  
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
     
 
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -52383,17 +52387,17 @@ module lm32_instruction_unit_medium_debug (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6120 "/tmp/lm32-customizer/tmp.v"
+`line 6121 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_enable,
     jtag_write_enable,
     jtag_write_data,
     jtag_address,
  
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -52403,22 +52407,22 @@ module lm32_instruction_unit_medium_debug (
     pc_m,
     pc_w,
   
-`line 6133 "/tmp/lm32-customizer/tmp.v"
+`line 6134 "/tmp/lm32-customizer/tmp.v"
 
     icache_stall_request,
     icache_restart_request,
     icache_refill_request,
     icache_refilling,
  
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -52431,27 +52435,27 @@ module lm32_instruction_unit_medium_debug (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6154 "/tmp/lm32-customizer/tmp.v"
+`line 6155 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6160 "/tmp/lm32-customizer/tmp.v"
+`line 6161 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6161 "/tmp/lm32-customizer/tmp.v"
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -52494,7 +52498,7 @@ input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_predict_address_d;
                                     
                      
 
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -52502,18 +52506,18 @@ input branch_mispredict_taken_m;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_m;                   
 
   
-`line 6210 "/tmp/lm32-customizer/tmp.v"
+`line 6211 "/tmp/lm32-customizer/tmp.v"
 
 input iflush;                                           
  
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
                             
                              
  
 
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -52521,29 +52525,29 @@ input iflush;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6232 "/tmp/lm32-customizer/tmp.v"
+`line 6233 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_read_enable;                                 
 input jtag_write_enable;                                
 input [ 7:0] jtag_write_data;                 
 input [ (32-1):0] jtag_address;                    
  
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -52562,7 +52566,7 @@ output [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 reg    [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 
   
-`line 6254 "/tmp/lm32-customizer/tmp.v"
+`line 6255 "/tmp/lm32-customizer/tmp.v"
 
 output icache_stall_request;                            
 wire   icache_stall_request;
@@ -52573,28 +52577,28 @@ wire   icache_refill_request;
 output icache_refilling;                                
 wire   icache_refilling;
  
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
-`line 6272 "/tmp/lm32-customizer/tmp.v"
+`line 6273 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (32-1):0] i_dat_o;
  
     
 
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -52602,25 +52606,25 @@ output i_cyc_o;
 reg    i_cyc_o; 
 output [ (4-1):0] i_sel_o;                 
   
-`line 6282 "/tmp/lm32-customizer/tmp.v"
+`line 6283 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (4-1):0] i_sel_o;
  
     
 
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
 output i_we_o;                                          
   
-`line 6290 "/tmp/lm32-customizer/tmp.v"
+`line 6291 "/tmp/lm32-customizer/tmp.v"
 
 reg    i_we_o;
  
    
 
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -52629,33 +52633,33 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6303 "/tmp/lm32-customizer/tmp.v"
+`line 6304 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_read_data;                 
 reg    [ 7:0] jtag_read_data;
 output jtag_access_complete;                            
 wire   jtag_access_complete;
  
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                       
     
 
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -52667,15 +52671,15 @@ reg    [ (32-1):0] instruction_d;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_a;                                
 
   
-`line 6327 "/tmp/lm32-customizer/tmp.v"
+`line 6328 "/tmp/lm32-customizer/tmp.v"
 
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] restart_address;                     
  
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6331 "/tmp/lm32-customizer/tmp.v"
+`line 6332 "/tmp/lm32-customizer/tmp.v"
 
 wire icache_read_enable_f;                              
 wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] icache_refill_address;              
@@ -52691,35 +52695,35 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                     
 
 
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
                                          
 
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6359 "/tmp/lm32-customizer/tmp.v"
+`line 6360 "/tmp/lm32-customizer/tmp.v"
 
 reg jtag_access;                                        
  
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -52835,11 +52839,11 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
-`line 6422 "/tmp/lm32-customizer/tmp.v"
+`line 6423 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_icache_medium_debug #(
@@ -52871,7 +52875,7 @@ lm32_icache_medium_debug #(
     .inst                   (icache_data_f)
     );
  
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -52879,7 +52883,7 @@ lm32_icache_medium_debug #(
 
 
   
-`line 6458 "/tmp/lm32-customizer/tmp.v"
+`line 6459 "/tmp/lm32-customizer/tmp.v"
 
 
 assign icache_read_enable_f =    (valid_f ==  1'b1)
@@ -52887,16 +52891,16 @@ assign icache_read_enable_f =    (valid_f ==  1'b1)
   
                                  
 
-`line 6464 "/tmp/lm32-customizer/tmp.v"
+`line 6465 "/tmp/lm32-customizer/tmp.v"
                          
    
                                  
 
-`line 6467 "/tmp/lm32-customizer/tmp.v"
+`line 6468 "/tmp/lm32-customizer/tmp.v"
        
                               ;
  
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -52908,7 +52912,7 @@ begin
           
      
 
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -52919,20 +52923,20 @@ begin
           
           
 
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
 	  pc_a = branch_predict_address_d;
 	else
   
-`line 6493 "/tmp/lm32-customizer/tmp.v"
+`line 6494 "/tmp/lm32-customizer/tmp.v"
 
           if (icache_restart_request ==  1'b1)
             pc_a = restart_address;
 	  else 
  
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -52941,21 +52945,21 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
   
-`line 6507 "/tmp/lm32-customizer/tmp.v"
+`line 6508 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 6510 "/tmp/lm32-customizer/tmp.v"
+`line 6511 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = icache_data_f;
  
-`line 6512 "/tmp/lm32-customizer/tmp.v"
+`line 6513 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -52968,30 +52972,30 @@ assign instruction_f = icache_data_f;
    
 
 
-`line 6523 "/tmp/lm32-customizer/tmp.v"
+`line 6524 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 6526 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6527 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6528 "/tmp/lm32-customizer/tmp.v"
+
  
    
    
    
 
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6536 "/tmp/lm32-customizer/tmp.v"
+`line 6537 "/tmp/lm32-customizer/tmp.v"
 
 
 generate
@@ -53020,7 +53024,7 @@ assign first_address = {icache_refill_address[ (clogb2(32'h7fffffff-32'h0)-2)+2-
     endcase
 endgenerate
  
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -53053,7 +53057,7 @@ begin
 end
 
   
-`line 6594 "/tmp/lm32-customizer/tmp.v"
+`line 6595 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -53074,23 +53078,23 @@ begin
                   
 
 
-`line 6613 "/tmp/lm32-customizer/tmp.v"
+`line 6614 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6614 "/tmp/lm32-customizer/tmp.v"
+`line 6615 "/tmp/lm32-customizer/tmp.v"
         
             if (icache_refill_request ==  1'b1)
                 restart_address <= icache_refill_address;
  
-`line 6617 "/tmp/lm32-customizer/tmp.v"
+`line 6618 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6618 "/tmp/lm32-customizer/tmp.v"
+`line 6619 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -53106,11 +53110,11 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6637 "/tmp/lm32-customizer/tmp.v"
+`line 6638 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
@@ -53123,15 +53127,15 @@ begin
     endcase 
 end
  
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6652 "/tmp/lm32-customizer/tmp.v"
+`line 6653 "/tmp/lm32-customizer/tmp.v"
                 
 always @(posedge clk_i  )
 begin
@@ -53147,16 +53151,16 @@ begin
   
           
 
-`line 6666 "/tmp/lm32-customizer/tmp.v"
+`line 6667 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6667 "/tmp/lm32-customizer/tmp.v"
+`line 6668 "/tmp/lm32-customizer/tmp.v"
 
         i_we_o <=  1'b0;
         i_sel_o <= 4'b1111;
         jtag_access <=  1'b0;
  
-`line 6671 "/tmp/lm32-customizer/tmp.v"
+`line 6672 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -53169,7 +53173,7 @@ begin
             if ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1))
             begin
   
-`line 6682 "/tmp/lm32-customizer/tmp.v"
+`line 6683 "/tmp/lm32-customizer/tmp.v"
 
                 if (jtag_access ==  1'b1)
                 begin
@@ -53180,7 +53184,7 @@ begin
                 end
                 else
  
-`line 6691 "/tmp/lm32-customizer/tmp.v"
+`line 6692 "/tmp/lm32-customizer/tmp.v"
 
                 begin
                     if (last_word ==  1'b1)
@@ -53205,7 +53209,7 @@ begin
                   
             
 
-`line 6714 "/tmp/lm32-customizer/tmp.v"
+`line 6715 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -53214,11 +53218,11 @@ begin
             begin
                 
   
-`line 6721 "/tmp/lm32-customizer/tmp.v"
+`line 6722 "/tmp/lm32-customizer/tmp.v"
      
                 i_sel_o <= 4'b1111;
  
-`line 6723 "/tmp/lm32-customizer/tmp.v"
+`line 6724 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -53228,11 +53232,11 @@ begin
   
                   
 
-`line 6731 "/tmp/lm32-customizer/tmp.v"
+`line 6732 "/tmp/lm32-customizer/tmp.v"
 
             end
   
-`line 6733 "/tmp/lm32-customizer/tmp.v"
+`line 6734 "/tmp/lm32-customizer/tmp.v"
 
             else
             begin
@@ -53254,7 +53258,7 @@ begin
                 end
             end 
  
-`line 6753 "/tmp/lm32-customizer/tmp.v"
+`line 6754 "/tmp/lm32-customizer/tmp.v"
                     
   
             
@@ -53266,7 +53270,7 @@ begin
                
                   
 
-`line 6763 "/tmp/lm32-customizer/tmp.v"
+`line 6764 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -53345,10 +53349,10 @@ end
     
 
 
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -53360,7 +53364,7 @@ begin
   
           
 
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -53371,7 +53375,7 @@ begin
   
               
 
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -53448,7 +53452,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -53733,11 +53737,8 @@ endmodule
 
 
   
-`line 6896 "/tmp/lm32-customizer/tmp.v"
+`line 6897 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 6898 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6899 "/tmp/lm32-customizer/tmp.v"
@@ -53745,10 +53746,10 @@ endmodule
   
 `line 6900 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6903 "/tmp/lm32-customizer/tmp.v"
+`line 6901 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6904 "/tmp/lm32-customizer/tmp.v"
@@ -53771,10 +53772,10 @@ endmodule
   
 `line 6910 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6913 "/tmp/lm32-customizer/tmp.v"
+`line 6911 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6914 "/tmp/lm32-customizer/tmp.v"
@@ -53803,6 +53804,9 @@ endmodule
   
 `line 6922 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6923 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -53817,41 +53821,41 @@ module lm32_jtag_medium_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
   
-`line 6936 "/tmp/lm32-customizer/tmp.v"
+`line 6937 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_enable,
     csr_write_data,
     stall_x,
  
-`line 6941 "/tmp/lm32-customizer/tmp.v"
+`line 6942 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6942 "/tmp/lm32-customizer/tmp.v"
+`line 6943 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6945 "/tmp/lm32-customizer/tmp.v"
+`line 6946 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6946 "/tmp/lm32-customizer/tmp.v"
+`line 6947 "/tmp/lm32-customizer/tmp.v"
 
     exception_q_w,
  
-`line 6948 "/tmp/lm32-customizer/tmp.v"
+`line 6949 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 6950 "/tmp/lm32-customizer/tmp.v"
+`line 6951 "/tmp/lm32-customizer/tmp.v"
 
     jtx_csr_read_data,
     jrx_csr_read_data,
  
-`line 6953 "/tmp/lm32-customizer/tmp.v"
+`line 6954 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6954 "/tmp/lm32-customizer/tmp.v"
+`line 6955 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
@@ -53861,15 +53865,15 @@ module lm32_jtag_medium_debug (
     jtag_write_data,
     jtag_address,
  
-`line 6962 "/tmp/lm32-customizer/tmp.v"
+`line 6963 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6963 "/tmp/lm32-customizer/tmp.v"
+`line 6964 "/tmp/lm32-customizer/tmp.v"
 
     jtag_break,
     jtag_reset,
  
-`line 6966 "/tmp/lm32-customizer/tmp.v"
+`line 6967 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d
@@ -53888,29 +53892,29 @@ input [ 7:0] jtag_reg_q;
 input [2:0] jtag_reg_addr_q;                            
 
   
-`line 6983 "/tmp/lm32-customizer/tmp.v"
+`line 6984 "/tmp/lm32-customizer/tmp.v"
 
 input [ (5-1):0] csr;                              
 input csr_write_enable;                                 
 input [ (32-1):0] csr_write_data;                  
 input stall_x;                                          
  
-`line 6988 "/tmp/lm32-customizer/tmp.v"
+`line 6989 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6989 "/tmp/lm32-customizer/tmp.v"
+`line 6990 "/tmp/lm32-customizer/tmp.v"
 
 input [ 7:0] jtag_read_data;                  
 input jtag_access_complete;                             
  
-`line 6992 "/tmp/lm32-customizer/tmp.v"
+`line 6993 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6993 "/tmp/lm32-customizer/tmp.v"
+`line 6994 "/tmp/lm32-customizer/tmp.v"
 
 input exception_q_w;                                    
  
-`line 6995 "/tmp/lm32-customizer/tmp.v"
+`line 6996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -53918,17 +53922,17 @@ input exception_q_w;
 
        
   
-`line 7001 "/tmp/lm32-customizer/tmp.v"
+`line 7002 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] jtx_csr_read_data;              
 wire   [ (32-1):0] jtx_csr_read_data;
 output [ (32-1):0] jrx_csr_read_data;              
 wire   [ (32-1):0] jrx_csr_read_data;
  
-`line 7006 "/tmp/lm32-customizer/tmp.v"
+`line 7007 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7007 "/tmp/lm32-customizer/tmp.v"
+`line 7008 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_csr_write_enable;                           
 reg    jtag_csr_write_enable;
@@ -53945,17 +53949,17 @@ wire   [ 7:0] jtag_write_data;
 output [ (32-1):0] jtag_address;                   
 wire   [ (32-1):0] jtag_address;
  
-`line 7022 "/tmp/lm32-customizer/tmp.v"
+`line 7023 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7023 "/tmp/lm32-customizer/tmp.v"
+`line 7024 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_break;                                      
 reg    jtag_break;
 output jtag_reset;                                      
 reg    jtag_reset;
  
-`line 7028 "/tmp/lm32-customizer/tmp.v"
+`line 7029 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 reg    [ 7:0] jtag_reg_d;
@@ -53977,19 +53981,19 @@ wire [ 7:0] rx_byte;
 wire [2:0] rx_addr;
 
   
-`line 7048 "/tmp/lm32-customizer/tmp.v"
+`line 7049 "/tmp/lm32-customizer/tmp.v"
                  
 reg [ 7:0] uart_tx_byte;      
 reg uart_tx_valid;                      
 reg [ 7:0] uart_rx_byte;      
 reg uart_rx_valid;                      
  
-`line 7053 "/tmp/lm32-customizer/tmp.v"
+`line 7054 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] command;             
   
-`line 7056 "/tmp/lm32-customizer/tmp.v"
+`line 7057 "/tmp/lm32-customizer/tmp.v"
 
 reg [ 7:0] jtag_byte_0;       
 reg [ 7:0] jtag_byte_1;
@@ -53998,7 +54002,7 @@ reg [ 7:0] jtag_byte_3;
 reg [ 7:0] jtag_byte_4;
 reg processing;                         
  
-`line 7063 "/tmp/lm32-customizer/tmp.v"
+`line 7064 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] state;       
@@ -54008,43 +54012,43 @@ reg [ 3:0] state;
 
 
   
-`line 7071 "/tmp/lm32-customizer/tmp.v"
+`line 7072 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_csr_write_data = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_csr = jtag_byte_4[ (5-1):0];
 assign jtag_address = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_write_data = jtag_byte_4;
  
-`line 7076 "/tmp/lm32-customizer/tmp.v"
+`line 7077 "/tmp/lm32-customizer/tmp.v"
 
                  
 
   
-`line 7079 "/tmp/lm32-customizer/tmp.v"
+`line 7080 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtag_reg_addr_d[1:0] = {uart_rx_valid, uart_tx_valid};         
  
    
 
-`line 7083 "/tmp/lm32-customizer/tmp.v"
+`line 7084 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7084 "/tmp/lm32-customizer/tmp.v"
+`line 7085 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_reg_addr_d[2] = processing;
  
    
 
-`line 7088 "/tmp/lm32-customizer/tmp.v"
+`line 7089 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 7090 "/tmp/lm32-customizer/tmp.v"
+`line 7091 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtx_csr_read_data = {{ 32-9{1'b0}}, uart_tx_valid, 8'h00};
 assign jrx_csr_read_data = {{ 32-9{1'b0}}, uart_rx_valid, uart_rx_byte};
  
-`line 7093 "/tmp/lm32-customizer/tmp.v"
+`line 7094 "/tmp/lm32-customizer/tmp.v"
          
                  
 
@@ -54083,38 +54087,38 @@ begin
         command <= 4'b0000;
         jtag_reg_d <= 8'h00;
   
-`line 7130 "/tmp/lm32-customizer/tmp.v"
+`line 7131 "/tmp/lm32-customizer/tmp.v"
 
         processing <=  1'b0;
         jtag_csr_write_enable <=  1'b0;
         jtag_read_enable <=  1'b0;
         jtag_write_enable <=  1'b0;
  
-`line 7135 "/tmp/lm32-customizer/tmp.v"
+`line 7136 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7136 "/tmp/lm32-customizer/tmp.v"
+`line 7137 "/tmp/lm32-customizer/tmp.v"
 
         jtag_break <=  1'b0;
         jtag_reset <=  1'b0;
  
-`line 7139 "/tmp/lm32-customizer/tmp.v"
+`line 7140 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7140 "/tmp/lm32-customizer/tmp.v"
+`line 7141 "/tmp/lm32-customizer/tmp.v"
                  
         uart_tx_byte <= 8'h00;
         uart_tx_valid <=  1'b0;
         uart_rx_byte <= 8'h00;
         uart_rx_valid <=  1'b0;
  
-`line 7145 "/tmp/lm32-customizer/tmp.v"
+`line 7146 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
     begin
   
-`line 7149 "/tmp/lm32-customizer/tmp.v"
+`line 7150 "/tmp/lm32-customizer/tmp.v"
                  
         if ((csr_write_enable ==  1'b1) && (stall_x ==  1'b0))
         begin
@@ -54133,10 +54137,10 @@ begin
             endcase
         end
  
-`line 7166 "/tmp/lm32-customizer/tmp.v"
+`line 7167 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7167 "/tmp/lm32-customizer/tmp.v"
+`line 7168 "/tmp/lm32-customizer/tmp.v"
 
         
         if (exception_q_w ==  1'b1)
@@ -54145,7 +54149,7 @@ begin
             jtag_reset <=  1'b0;
         end
  
-`line 7174 "/tmp/lm32-customizer/tmp.v"
+`line 7175 "/tmp/lm32-customizer/tmp.v"
 
         case (state)
          4'h0:
@@ -54156,13 +54160,13 @@ begin
                 command <= rx_byte[7:4];                
                 case (rx_addr)
   
-`line 7183 "/tmp/lm32-customizer/tmp.v"
+`line 7184 "/tmp/lm32-customizer/tmp.v"
 
                  3'b000:
                 begin
                     case (rx_byte[7:4])
   
-`line 7187 "/tmp/lm32-customizer/tmp.v"
+`line 7188 "/tmp/lm32-customizer/tmp.v"
 
                      4'b0001:
                         state <=  4'h1;
@@ -54181,39 +54185,39 @@ begin
                      4'b0101:
                         state <=  4'h1;
  
-`line 7204 "/tmp/lm32-customizer/tmp.v"
+`line 7205 "/tmp/lm32-customizer/tmp.v"
                     
                      4'b0110:
                     begin
   
-`line 7207 "/tmp/lm32-customizer/tmp.v"
+`line 7208 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7210 "/tmp/lm32-customizer/tmp.v"
+`line 7211 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_break <=  1'b1;
                     end
                      4'b0111:
                     begin
   
-`line 7215 "/tmp/lm32-customizer/tmp.v"
+`line 7216 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7218 "/tmp/lm32-customizer/tmp.v"
+`line 7219 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_reset <=  1'b1;
                     end
                     endcase                               
                 end
  
-`line 7223 "/tmp/lm32-customizer/tmp.v"
+`line 7224 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7224 "/tmp/lm32-customizer/tmp.v"
+`line 7225 "/tmp/lm32-customizer/tmp.v"
                  
                  3'b001:
                 begin
@@ -54226,7 +54230,7 @@ begin
                     uart_tx_valid <=  1'b0;
                 end
  
-`line 7235 "/tmp/lm32-customizer/tmp.v"
+`line 7236 "/tmp/lm32-customizer/tmp.v"
 
                 default:
                     ;
@@ -54234,7 +54238,7 @@ begin
             end
         end
   
-`line 7241 "/tmp/lm32-customizer/tmp.v"
+`line 7242 "/tmp/lm32-customizer/tmp.v"
 
          4'h1:
         begin
@@ -54322,7 +54326,7 @@ begin
             state <=  4'h0;
         end    
  
-`line 7327 "/tmp/lm32-customizer/tmp.v"
+`line 7328 "/tmp/lm32-customizer/tmp.v"
 
         endcase
     end
@@ -54331,7 +54335,7 @@ end
 endmodule
 
  
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -54403,7 +54407,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -54700,22 +54704,22 @@ module lm32_interrupt_medium_debug (
     
     stall_x,
   
-`line 7377 "/tmp/lm32-customizer/tmp.v"
+`line 7378 "/tmp/lm32-customizer/tmp.v"
 
     non_debug_exception,
     debug_exception,
  
     
 
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
-`line 7384 "/tmp/lm32-customizer/tmp.v"
+`line 7385 "/tmp/lm32-customizer/tmp.v"
 
     bret_q_x,
  
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -54744,22 +54748,22 @@ input [interrupts-1:0] interrupt;
 input stall_x;                                  
 
   
-`line 7413 "/tmp/lm32-customizer/tmp.v"
+`line 7414 "/tmp/lm32-customizer/tmp.v"
 
 input non_debug_exception;                      
 input debug_exception;                          
  
                                  
 
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
-`line 7420 "/tmp/lm32-customizer/tmp.v"
+`line 7421 "/tmp/lm32-customizer/tmp.v"
 
 input bret_q_x;                                 
  
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (5-1):0] csr;                      
@@ -54789,11 +54793,11 @@ wire [interrupts-1:0] interrupt_n_exception;
 reg ie;                                         
 reg eie;                                        
   
-`line 7450 "/tmp/lm32-customizer/tmp.v"
+`line 7451 "/tmp/lm32-customizer/tmp.v"
 
 reg bie;                                        
  
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -54813,13 +54817,13 @@ assign asserted = ip | interrupt;
        
 assign ie_csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7470 "/tmp/lm32-customizer/tmp.v"
+`line 7471 "/tmp/lm32-customizer/tmp.v"
 
                            bie,
  
                            
 
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -54835,13 +54839,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7488 "/tmp/lm32-customizer/tmp.v"
+`line 7489 "/tmp/lm32-customizer/tmp.v"
 
                                     bie,
  
                                                                          
 
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -54860,13 +54864,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7509 "/tmp/lm32-customizer/tmp.v"
+`line 7510 "/tmp/lm32-customizer/tmp.v"
 
                                     bie, 
  
                                                                         
 
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -54883,7 +54887,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -54901,11 +54905,11 @@ always @(posedge clk_i  )
         ie                   <=  1'b0;
         eie                  <=  1'b0;
   
-`line 7544 "/tmp/lm32-customizer/tmp.v"
+`line 7545 "/tmp/lm32-customizer/tmp.v"
 
         bie                  <=  1'b0;
  
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -54917,7 +54921,7 @@ always @(posedge clk_i  )
         
         ip                   <= asserted;
   
-`line 7556 "/tmp/lm32-customizer/tmp.v"
+`line 7557 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -54939,7 +54943,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -54958,13 +54962,13 @@ always @(posedge clk_i  )
                       
            
   
-`line 7593 "/tmp/lm32-customizer/tmp.v"
+`line 7594 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -54974,11 +54978,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7605 "/tmp/lm32-customizer/tmp.v"
+`line 7606 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h1)
@@ -55000,11 +55004,11 @@ always @(posedge clk_i  )
         ie              <=  1'b0;
         eie             <=  1'b0;
   
-`line 7627 "/tmp/lm32-customizer/tmp.v"
+`line 7628 "/tmp/lm32-customizer/tmp.v"
 
         bie             <=  1'b0;
  
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -55014,7 +55018,7 @@ always @(posedge clk_i  )
         
         ip              <= asserted;
   
-`line 7637 "/tmp/lm32-customizer/tmp.v"
+`line 7638 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -55036,7 +55040,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -55053,13 +55057,13 @@ always @(posedge clk_i  )
              end
            
   
-`line 7672 "/tmp/lm32-customizer/tmp.v"
+`line 7673 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -55069,11 +55073,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7684 "/tmp/lm32-customizer/tmp.v"
+`line 7685 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h2)
@@ -55115,50 +55119,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -55240,7 +55200,52 @@ endmodule
 `line 29 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 30 "src/lm32_include.v"
+`line 30 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -55802,67 +55807,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_medium_icache (
+module lm32_top_medium_icache (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
   
     
     
 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
-    
+`line 49 "/tmp/lm32-customizer/tmp.v"
 
+    
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
     
     
     
-
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
     
 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -55871,251 +55886,313 @@ module lm32_mc_arithmetic_medium_icache (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-                                  
-                                 
 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
-
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
-  
-                         
+`line 106 "/tmp/lm32-customizer/tmp.v"
     
 
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
-
-
-
-
-
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
   
-  
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-`line 116 "/tmp/lm32-customizer/tmp.v"
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
+ 
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
+
+
+
+
 
   
                                
-                                 
-
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
-
-      
-
-`line 136 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-
+   
        
+     
+           
+    
+           
+    
 
-`line 141 "/tmp/lm32-customizer/tmp.v"
+`line 133 "/tmp/lm32-customizer/tmp.v"
 
-
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
 
   
-          
+`line 135 "/tmp/lm32-customizer/tmp.v"
 
-`line 161 "/tmp/lm32-customizer/tmp.v"
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
+ 
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
+
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
-          
 
-`line 169 "/tmp/lm32-customizer/tmp.v"
 
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
+
+ 
   
-                   
-                      
-                   
-                      
 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
   
-                   
-                      
+  
+ 
+  
+  
+ 
+ 
 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
+  
+
+                     
+                             
+                            
+                   
+                                 
+ 
+                                 
+
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_medium_icache cpu (
+    
+    .clk_i                 (clk_i),
   
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
 
-`line 206 "/tmp/lm32-customizer/tmp.v"
+`line 218 "/tmp/lm32-customizer/tmp.v"
 
-            end            
-        end
+    .rst_i                 (rst_i),
+    
   
-        
-        
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
                
-            
-                  
-                   
-            
              
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
-        
-        
-               
-            
-                  
-                   
-            
-             
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
 
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
-
-`line 265 "/tmp/lm32-customizer/tmp.v"
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
+    
                   
-                
-        
-        
                
-               
-              
-                   
-                  
                 
-        
+           
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+                
+           
+
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  		   
 
+  
+    
+                     
+                
+    
+                
+                     
+                
+                      
+                     
+    
+
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -56187,7 +56264,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -56470,77 +56547,67 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_medium_icache (
+
+module lm32_mc_arithmetic_medium_icache (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
     
     
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
+`line 360 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
- 
-`line 342 "/tmp/lm32-customizer/tmp.v"
-
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
     
 
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
- 
-`line 366 "/tmp/lm32-customizer/tmp.v"
-
     
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+    
+
+`line 375 "/tmp/lm32-customizer/tmp.v"
+
+    stall_request_x
     );
 
 
@@ -56549,135 +56616,65 @@ module lm32_top_medium_icache (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+                                  
+                                 
 
-
-input [ (32-1):0] interrupt;          
-
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
- 
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 398 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
 
 
 
 
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+                         
+    
+
+`line 411 "/tmp/lm32-customizer/tmp.v"
+
+output stall_request_x;                         
+wire   stall_request_x;
+
+
+
+
+
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
+  
+  
+
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
 
   
                                
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-`line 422 "/tmp/lm32-customizer/tmp.v"
-
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
- 
-`line 441 "/tmp/lm32-customizer/tmp.v"
-
-
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
- 
-  
-
-  
-  
- 
-  
-  
- 
- 
-
-`line 475 "/tmp/lm32-customizer/tmp.v"
-
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
- 
                                  
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-  
-`line 1 "src/lm32_functions.v"
-
-`line 1 "src/lm32_functions.v"
+`line 432 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -56685,177 +56682,185 @@ wire   [ (2-1):0] D_BTE_O;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_medium_icache cpu (
-    
-    .clk_i                 (clk_i),
-  
-                   
-
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-    
-                  
-               
-                
-           
-
-`line 522 "/tmp/lm32-customizer/tmp.v"
+assign stall_request_x = state !=  3'b000;
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-                
-           
-
-`line 549 "/tmp/lm32-customizer/tmp.v"
 
       
-                
-               
-            
-            
 
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
+`line 444 "/tmp/lm32-customizer/tmp.v"
 
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  		   
 
   
-    
-                     
-                
-    
-                
-                     
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+          
+
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
+          
+
+`line 477 "/tmp/lm32-customizer/tmp.v"
+
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
+  
+                   
+                      
+                   
+                      
+
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
+  
+                   
+                      
+
+`line 496 "/tmp/lm32-customizer/tmp.v"
+
+  
+                   
                 
                       
-                     
-    
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
         
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+
+`line 560 "/tmp/lm32-customizer/tmp.v"
+        
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -56963,7 +56968,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -57257,23 +57262,23 @@ module lm32_cpu_medium_icache (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
     
@@ -57282,10 +57287,10 @@ module lm32_cpu_medium_icache (
     
     
 
-`line 688 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 689 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -57293,7 +57298,7 @@ module lm32_cpu_medium_icache (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -57311,13 +57316,13 @@ module lm32_cpu_medium_icache (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -57325,10 +57330,10 @@ module lm32_cpu_medium_icache (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -57341,7 +57346,7 @@ module lm32_cpu_medium_icache (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -57363,11 +57368,11 @@ parameter eba_reset =  32'h00000000;
   
                             
 
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 755 "/tmp/lm32-customizer/tmp.v"
+`line 756 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity =  1;     
 parameter icache_sets =  256;                       
@@ -57381,7 +57386,7 @@ parameter icache_limit =  32'h7fffffff;
          
                        
 
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -57391,7 +57396,7 @@ parameter icache_limit =  32'h7fffffff;
           
                         
 
-`line 775 "/tmp/lm32-customizer/tmp.v"
+`line 776 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity = 1;    
 parameter dcache_sets = 512;                      
@@ -57399,36 +57404,36 @@ parameter dcache_bytes_per_line = 16;
 parameter dcache_base_address = 0;      
 parameter dcache_limit = 0;                    
  
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
                           
 
-`line 785 "/tmp/lm32-customizer/tmp.v"
+`line 786 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints = 0;
  
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -57439,23 +57444,23 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
@@ -57464,18 +57469,18 @@ input [ (32-1):0] interrupt;
                 
   
 
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -57503,7 +57508,7 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -57512,7 +57517,7 @@ input D_RTY_I;
   
     
 
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -57525,11 +57530,11 @@ input D_RTY_I;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -57550,7 +57555,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -57579,11 +57584,11 @@ wire   [ (2-1):0] D_BTE_O;
 
 
   
-`line 923 "/tmp/lm32-customizer/tmp.v"
+`line 924 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_a;                                    
  
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -57631,21 +57636,21 @@ reg x_result_sel_csr_x;
                     
  
 
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -57653,7 +57658,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -57661,27 +57666,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -57713,7 +57718,7 @@ reg [ (3-1):0] condition_x;
                                     
                                      
 
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -57724,7 +57729,7 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
                                      
@@ -57735,7 +57740,7 @@ reg eret_m;
  
 
 
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -57743,7 +57748,7 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -57752,7 +57757,7 @@ wire csr_write_enable_q_x;
  
   
 
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -57769,7 +57774,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -57777,15 +57782,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -57815,32 +57820,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -57848,27 +57853,27 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -57879,7 +57884,7 @@ wire [ (32-1):0] multiplier_result_w;
  
                            
 
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -57887,23 +57892,23 @@ wire [ (32-1):0] multiplier_result_w;
                          
   
 
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -57916,20 +57921,20 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
 wire [ (32-1):0] instruction_d;     
   
-`line 1197 "/tmp/lm32-customizer/tmp.v"
+`line 1198 "/tmp/lm32-customizer/tmp.v"
 
 wire iflush;                                    
 wire icache_stall_request;                      
@@ -57937,7 +57942,7 @@ wire icache_restart_request;
 wire icache_refill_request;                     
 wire icache_refilling;                          
  
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -57946,7 +57951,7 @@ wire icache_refilling;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -57958,7 +57963,7 @@ wire icache_refilling;
                       
                            
 
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
@@ -57984,7 +57989,7 @@ wire stall_wb_load;
                                  
 
 
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -58005,7 +58010,7 @@ reg condition_met_m;
       
                              
 
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -58019,14 +58024,14 @@ reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] eba;
   
                   
 
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58045,14 +58050,14 @@ reg [ (3-1):0] eid_x;
  
  
 
-`line 1297 "/tmp/lm32-customizer/tmp.v"
+`line 1298 "/tmp/lm32-customizer/tmp.v"
 
 wire exception_x;                               
 reg exception_m;
 reg exception_w;
 wire exception_q_w;
  
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58060,38 +58065,38 @@ wire exception_q_w;
                             
 
 
-`line 1308 "/tmp/lm32-customizer/tmp.v"
+`line 1309 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1309 "/tmp/lm32-customizer/tmp.v"
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
                        
                        
 
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
             
                    
 
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
                          
 
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -58185,35 +58190,35 @@ lm32_instruction_unit_medium_icache #(
              
             
 
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
     .branch_mispredict_taken_m (branch_mispredict_taken_m),
     .branch_target_m        (branch_target_m),
   
-`line 1369 "/tmp/lm32-customizer/tmp.v"
+`line 1370 "/tmp/lm32-customizer/tmp.v"
 
     .iflush                 (iflush),
  
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
      
       
            
 
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -58221,7 +58226,7 @@ lm32_instruction_unit_medium_icache #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
            
@@ -58229,7 +58234,7 @@ lm32_instruction_unit_medium_icache #(
             
                
 
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -58239,22 +58244,22 @@ lm32_instruction_unit_medium_icache #(
     .pc_m                   (pc_m),
     .pc_w                   (pc_w),
   
-`line 1402 "/tmp/lm32-customizer/tmp.v"
+`line 1403 "/tmp/lm32-customizer/tmp.v"
 
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
  
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -58267,25 +58272,25 @@ lm32_instruction_unit_medium_icache #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
              
        
 
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -58301,42 +58306,42 @@ lm32_decoder_medium_icache decoder (
   
       
 
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -58355,28 +58360,28 @@ lm32_decoder_medium_icache decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
                      
                     
 
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -58386,19 +58391,19 @@ lm32_decoder_medium_icache decoder (
   
                
 
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
                        
 
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -58436,12 +58441,12 @@ lm32_load_store_unit_medium_icache #(
   
                      
 
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -58456,7 +58461,7 @@ lm32_load_store_unit_medium_icache #(
        
            
 
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -58464,7 +58469,7 @@ lm32_load_store_unit_medium_icache #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -58505,7 +58510,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -58521,11 +58526,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -58540,7 +58545,7 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58573,11 +58578,11 @@ lm32_multiplier multiplier (
             
     
 
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_medium_icache interrupt_unit (
@@ -58592,17 +58597,17 @@ lm32_interrupt_medium_icache interrupt_unit (
          
             
 
-`line 1683 "/tmp/lm32-customizer/tmp.v"
+`line 1684 "/tmp/lm32-customizer/tmp.v"
 
     .exception              (exception_q_w), 
  
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
                    
 
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -58613,7 +58618,7 @@ lm32_interrupt_medium_icache interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58665,7 +58670,7 @@ lm32_interrupt_medium_icache interrupt_unit (
             
     
 
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58708,13 +58713,13 @@ lm32_interrupt_medium_icache interrupt_unit (
                    
     
 
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -58833,7 +58838,7 @@ lm32_interrupt_medium_icache interrupt_unit (
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -58903,7 +58908,7 @@ lm32_interrupt_medium_icache interrupt_unit (
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -58912,23 +58917,23 @@ lm32_interrupt_medium_icache interrupt_unit (
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -59018,25 +59023,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -59065,26 +59070,26 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
+`line 2131 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -59094,11 +59099,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -59108,11 +59113,11 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
@@ -59126,7 +59131,7 @@ end
                                  
                               
 
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -59172,59 +59177,59 @@ assign kill_f =    (   (valid_d ==  1'b1)
       
                    
 
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2210 "/tmp/lm32-customizer/tmp.v"
+`line 2211 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1) 
  
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
                   
                    
 
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
       
                    
 
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2221 "/tmp/lm32-customizer/tmp.v"
+`line 2222 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1)     
  
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
                   
                    
 
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
                   
                    
 
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
                   
                    
 
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
                   
                    
 
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
@@ -59241,13 +59246,13 @@ assign kill_w =     1'b0
 
                               
 
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -59256,20 +59261,20 @@ assign kill_w =     1'b0
                                          
      
 
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
                                    
 
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
@@ -59304,42 +59309,42 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 
          
 
-`line 2309 "/tmp/lm32-customizer/tmp.v"
+`line 2310 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_x =           (system_call_exception ==  1'b1)
   
                                
                                
 
-`line 2314 "/tmp/lm32-customizer/tmp.v"
+`line 2315 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 2317 "/tmp/lm32-customizer/tmp.v"
+`line 2318 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2318 "/tmp/lm32-customizer/tmp.v"
+`line 2319 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
                                    
 
-`line 2322 "/tmp/lm32-customizer/tmp.v"
+`line 2323 "/tmp/lm32-customizer/tmp.v"
                             
   
  				   
 				   
 
-`line 2326 "/tmp/lm32-customizer/tmp.v"
+`line 2327 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2328 "/tmp/lm32-customizer/tmp.v"
+`line 2329 "/tmp/lm32-customizer/tmp.v"
 
                             ;
  
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -59360,7 +59365,7 @@ begin
           
     
 
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
             
@@ -59370,36 +59375,36 @@ begin
           
     
 
-`line 2357 "/tmp/lm32-customizer/tmp.v"
+`line 2358 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
      
 
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
     
 
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
                 
 
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -59419,7 +59424,7 @@ assign stall_d =   (stall_x ==  1'b1)
   
 			   
 
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -59443,7 +59448,7 @@ assign stall_d =   (stall_x ==  1'b1)
                        
 		   
 
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -59456,7 +59461,7 @@ assign stall_x =    (stall_m ==  1'b1)
                         
                      
 
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -59467,7 +59472,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -59475,7 +59480,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -59493,26 +59498,26 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
                          
 
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
-`line 2469 "/tmp/lm32-customizer/tmp.v"
+`line 2470 "/tmp/lm32-customizer/tmp.v"
 
                  || (icache_stall_request ==  1'b1)     
                  || ((I_CYC_O ==  1'b1) && ((branch_m ==  1'b1) || (exception_m ==  1'b1))) 
@@ -59521,14 +59526,14 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                                 
 
 
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
@@ -59536,24 +59541,24 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
          
 
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
+`line 2495 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
@@ -59561,14 +59566,14 @@ assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
          
 
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
                   
 
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
@@ -59576,13 +59581,13 @@ assign store_q_x = (store_x ==  1'b1)
   
                   
 
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
@@ -59591,11 +59596,11 @@ assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
          
                  
 
-`line 2526 "/tmp/lm32-customizer/tmp.v"
+`line 2527 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_q_w = ((exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -59613,110 +59618,110 @@ assign cfg = {
   
               
 
-`line 2544 "/tmp/lm32-customizer/tmp.v"
+`line 2545 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
+`line 2552 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2554 "/tmp/lm32-customizer/tmp.v"
+`line 2555 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2556 "/tmp/lm32-customizer/tmp.v"
+`line 2557 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2559 "/tmp/lm32-customizer/tmp.v"
+`line 2560 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2561 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2562 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2563 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2566 "/tmp/lm32-customizer/tmp.v"
+`line 2567 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2569 "/tmp/lm32-customizer/tmp.v"
+`line 2570 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
+`line 2592 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2594 "/tmp/lm32-customizer/tmp.v"
+`line 2595 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -59725,26 +59730,26 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
 
   
-`line 2619 "/tmp/lm32-customizer/tmp.v"
+`line 2620 "/tmp/lm32-customizer/tmp.v"
 
 assign iflush = (   (csr_write_enable_d ==  1'b1) 
                  && (csr_d ==  3'h3)
@@ -59757,11 +59762,11 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
                      
 		    
 
-`line 2630 "/tmp/lm32-customizer/tmp.v"
+`line 2631 "/tmp/lm32-customizer/tmp.v"
 
 		 ;
  
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
          
@@ -59774,7 +59779,7 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
 
 		   
 
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -59785,31 +59790,31 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      3'h0,
      3'h1,
      3'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      3'h6:  csr_read_data_x = cfg;
      3'h7:  csr_read_data_x = {eba, 8'h00};
   
         
 
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
           
         
 
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      3'ha: csr_read_data_x = cfg2;
       
@@ -59834,7 +59839,7 @@ begin
                
               
 
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
@@ -59856,7 +59861,7 @@ end
     
 
 
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -59869,7 +59874,7 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -59889,13 +59894,13 @@ end
     
 
 
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
 
   
-`line 2744 "/tmp/lm32-customizer/tmp.v"
+`line 2745 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -59912,7 +59917,7 @@ end
             
  
 
-`line 2759 "/tmp/lm32-customizer/tmp.v"
+`line 2760 "/tmp/lm32-customizer/tmp.v"
 
 always @(*)
 begin
@@ -59924,7 +59929,7 @@ begin
         valid_a = !icache_refilling;
 end 
  
-`line 2769 "/tmp/lm32-customizer/tmp.v"
+`line 2770 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -59939,7 +59944,7 @@ end
  
 
 
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -59956,13 +59961,13 @@ begin
     begin    
         if ((kill_f ==  1'b1) || (stall_a ==  1'b0))
   
-`line 2797 "/tmp/lm32-customizer/tmp.v"
+`line 2798 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <= valid_a;    
  
               
 
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -60003,7 +60008,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -60013,42 +60018,42 @@ begin
   
           
 
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -60063,17 +60068,17 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
@@ -60082,39 +60087,39 @@ begin
   
           
 
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
           
 
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
 
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -60124,11 +60129,11 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
@@ -60136,22 +60141,22 @@ begin
   
           
 
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
           
                   
 
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
@@ -60159,16 +60164,16 @@ begin
           
                   
 
-`line 2944 "/tmp/lm32-customizer/tmp.v"
+`line 2945 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <=  1'b0;
  
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -60180,7 +60185,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -60190,42 +60195,42 @@ begin
   
               
 
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -60242,35 +60247,35 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
               
 
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
               
 
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
                
 
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -60282,54 +60287,54 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
       
                 
 
-`line 3054 "/tmp/lm32-customizer/tmp.v"
+`line 3055 "/tmp/lm32-customizer/tmp.v"
 
             branch_m <= branch_x;
 	    branch_predict_m <= branch_predict_x;
 	    branch_predict_taken_m <= branch_predict_taken_x;
  
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
 	   
@@ -60344,14 +60349,14 @@ begin
              
                   
 
-`line 3071 "/tmp/lm32-customizer/tmp.v"
+`line 3072 "/tmp/lm32-customizer/tmp.v"
 
             if (exception_x ==  1'b1)
                 write_idx_m <=  5'd30;
             else 
                 write_idx_m <= write_idx_x;
  
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
@@ -60365,34 +60370,34 @@ begin
 	   
 	       
 
-`line 3088 "/tmp/lm32-customizer/tmp.v"
+`line 3089 "/tmp/lm32-customizer/tmp.v"
 
             branch_target_m <= exception_x ==  1'b1 ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
  
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
                
 
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
               
                       
 
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -60410,7 +60415,7 @@ begin
 
 					 
 
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
@@ -60418,19 +60423,19 @@ begin
   
                       
 
-`line 3127 "/tmp/lm32-customizer/tmp.v"
+`line 3128 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
  
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -60440,18 +60445,18 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
           
           
 
-`line 3146 "/tmp/lm32-customizer/tmp.v"
+`line 3147 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <= exception_m;
  
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
               
@@ -60461,13 +60466,13 @@ begin
 	   
             
 
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -60499,11 +60504,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -60549,7 +60554,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -60613,7 +60618,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -60626,14 +60631,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -60723,7 +60728,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -61037,12 +61042,12 @@ module lm32_load_store_unit_medium_icache (
   
     
 
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -61057,7 +61062,7 @@ module lm32_load_store_unit_medium_icache (
     
     
 
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -61065,7 +61070,7 @@ module lm32_load_store_unit_medium_icache (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -61126,13 +61131,13 @@ input [ 1:0] size_x;
   
                                             
 
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -61154,7 +61159,7 @@ input d_rty_i;
  
    
 
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -61167,7 +61172,7 @@ input d_rty_i;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -61221,7 +61226,7 @@ reg [ (32-1):0] data_w;
                                           
                       
 
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -61232,14 +61237,14 @@ reg [ (32-1):0] data_w;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -61393,7 +61398,7 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -61429,7 +61434,7 @@ endfunction
                   
     
 
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -61441,14 +61446,14 @@ endfunction
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -61462,24 +61467,24 @@ endfunction
 
                      
 
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
                           
 
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -61516,7 +61521,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -61526,7 +61531,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -61549,7 +61554,7 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -61587,7 +61592,7 @@ end
   
  
 
-`line 3843 "/tmp/lm32-customizer/tmp.v"
+`line 3844 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -61604,7 +61609,7 @@ end
                     
   
  
-`line 3858 "/tmp/lm32-customizer/tmp.v"
+`line 3859 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -61612,18 +61617,18 @@ end
                      
                     
   
-`line 3864 "/tmp/lm32-customizer/tmp.v"
+`line 3865 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_data_m;
    
-`line 3867 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 3868 "/tmp/lm32-customizer/tmp.v"
 
- 
+  
 `line 3869 "/tmp/lm32-customizer/tmp.v"
+
+ 
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -61672,7 +61677,7 @@ assign d_bte_o =  2'b00;
     
 
 
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -61698,7 +61703,7 @@ begin
                   
           
 
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
@@ -61707,7 +61712,7 @@ begin
         
           
 
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -61723,7 +61728,7 @@ begin
                 
                 
 
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -61736,7 +61741,7 @@ begin
                 
                   
 
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -61764,19 +61769,19 @@ begin
             
              
 
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -61831,17 +61836,17 @@ begin
   
           
 
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -61856,17 +61861,17 @@ begin
   
               
 
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -61987,7 +61992,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -62273,15 +62278,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -62415,6 +62417,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -62430,42 +62435,42 @@ module lm32_decoder_medium_icache (
   
     
 
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -62484,28 +62489,28 @@ module lm32_decoder_medium_icache (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
+`line 4274 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -62515,19 +62520,19 @@ module lm32_decoder_medium_icache (
   
     
 
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
     
 
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -62552,21 +62557,21 @@ reg    x_result_sel_csr;
  
     
 
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -62574,29 +62579,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -62631,12 +62636,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -62644,13 +62649,13 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
+`line 4391 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -62658,7 +62663,7 @@ wire   direction;
  
    
 
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -62674,7 +62679,7 @@ wire bi_unconditional;
  
    
 
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
@@ -62684,13 +62689,13 @@ wire   eret;
  
    
 
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -62795,7 +62800,7 @@ assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
        
 
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -62805,14 +62810,14 @@ assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
        
 
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -62821,20 +62826,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -62854,42 +62859,42 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
     
    
 
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -62913,25 +62918,25 @@ begin
   
       
 
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
@@ -62950,21 +62955,21 @@ begin
                       
 
 
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -62972,7 +62977,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -62981,21 +62986,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -63006,46 +63011,46 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
                          
                          
 
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -63072,12 +63077,12 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
@@ -63086,20 +63091,20 @@ assign condition = instruction[28:26];
   
      
 
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
        
 
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -63202,7 +63207,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -63487,11 +63492,8 @@ endmodule
 
 
   
-`line 4748 "/tmp/lm32-customizer/tmp.v"
+`line 4749 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 4750 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 4751 "/tmp/lm32-customizer/tmp.v"
@@ -63502,9 +63504,9 @@ endmodule
   
 `line 4753 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4755 "/tmp/lm32-customizer/tmp.v"
+`line 4754 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4756 "/tmp/lm32-customizer/tmp.v"
@@ -63515,9 +63517,9 @@ endmodule
   
 `line 4758 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4760 "/tmp/lm32-customizer/tmp.v"
+`line 4759 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4761 "/tmp/lm32-customizer/tmp.v"
@@ -63528,9 +63530,9 @@ endmodule
   
 `line 4763 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4765 "/tmp/lm32-customizer/tmp.v"
+`line 4764 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4766 "/tmp/lm32-customizer/tmp.v"
@@ -63543,6 +63545,9 @@ endmodule
 
   
 `line 4769 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4770 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -63564,7 +63569,7 @@ module lm32_icache_medium_icache (
   
     
 
-`line 4789 "/tmp/lm32-customizer/tmp.v"
+`line 4790 "/tmp/lm32-customizer/tmp.v"
 
     valid_d,
     branch_predict_taken_d,
@@ -63621,7 +63626,7 @@ input iflush;
   
                                       
 
-`line 4844 "/tmp/lm32-customizer/tmp.v"
+`line 4845 "/tmp/lm32-customizer/tmp.v"
 
    
 
@@ -63927,7 +63932,7 @@ begin
                   
 	      
 
-`line 5093 "/tmp/lm32-customizer/tmp.v"
+`line 5094 "/tmp/lm32-customizer/tmp.v"
 
 		state <=  4'b0100;
 	   
@@ -64005,7 +64010,7 @@ endgenerate
 endmodule
 
  
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -64080,7 +64085,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -64837,7 +64842,7 @@ endmodule
 
 
 
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -64913,7 +64918,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -65512,7 +65517,7 @@ endmodule
 
 
 
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -65602,7 +65607,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -65909,35 +65914,35 @@ module lm32_instruction_unit_medium_icache (
     
     
 
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
     branch_mispredict_taken_m,
     branch_target_m,
   
-`line 6100 "/tmp/lm32-customizer/tmp.v"
+`line 6101 "/tmp/lm32-customizer/tmp.v"
 
     iflush,
  
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
     
 
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -65945,7 +65950,7 @@ module lm32_instruction_unit_medium_icache (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
     
@@ -65953,7 +65958,7 @@ module lm32_instruction_unit_medium_icache (
     
     
 
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -65963,22 +65968,22 @@ module lm32_instruction_unit_medium_icache (
     pc_m,
     pc_w,
   
-`line 6133 "/tmp/lm32-customizer/tmp.v"
+`line 6134 "/tmp/lm32-customizer/tmp.v"
 
     icache_stall_request,
     icache_restart_request,
     icache_refill_request,
     icache_refilling,
  
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -65991,25 +65996,25 @@ module lm32_instruction_unit_medium_icache (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6160 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 6161 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -66052,7 +66057,7 @@ input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_predict_address_d;
                                     
                      
 
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -66060,18 +66065,18 @@ input branch_mispredict_taken_m;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_m;                   
 
   
-`line 6210 "/tmp/lm32-customizer/tmp.v"
+`line 6211 "/tmp/lm32-customizer/tmp.v"
 
 input iflush;                                           
  
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
                             
                              
  
 
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -66079,18 +66084,18 @@ input iflush;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -66099,7 +66104,7 @@ input i_rty_i;
                    
                       
 
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66118,7 +66123,7 @@ output [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 reg    [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 
   
-`line 6254 "/tmp/lm32-customizer/tmp.v"
+`line 6255 "/tmp/lm32-customizer/tmp.v"
 
 output icache_stall_request;                            
 wire   icache_stall_request;
@@ -66129,28 +66134,28 @@ wire   icache_refill_request;
 output icache_refilling;                                
 wire   icache_refilling;
  
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
      
 
-`line 6274 "/tmp/lm32-customizer/tmp.v"
+`line 6275 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (32-1):0] i_dat_o;
  
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -66160,11 +66165,11 @@ output [ (4-1):0] i_sel_o;
   
      
 
-`line 6284 "/tmp/lm32-customizer/tmp.v"
+`line 6285 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (4-1):0] i_sel_o;
  
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
@@ -66172,11 +66177,11 @@ output i_we_o;
   
     
 
-`line 6292 "/tmp/lm32-customizer/tmp.v"
+`line 6293 "/tmp/lm32-customizer/tmp.v"
 
 wire   i_we_o;
  
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -66185,7 +66190,7 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -66194,22 +66199,22 @@ wire   [ (2-1):0] i_bte_o;
                              
    
 
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                       
     
 
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -66221,15 +66226,15 @@ reg    [ (32-1):0] instruction_d;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_a;                                
 
   
-`line 6327 "/tmp/lm32-customizer/tmp.v"
+`line 6328 "/tmp/lm32-customizer/tmp.v"
 
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] restart_address;                     
  
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6331 "/tmp/lm32-customizer/tmp.v"
+`line 6332 "/tmp/lm32-customizer/tmp.v"
 
 wire icache_read_enable_f;                              
 wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] icache_refill_address;              
@@ -66245,33 +66250,33 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                     
 
 
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
                                          
 
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                          
 
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66387,11 +66392,11 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
-`line 6422 "/tmp/lm32-customizer/tmp.v"
+`line 6423 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_icache_medium_icache #(
@@ -66423,7 +66428,7 @@ lm32_icache_medium_icache #(
     .inst                   (icache_data_f)
     );
  
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66431,7 +66436,7 @@ lm32_icache_medium_icache #(
 
 
   
-`line 6458 "/tmp/lm32-customizer/tmp.v"
+`line 6459 "/tmp/lm32-customizer/tmp.v"
 
 
 assign icache_read_enable_f =    (valid_f ==  1'b1)
@@ -66439,16 +66444,16 @@ assign icache_read_enable_f =    (valid_f ==  1'b1)
   
                                  
 
-`line 6464 "/tmp/lm32-customizer/tmp.v"
+`line 6465 "/tmp/lm32-customizer/tmp.v"
                          
    
                                  
 
-`line 6467 "/tmp/lm32-customizer/tmp.v"
+`line 6468 "/tmp/lm32-customizer/tmp.v"
        
                               ;
  
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66460,7 +66465,7 @@ begin
           
      
 
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -66471,20 +66476,20 @@ begin
           
           
 
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
 	  pc_a = branch_predict_address_d;
 	else
   
-`line 6493 "/tmp/lm32-customizer/tmp.v"
+`line 6494 "/tmp/lm32-customizer/tmp.v"
 
           if (icache_restart_request ==  1'b1)
             pc_a = restart_address;
 	  else 
  
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -66493,21 +66498,21 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
   
-`line 6507 "/tmp/lm32-customizer/tmp.v"
+`line 6508 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 6510 "/tmp/lm32-customizer/tmp.v"
+`line 6511 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = icache_data_f;
  
-`line 6512 "/tmp/lm32-customizer/tmp.v"
+`line 6513 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -66520,30 +66525,30 @@ assign instruction_f = icache_data_f;
    
 
 
-`line 6523 "/tmp/lm32-customizer/tmp.v"
+`line 6524 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 6526 "/tmp/lm32-customizer/tmp.v"
+`line 6527 "/tmp/lm32-customizer/tmp.v"
 
   
 
-`line 6528 "/tmp/lm32-customizer/tmp.v"
+`line 6529 "/tmp/lm32-customizer/tmp.v"
 
 assign i_dat_o = 32'd0;
 assign i_we_o =  1'b0;
 assign i_sel_o = 4'b1111;
  
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6536 "/tmp/lm32-customizer/tmp.v"
+`line 6537 "/tmp/lm32-customizer/tmp.v"
 
 
 generate
@@ -66572,7 +66577,7 @@ assign first_address = {icache_refill_address[ (clogb2(32'h7fffffff-32'h0)-2)+2-
     endcase
 endgenerate
  
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -66605,7 +66610,7 @@ begin
 end
 
   
-`line 6594 "/tmp/lm32-customizer/tmp.v"
+`line 6595 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -66626,23 +66631,23 @@ begin
                   
 
 
-`line 6613 "/tmp/lm32-customizer/tmp.v"
+`line 6614 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6614 "/tmp/lm32-customizer/tmp.v"
+`line 6615 "/tmp/lm32-customizer/tmp.v"
         
             if (icache_refill_request ==  1'b1)
                 restart_address <= icache_refill_address;
  
-`line 6617 "/tmp/lm32-customizer/tmp.v"
+`line 6618 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6618 "/tmp/lm32-customizer/tmp.v"
+`line 6619 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66658,7 +66663,7 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -66673,15 +66678,15 @@ end
      
 
 
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6652 "/tmp/lm32-customizer/tmp.v"
+`line 6653 "/tmp/lm32-customizer/tmp.v"
                 
 always @(posedge clk_i  )
 begin
@@ -66697,14 +66702,14 @@ begin
   
           
 
-`line 6666 "/tmp/lm32-customizer/tmp.v"
+`line 6667 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
           
 
-`line 6671 "/tmp/lm32-customizer/tmp.v"
+`line 6672 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -66726,7 +66731,7 @@ begin
                 
                 
 
-`line 6691 "/tmp/lm32-customizer/tmp.v"
+`line 6692 "/tmp/lm32-customizer/tmp.v"
 
                 begin
                     if (last_word ==  1'b1)
@@ -66751,7 +66756,7 @@ begin
                   
             
 
-`line 6714 "/tmp/lm32-customizer/tmp.v"
+`line 6715 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -66762,7 +66767,7 @@ begin
        
                   
 
-`line 6723 "/tmp/lm32-customizer/tmp.v"
+`line 6724 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -66772,7 +66777,7 @@ begin
   
                   
 
-`line 6731 "/tmp/lm32-customizer/tmp.v"
+`line 6732 "/tmp/lm32-customizer/tmp.v"
 
             end
   
@@ -66796,7 +66801,7 @@ begin
                 
              
 
-`line 6753 "/tmp/lm32-customizer/tmp.v"
+`line 6754 "/tmp/lm32-customizer/tmp.v"
                     
   
             
@@ -66808,7 +66813,7 @@ begin
                
                   
 
-`line 6763 "/tmp/lm32-customizer/tmp.v"
+`line 6764 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -66887,10 +66892,10 @@ end
     
 
 
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -66902,7 +66907,7 @@ begin
   
           
 
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -66913,7 +66918,7 @@ begin
   
               
 
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -66990,7 +66995,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -67713,7 +67718,7 @@ endmodule
 
 
 
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -67785,7 +67790,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -68085,17 +68090,17 @@ module lm32_interrupt_medium_icache (
     
     
 
-`line 7380 "/tmp/lm32-customizer/tmp.v"
+`line 7381 "/tmp/lm32-customizer/tmp.v"
 
     exception,
  
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
     
 
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -68127,17 +68132,17 @@ input stall_x;
                        
                            
 
-`line 7416 "/tmp/lm32-customizer/tmp.v"
+`line 7417 "/tmp/lm32-customizer/tmp.v"
 
 input exception;                                
  
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
                                   
 
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (3-1):0] csr;                      
@@ -68169,7 +68174,7 @@ reg eie;
   
                                          
 
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -68191,11 +68196,11 @@ assign ie_csr_read_data = {{ 32-3{1'b0}},
   
                            
 
-`line 7472 "/tmp/lm32-customizer/tmp.v"
+`line 7473 "/tmp/lm32-customizer/tmp.v"
 
                            1'b0,
  
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -68213,11 +68218,11 @@ begin
   
                                     
 
-`line 7490 "/tmp/lm32-customizer/tmp.v"
+`line 7491 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                     
  
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -68238,11 +68243,11 @@ begin
   
                                      
 
-`line 7511 "/tmp/lm32-customizer/tmp.v"
+`line 7512 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                    
  
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -68259,7 +68264,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -68279,7 +68284,7 @@ always @(posedge clk_i  )
   
                            
 
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -68304,7 +68309,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7569 "/tmp/lm32-customizer/tmp.v"
+`line 7570 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -68313,7 +68318,7 @@ always @(posedge clk_i  )
             ie               <=  1'b0;
         end
  
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -68336,7 +68341,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -68348,7 +68353,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h1)
@@ -68372,7 +68377,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -68395,7 +68400,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7650 "/tmp/lm32-customizer/tmp.v"
+`line 7651 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -68404,7 +68409,7 @@ always @(posedge clk_i  )
             ie          <=  1'b0;
         end
  
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -68425,7 +68430,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -68437,7 +68442,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h2)
@@ -68479,50 +68484,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -68621,7 +68582,52 @@ endmodule
 `line 30 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 31 "src/lm32_include.v"
+`line 31 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -69211,67 +69217,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_medium_icache_debug (
+module lm32_top_medium_icache_debug (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
   
     
     
 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
-    
+`line 49 "/tmp/lm32-customizer/tmp.v"
 
+    
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
     
     
     
-
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
     
 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -69280,251 +69296,321 @@ module lm32_mc_arithmetic_medium_icache_debug (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-                                  
-                                 
 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
-
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
-  
-                         
+`line 106 "/tmp/lm32-customizer/tmp.v"
     
 
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
-
-
-
-
-
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
   
-  
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-`line 116 "/tmp/lm32-customizer/tmp.v"
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
+ 
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
+
+
+
+
 
   
                                
-                                 
-
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
-
-      
-
-`line 136 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-
+   
        
+     
+           
+    
+           
+    
 
-`line 141 "/tmp/lm32-customizer/tmp.v"
+`line 133 "/tmp/lm32-customizer/tmp.v"
 
-
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
 
   
-          
+`line 135 "/tmp/lm32-customizer/tmp.v"
 
-`line 161 "/tmp/lm32-customizer/tmp.v"
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
+ 
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
+
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
-          
 
-`line 169 "/tmp/lm32-customizer/tmp.v"
 
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
+
+ 
   
-                   
-                      
-                   
-                      
+`line 179 "/tmp/lm32-customizer/tmp.v"
 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
-  
-                   
-                      
 
+wire [ 7:0] jtag_reg_d;
+wire [ 7:0] jtag_reg_q;
+wire jtag_update;
+wire [2:0] jtag_reg_addr_d;
+wire [2:0] jtag_reg_addr_q;
+wire jtck;
+wire jrstn;
+ 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
+  
+
+                     
+                             
+                            
+                   
+                                 
+ 
+                                 
+
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_medium_icache_debug cpu (
+    
+    .clk_i                 (clk_i),
   
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
 
-`line 206 "/tmp/lm32-customizer/tmp.v"
+`line 218 "/tmp/lm32-customizer/tmp.v"
 
-            end            
-        end
+    .rst_i                 (rst_i),
+    
   
-        
-        
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
                
-            
-                  
-                   
-            
              
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
-        
-        
-               
-            
-                  
-                   
-            
-             
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
 
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
-
-`line 265 "/tmp/lm32-customizer/tmp.v"
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
-                  
-                
-        
-        
-               
-               
-              
-                   
-                  
-                
-        
+`line 229 "/tmp/lm32-customizer/tmp.v"
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+    
+    .jtag_clk              (jtck),
+    .jtag_update           (jtag_update),
+    .jtag_reg_q            (jtag_reg_q),
+    .jtag_reg_addr_q       (jtag_reg_addr_q),
+ 
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 259 "/tmp/lm32-customizer/tmp.v"
+
+    .jtag_reg_d            (jtag_reg_d),
+    .jtag_reg_addr_d       (jtag_reg_addr_d),
+ 
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  
+`line 293 "/tmp/lm32-customizer/tmp.v"
+		   
 
+jtag_cores jtag_cores (
+    
+    .reg_d                 (jtag_reg_d),
+    .reg_addr_d            (jtag_reg_addr_d),
+    
+    .reg_update            (jtag_update),
+    .reg_q                 (jtag_reg_q),
+    .reg_addr_q            (jtag_reg_addr_q),
+    .jtck                  (jtck),
+    .jrstn                 (jrstn)
+    );
+ 
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -69596,7 +69682,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -69879,77 +69965,67 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_medium_icache_debug (
+
+module lm32_mc_arithmetic_medium_icache_debug (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
     
     
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
+`line 360 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
- 
-`line 342 "/tmp/lm32-customizer/tmp.v"
-
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
     
 
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
- 
-`line 366 "/tmp/lm32-customizer/tmp.v"
-
     
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+    
+
+`line 375 "/tmp/lm32-customizer/tmp.v"
+
+    stall_request_x
     );
 
 
@@ -69958,137 +70034,65 @@ module lm32_top_medium_icache_debug (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+                                  
+                                 
 
-
-input [ (32-1):0] interrupt;          
-
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
- 
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 398 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
 
 
 
 
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+                         
+    
+
+`line 411 "/tmp/lm32-customizer/tmp.v"
+
+output stall_request_x;                         
+wire   stall_request_x;
+
+
+
+
+
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
+  
+  
+
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
 
   
                                
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-`line 422 "/tmp/lm32-customizer/tmp.v"
-
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
- 
-`line 441 "/tmp/lm32-customizer/tmp.v"
-
-
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
- 
-  
-`line 466 "/tmp/lm32-customizer/tmp.v"
-
-
-wire [ 7:0] jtag_reg_d;
-wire [ 7:0] jtag_reg_q;
-wire jtag_update;
-wire [2:0] jtag_reg_addr_d;
-wire [2:0] jtag_reg_addr_q;
-wire jtck;
-wire jrstn;
- 
-`line 475 "/tmp/lm32-customizer/tmp.v"
-
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
- 
                                  
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-  
-`line 1 "src/lm32_functions.v"
-
-`line 1 "src/lm32_functions.v"
+`line 432 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -70096,183 +70100,185 @@ wire jrstn;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_medium_icache_debug cpu (
-    
-    .clk_i                 (clk_i),
-  
-                   
-
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-`line 516 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .jtag_clk              (jtck),
-    .jtag_update           (jtag_update),
-    .jtag_reg_q            (jtag_reg_q),
-    .jtag_reg_addr_q       (jtag_reg_addr_q),
- 
-`line 522 "/tmp/lm32-customizer/tmp.v"
+assign stall_request_x = state !=  3'b000;
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 546 "/tmp/lm32-customizer/tmp.v"
-
-    .jtag_reg_d            (jtag_reg_d),
-    .jtag_reg_addr_d       (jtag_reg_addr_d),
- 
-`line 549 "/tmp/lm32-customizer/tmp.v"
 
       
+
+`line 444 "/tmp/lm32-customizer/tmp.v"
+
+
+  
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+          
+
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
+          
+
+`line 477 "/tmp/lm32-customizer/tmp.v"
+
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
+  
+                   
+                      
+                   
+                      
+
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
+  
+                   
+                      
+
+`line 496 "/tmp/lm32-customizer/tmp.v"
+
+  
+                   
                 
+                      
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
+
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
+        
+        
                
             
+                  
+                   
             
-
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  
-`line 580 "/tmp/lm32-customizer/tmp.v"
-		   
-
-jtag_cores jtag_cores (
-    
-    .reg_d                 (jtag_reg_d),
-    .reg_addr_d            (jtag_reg_addr_d),
-    
-    .reg_update            (jtag_update),
-    .reg_q                 (jtag_reg_q),
-    .reg_addr_q            (jtag_reg_addr_q),
-    .jtck                  (jtck),
-    .jrstn                 (jrstn)
-    );
- 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
         
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+
+`line 560 "/tmp/lm32-customizer/tmp.v"
+        
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -70380,7 +70386,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -70674,26 +70680,26 @@ module lm32_cpu_medium_icache_debug (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
-`line 682 "/tmp/lm32-customizer/tmp.v"
+`line 683 "/tmp/lm32-customizer/tmp.v"
 
     
     jtag_clk,
@@ -70701,10 +70707,10 @@ module lm32_cpu_medium_icache_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
  
-`line 688 "/tmp/lm32-customizer/tmp.v"
+`line 689 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 689 "/tmp/lm32-customizer/tmp.v"
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -70712,7 +70718,7 @@ module lm32_cpu_medium_icache_debug (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -70730,15 +70736,15 @@ module lm32_cpu_medium_icache_debug (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 712 "/tmp/lm32-customizer/tmp.v"
+`line 713 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d,
  
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -70746,10 +70752,10 @@ module lm32_cpu_medium_icache_debug (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -70762,7 +70768,7 @@ module lm32_cpu_medium_icache_debug (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -70782,15 +70788,15 @@ module lm32_cpu_medium_icache_debug (
 
 parameter eba_reset =  32'h00000000;                           
   
-`line 751 "/tmp/lm32-customizer/tmp.v"
+`line 752 "/tmp/lm32-customizer/tmp.v"
 
 parameter deba_reset =  32'h10000000;                         
  
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 755 "/tmp/lm32-customizer/tmp.v"
+`line 756 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity =  1;     
 parameter icache_sets =  256;                       
@@ -70804,7 +70810,7 @@ parameter icache_limit =  32'h7fffffff;
          
                        
 
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -70814,7 +70820,7 @@ parameter icache_limit =  32'h7fffffff;
           
                         
 
-`line 775 "/tmp/lm32-customizer/tmp.v"
+`line 776 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity = 1;    
 parameter dcache_sets = 512;                      
@@ -70822,36 +70828,36 @@ parameter dcache_bytes_per_line = 16;
 parameter dcache_base_address = 0;      
 parameter dcache_limit = 0;                    
  
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 783 "/tmp/lm32-customizer/tmp.v"
+`line 784 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints =  32'h4;                       
  
    
 
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -70862,45 +70868,45 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
-`line 819 "/tmp/lm32-customizer/tmp.v"
+`line 820 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
 input [2:0] jtag_reg_addr_q;
  
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -70928,18 +70934,18 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 859 "/tmp/lm32-customizer/tmp.v"
+`line 860 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 wire   [ 7:0] jtag_reg_d;
 output [2:0] jtag_reg_addr_d;
 wire   [2:0] jtag_reg_addr_d;
  
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -70952,11 +70958,11 @@ wire   [2:0] jtag_reg_addr_d;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -70977,7 +70983,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -71006,11 +71012,11 @@ wire   [ (2-1):0] D_BTE_O;
 
 
   
-`line 923 "/tmp/lm32-customizer/tmp.v"
+`line 924 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_a;                                    
  
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -71058,21 +71064,21 @@ reg x_result_sel_csr_x;
                     
  
 
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
       
                        
  
 
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 976 "/tmp/lm32-customizer/tmp.v"
+`line 977 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_sext_d;                       
 reg x_result_sel_sext_x;
  
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -71080,7 +71086,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -71088,27 +71094,27 @@ wire m_result_sel_compare_d;
 reg m_result_sel_compare_x;
 reg m_result_sel_compare_m;
   
-`line 991 "/tmp/lm32-customizer/tmp.v"
+`line 992 "/tmp/lm32-customizer/tmp.v"
 
 wire m_result_sel_shift_d;                      
 reg m_result_sel_shift_x;
 reg m_result_sel_shift_m;
  
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
 reg w_result_sel_load_m;
 reg w_result_sel_load_w;
   
-`line 1000 "/tmp/lm32-customizer/tmp.v"
+`line 1001 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_mul_d;                        
 reg w_result_sel_mul_x;
 reg w_result_sel_mul_m;
 reg w_result_sel_mul_w;
  
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -71137,12 +71143,12 @@ reg  [ (5-1):0] csr_x;
 wire [ (3-1):0] condition_d;         
 reg [ (3-1):0] condition_x;          
   
-`line 1032 "/tmp/lm32-customizer/tmp.v"
+`line 1033 "/tmp/lm32-customizer/tmp.v"
 
 wire break_d;                                   
 reg break_x;                                    
  
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -71153,10 +71159,10 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1045 "/tmp/lm32-customizer/tmp.v"
+`line 1046 "/tmp/lm32-customizer/tmp.v"
 
 wire bret_d;                                    
 reg bret_x;
@@ -71165,10 +71171,10 @@ reg bret_m;
   
  
 
-`line 1052 "/tmp/lm32-customizer/tmp.v"
+`line 1053 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -71176,7 +71182,7 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -71185,7 +71191,7 @@ wire csr_write_enable_q_x;
  
   
 
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -71202,7 +71208,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -71210,15 +71216,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -71248,32 +71254,32 @@ reg [ 3:0] logic_op_x;
 wire [ (32-1):0] logic_result_x;           
 
   
-`line 1119 "/tmp/lm32-customizer/tmp.v"
+`line 1120 "/tmp/lm32-customizer/tmp.v"
 
 
 wire [ (32-1):0] sextb_result_x;           
 wire [ (32-1):0] sexth_result_x;           
 wire [ (32-1):0] sext_result_x;            
  
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1127 "/tmp/lm32-customizer/tmp.v"
+`line 1128 "/tmp/lm32-customizer/tmp.v"
 
   
                                    
                                      
 
-`line 1131 "/tmp/lm32-customizer/tmp.v"
+`line 1132 "/tmp/lm32-customizer/tmp.v"
 
 wire direction_d;                               
 reg direction_x;                                        
 reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -71281,27 +71287,27 @@ wire [ (32-1):0] shifter_result_m;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
            
 
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1148 "/tmp/lm32-customizer/tmp.v"
+`line 1149 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] multiplier_result_w;      
  
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -71312,7 +71318,7 @@ wire [ (32-1):0] multiplier_result_w;
  
                            
 
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -71320,23 +71326,23 @@ wire [ (32-1):0] multiplier_result_w;
                          
   
 
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -71349,20 +71355,20 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
 wire [ (32-1):0] instruction_d;     
   
-`line 1197 "/tmp/lm32-customizer/tmp.v"
+`line 1198 "/tmp/lm32-customizer/tmp.v"
 
 wire iflush;                                    
 wire icache_stall_request;                      
@@ -71370,7 +71376,7 @@ wire icache_restart_request;
 wire icache_refill_request;                     
 wire icache_refilling;                          
  
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -71379,7 +71385,7 @@ wire icache_refilling;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -71391,25 +71397,25 @@ wire icache_refilling;
                       
                            
 
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
 
 
   
-`line 1225 "/tmp/lm32-customizer/tmp.v"
+`line 1226 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1226 "/tmp/lm32-customizer/tmp.v"
+`line 1227 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] jtx_csr_read_data;        
 wire [ (32-1):0] jrx_csr_read_data;        
  
-`line 1229 "/tmp/lm32-customizer/tmp.v"
+`line 1230 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1230 "/tmp/lm32-customizer/tmp.v"
+`line 1231 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_csr_write_enable;                     
 wire [ (32-1):0] jtag_csr_write_data;      
@@ -71421,17 +71427,17 @@ wire [ 7:0] jtag_write_data;
 wire [ (32-1):0] jtag_address;
 wire jtag_access_complete;
  
-`line 1240 "/tmp/lm32-customizer/tmp.v"
+`line 1241 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1241 "/tmp/lm32-customizer/tmp.v"
+`line 1242 "/tmp/lm32-customizer/tmp.v"
 
 wire jtag_break;                                
  
-`line 1243 "/tmp/lm32-customizer/tmp.v"
+`line 1244 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -71452,7 +71458,7 @@ reg condition_met_m;
       
                              
 
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -71464,29 +71470,29 @@ wire kill_w;
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] eba;                 
   
-`line 1273 "/tmp/lm32-customizer/tmp.v"
+`line 1274 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8] deba;                
  
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1282 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1283 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 1284 "/tmp/lm32-customizer/tmp.v"
+
 wire dc_ss;                                     
  
-`line 1285 "/tmp/lm32-customizer/tmp.v"
+`line 1286 "/tmp/lm32-customizer/tmp.v"
 
 wire dc_re;                                     
 wire exception_x;                               
@@ -71505,54 +71511,54 @@ wire non_debug_exception_q_w;
  
  
 
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 1304 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 1305 "/tmp/lm32-customizer/tmp.v"
 
-wire reset_exception;                           
- 
-`line 1307 "/tmp/lm32-customizer/tmp.v"
+  
+`line 1306 "/tmp/lm32-customizer/tmp.v"
 
+wire reset_exception;                           
  
 `line 1308 "/tmp/lm32-customizer/tmp.v"
 
-  
+ 
 `line 1309 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1312 "/tmp/lm32-customizer/tmp.v"
+`line 1313 "/tmp/lm32-customizer/tmp.v"
 
 wire breakpoint_exception;                      
 wire watchpoint_exception;                      
  
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
             
                    
 
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
                          
 
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -71646,35 +71652,35 @@ lm32_instruction_unit_medium_icache_debug #(
              
             
 
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
     .branch_mispredict_taken_m (branch_mispredict_taken_m),
     .branch_target_m        (branch_target_m),
   
-`line 1369 "/tmp/lm32-customizer/tmp.v"
+`line 1370 "/tmp/lm32-customizer/tmp.v"
 
     .iflush                 (iflush),
  
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
      
       
            
 
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -71682,17 +71688,17 @@ lm32_instruction_unit_medium_icache_debug #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1389 "/tmp/lm32-customizer/tmp.v"
+`line 1390 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_enable       (jtag_read_enable),
     .jtag_write_enable      (jtag_write_enable),
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -71702,22 +71708,22 @@ lm32_instruction_unit_medium_icache_debug #(
     .pc_m                   (pc_m),
     .pc_w                   (pc_w),
   
-`line 1402 "/tmp/lm32-customizer/tmp.v"
+`line 1403 "/tmp/lm32-customizer/tmp.v"
 
     .icache_stall_request   (icache_stall_request),
     .icache_restart_request (icache_restart_request),
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
  
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -71730,27 +71736,27 @@ lm32_instruction_unit_medium_icache_debug #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1423 "/tmp/lm32-customizer/tmp.v"
+`line 1424 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -71766,42 +71772,42 @@ lm32_decoder_medium_icache_debug decoder (
   
       
 
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
       
          
 
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1450 "/tmp/lm32-customizer/tmp.v"
+`line 1451 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_sext      (x_result_sel_sext_d),
  
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
-`line 1459 "/tmp/lm32-customizer/tmp.v"
+`line 1460 "/tmp/lm32-customizer/tmp.v"
 
     .m_result_sel_shift     (m_result_sel_shift_d),  
  
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
-`line 1463 "/tmp/lm32-customizer/tmp.v"
+`line 1464 "/tmp/lm32-customizer/tmp.v"
 
     .w_result_sel_mul       (w_result_sel_mul_d),
  
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -71820,28 +71826,28 @@ lm32_decoder_medium_icache_debug decoder (
     .adder_op               (adder_op_d),
     .logic_op               (logic_op_d),
   
-`line 1482 "/tmp/lm32-customizer/tmp.v"
+`line 1483 "/tmp/lm32-customizer/tmp.v"
 
     .direction              (direction_d),
  
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
                      
                     
 
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -71849,25 +71855,25 @@ lm32_decoder_medium_icache_debug decoder (
     .branch_reg             (branch_reg_d),
     .condition              (condition_d),
   
-`line 1501 "/tmp/lm32-customizer/tmp.v"
+`line 1502 "/tmp/lm32-customizer/tmp.v"
 
     .break_opcode           (break_d),
  
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
-`line 1506 "/tmp/lm32-customizer/tmp.v"
+`line 1507 "/tmp/lm32-customizer/tmp.v"
 
     .bret                   (bret_d),
  
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -71905,12 +71911,12 @@ lm32_load_store_unit_medium_icache_debug #(
   
                      
 
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -71925,7 +71931,7 @@ lm32_load_store_unit_medium_icache_debug #(
        
            
 
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -71933,7 +71939,7 @@ lm32_load_store_unit_medium_icache_debug #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -71974,7 +71980,7 @@ lm32_logic_op logic_op (
     );
               
   
-`line 1608 "/tmp/lm32-customizer/tmp.v"
+`line 1609 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_shifter shifter (
@@ -71990,11 +71996,11 @@ lm32_shifter shifter (
     .shifter_result_m       (shifter_result_m)
     );
  
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1624 "/tmp/lm32-customizer/tmp.v"
+`line 1625 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_multiplier multiplier (
@@ -72009,7 +72015,7 @@ lm32_multiplier multiplier (
     .result                 (multiplier_result_w)    
     );
  
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -72042,11 +72048,11 @@ lm32_multiplier multiplier (
             
     
 
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_medium_icache_debug interrupt_unit (
@@ -72058,22 +72064,22 @@ lm32_interrupt_medium_icache_debug interrupt_unit (
     
     .stall_x                (stall_x),
   
-`line 1680 "/tmp/lm32-customizer/tmp.v"
+`line 1681 "/tmp/lm32-customizer/tmp.v"
 
     .non_debug_exception    (non_debug_exception_q_w), 
     .debug_exception        (debug_exception_q_w),
  
                    
 
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
-`line 1687 "/tmp/lm32-customizer/tmp.v"
+`line 1688 "/tmp/lm32-customizer/tmp.v"
 
     .bret_q_x               (bret_q_x),
  
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -72084,11 +72090,11 @@ lm32_interrupt_medium_icache_debug interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1700 "/tmp/lm32-customizer/tmp.v"
+`line 1701 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_jtag_medium_icache_debug jtag (
@@ -72102,42 +72108,42 @@ lm32_jtag_medium_icache_debug jtag (
     .jtag_reg_addr_q        (jtag_reg_addr_q),
     
   
-`line 1712 "/tmp/lm32-customizer/tmp.v"
+`line 1713 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
     .csr_write_enable       (csr_write_enable_q_x),
     .stall_x                (stall_x),
  
-`line 1717 "/tmp/lm32-customizer/tmp.v"
+`line 1718 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1718 "/tmp/lm32-customizer/tmp.v"
+`line 1719 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
  
-`line 1721 "/tmp/lm32-customizer/tmp.v"
+`line 1722 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1722 "/tmp/lm32-customizer/tmp.v"
+`line 1723 "/tmp/lm32-customizer/tmp.v"
 
     .exception_q_w          (debug_exception_q_w || non_debug_exception_q_w),
  
-`line 1724 "/tmp/lm32-customizer/tmp.v"
+`line 1725 "/tmp/lm32-customizer/tmp.v"
     
     
     
   
-`line 1727 "/tmp/lm32-customizer/tmp.v"
+`line 1728 "/tmp/lm32-customizer/tmp.v"
 
     .jtx_csr_read_data      (jtx_csr_read_data),
     .jrx_csr_read_data      (jrx_csr_read_data),
  
-`line 1730 "/tmp/lm32-customizer/tmp.v"
+`line 1731 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1731 "/tmp/lm32-customizer/tmp.v"
+`line 1732 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
@@ -72147,26 +72153,26 @@ lm32_jtag_medium_icache_debug jtag (
     .jtag_write_data        (jtag_write_data),
     .jtag_address           (jtag_address),
  
-`line 1739 "/tmp/lm32-customizer/tmp.v"
+`line 1740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1740 "/tmp/lm32-customizer/tmp.v"
+`line 1741 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_break             (jtag_break),
     .jtag_reset             (reset_exception),
  
-`line 1743 "/tmp/lm32-customizer/tmp.v"
+`line 1744 "/tmp/lm32-customizer/tmp.v"
 
     
     .jtag_reg_d             (jtag_reg_d),
     .jtag_reg_addr_d        (jtag_reg_addr_d)
     );
  
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 1750 "/tmp/lm32-customizer/tmp.v"
+`line 1751 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_debug_medium_icache_debug #(
@@ -72184,16 +72190,16 @@ lm32_debug_medium_icache_debug #(
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
   
-`line 1766 "/tmp/lm32-customizer/tmp.v"
+`line 1767 "/tmp/lm32-customizer/tmp.v"
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
  
-`line 1770 "/tmp/lm32-customizer/tmp.v"
+`line 1771 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1771 "/tmp/lm32-customizer/tmp.v"
+`line 1772 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
     .bret_q_x               (bret_q_x),
@@ -72203,31 +72209,31 @@ lm32_debug_medium_icache_debug #(
   
       
 
-`line 1779 "/tmp/lm32-customizer/tmp.v"
+`line 1780 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 1780 "/tmp/lm32-customizer/tmp.v"
+`line 1781 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 1782 "/tmp/lm32-customizer/tmp.v"
+`line 1783 "/tmp/lm32-customizer/tmp.v"
 
     .dc_ss                  (dc_ss),
  
-`line 1784 "/tmp/lm32-customizer/tmp.v"
+`line 1785 "/tmp/lm32-customizer/tmp.v"
 
     .dc_re                  (dc_re),
     .bp_match               (bp_match),
     .wp_match               (wp_match)
     );
  
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -72346,7 +72352,7 @@ lm32_debug_medium_icache_debug #(
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -72416,7 +72422,7 @@ lm32_debug_medium_icache_debug #(
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -72425,23 +72431,23 @@ lm32_debug_medium_icache_debug #(
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -72531,25 +72537,25 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2085 "/tmp/lm32-customizer/tmp.v"
+`line 2086 "/tmp/lm32-customizer/tmp.v"
 
 
 assign sextb_result_x = {{24{operand_0_x[7]}}, operand_0_x[7:0]};
 assign sexth_result_x = {{16{operand_0_x[15]}}, operand_0_x[15:0]};
 assign sext_result_x = size_x ==  2'b00 ? sextb_result_x : sexth_result_x;
  
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
 
       
 
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -72578,26 +72584,26 @@ begin
     x_result =   x_result_sel_add_x ? adder_result_x 
                : x_result_sel_csr_x ? csr_read_data_x
   
-`line 2122 "/tmp/lm32-customizer/tmp.v"
+`line 2123 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_sext_x ? sext_result_x
  
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2130 "/tmp/lm32-customizer/tmp.v"
+`line 2131 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -72607,11 +72613,11 @@ always @(*)
 begin
     m_result =   m_result_sel_compare_m ? {{ 32-1{1'b0}}, condition_met_m}
   
-`line 2141 "/tmp/lm32-customizer/tmp.v"
+`line 2142 "/tmp/lm32-customizer/tmp.v"
 
                : m_result_sel_shift_m ? shifter_result_m
  
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -72621,11 +72627,11 @@ always @(*)
 begin
     w_result =    w_result_sel_load_w ? load_data_w
   
-`line 2151 "/tmp/lm32-customizer/tmp.v"
+`line 2152 "/tmp/lm32-customizer/tmp.v"
 
                 : w_result_sel_mul_w ? multiplier_result_w
  
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
@@ -72639,7 +72645,7 @@ end
                                  
                               
 
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -72685,66 +72691,66 @@ assign kill_f =    (   (valid_d ==  1'b1)
       
                    
 
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2210 "/tmp/lm32-customizer/tmp.v"
+`line 2211 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1) 
  
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
                   
                    
 
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
       
                    
 
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2221 "/tmp/lm32-customizer/tmp.v"
+`line 2222 "/tmp/lm32-customizer/tmp.v"
 
                 || (icache_refill_request ==  1'b1)     
  
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
                   
                    
 
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
                   
                    
 
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
                   
                    
 
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
                   
                    
 
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
 
 
   
-`line 2246 "/tmp/lm32-customizer/tmp.v"
+`line 2247 "/tmp/lm32-customizer/tmp.v"
 
 assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				      || (bp_match ==  1'b1)
@@ -72752,23 +72758,23 @@ assign breakpoint_exception =    (   (   (break_x ==  1'b1)
 				  && (valid_x ==  1'b1)
 				 )
   
-`line 2252 "/tmp/lm32-customizer/tmp.v"
+`line 2253 "/tmp/lm32-customizer/tmp.v"
 
                               || (jtag_break ==  1'b1)
  
-`line 2254 "/tmp/lm32-customizer/tmp.v"
+`line 2255 "/tmp/lm32-customizer/tmp.v"
 
                               ;
  
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2258 "/tmp/lm32-customizer/tmp.v"
+`line 2259 "/tmp/lm32-customizer/tmp.v"
 
 assign watchpoint_exception = wp_match ==  1'b1;
  
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -72777,25 +72783,25 @@ assign watchpoint_exception = wp_match ==  1'b1;
                                          
      
 
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
                                    
 
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
   
-`line 2279 "/tmp/lm32-customizer/tmp.v"
+`line 2280 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_x =  (breakpoint_exception ==  1'b1)
                          || (watchpoint_exception ==  1'b1)
@@ -72803,43 +72809,43 @@ assign debug_exception_x =  (breakpoint_exception ==  1'b1)
 
 assign non_debug_exception_x = (system_call_exception ==  1'b1)
   
-`line 2285 "/tmp/lm32-customizer/tmp.v"
+`line 2286 "/tmp/lm32-customizer/tmp.v"
 
                             || (reset_exception ==  1'b1)
  
-`line 2287 "/tmp/lm32-customizer/tmp.v"
+`line 2288 "/tmp/lm32-customizer/tmp.v"
 
   
                                
                                
 
-`line 2291 "/tmp/lm32-customizer/tmp.v"
+`line 2292 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 2294 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2295 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2296 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
-`line 2297 "/tmp/lm32-customizer/tmp.v"
+`line 2298 "/tmp/lm32-customizer/tmp.v"
 
                                 && (dc_ss ==  1'b0)
  
-`line 2299 "/tmp/lm32-customizer/tmp.v"
+`line 2300 "/tmp/lm32-customizer/tmp.v"
                             
   
  				   
 				   
 
-`line 2303 "/tmp/lm32-customizer/tmp.v"
+`line 2304 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2305 "/tmp/lm32-customizer/tmp.v"
+`line 2306 "/tmp/lm32-customizer/tmp.v"
 
                             ;
 
@@ -72866,36 +72872,36 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
                             
 
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
 always @(*)
 begin
   
-`line 2335 "/tmp/lm32-customizer/tmp.v"
+`line 2336 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2336 "/tmp/lm32-customizer/tmp.v"
+`line 2337 "/tmp/lm32-customizer/tmp.v"
 
     if (reset_exception ==  1'b1)
         eid_x =  3'h0;
     else
  
-`line 2340 "/tmp/lm32-customizer/tmp.v"
+`line 2341 "/tmp/lm32-customizer/tmp.v"
      
   
             
           
     
 
-`line 2345 "/tmp/lm32-customizer/tmp.v"
+`line 2346 "/tmp/lm32-customizer/tmp.v"
 
          if (breakpoint_exception ==  1'b1)
         eid_x =  3'd1;
     else
  
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
             
@@ -72905,40 +72911,40 @@ begin
           
     
 
-`line 2357 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2358 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 2359 "/tmp/lm32-customizer/tmp.v"
 
          if (watchpoint_exception ==  1'b1)
         eid_x =  3'd3;
     else 
  
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
     
 
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
-`line 2370 "/tmp/lm32-customizer/tmp.v"
+`line 2371 "/tmp/lm32-customizer/tmp.v"
 
              && (dc_ss ==  1'b0)
  
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -72958,7 +72964,7 @@ assign stall_d =   (stall_x ==  1'b1)
   
 			   
 
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -72970,7 +72976,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
   
-`line 2404 "/tmp/lm32-customizer/tmp.v"
+`line 2405 "/tmp/lm32-customizer/tmp.v"
 
 		|| (   (   (break_d ==  1'b1)
 			|| (bret_d ==  1'b1)
@@ -72984,7 +72990,7 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
  
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -72997,7 +73003,7 @@ assign stall_x =    (stall_m ==  1'b1)
                         
                      
 
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -73008,7 +73014,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -73016,7 +73022,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -73034,26 +73040,26 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
                          
 
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
-`line 2469 "/tmp/lm32-customizer/tmp.v"
+`line 2470 "/tmp/lm32-customizer/tmp.v"
 
                  || (icache_stall_request ==  1'b1)     
                  || ((I_CYC_O ==  1'b1) && ((branch_m ==  1'b1) || (exception_m ==  1'b1))) 
@@ -73062,14 +73068,14 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                                 
 
 
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
@@ -73077,72 +73083,72 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
          
 
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
+`line 2495 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
 assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
-`line 2502 "/tmp/lm32-customizer/tmp.v"
+`line 2503 "/tmp/lm32-customizer/tmp.v"
 
 assign bret_q_x = (bret_x ==  1'b1) && (q_x ==  1'b1);
  
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2507 "/tmp/lm32-customizer/tmp.v"
+`line 2508 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-`line 2513 "/tmp/lm32-customizer/tmp.v"
+`line 2514 "/tmp/lm32-customizer/tmp.v"
 
                && (bp_match ==  1'b0)
  
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
 assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
   
-`line 2523 "/tmp/lm32-customizer/tmp.v"
+`line 2524 "/tmp/lm32-customizer/tmp.v"
 
 assign debug_exception_q_w = ((debug_exception_w ==  1'b1) && (valid_w ==  1'b1));
 assign non_debug_exception_q_w = ((non_debug_exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
                  
 
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -73158,112 +73164,112 @@ assign cfg = {
               breakpoints[3:0],
               interrupts[5:0],
   
-`line 2542 "/tmp/lm32-customizer/tmp.v"
+`line 2543 "/tmp/lm32-customizer/tmp.v"
 
                1'b1,
  
               
 
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2552 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2553 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2556 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2557 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2558 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2561 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2562 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2563 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2566 "/tmp/lm32-customizer/tmp.v"
+`line 2567 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2569 "/tmp/lm32-customizer/tmp.v"
+`line 2570 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2582 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2583 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2586 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 2587 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 2588 "/tmp/lm32-customizer/tmp.v"
+
                1'b1,
  
               
 
-`line 2591 "/tmp/lm32-customizer/tmp.v"
+`line 2592 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2594 "/tmp/lm32-customizer/tmp.v"
+`line 2595 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2597 "/tmp/lm32-customizer/tmp.v"
+`line 2598 "/tmp/lm32-customizer/tmp.v"
  
                1'b1
  
               
 
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -73272,26 +73278,26 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
 
   
-`line 2619 "/tmp/lm32-customizer/tmp.v"
+`line 2620 "/tmp/lm32-customizer/tmp.v"
 
 assign iflush = (   (csr_write_enable_d ==  1'b1) 
                  && (csr_d ==  5'h3)
@@ -73300,17 +73306,17 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
                  && (valid_d ==  1'b1))
 
   
-`line 2626 "/tmp/lm32-customizer/tmp.v"
+`line 2627 "/tmp/lm32-customizer/tmp.v"
 
              ||
                 (   (jtag_csr_write_enable ==  1'b1)
 		 && (jtag_csr ==  5'h3))
  
-`line 2630 "/tmp/lm32-customizer/tmp.v"
+`line 2631 "/tmp/lm32-customizer/tmp.v"
 
 		 ;
  
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
          
@@ -73323,7 +73329,7 @@ assign iflush = (   (csr_write_enable_d ==  1'b1)
 
 		   
 
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -73334,35 +73340,35 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      5'h0,
      5'h1,
      5'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      5'h6:  csr_read_data_x = cfg;
      5'h7:  csr_read_data_x = {eba, 8'h00};
   
-`line 2662 "/tmp/lm32-customizer/tmp.v"
+`line 2663 "/tmp/lm32-customizer/tmp.v"
 
      5'h9: csr_read_data_x = {deba, 8'h00};
  
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2665 "/tmp/lm32-customizer/tmp.v"
+`line 2666 "/tmp/lm32-customizer/tmp.v"
 
      5'he:  csr_read_data_x = jtx_csr_read_data;  
      5'hf:  csr_read_data_x = jrx_csr_read_data;
  
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      5'ha: csr_read_data_x = cfg2;
       
@@ -73384,18 +73390,18 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2688 "/tmp/lm32-customizer/tmp.v"
+`line 2689 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
             eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 2695 "/tmp/lm32-customizer/tmp.v"
+`line 2696 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -73407,17 +73413,17 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-`line 2705 "/tmp/lm32-customizer/tmp.v"
+`line 2706 "/tmp/lm32-customizer/tmp.v"
 
         if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
             deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
  
-`line 2708 "/tmp/lm32-customizer/tmp.v"
+`line 2709 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -73430,7 +73436,7 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -73450,13 +73456,13 @@ end
     
 
 
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
 
   
-`line 2744 "/tmp/lm32-customizer/tmp.v"
+`line 2745 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -73473,7 +73479,7 @@ end
             
  
 
-`line 2759 "/tmp/lm32-customizer/tmp.v"
+`line 2760 "/tmp/lm32-customizer/tmp.v"
 
 always @(*)
 begin
@@ -73485,7 +73491,7 @@ begin
         valid_a = !icache_refilling;
 end 
  
-`line 2769 "/tmp/lm32-customizer/tmp.v"
+`line 2770 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -73500,7 +73506,7 @@ end
  
 
 
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -73517,13 +73523,13 @@ begin
     begin    
         if ((kill_f ==  1'b1) || (stall_a ==  1'b0))
   
-`line 2797 "/tmp/lm32-customizer/tmp.v"
+`line 2798 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <= valid_a;    
  
               
 
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -73564,7 +73570,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -73574,42 +73580,42 @@ begin
   
           
 
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
       
           
 
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2852 "/tmp/lm32-customizer/tmp.v"
+`line 2853 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_sext_x <=  1'b0;
  
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
-`line 2861 "/tmp/lm32-customizer/tmp.v"
+`line 2862 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_x <=  1'b0;
  
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
-`line 2865 "/tmp/lm32-customizer/tmp.v"
+`line 2866 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_x <=  1'b0;
  
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -73624,62 +73630,62 @@ begin
         adder_op_x_n <=  1'b0;
         logic_op_x <= 4'h0;
   
-`line 2880 "/tmp/lm32-customizer/tmp.v"
+`line 2881 "/tmp/lm32-customizer/tmp.v"
 
         direction_x <=  1'b0;
  
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
         branch_predict_taken_x <=  1'b0;
         condition_x <=  3'b000;
   
-`line 2891 "/tmp/lm32-customizer/tmp.v"
+`line 2892 "/tmp/lm32-customizer/tmp.v"
 
         break_x <=  1'b0;
  
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
-`line 2896 "/tmp/lm32-customizer/tmp.v"
+`line 2897 "/tmp/lm32-customizer/tmp.v"
 
         bret_x <=  1'b0;
  
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
 
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
         branch_target_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         m_result_sel_compare_m <=  1'b0;
   
-`line 2907 "/tmp/lm32-customizer/tmp.v"
+`line 2908 "/tmp/lm32-customizer/tmp.v"
 
         m_result_sel_shift_m <=  1'b0;
  
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
-`line 2911 "/tmp/lm32-customizer/tmp.v"
+`line 2912 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_m <=  1'b0;
  
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -73689,11 +73695,11 @@ begin
         load_m <=  1'b0;
         store_m <=  1'b0;
   
-`line 2921 "/tmp/lm32-customizer/tmp.v"
+`line 2922 "/tmp/lm32-customizer/tmp.v"
 
         direction_m <=  1'b0;
  
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
@@ -73701,41 +73707,41 @@ begin
   
           
 
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2930 "/tmp/lm32-customizer/tmp.v"
+`line 2931 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_m <=  1'b0;
         non_debug_exception_m <=  1'b0;        
  
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
-`line 2936 "/tmp/lm32-customizer/tmp.v"
+`line 2937 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <=  1'b0;
  
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
   
-`line 2941 "/tmp/lm32-customizer/tmp.v"
+`line 2942 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <=  1'b0;
         non_debug_exception_w <=  1'b0;        
  
           
 
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -73747,7 +73753,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -73757,42 +73763,42 @@ begin
   
               
 
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
       
               
 
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2971 "/tmp/lm32-customizer/tmp.v"
+`line 2972 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
-`line 2980 "/tmp/lm32-customizer/tmp.v"
+`line 2981 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_x <= m_result_sel_shift_d;
  
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
-`line 2984 "/tmp/lm32-customizer/tmp.v"
+`line 2985 "/tmp/lm32-customizer/tmp.v"
 
             w_result_sel_mul_x <= w_result_sel_mul_d;
  
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -73809,39 +73815,39 @@ begin
             adder_op_x_n <= ~adder_op_d;
             logic_op_x <= logic_op_d;
   
-`line 3001 "/tmp/lm32-customizer/tmp.v"
+`line 3002 "/tmp/lm32-customizer/tmp.v"
 
             direction_x <= direction_d;
  
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
-`line 3009 "/tmp/lm32-customizer/tmp.v"
+`line 3010 "/tmp/lm32-customizer/tmp.v"
 
             break_x <= break_d;
  
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
               
 
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
-`line 3017 "/tmp/lm32-customizer/tmp.v"
+`line 3018 "/tmp/lm32-customizer/tmp.v"
 
             bret_x <= bret_d; 
  
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -73853,57 +73859,57 @@ begin
             operand_m <= x_result;
             m_result_sel_compare_m <= m_result_sel_compare_x;
   
-`line 3029 "/tmp/lm32-customizer/tmp.v"
+`line 3030 "/tmp/lm32-customizer/tmp.v"
 
             m_result_sel_shift_m <= m_result_sel_shift_x;
  
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
                 w_result_sel_load_m <=  1'b0;
   
-`line 3035 "/tmp/lm32-customizer/tmp.v"
+`line 3036 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <=  1'b0;
  
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
             begin
                 w_result_sel_load_m <= w_result_sel_load_x;
   
-`line 3042 "/tmp/lm32-customizer/tmp.v"
+`line 3043 "/tmp/lm32-customizer/tmp.v"
 
                 w_result_sel_mul_m <= w_result_sel_mul_x;
  
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
-`line 3047 "/tmp/lm32-customizer/tmp.v"
+`line 3048 "/tmp/lm32-customizer/tmp.v"
 
             direction_m <= direction_x;
  
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
       
                 
 
-`line 3054 "/tmp/lm32-customizer/tmp.v"
+`line 3055 "/tmp/lm32-customizer/tmp.v"
 
             branch_m <= branch_x;
 	    branch_predict_m <= branch_predict_x;
 	    branch_predict_taken_m <= branch_predict_taken_x;
  
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 3059 "/tmp/lm32-customizer/tmp.v"
+`line 3060 "/tmp/lm32-customizer/tmp.v"
 
 	   
 	   
@@ -73922,11 +73928,11 @@ begin
              
                   
 
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
-`line 3078 "/tmp/lm32-customizer/tmp.v"
+`line 3079 "/tmp/lm32-customizer/tmp.v"
 
 	   if (exception_x ==  1'b1)
 	     if ((dc_re ==  1'b1)
@@ -73940,34 +73946,34 @@ begin
  
                       
 
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
-`line 3098 "/tmp/lm32-customizer/tmp.v"
+`line 3099 "/tmp/lm32-customizer/tmp.v"
 
             bret_m <= bret_q_x; 
  
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
-`line 3102 "/tmp/lm32-customizer/tmp.v"
+`line 3103 "/tmp/lm32-customizer/tmp.v"
 
             debug_exception_m <= debug_exception_x;
             non_debug_exception_m <= non_debug_exception_x;        
  
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -73985,7 +73991,7 @@ begin
 
 					 
 
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
@@ -73993,19 +73999,19 @@ begin
   
                       
 
-`line 3127 "/tmp/lm32-customizer/tmp.v"
+`line 3128 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
  
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
-`line 3131 "/tmp/lm32-customizer/tmp.v"
+`line 3132 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_mul_w <= w_result_sel_mul_m;
  
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -74015,18 +74021,18 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
-`line 3143 "/tmp/lm32-customizer/tmp.v"
+`line 3144 "/tmp/lm32-customizer/tmp.v"
 
         debug_exception_w <= debug_exception_m;
         non_debug_exception_w <= non_debug_exception_m;
  
           
 
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
               
@@ -74036,13 +74042,13 @@ begin
 	   
             
 
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -74074,11 +74080,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -74124,7 +74130,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -74188,7 +74194,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -74201,14 +74207,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -74298,7 +74304,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -74612,12 +74618,12 @@ module lm32_load_store_unit_medium_icache_debug (
   
     
 
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -74632,7 +74638,7 @@ module lm32_load_store_unit_medium_icache_debug (
     
     
 
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -74640,7 +74646,7 @@ module lm32_load_store_unit_medium_icache_debug (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -74701,13 +74707,13 @@ input [ 1:0] size_x;
   
                                             
 
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -74729,7 +74735,7 @@ input d_rty_i;
  
    
 
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -74742,7 +74748,7 @@ input d_rty_i;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -74796,7 +74802,7 @@ reg [ (32-1):0] data_w;
                                           
                       
 
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -74807,14 +74813,14 @@ reg [ (32-1):0] data_w;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -74968,7 +74974,7 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -75004,7 +75010,7 @@ endfunction
                   
     
 
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -75016,14 +75022,14 @@ endfunction
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -75037,24 +75043,24 @@ endfunction
 
                      
 
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
                           
 
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -75091,7 +75097,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -75101,7 +75107,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -75124,7 +75130,7 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -75162,7 +75168,7 @@ end
   
  
 
-`line 3843 "/tmp/lm32-customizer/tmp.v"
+`line 3844 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -75179,7 +75185,7 @@ end
                     
   
  
-`line 3858 "/tmp/lm32-customizer/tmp.v"
+`line 3859 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -75187,18 +75193,18 @@ end
                      
                     
   
-`line 3864 "/tmp/lm32-customizer/tmp.v"
+`line 3865 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_data_m;
    
-`line 3867 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 3868 "/tmp/lm32-customizer/tmp.v"
 
- 
+  
 `line 3869 "/tmp/lm32-customizer/tmp.v"
+
+ 
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -75247,7 +75253,7 @@ assign d_bte_o =  2'b00;
     
 
 
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -75273,7 +75279,7 @@ begin
                   
           
 
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
@@ -75282,7 +75288,7 @@ begin
         
           
 
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -75298,7 +75304,7 @@ begin
                 
                 
 
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -75311,7 +75317,7 @@ begin
                 
                   
 
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -75339,19 +75345,19 @@ begin
             
              
 
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -75406,17 +75412,17 @@ begin
   
           
 
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -75431,17 +75437,17 @@ begin
   
               
 
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -75562,7 +75568,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -75848,15 +75854,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -75990,6 +75993,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -76005,42 +76011,42 @@ module lm32_decoder_medium_icache_debug (
   
     
 
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
       
     
 
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4232 "/tmp/lm32-customizer/tmp.v"
+`line 4233 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext,
  
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
-`line 4241 "/tmp/lm32-customizer/tmp.v"
+`line 4242 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift,  
  
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
-`line 4245 "/tmp/lm32-customizer/tmp.v"
+`line 4246 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul,
  
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -76059,28 +76065,28 @@ module lm32_decoder_medium_icache_debug (
     adder_op,
     logic_op,
   
-`line 4264 "/tmp/lm32-customizer/tmp.v"
+`line 4265 "/tmp/lm32-customizer/tmp.v"
 
     direction,
  
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
+`line 4274 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -76088,25 +76094,25 @@ module lm32_decoder_medium_icache_debug (
     bi_conditional,
     bi_unconditional,
   
-`line 4283 "/tmp/lm32-customizer/tmp.v"
+`line 4284 "/tmp/lm32-customizer/tmp.v"
 
     break_opcode,
  
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
-`line 4288 "/tmp/lm32-customizer/tmp.v"
+`line 4289 "/tmp/lm32-customizer/tmp.v"
 
     bret,
  
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -76131,21 +76137,21 @@ reg    x_result_sel_csr;
  
     
 
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
       
  
     
 
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4321 "/tmp/lm32-customizer/tmp.v"
+`line 4322 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_sext;
 reg    x_result_sel_sext;
  
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -76153,29 +76159,29 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
 output m_result_sel_compare;
 reg    m_result_sel_compare;
   
-`line 4335 "/tmp/lm32-customizer/tmp.v"
+`line 4336 "/tmp/lm32-customizer/tmp.v"
 
 output m_result_sel_shift;
 reg    m_result_sel_shift;
  
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
   
-`line 4341 "/tmp/lm32-customizer/tmp.v"
+`line 4342 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_mul;
 reg    w_result_sel_mul;
  
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -76210,12 +76216,12 @@ wire   adder_op;
 output [ 3:0] logic_op;
 wire   [ 3:0] logic_op;
   
-`line 4377 "/tmp/lm32-customizer/tmp.v"
+`line 4378 "/tmp/lm32-customizer/tmp.v"
 
 output direction;
 wire   direction;
  
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -76223,13 +76229,13 @@ wire   direction;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
+`line 4391 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -76237,7 +76243,7 @@ wire   direction;
  
    
 
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -76250,30 +76256,30 @@ wire bi_conditional;
 output bi_unconditional;
 wire bi_unconditional;
   
-`line 4407 "/tmp/lm32-customizer/tmp.v"
+`line 4408 "/tmp/lm32-customizer/tmp.v"
 
 output break_opcode;
 wire   break_opcode;
  
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
 output eret;
 wire   eret;
   
-`line 4415 "/tmp/lm32-customizer/tmp.v"
+`line 4416 "/tmp/lm32-customizer/tmp.v"
 
 output bret;
 wire   bret;
  
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -76378,7 +76384,7 @@ assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
        
 
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -76388,14 +76394,14 @@ assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
        
 
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4479 "/tmp/lm32-customizer/tmp.v"
+`line 4480 "/tmp/lm32-customizer/tmp.v"
 
 assign op_mul    = instruction[ 30:26] ==  5'b00010;
  
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -76404,20 +76410,20 @@ assign op_raise  = instruction[ 31:26] ==  6'b101011;
 assign op_rcsr   = instruction[ 31:26] ==  6'b100100;
 assign op_sb     = instruction[ 31:26] ==  6'b001100;
   
-`line 4488 "/tmp/lm32-customizer/tmp.v"
+`line 4489 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sextb  = instruction[ 31:26] ==  6'b101100;
 assign op_sexth  = instruction[ 31:26] ==  6'b110111;
  
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
-`line 4493 "/tmp/lm32-customizer/tmp.v"
+`line 4494 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sl     = instruction[ 30:26] ==  5'b01111;      
  
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -76437,42 +76443,42 @@ assign bi_unconditional = op_bi;
 assign bra = op_b | bi_unconditional | bi_conditional;
 assign call = op_call | op_calli;
   
-`line 4513 "/tmp/lm32-customizer/tmp.v"
+`line 4514 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sl | op_sr | op_sru;
  
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4523 "/tmp/lm32-customizer/tmp.v"
+`line 4524 "/tmp/lm32-customizer/tmp.v"
 
 assign sext = op_sextb | op_sexth;
  
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4526 "/tmp/lm32-customizer/tmp.v"
+`line 4527 "/tmp/lm32-customizer/tmp.v"
 
 assign multiply = op_mul;
  
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
     
    
 
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -76496,25 +76502,25 @@ begin
   
       
 
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4558 "/tmp/lm32-customizer/tmp.v"
+`line 4559 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_sext =  1'b0;
  
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
@@ -76533,21 +76539,21 @@ begin
                       
 
 
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
       
                   
 
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4586 "/tmp/lm32-customizer/tmp.v"
+`line 4587 "/tmp/lm32-customizer/tmp.v"
 
     else if (sext)
         x_result_sel_sext =  1'b1;
  
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -76555,7 +76561,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -76564,21 +76570,21 @@ begin
 
     m_result_sel_compare = cmp;
   
-`line 4602 "/tmp/lm32-customizer/tmp.v"
+`line 4603 "/tmp/lm32-customizer/tmp.v"
 
     m_result_sel_shift = shift;
  
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
     w_result_sel_load = load;
   
-`line 4608 "/tmp/lm32-customizer/tmp.v"
+`line 4609 "/tmp/lm32-customizer/tmp.v"
 
     w_result_sel_mul = op_mul; 
  
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -76589,46 +76595,46 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
                          
                          
 
-`line 4626 "/tmp/lm32-customizer/tmp.v"
+`line 4627 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
-`line 4630 "/tmp/lm32-customizer/tmp.v"
+`line 4631 "/tmp/lm32-customizer/tmp.v"
 
                         | sext 
  
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
 
 assign m_bypass_enable = x_bypass_enable 
   
-`line 4640 "/tmp/lm32-customizer/tmp.v"
+`line 4641 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -76655,38 +76661,38 @@ assign adder_op = op_sub | op_cmpe | op_cmpg | op_cmpge | op_cmpgeu | op_cmpgu |
 
 assign logic_op = instruction[29:26];
   
-`line 4667 "/tmp/lm32-customizer/tmp.v"
+`line 4668 "/tmp/lm32-customizer/tmp.v"
 
 
 assign direction = instruction[29];
  
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
 assign branch_reg = op_call | op_b;
 assign condition = instruction[28:26];      
   
-`line 4675 "/tmp/lm32-customizer/tmp.v"
+`line 4676 "/tmp/lm32-customizer/tmp.v"
 
 assign break_opcode = op_raise & ~instruction[2];
  
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
-`line 4680 "/tmp/lm32-customizer/tmp.v"
+`line 4681 "/tmp/lm32-customizer/tmp.v"
 
 assign bret = op_b & (instruction[25:21] == 5'd31);
  
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -76789,7 +76795,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -77074,11 +77080,8 @@ endmodule
 
 
   
-`line 4748 "/tmp/lm32-customizer/tmp.v"
+`line 4749 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 4750 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 4751 "/tmp/lm32-customizer/tmp.v"
@@ -77089,9 +77092,9 @@ endmodule
   
 `line 4753 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4755 "/tmp/lm32-customizer/tmp.v"
+`line 4754 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4756 "/tmp/lm32-customizer/tmp.v"
@@ -77102,9 +77105,9 @@ endmodule
   
 `line 4758 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4760 "/tmp/lm32-customizer/tmp.v"
+`line 4759 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4761 "/tmp/lm32-customizer/tmp.v"
@@ -77115,9 +77118,9 @@ endmodule
   
 `line 4763 "/tmp/lm32-customizer/tmp.v"
 
-
   
-`line 4765 "/tmp/lm32-customizer/tmp.v"
+`line 4764 "/tmp/lm32-customizer/tmp.v"
+
 
   
 `line 4766 "/tmp/lm32-customizer/tmp.v"
@@ -77130,6 +77133,9 @@ endmodule
 
   
 `line 4769 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4770 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -77151,7 +77157,7 @@ module lm32_icache_medium_icache_debug (
   
     
 
-`line 4789 "/tmp/lm32-customizer/tmp.v"
+`line 4790 "/tmp/lm32-customizer/tmp.v"
 
     valid_d,
     branch_predict_taken_d,
@@ -77208,7 +77214,7 @@ input iflush;
   
                                       
 
-`line 4844 "/tmp/lm32-customizer/tmp.v"
+`line 4845 "/tmp/lm32-customizer/tmp.v"
 
    
 
@@ -77514,7 +77520,7 @@ begin
                   
 	      
 
-`line 5093 "/tmp/lm32-customizer/tmp.v"
+`line 5094 "/tmp/lm32-customizer/tmp.v"
 
 		state <=  4'b0100;
 	   
@@ -77592,7 +77598,7 @@ endgenerate
 endmodule
 
  
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -77667,7 +77673,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -78424,7 +78430,7 @@ endmodule
 
 
 
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -78500,7 +78506,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -78785,12 +78791,9 @@ endmodule
 
 
   
-`line 5710 "/tmp/lm32-customizer/tmp.v"
+`line 5711 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 5713 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 5714 "/tmp/lm32-customizer/tmp.v"
@@ -78806,6 +78809,9 @@ endmodule
 
   
 `line 5718 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 5719 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -78824,16 +78830,16 @@ module lm32_debug_medium_icache_debug (
     csr_write_data,
     csr_x,
   
-`line 5735 "/tmp/lm32-customizer/tmp.v"
+`line 5736 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
-`line 5739 "/tmp/lm32-customizer/tmp.v"
+`line 5740 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5740 "/tmp/lm32-customizer/tmp.v"
+`line 5741 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
     bret_q_x,
@@ -78843,18 +78849,18 @@ module lm32_debug_medium_icache_debug (
   
     
 
-`line 5748 "/tmp/lm32-customizer/tmp.v"
+`line 5749 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5749 "/tmp/lm32-customizer/tmp.v"
+`line 5750 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 5751 "/tmp/lm32-customizer/tmp.v"
+`line 5752 "/tmp/lm32-customizer/tmp.v"
 
     dc_ss,
  
-`line 5753 "/tmp/lm32-customizer/tmp.v"
+`line 5754 "/tmp/lm32-customizer/tmp.v"
 
     dc_re,
     bp_match,
@@ -78883,16 +78889,16 @@ input csr_write_enable_x;
 input [ (32-1):0] csr_write_data;          
 input [ (5-1):0] csr_x;                    
   
-`line 5780 "/tmp/lm32-customizer/tmp.v"
+`line 5781 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
-`line 5784 "/tmp/lm32-customizer/tmp.v"
+`line 5785 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 5785 "/tmp/lm32-customizer/tmp.v"
+`line 5786 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
 input bret_q_x;                                 
@@ -78902,10 +78908,10 @@ input q_x;
   
                      
 
-`line 5793 "/tmp/lm32-customizer/tmp.v"
+`line 5794 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 5794 "/tmp/lm32-customizer/tmp.v"
+`line 5795 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -78913,12 +78919,12 @@ input q_x;
 
 
   
-`line 5800 "/tmp/lm32-customizer/tmp.v"
+`line 5801 "/tmp/lm32-customizer/tmp.v"
 
 output dc_ss;                                   
 reg    dc_ss;
  
-`line 5803 "/tmp/lm32-customizer/tmp.v"
+`line 5804 "/tmp/lm32-customizer/tmp.v"
 
 output dc_re;                                   
 reg    dc_re;
@@ -78948,13 +78954,13 @@ wire [ (32-1):0] debug_csr_write_data;
 wire [ (5-1):0] debug_csr;                 
 
   
-`line 5831 "/tmp/lm32-customizer/tmp.v"
+`line 5832 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 2:0] state;           
 
  
-`line 5835 "/tmp/lm32-customizer/tmp.v"
+`line 5836 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -79031,7 +79037,7 @@ assign bp_match_n[i] = ((bp_a[i] == pc_x) && (bp_e[i] ==  1'b1));
 endgenerate
 generate 
   
-`line 5855 "/tmp/lm32-customizer/tmp.v"
+`line 5856 "/tmp/lm32-customizer/tmp.v"
 
     if (breakpoints > 0) 
 assign bp_match = (|bp_match_n) || (state ==  3'b011);
@@ -79043,7 +79049,7 @@ assign bp_match = state ==  3'b011;
     
    
 
-`line 5865 "/tmp/lm32-customizer/tmp.v"
+`line 5866 "/tmp/lm32-customizer/tmp.v"
 
 endgenerate    
                
@@ -79062,7 +79068,7 @@ assign wp_match =  1'b0;
 endgenerate
                 
   
-`line 5882 "/tmp/lm32-customizer/tmp.v"
+`line 5883 "/tmp/lm32-customizer/tmp.v"
                 
 
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
@@ -79073,7 +79079,7 @@ assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
    
    
 
-`line 5891 "/tmp/lm32-customizer/tmp.v"
+`line 5892 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -79141,7 +79147,7 @@ begin
 end    
 
   
-`line 5957 "/tmp/lm32-customizer/tmp.v"
+`line 5958 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -79186,7 +79192,7 @@ begin
                   
              
 
-`line 6000 "/tmp/lm32-customizer/tmp.v"
+`line 6001 "/tmp/lm32-customizer/tmp.v"
 
                  if ((exception_x ==  1'b1) && (q_x ==  1'b1) && (stall_x ==  1'b0))
             begin
@@ -79202,7 +79208,7 @@ begin
                   
              
 
-`line 6014 "/tmp/lm32-customizer/tmp.v"
+`line 6015 "/tmp/lm32-customizer/tmp.v"
 
                 state <=  3'b000;
         end
@@ -79210,13 +79216,13 @@ begin
     end
 end
  
-`line 6020 "/tmp/lm32-customizer/tmp.v"
+`line 6021 "/tmp/lm32-customizer/tmp.v"
 
 
 endmodule
 
  
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -79306,7 +79312,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -79613,35 +79619,35 @@ module lm32_instruction_unit_medium_icache_debug (
     
     
 
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
     branch_mispredict_taken_m,
     branch_target_m,
   
-`line 6100 "/tmp/lm32-customizer/tmp.v"
+`line 6101 "/tmp/lm32-customizer/tmp.v"
 
     iflush,
  
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
     
 
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -79649,17 +79655,17 @@ module lm32_instruction_unit_medium_icache_debug (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6120 "/tmp/lm32-customizer/tmp.v"
+`line 6121 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_enable,
     jtag_write_enable,
     jtag_write_data,
     jtag_address,
  
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -79669,22 +79675,22 @@ module lm32_instruction_unit_medium_icache_debug (
     pc_m,
     pc_w,
   
-`line 6133 "/tmp/lm32-customizer/tmp.v"
+`line 6134 "/tmp/lm32-customizer/tmp.v"
 
     icache_stall_request,
     icache_restart_request,
     icache_refill_request,
     icache_refilling,
  
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -79697,27 +79703,27 @@ module lm32_instruction_unit_medium_icache_debug (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6154 "/tmp/lm32-customizer/tmp.v"
+`line 6155 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6160 "/tmp/lm32-customizer/tmp.v"
+`line 6161 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6161 "/tmp/lm32-customizer/tmp.v"
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -79760,7 +79766,7 @@ input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_predict_address_d;
                                     
                      
 
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -79768,18 +79774,18 @@ input branch_mispredict_taken_m;
 input [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] branch_target_m;                   
 
   
-`line 6210 "/tmp/lm32-customizer/tmp.v"
+`line 6211 "/tmp/lm32-customizer/tmp.v"
 
 input iflush;                                           
  
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
                             
                              
  
 
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -79787,29 +79793,29 @@ input iflush;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6232 "/tmp/lm32-customizer/tmp.v"
+`line 6233 "/tmp/lm32-customizer/tmp.v"
 
 input jtag_read_enable;                                 
 input jtag_write_enable;                                
 input [ 7:0] jtag_write_data;                 
 input [ (32-1):0] jtag_address;                    
  
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -79828,7 +79834,7 @@ output [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 reg    [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_w;
 
   
-`line 6254 "/tmp/lm32-customizer/tmp.v"
+`line 6255 "/tmp/lm32-customizer/tmp.v"
 
 output icache_stall_request;                            
 wire   icache_stall_request;
@@ -79839,28 +79845,28 @@ wire   icache_refill_request;
 output icache_refilling;                                
 wire   icache_refilling;
  
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
-`line 6272 "/tmp/lm32-customizer/tmp.v"
+`line 6273 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (32-1):0] i_dat_o;
  
     
 
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -79868,25 +79874,25 @@ output i_cyc_o;
 reg    i_cyc_o; 
 output [ (4-1):0] i_sel_o;                 
   
-`line 6282 "/tmp/lm32-customizer/tmp.v"
+`line 6283 "/tmp/lm32-customizer/tmp.v"
 
 reg    [ (4-1):0] i_sel_o;
  
     
 
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
 output i_we_o;                                          
   
-`line 6290 "/tmp/lm32-customizer/tmp.v"
+`line 6291 "/tmp/lm32-customizer/tmp.v"
 
 reg    i_we_o;
  
    
 
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -79895,33 +79901,33 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6303 "/tmp/lm32-customizer/tmp.v"
+`line 6304 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_read_data;                 
 reg    [ 7:0] jtag_read_data;
 output jtag_access_complete;                            
 wire   jtag_access_complete;
  
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                       
     
 
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -79933,15 +79939,15 @@ reg    [ (32-1):0] instruction_d;
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] pc_a;                                
 
   
-`line 6327 "/tmp/lm32-customizer/tmp.v"
+`line 6328 "/tmp/lm32-customizer/tmp.v"
 
 reg [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] restart_address;                     
  
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6331 "/tmp/lm32-customizer/tmp.v"
+`line 6332 "/tmp/lm32-customizer/tmp.v"
 
 wire icache_read_enable_f;                              
 wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] icache_refill_address;              
@@ -79957,35 +79963,35 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                     
 
 
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
                                          
 
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6359 "/tmp/lm32-customizer/tmp.v"
+`line 6360 "/tmp/lm32-customizer/tmp.v"
 
 reg jtag_access;                                        
  
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -80101,11 +80107,11 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
-`line 6422 "/tmp/lm32-customizer/tmp.v"
+`line 6423 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_icache_medium_icache_debug #(
@@ -80137,7 +80143,7 @@ lm32_icache_medium_icache_debug #(
     .inst                   (icache_data_f)
     );
  
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -80145,7 +80151,7 @@ lm32_icache_medium_icache_debug #(
 
 
   
-`line 6458 "/tmp/lm32-customizer/tmp.v"
+`line 6459 "/tmp/lm32-customizer/tmp.v"
 
 
 assign icache_read_enable_f =    (valid_f ==  1'b1)
@@ -80153,16 +80159,16 @@ assign icache_read_enable_f =    (valid_f ==  1'b1)
   
                                  
 
-`line 6464 "/tmp/lm32-customizer/tmp.v"
+`line 6465 "/tmp/lm32-customizer/tmp.v"
                          
    
                                  
 
-`line 6467 "/tmp/lm32-customizer/tmp.v"
+`line 6468 "/tmp/lm32-customizer/tmp.v"
        
                               ;
  
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -80174,7 +80180,7 @@ begin
           
      
 
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -80185,20 +80191,20 @@ begin
           
           
 
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
 	  pc_a = branch_predict_address_d;
 	else
   
-`line 6493 "/tmp/lm32-customizer/tmp.v"
+`line 6494 "/tmp/lm32-customizer/tmp.v"
 
           if (icache_restart_request ==  1'b1)
             pc_a = restart_address;
 	  else 
  
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -80207,21 +80213,21 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
   
-`line 6507 "/tmp/lm32-customizer/tmp.v"
+`line 6508 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 6510 "/tmp/lm32-customizer/tmp.v"
+`line 6511 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = icache_data_f;
  
-`line 6512 "/tmp/lm32-customizer/tmp.v"
+`line 6513 "/tmp/lm32-customizer/tmp.v"
 
  
  
@@ -80234,30 +80240,30 @@ assign instruction_f = icache_data_f;
    
 
 
-`line 6523 "/tmp/lm32-customizer/tmp.v"
+`line 6524 "/tmp/lm32-customizer/tmp.v"
 
 
-
-  
-`line 6526 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6527 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6528 "/tmp/lm32-customizer/tmp.v"
+
  
    
    
    
 
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6536 "/tmp/lm32-customizer/tmp.v"
+`line 6537 "/tmp/lm32-customizer/tmp.v"
 
 
 generate
@@ -80286,7 +80292,7 @@ assign first_address = {icache_refill_address[ (clogb2(32'h7fffffff-32'h0)-2)+2-
     endcase
 endgenerate
  
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -80319,7 +80325,7 @@ begin
 end
 
   
-`line 6594 "/tmp/lm32-customizer/tmp.v"
+`line 6595 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -80340,23 +80346,23 @@ begin
                   
 
 
-`line 6613 "/tmp/lm32-customizer/tmp.v"
+`line 6614 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6614 "/tmp/lm32-customizer/tmp.v"
+`line 6615 "/tmp/lm32-customizer/tmp.v"
         
             if (icache_refill_request ==  1'b1)
                 restart_address <= icache_refill_address;
  
-`line 6617 "/tmp/lm32-customizer/tmp.v"
+`line 6618 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6618 "/tmp/lm32-customizer/tmp.v"
+`line 6619 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
  
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -80372,11 +80378,11 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6637 "/tmp/lm32-customizer/tmp.v"
+`line 6638 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
@@ -80389,15 +80395,15 @@ begin
     endcase 
 end
  
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6652 "/tmp/lm32-customizer/tmp.v"
+`line 6653 "/tmp/lm32-customizer/tmp.v"
                 
 always @(posedge clk_i  )
 begin
@@ -80413,16 +80419,16 @@ begin
   
           
 
-`line 6666 "/tmp/lm32-customizer/tmp.v"
+`line 6667 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6667 "/tmp/lm32-customizer/tmp.v"
+`line 6668 "/tmp/lm32-customizer/tmp.v"
 
         i_we_o <=  1'b0;
         i_sel_o <= 4'b1111;
         jtag_access <=  1'b0;
  
-`line 6671 "/tmp/lm32-customizer/tmp.v"
+`line 6672 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -80435,7 +80441,7 @@ begin
             if ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1))
             begin
   
-`line 6682 "/tmp/lm32-customizer/tmp.v"
+`line 6683 "/tmp/lm32-customizer/tmp.v"
 
                 if (jtag_access ==  1'b1)
                 begin
@@ -80446,7 +80452,7 @@ begin
                 end
                 else
  
-`line 6691 "/tmp/lm32-customizer/tmp.v"
+`line 6692 "/tmp/lm32-customizer/tmp.v"
 
                 begin
                     if (last_word ==  1'b1)
@@ -80471,7 +80477,7 @@ begin
                   
             
 
-`line 6714 "/tmp/lm32-customizer/tmp.v"
+`line 6715 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -80480,11 +80486,11 @@ begin
             begin
                 
   
-`line 6721 "/tmp/lm32-customizer/tmp.v"
+`line 6722 "/tmp/lm32-customizer/tmp.v"
      
                 i_sel_o <= 4'b1111;
  
-`line 6723 "/tmp/lm32-customizer/tmp.v"
+`line 6724 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {first_address, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -80494,11 +80500,11 @@ begin
   
                   
 
-`line 6731 "/tmp/lm32-customizer/tmp.v"
+`line 6732 "/tmp/lm32-customizer/tmp.v"
 
             end
   
-`line 6733 "/tmp/lm32-customizer/tmp.v"
+`line 6734 "/tmp/lm32-customizer/tmp.v"
 
             else
             begin
@@ -80520,7 +80526,7 @@ begin
                 end
             end 
  
-`line 6753 "/tmp/lm32-customizer/tmp.v"
+`line 6754 "/tmp/lm32-customizer/tmp.v"
                     
   
             
@@ -80532,7 +80538,7 @@ begin
                
                   
 
-`line 6763 "/tmp/lm32-customizer/tmp.v"
+`line 6764 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -80611,10 +80617,10 @@ end
     
 
 
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -80626,7 +80632,7 @@ begin
   
           
 
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -80637,7 +80643,7 @@ begin
   
               
 
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -80714,7 +80720,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -80999,11 +81005,8 @@ endmodule
 
 
   
-`line 6896 "/tmp/lm32-customizer/tmp.v"
+`line 6897 "/tmp/lm32-customizer/tmp.v"
 
-
-  
-`line 6898 "/tmp/lm32-customizer/tmp.v"
 
   
 `line 6899 "/tmp/lm32-customizer/tmp.v"
@@ -81011,10 +81014,10 @@ endmodule
   
 `line 6900 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6903 "/tmp/lm32-customizer/tmp.v"
+`line 6901 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6904 "/tmp/lm32-customizer/tmp.v"
@@ -81037,10 +81040,10 @@ endmodule
   
 `line 6910 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 6913 "/tmp/lm32-customizer/tmp.v"
+`line 6911 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 6914 "/tmp/lm32-customizer/tmp.v"
@@ -81069,6 +81072,9 @@ endmodule
   
 `line 6922 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 6923 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -81083,41 +81089,41 @@ module lm32_jtag_medium_icache_debug (
     jtag_reg_q,
     jtag_reg_addr_q,
   
-`line 6936 "/tmp/lm32-customizer/tmp.v"
+`line 6937 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_enable,
     csr_write_data,
     stall_x,
  
-`line 6941 "/tmp/lm32-customizer/tmp.v"
+`line 6942 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6942 "/tmp/lm32-customizer/tmp.v"
+`line 6943 "/tmp/lm32-customizer/tmp.v"
 
     jtag_read_data,
     jtag_access_complete,
  
-`line 6945 "/tmp/lm32-customizer/tmp.v"
+`line 6946 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6946 "/tmp/lm32-customizer/tmp.v"
+`line 6947 "/tmp/lm32-customizer/tmp.v"
 
     exception_q_w,
  
-`line 6948 "/tmp/lm32-customizer/tmp.v"
+`line 6949 "/tmp/lm32-customizer/tmp.v"
 
     
   
-`line 6950 "/tmp/lm32-customizer/tmp.v"
+`line 6951 "/tmp/lm32-customizer/tmp.v"
 
     jtx_csr_read_data,
     jrx_csr_read_data,
  
-`line 6953 "/tmp/lm32-customizer/tmp.v"
+`line 6954 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6954 "/tmp/lm32-customizer/tmp.v"
+`line 6955 "/tmp/lm32-customizer/tmp.v"
 
     jtag_csr_write_enable,
     jtag_csr_write_data,
@@ -81127,15 +81133,15 @@ module lm32_jtag_medium_icache_debug (
     jtag_write_data,
     jtag_address,
  
-`line 6962 "/tmp/lm32-customizer/tmp.v"
+`line 6963 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6963 "/tmp/lm32-customizer/tmp.v"
+`line 6964 "/tmp/lm32-customizer/tmp.v"
 
     jtag_break,
     jtag_reset,
  
-`line 6966 "/tmp/lm32-customizer/tmp.v"
+`line 6967 "/tmp/lm32-customizer/tmp.v"
 
     jtag_reg_d,
     jtag_reg_addr_d
@@ -81154,29 +81160,29 @@ input [ 7:0] jtag_reg_q;
 input [2:0] jtag_reg_addr_q;                            
 
   
-`line 6983 "/tmp/lm32-customizer/tmp.v"
+`line 6984 "/tmp/lm32-customizer/tmp.v"
 
 input [ (5-1):0] csr;                              
 input csr_write_enable;                                 
 input [ (32-1):0] csr_write_data;                  
 input stall_x;                                          
  
-`line 6988 "/tmp/lm32-customizer/tmp.v"
+`line 6989 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6989 "/tmp/lm32-customizer/tmp.v"
+`line 6990 "/tmp/lm32-customizer/tmp.v"
 
 input [ 7:0] jtag_read_data;                  
 input jtag_access_complete;                             
  
-`line 6992 "/tmp/lm32-customizer/tmp.v"
+`line 6993 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6993 "/tmp/lm32-customizer/tmp.v"
+`line 6994 "/tmp/lm32-customizer/tmp.v"
 
 input exception_q_w;                                    
  
-`line 6995 "/tmp/lm32-customizer/tmp.v"
+`line 6996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -81184,17 +81190,17 @@ input exception_q_w;
 
        
   
-`line 7001 "/tmp/lm32-customizer/tmp.v"
+`line 7002 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] jtx_csr_read_data;              
 wire   [ (32-1):0] jtx_csr_read_data;
 output [ (32-1):0] jrx_csr_read_data;              
 wire   [ (32-1):0] jrx_csr_read_data;
  
-`line 7006 "/tmp/lm32-customizer/tmp.v"
+`line 7007 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7007 "/tmp/lm32-customizer/tmp.v"
+`line 7008 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_csr_write_enable;                           
 reg    jtag_csr_write_enable;
@@ -81211,17 +81217,17 @@ wire   [ 7:0] jtag_write_data;
 output [ (32-1):0] jtag_address;                   
 wire   [ (32-1):0] jtag_address;
  
-`line 7022 "/tmp/lm32-customizer/tmp.v"
+`line 7023 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7023 "/tmp/lm32-customizer/tmp.v"
+`line 7024 "/tmp/lm32-customizer/tmp.v"
 
 output jtag_break;                                      
 reg    jtag_break;
 output jtag_reset;                                      
 reg    jtag_reset;
  
-`line 7028 "/tmp/lm32-customizer/tmp.v"
+`line 7029 "/tmp/lm32-customizer/tmp.v"
 
 output [ 7:0] jtag_reg_d;
 reg    [ 7:0] jtag_reg_d;
@@ -81243,19 +81249,19 @@ wire [ 7:0] rx_byte;
 wire [2:0] rx_addr;
 
   
-`line 7048 "/tmp/lm32-customizer/tmp.v"
+`line 7049 "/tmp/lm32-customizer/tmp.v"
                  
 reg [ 7:0] uart_tx_byte;      
 reg uart_tx_valid;                      
 reg [ 7:0] uart_rx_byte;      
 reg uart_rx_valid;                      
  
-`line 7053 "/tmp/lm32-customizer/tmp.v"
+`line 7054 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] command;             
   
-`line 7056 "/tmp/lm32-customizer/tmp.v"
+`line 7057 "/tmp/lm32-customizer/tmp.v"
 
 reg [ 7:0] jtag_byte_0;       
 reg [ 7:0] jtag_byte_1;
@@ -81264,7 +81270,7 @@ reg [ 7:0] jtag_byte_3;
 reg [ 7:0] jtag_byte_4;
 reg processing;                         
  
-`line 7063 "/tmp/lm32-customizer/tmp.v"
+`line 7064 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ 3:0] state;       
@@ -81274,43 +81280,43 @@ reg [ 3:0] state;
 
 
   
-`line 7071 "/tmp/lm32-customizer/tmp.v"
+`line 7072 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_csr_write_data = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_csr = jtag_byte_4[ (5-1):0];
 assign jtag_address = {jtag_byte_0, jtag_byte_1, jtag_byte_2, jtag_byte_3};
 assign jtag_write_data = jtag_byte_4;
  
-`line 7076 "/tmp/lm32-customizer/tmp.v"
+`line 7077 "/tmp/lm32-customizer/tmp.v"
 
                  
 
   
-`line 7079 "/tmp/lm32-customizer/tmp.v"
+`line 7080 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtag_reg_addr_d[1:0] = {uart_rx_valid, uart_tx_valid};         
  
    
 
-`line 7083 "/tmp/lm32-customizer/tmp.v"
+`line 7084 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7084 "/tmp/lm32-customizer/tmp.v"
+`line 7085 "/tmp/lm32-customizer/tmp.v"
 
 assign jtag_reg_addr_d[2] = processing;
  
    
 
-`line 7088 "/tmp/lm32-customizer/tmp.v"
+`line 7089 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 7090 "/tmp/lm32-customizer/tmp.v"
+`line 7091 "/tmp/lm32-customizer/tmp.v"
                  
 assign jtx_csr_read_data = {{ 32-9{1'b0}}, uart_tx_valid, 8'h00};
 assign jrx_csr_read_data = {{ 32-9{1'b0}}, uart_rx_valid, uart_rx_byte};
  
-`line 7093 "/tmp/lm32-customizer/tmp.v"
+`line 7094 "/tmp/lm32-customizer/tmp.v"
          
                  
 
@@ -81349,38 +81355,38 @@ begin
         command <= 4'b0000;
         jtag_reg_d <= 8'h00;
   
-`line 7130 "/tmp/lm32-customizer/tmp.v"
+`line 7131 "/tmp/lm32-customizer/tmp.v"
 
         processing <=  1'b0;
         jtag_csr_write_enable <=  1'b0;
         jtag_read_enable <=  1'b0;
         jtag_write_enable <=  1'b0;
  
-`line 7135 "/tmp/lm32-customizer/tmp.v"
+`line 7136 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7136 "/tmp/lm32-customizer/tmp.v"
+`line 7137 "/tmp/lm32-customizer/tmp.v"
 
         jtag_break <=  1'b0;
         jtag_reset <=  1'b0;
  
-`line 7139 "/tmp/lm32-customizer/tmp.v"
+`line 7140 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7140 "/tmp/lm32-customizer/tmp.v"
+`line 7141 "/tmp/lm32-customizer/tmp.v"
                  
         uart_tx_byte <= 8'h00;
         uart_tx_valid <=  1'b0;
         uart_rx_byte <= 8'h00;
         uart_rx_valid <=  1'b0;
  
-`line 7145 "/tmp/lm32-customizer/tmp.v"
+`line 7146 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
     begin
   
-`line 7149 "/tmp/lm32-customizer/tmp.v"
+`line 7150 "/tmp/lm32-customizer/tmp.v"
                  
         if ((csr_write_enable ==  1'b1) && (stall_x ==  1'b0))
         begin
@@ -81399,10 +81405,10 @@ begin
             endcase
         end
  
-`line 7166 "/tmp/lm32-customizer/tmp.v"
+`line 7167 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7167 "/tmp/lm32-customizer/tmp.v"
+`line 7168 "/tmp/lm32-customizer/tmp.v"
 
         
         if (exception_q_w ==  1'b1)
@@ -81411,7 +81417,7 @@ begin
             jtag_reset <=  1'b0;
         end
  
-`line 7174 "/tmp/lm32-customizer/tmp.v"
+`line 7175 "/tmp/lm32-customizer/tmp.v"
 
         case (state)
          4'h0:
@@ -81422,13 +81428,13 @@ begin
                 command <= rx_byte[7:4];                
                 case (rx_addr)
   
-`line 7183 "/tmp/lm32-customizer/tmp.v"
+`line 7184 "/tmp/lm32-customizer/tmp.v"
 
                  3'b000:
                 begin
                     case (rx_byte[7:4])
   
-`line 7187 "/tmp/lm32-customizer/tmp.v"
+`line 7188 "/tmp/lm32-customizer/tmp.v"
 
                      4'b0001:
                         state <=  4'h1;
@@ -81447,39 +81453,39 @@ begin
                      4'b0101:
                         state <=  4'h1;
  
-`line 7204 "/tmp/lm32-customizer/tmp.v"
+`line 7205 "/tmp/lm32-customizer/tmp.v"
                     
                      4'b0110:
                     begin
   
-`line 7207 "/tmp/lm32-customizer/tmp.v"
+`line 7208 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7210 "/tmp/lm32-customizer/tmp.v"
+`line 7211 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_break <=  1'b1;
                     end
                      4'b0111:
                     begin
   
-`line 7215 "/tmp/lm32-customizer/tmp.v"
+`line 7216 "/tmp/lm32-customizer/tmp.v"
      
                         uart_rx_valid <=  1'b0;    
                         uart_tx_valid <=  1'b0;         
  
-`line 7218 "/tmp/lm32-customizer/tmp.v"
+`line 7219 "/tmp/lm32-customizer/tmp.v"
 
                         jtag_reset <=  1'b1;
                     end
                     endcase                               
                 end
  
-`line 7223 "/tmp/lm32-customizer/tmp.v"
+`line 7224 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 7224 "/tmp/lm32-customizer/tmp.v"
+`line 7225 "/tmp/lm32-customizer/tmp.v"
                  
                  3'b001:
                 begin
@@ -81492,7 +81498,7 @@ begin
                     uart_tx_valid <=  1'b0;
                 end
  
-`line 7235 "/tmp/lm32-customizer/tmp.v"
+`line 7236 "/tmp/lm32-customizer/tmp.v"
 
                 default:
                     ;
@@ -81500,7 +81506,7 @@ begin
             end
         end
   
-`line 7241 "/tmp/lm32-customizer/tmp.v"
+`line 7242 "/tmp/lm32-customizer/tmp.v"
 
          4'h1:
         begin
@@ -81588,7 +81594,7 @@ begin
             state <=  4'h0;
         end    
  
-`line 7327 "/tmp/lm32-customizer/tmp.v"
+`line 7328 "/tmp/lm32-customizer/tmp.v"
 
         endcase
     end
@@ -81597,7 +81603,7 @@ end
 endmodule
 
  
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -81669,7 +81675,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -81966,22 +81972,22 @@ module lm32_interrupt_medium_icache_debug (
     
     stall_x,
   
-`line 7377 "/tmp/lm32-customizer/tmp.v"
+`line 7378 "/tmp/lm32-customizer/tmp.v"
 
     non_debug_exception,
     debug_exception,
  
     
 
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
-`line 7384 "/tmp/lm32-customizer/tmp.v"
+`line 7385 "/tmp/lm32-customizer/tmp.v"
 
     bret_q_x,
  
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -82010,22 +82016,22 @@ input [interrupts-1:0] interrupt;
 input stall_x;                                  
 
   
-`line 7413 "/tmp/lm32-customizer/tmp.v"
+`line 7414 "/tmp/lm32-customizer/tmp.v"
 
 input non_debug_exception;                      
 input debug_exception;                          
  
                                  
 
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
-`line 7420 "/tmp/lm32-customizer/tmp.v"
+`line 7421 "/tmp/lm32-customizer/tmp.v"
 
 input bret_q_x;                                 
  
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (5-1):0] csr;                      
@@ -82055,11 +82061,11 @@ wire [interrupts-1:0] interrupt_n_exception;
 reg ie;                                         
 reg eie;                                        
   
-`line 7450 "/tmp/lm32-customizer/tmp.v"
+`line 7451 "/tmp/lm32-customizer/tmp.v"
 
 reg bie;                                        
  
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -82079,13 +82085,13 @@ assign asserted = ip | interrupt;
        
 assign ie_csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7470 "/tmp/lm32-customizer/tmp.v"
+`line 7471 "/tmp/lm32-customizer/tmp.v"
 
                            bie,
  
                            
 
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -82101,13 +82107,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7488 "/tmp/lm32-customizer/tmp.v"
+`line 7489 "/tmp/lm32-customizer/tmp.v"
 
                                     bie,
  
                                                                          
 
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -82126,13 +82132,13 @@ begin
     case (csr)
      5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-`line 7509 "/tmp/lm32-customizer/tmp.v"
+`line 7510 "/tmp/lm32-customizer/tmp.v"
 
                                     bie, 
  
                                                                         
 
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -82149,7 +82155,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -82167,11 +82173,11 @@ always @(posedge clk_i  )
         ie                   <=  1'b0;
         eie                  <=  1'b0;
   
-`line 7544 "/tmp/lm32-customizer/tmp.v"
+`line 7545 "/tmp/lm32-customizer/tmp.v"
 
         bie                  <=  1'b0;
  
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -82183,7 +82189,7 @@ always @(posedge clk_i  )
         
         ip                   <= asserted;
   
-`line 7556 "/tmp/lm32-customizer/tmp.v"
+`line 7557 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -82205,7 +82211,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -82224,13 +82230,13 @@ always @(posedge clk_i  )
                       
            
   
-`line 7593 "/tmp/lm32-customizer/tmp.v"
+`line 7594 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -82240,11 +82246,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7605 "/tmp/lm32-customizer/tmp.v"
+`line 7606 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h1)
@@ -82266,11 +82272,11 @@ always @(posedge clk_i  )
         ie              <=  1'b0;
         eie             <=  1'b0;
   
-`line 7627 "/tmp/lm32-customizer/tmp.v"
+`line 7628 "/tmp/lm32-customizer/tmp.v"
 
         bie             <=  1'b0;
  
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -82280,7 +82286,7 @@ always @(posedge clk_i  )
         
         ip              <= asserted;
   
-`line 7637 "/tmp/lm32-customizer/tmp.v"
+`line 7638 "/tmp/lm32-customizer/tmp.v"
 
         if (non_debug_exception ==  1'b1)
         begin
@@ -82302,7 +82308,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -82319,13 +82325,13 @@ always @(posedge clk_i  )
              end
            
   
-`line 7672 "/tmp/lm32-customizer/tmp.v"
+`line 7673 "/tmp/lm32-customizer/tmp.v"
 
             else if (bret_q_x ==  1'b1)
                 
                 ie      <= bie;
  
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -82335,11 +82341,11 @@ always @(posedge clk_i  )
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-`line 7684 "/tmp/lm32-customizer/tmp.v"
+`line 7685 "/tmp/lm32-customizer/tmp.v"
 
                     bie <= csr_write_data[2];
  
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  5'h2)
@@ -82381,50 +82387,6 @@ endmodule
 
 
 
-
-
-
-  
-`line 1 "src/lm32_include.v"
-
-`line 1 "src/lm32_include.v"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-`line 33 "src/lm32_include.v"
-
-  
-`line 34 "src/lm32_include.v"
 
 
 
@@ -82494,7 +82456,52 @@ endmodule
 `line 25 "/tmp/lm32-customizer/system_conf.v"
 
 
-`line 26 "src/lm32_include.v"
+`line 26 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 1 "src/lm32_include.v"
+
+`line 1 "src/lm32_include.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+`line 33 "src/lm32_include.v"
+
+  
+`line 34 "src/lm32_include.v"
+
+
+
 
 
   
@@ -83064,67 +83071,77 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
-           
-  
-`line 31 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 32 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 33 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 34 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 35 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 36 "/tmp/lm32-customizer/tmp.v"
-
-  
-`line 37 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-
-module lm32_mc_arithmetic_minimal (
+module lm32_top_minimal (
     
     clk_i,
     rst_i,
-    stall_d,
-    kill_x,
+    
+
+    interrupt,
+
+    
   
     
     
 
-`line 52 "/tmp/lm32-customizer/tmp.v"
-
+`line 48 "/tmp/lm32-customizer/tmp.v"
+     
   
-    
+`line 49 "/tmp/lm32-customizer/tmp.v"
 
+    
+    I_DAT_I,
+    I_ACK_I,
+    I_ERR_I,
+    I_RTY_I,
+ 
 `line 55 "/tmp/lm32-customizer/tmp.v"
 
-  
+    
+    D_DAT_I,
+    D_ACK_I,
+    D_ERR_I,
+    D_RTY_I,
+    
+      
     
     
     
-
-`line 60 "/tmp/lm32-customizer/tmp.v"
-
-    operand_0_d,
-    operand_1_d,
-    
-    result_x,
-  
     
 
 `line 67 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 68 "/tmp/lm32-customizer/tmp.v"
 
-    stall_request_x
+    
+    I_DAT_O,
+    I_ADR_O,
+    I_CYC_O,
+    I_SEL_O,
+    I_STB_O,
+    I_WE_O,
+    I_CTI_O,
+    I_LOCK_O,
+    I_BTE_O,
+ 
+`line 79 "/tmp/lm32-customizer/tmp.v"
+
+    
+    D_DAT_O,
+    D_ADR_O,
+    D_CYC_O,
+    D_SEL_O,
+    D_STB_O,
+    D_WE_O,
+    D_CTI_O,
+    D_LOCK_O,
+    D_BTE_O
     );
 
 
@@ -83133,251 +83150,313 @@ module lm32_mc_arithmetic_minimal (
 
 input clk_i;                                    
 input rst_i;                                    
-input stall_d;                                  
-input kill_x;                                   
-  
-                                  
-                                 
 
-`line 82 "/tmp/lm32-customizer/tmp.v"
+
+input [ (32-1):0] interrupt;          
+
 
   
-                                
-
-`line 85 "/tmp/lm32-customizer/tmp.v"
-
-  
-                              
-                             
+               
                              
 
-`line 90 "/tmp/lm32-customizer/tmp.v"
-
-input [ (32-1):0] operand_0_d;
-input [ (32-1):0] operand_1_d;
-
-
-
-
-
-output [ (32-1):0] result_x;               
-reg    [ (32-1):0] result_x;
-  
-                         
+`line 106 "/tmp/lm32-customizer/tmp.v"
     
 
-`line 103 "/tmp/lm32-customizer/tmp.v"
-
-output stall_request_x;                         
-wire   stall_request_x;
-
-
-
-
-
-reg [ (32-1):0] p;                         
-reg [ (32-1):0] a;
-reg [ (32-1):0] b;
   
-  
+`line 108 "/tmp/lm32-customizer/tmp.v"
 
-`line 116 "/tmp/lm32-customizer/tmp.v"
+input [ (32-1):0] I_DAT_I;                 
+input I_ACK_I;                                  
+input I_ERR_I;                                  
+input I_RTY_I;                                  
+ 
+`line 113 "/tmp/lm32-customizer/tmp.v"
 
 
-reg [ 2:0] state;                 
-reg [5:0] cycles;                               
+input [ (32-1):0] D_DAT_I;                 
+input D_ACK_I;                                  
+input D_ERR_I;                                  
+input D_RTY_I;                                  
+
+
+
+
 
   
                                
-                                 
-
-`line 124 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-
-assign stall_request_x = state !=  3'b000;
-
-  
-
-      
-
-`line 136 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-
+   
        
+     
+           
+    
+           
+    
 
-`line 141 "/tmp/lm32-customizer/tmp.v"
+`line 133 "/tmp/lm32-customizer/tmp.v"
 
-
-
-
-
-
-
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        cycles <= {6{1'b0}};
-        p <= { 32{1'b0}};
-        a <= { 32{1'b0}};
-        b <= { 32{1'b0}};
-  
-          
-
-`line 158 "/tmp/lm32-customizer/tmp.v"
 
   
-          
+`line 135 "/tmp/lm32-customizer/tmp.v"
 
-`line 161 "/tmp/lm32-customizer/tmp.v"
+output [ (32-1):0] I_DAT_O;                
+wire   [ (32-1):0] I_DAT_O;
+output [ (32-1):0] I_ADR_O;                
+wire   [ (32-1):0] I_ADR_O;
+output I_CYC_O;                                 
+wire   I_CYC_O;
+output [ (4-1):0] I_SEL_O;         
+wire   [ (4-1):0] I_SEL_O;
+output I_STB_O;                                 
+wire   I_STB_O;
+output I_WE_O;                                  
+wire   I_WE_O;
+output [ (3-1):0] I_CTI_O;               
+wire   [ (3-1):0] I_CTI_O;
+output I_LOCK_O;                                
+wire   I_LOCK_O;
+output [ (2-1):0] I_BTE_O;               
+wire   [ (2-1):0] I_BTE_O;
+ 
+`line 154 "/tmp/lm32-customizer/tmp.v"
 
-        result_x <= { 32{1'b0}};
-        state <=  3'b000;
-    end
-    else
-    begin
+
+output [ (32-1):0] D_DAT_O;                
+wire   [ (32-1):0] D_DAT_O;
+output [ (32-1):0] D_ADR_O;                
+wire   [ (32-1):0] D_ADR_O;
+output D_CYC_O;                                 
+wire   D_CYC_O;
+output [ (4-1):0] D_SEL_O;         
+wire   [ (4-1):0] D_SEL_O;
+output D_STB_O;                                 
+wire   D_STB_O;
+output D_WE_O;                                  
+wire   D_WE_O;
+output [ (3-1):0] D_CTI_O;               
+wire   [ (3-1):0] D_CTI_O;
+output D_LOCK_O;                                
+wire   D_LOCK_O;
+output [ (2-1):0] D_BTE_O;               
+wire   [ (2-1):0] D_BTE_O;
   
-          
 
-`line 169 "/tmp/lm32-customizer/tmp.v"
 
-        case (state)
-         3'b000:
-        begin
-            if (stall_d ==  1'b0)                 
-            begin          
-                cycles <=  32;
-                p <= 32'b0;
-                a <= operand_0_d;
-                b <= operand_1_d;                    
+
+ 
   
-                   
-                      
-                   
-                      
 
-`line 184 "/tmp/lm32-customizer/tmp.v"
-                    
   
-                   
-                      
+  
+ 
+  
+  
+ 
+ 
 
 `line 188 "/tmp/lm32-customizer/tmp.v"
 
+
+
+  
+
+                     
+                             
+                            
+                   
+                                 
+ 
+                                 
+
+
+`line 201 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+  
+`line 1 "src/lm32_functions.v"
+
+`line 1 "src/lm32_functions.v"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+`line 50 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+   
+
+lm32_cpu_minimal cpu (
+    
+    .clk_i                 (clk_i),
   
                    
-                
-                      
-                      
-                      
-                      
-                      
-                
-                   
-                
-                      
-                      
-                      
-                      
-                      
-                
 
-`line 206 "/tmp/lm32-customizer/tmp.v"
+`line 218 "/tmp/lm32-customizer/tmp.v"
 
-            end            
-        end
+    .rst_i                 (rst_i),
+    
   
-        
-        
+`line 221 "/tmp/lm32-customizer/tmp.v"
+
+    .interrupt             (interrupt),
+ 
+`line 223 "/tmp/lm32-customizer/tmp.v"
+
+    
+  
                
-            
-                  
-                   
-            
              
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
-        
-        
-               
-            
-                  
-                   
-            
-             
-            
-                   
-                   
-            
-              
-                   
-            
-                
-                    
-                  
-            
-                
-        
 
-`line 252 "/tmp/lm32-customizer/tmp.v"
-        
-  
-        
-        
-               
-                    
-               
-               
-              
-                   
-                  
-                
-        
-
-`line 265 "/tmp/lm32-customizer/tmp.v"
+`line 228 "/tmp/lm32-customizer/tmp.v"
      
   
-        
-               
-               
-              
-                   
+    
                   
-                
-        
-        
                
-               
-              
-                   
-                  
                 
-        
+           
 
-`line 283 "/tmp/lm32-customizer/tmp.v"
+`line 235 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 236 "/tmp/lm32-customizer/tmp.v"
+
+     
+    .I_DAT_I               (I_DAT_I),
+    .I_ACK_I               (I_ACK_I),
+    .I_ERR_I               (I_ERR_I),
+    .I_RTY_I               (I_RTY_I),
+ 
+`line 242 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_I               (D_DAT_I),
+    .D_ACK_I               (D_ACK_I),
+    .D_ERR_I               (D_ERR_I),
+    .D_RTY_I               (D_RTY_I),
+    
+  
+                  
+            
+           
+                 
+                
+ 
+                
+
+
+`line 258 "/tmp/lm32-customizer/tmp.v"
+
+  
+                
+           
+
+`line 262 "/tmp/lm32-customizer/tmp.v"
+
+      
+                
+               
+            
+            
+
+`line 268 "/tmp/lm32-customizer/tmp.v"
+    
+  
+`line 269 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .I_DAT_O               (I_DAT_O),
+    .I_ADR_O               (I_ADR_O),
+    .I_CYC_O               (I_CYC_O),
+    .I_SEL_O               (I_SEL_O),
+    .I_STB_O               (I_STB_O),
+    .I_WE_O                (I_WE_O),
+    .I_CTI_O               (I_CTI_O),
+    .I_LOCK_O              (I_LOCK_O),
+    .I_BTE_O               (I_BTE_O),
+     
+`line 280 "/tmp/lm32-customizer/tmp.v"
+
+    
+    .D_DAT_O               (D_DAT_O),
+    .D_ADR_O               (D_ADR_O),
+    .D_CYC_O               (D_CYC_O),
+    .D_SEL_O               (D_SEL_O),
+    .D_STB_O               (D_STB_O),
+    .D_WE_O                (D_WE_O),
+    .D_CTI_O               (D_CTI_O),
+    .D_LOCK_O              (D_LOCK_O),
+    .D_BTE_O               (D_BTE_O)
+    );
    
-        endcase
-    end
-end 
+  		   
 
+  
+    
+                     
+                
+    
+                
+                     
+                
+                      
+                     
+    
+
+`line 306 "/tmp/lm32-customizer/tmp.v"
+        
+   
 endmodule
 
 
@@ -83449,7 +83528,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -83732,77 +83811,67 @@ endmodule
 
 `line 315 "/tmp/lm32-customizer/tmp.v"
 
+           
+  
+`line 339 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 340 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 341 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 342 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 343 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 344 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 345 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
 
-module lm32_top_minimal (
+
+module lm32_mc_arithmetic_minimal (
     
     clk_i,
     rst_i,
-    
-
-    interrupt,
-
-    
+    stall_d,
+    kill_x,
   
     
     
 
-`line 335 "/tmp/lm32-customizer/tmp.v"
-     
+`line 360 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 336 "/tmp/lm32-customizer/tmp.v"
-
-    
-    I_DAT_I,
-    I_ACK_I,
-    I_ERR_I,
-    I_RTY_I,
- 
-`line 342 "/tmp/lm32-customizer/tmp.v"
-
-    
-    D_DAT_I,
-    D_ACK_I,
-    D_ERR_I,
-    D_RTY_I,
-    
-      
-    
-    
-    
     
 
-`line 354 "/tmp/lm32-customizer/tmp.v"
-    
+`line 363 "/tmp/lm32-customizer/tmp.v"
+
   
-`line 355 "/tmp/lm32-customizer/tmp.v"
-
     
-    I_DAT_O,
-    I_ADR_O,
-    I_CYC_O,
-    I_SEL_O,
-    I_STB_O,
-    I_WE_O,
-    I_CTI_O,
-    I_LOCK_O,
-    I_BTE_O,
- 
-`line 366 "/tmp/lm32-customizer/tmp.v"
-
     
-    D_DAT_O,
-    D_ADR_O,
-    D_CYC_O,
-    D_SEL_O,
-    D_STB_O,
-    D_WE_O,
-    D_CTI_O,
-    D_LOCK_O,
-    D_BTE_O
+    
+
+`line 368 "/tmp/lm32-customizer/tmp.v"
+
+    operand_0_d,
+    operand_1_d,
+    
+    result_x,
+  
+    
+
+`line 375 "/tmp/lm32-customizer/tmp.v"
+
+    stall_request_x
     );
 
 
@@ -83811,135 +83880,65 @@ module lm32_top_minimal (
 
 input clk_i;                                    
 input rst_i;                                    
+input stall_d;                                  
+input kill_x;                                   
+  
+                                  
+                                 
 
-
-input [ (32-1):0] interrupt;          
-
+`line 390 "/tmp/lm32-customizer/tmp.v"
 
   
-               
-                             
+                                
 
 `line 393 "/tmp/lm32-customizer/tmp.v"
-    
 
   
-`line 395 "/tmp/lm32-customizer/tmp.v"
+                              
+                             
+                             
 
-input [ (32-1):0] I_DAT_I;                 
-input I_ACK_I;                                  
-input I_ERR_I;                                  
-input I_RTY_I;                                  
- 
-`line 400 "/tmp/lm32-customizer/tmp.v"
+`line 398 "/tmp/lm32-customizer/tmp.v"
 
-
-input [ (32-1):0] D_DAT_I;                 
-input D_ACK_I;                                  
-input D_ERR_I;                                  
-input D_RTY_I;                                  
+input [ (32-1):0] operand_0_d;
+input [ (32-1):0] operand_1_d;
 
 
 
 
+
+output [ (32-1):0] result_x;               
+reg    [ (32-1):0] result_x;
+  
+                         
+    
+
+`line 411 "/tmp/lm32-customizer/tmp.v"
+
+output stall_request_x;                         
+wire   stall_request_x;
+
+
+
+
+
+reg [ (32-1):0] p;                         
+reg [ (32-1):0] a;
+reg [ (32-1):0] b;
+  
+  
+
+`line 424 "/tmp/lm32-customizer/tmp.v"
+
+
+reg [ 2:0] state;                 
+reg [5:0] cycles;                               
 
   
                                
-   
-       
-     
-           
-    
-           
-    
-
-`line 420 "/tmp/lm32-customizer/tmp.v"
-
-
-  
-`line 422 "/tmp/lm32-customizer/tmp.v"
-
-output [ (32-1):0] I_DAT_O;                
-wire   [ (32-1):0] I_DAT_O;
-output [ (32-1):0] I_ADR_O;                
-wire   [ (32-1):0] I_ADR_O;
-output I_CYC_O;                                 
-wire   I_CYC_O;
-output [ (4-1):0] I_SEL_O;         
-wire   [ (4-1):0] I_SEL_O;
-output I_STB_O;                                 
-wire   I_STB_O;
-output I_WE_O;                                  
-wire   I_WE_O;
-output [ (3-1):0] I_CTI_O;               
-wire   [ (3-1):0] I_CTI_O;
-output I_LOCK_O;                                
-wire   I_LOCK_O;
-output [ (2-1):0] I_BTE_O;               
-wire   [ (2-1):0] I_BTE_O;
- 
-`line 441 "/tmp/lm32-customizer/tmp.v"
-
-
-output [ (32-1):0] D_DAT_O;                
-wire   [ (32-1):0] D_DAT_O;
-output [ (32-1):0] D_ADR_O;                
-wire   [ (32-1):0] D_ADR_O;
-output D_CYC_O;                                 
-wire   D_CYC_O;
-output [ (4-1):0] D_SEL_O;         
-wire   [ (4-1):0] D_SEL_O;
-output D_STB_O;                                 
-wire   D_STB_O;
-output D_WE_O;                                  
-wire   D_WE_O;
-output [ (3-1):0] D_CTI_O;               
-wire   [ (3-1):0] D_CTI_O;
-output D_LOCK_O;                                
-wire   D_LOCK_O;
-output [ (2-1):0] D_BTE_O;               
-wire   [ (2-1):0] D_BTE_O;
-  
-
-
-
- 
-  
-
-  
-  
- 
-  
-  
- 
- 
-
-`line 475 "/tmp/lm32-customizer/tmp.v"
-
-
-
-  
-
-                     
-                             
-                            
-                   
-                                 
- 
                                  
 
-
-`line 488 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-
-
-  
-`line 1 "src/lm32_functions.v"
-
-`line 1 "src/lm32_functions.v"
+`line 432 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -83947,177 +83946,185 @@ wire   [ (2-1):0] D_BTE_O;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-					  
-function integer clogb2;
-input [31:0] value;
-begin
-   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        value = value >> 1;
-end
-endfunction 
-
-function integer clogb2_v1;
-input [31:0] value;
-reg   [31:0] i;
-reg   [31:0] temp;
-begin
-   temp = 0;
-   i    = 0;
-   for (i = 0; temp < value; i = i + 1)  
-	temp = 1<<i;
-   clogb2_v1 = i-1;
-end
-endfunction
-
-
-`line 50 "/tmp/lm32-customizer/tmp.v"
-
-
-
-
-   
-
-lm32_cpu_minimal cpu (
-    
-    .clk_i                 (clk_i),
-  
-                   
-
-`line 505 "/tmp/lm32-customizer/tmp.v"
-
-    .rst_i                 (rst_i),
-    
-  
-`line 508 "/tmp/lm32-customizer/tmp.v"
-
-    .interrupt             (interrupt),
- 
-`line 510 "/tmp/lm32-customizer/tmp.v"
-
-    
-  
-               
-             
-
-`line 515 "/tmp/lm32-customizer/tmp.v"
-     
-  
-    
-                  
-               
-                
-           
-
-`line 522 "/tmp/lm32-customizer/tmp.v"
+assign stall_request_x = state !=  3'b000;
 
   
-`line 523 "/tmp/lm32-customizer/tmp.v"
-
-     
-    .I_DAT_I               (I_DAT_I),
-    .I_ACK_I               (I_ACK_I),
-    .I_ERR_I               (I_ERR_I),
-    .I_RTY_I               (I_RTY_I),
- 
-`line 529 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_I               (D_DAT_I),
-    .D_ACK_I               (D_ACK_I),
-    .D_ERR_I               (D_ERR_I),
-    .D_RTY_I               (D_RTY_I),
-    
-  
-                  
-            
-           
-                 
-                
- 
-                
-
-
-`line 545 "/tmp/lm32-customizer/tmp.v"
-
-  
-                
-           
-
-`line 549 "/tmp/lm32-customizer/tmp.v"
 
       
-                
-               
-            
-            
 
-`line 555 "/tmp/lm32-customizer/tmp.v"
-    
-  
-`line 556 "/tmp/lm32-customizer/tmp.v"
+`line 444 "/tmp/lm32-customizer/tmp.v"
 
-    
-    .I_DAT_O               (I_DAT_O),
-    .I_ADR_O               (I_ADR_O),
-    .I_CYC_O               (I_CYC_O),
-    .I_SEL_O               (I_SEL_O),
-    .I_STB_O               (I_STB_O),
-    .I_WE_O                (I_WE_O),
-    .I_CTI_O               (I_CTI_O),
-    .I_LOCK_O              (I_LOCK_O),
-    .I_BTE_O               (I_BTE_O),
-     
-`line 567 "/tmp/lm32-customizer/tmp.v"
-
-    
-    .D_DAT_O               (D_DAT_O),
-    .D_ADR_O               (D_ADR_O),
-    .D_CYC_O               (D_CYC_O),
-    .D_SEL_O               (D_SEL_O),
-    .D_STB_O               (D_STB_O),
-    .D_WE_O                (D_WE_O),
-    .D_CTI_O               (D_CTI_O),
-    .D_LOCK_O              (D_LOCK_O),
-    .D_BTE_O               (D_BTE_O)
-    );
-   
-  		   
 
   
-    
-                     
-                
-    
-                
-                     
+
+       
+
+`line 449 "/tmp/lm32-customizer/tmp.v"
+
+
+
+
+
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        cycles <= {6{1'b0}};
+        p <= { 32{1'b0}};
+        a <= { 32{1'b0}};
+        b <= { 32{1'b0}};
+  
+          
+
+`line 466 "/tmp/lm32-customizer/tmp.v"
+
+  
+          
+
+`line 469 "/tmp/lm32-customizer/tmp.v"
+
+        result_x <= { 32{1'b0}};
+        state <=  3'b000;
+    end
+    else
+    begin
+  
+          
+
+`line 477 "/tmp/lm32-customizer/tmp.v"
+
+        case (state)
+         3'b000:
+        begin
+            if (stall_d ==  1'b0)                 
+            begin          
+                cycles <=  32;
+                p <= 32'b0;
+                a <= operand_0_d;
+                b <= operand_1_d;                    
+  
+                   
+                      
+                   
+                      
+
+`line 492 "/tmp/lm32-customizer/tmp.v"
+                    
+  
+                   
+                      
+
+`line 496 "/tmp/lm32-customizer/tmp.v"
+
+  
+                   
                 
                       
-                     
-    
+                      
+                      
+                      
+                      
+                
+                   
+                
+                      
+                      
+                      
+                      
+                      
+                
 
-`line 593 "/tmp/lm32-customizer/tmp.v"
+`line 514 "/tmp/lm32-customizer/tmp.v"
+
+            end            
+        end
+  
         
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+
+`line 560 "/tmp/lm32-customizer/tmp.v"
+        
+  
+        
+        
+               
+                    
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 573 "/tmp/lm32-customizer/tmp.v"
+     
+  
+        
+               
+               
+              
+                   
+                  
+                
+        
+        
+               
+               
+              
+                   
+                  
+                
+        
+
+`line 591 "/tmp/lm32-customizer/tmp.v"
    
+        endcase
+    end
+end 
+
 endmodule
 
 
@@ -84225,7 +84232,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -84519,23 +84526,23 @@ module lm32_cpu_minimal (
   
     
 
-`line 671 "/tmp/lm32-customizer/tmp.v"
+`line 672 "/tmp/lm32-customizer/tmp.v"
     
     rst_i,
     
   
-`line 674 "/tmp/lm32-customizer/tmp.v"
+`line 675 "/tmp/lm32-customizer/tmp.v"
 
     interrupt,
  
-`line 676 "/tmp/lm32-customizer/tmp.v"
+`line 677 "/tmp/lm32-customizer/tmp.v"
 
     
   
     
     
 
-`line 681 "/tmp/lm32-customizer/tmp.v"
+`line 682 "/tmp/lm32-customizer/tmp.v"
      
   
     
@@ -84544,10 +84551,10 @@ module lm32_cpu_minimal (
     
     
 
-`line 688 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 689 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 690 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_I,
@@ -84555,7 +84562,7 @@ module lm32_cpu_minimal (
     I_ERR_I,
     I_RTY_I,
  
-`line 695 "/tmp/lm32-customizer/tmp.v"
+`line 696 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_I,
@@ -84573,13 +84580,13 @@ module lm32_cpu_minimal (
     
 
 
-`line 711 "/tmp/lm32-customizer/tmp.v"
+`line 712 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 715 "/tmp/lm32-customizer/tmp.v"
+`line 716 "/tmp/lm32-customizer/tmp.v"
 
       
     
@@ -84587,10 +84594,10 @@ module lm32_cpu_minimal (
     
     
 
-`line 721 "/tmp/lm32-customizer/tmp.v"
+`line 722 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 722 "/tmp/lm32-customizer/tmp.v"
+`line 723 "/tmp/lm32-customizer/tmp.v"
 
     
     I_DAT_O,
@@ -84603,7 +84610,7 @@ module lm32_cpu_minimal (
     I_LOCK_O,
     I_BTE_O,
  
-`line 733 "/tmp/lm32-customizer/tmp.v"
+`line 734 "/tmp/lm32-customizer/tmp.v"
 
     
     D_DAT_O,
@@ -84625,7 +84632,7 @@ parameter eba_reset =  32'h00000000;
   
                             
 
-`line 753 "/tmp/lm32-customizer/tmp.v"
+`line 754 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -84635,7 +84642,7 @@ parameter eba_reset =  32'h00000000;
           
                         
 
-`line 761 "/tmp/lm32-customizer/tmp.v"
+`line 762 "/tmp/lm32-customizer/tmp.v"
 
 parameter icache_associativity = 1;    
 parameter icache_sets = 512;                      
@@ -84643,7 +84650,7 @@ parameter icache_bytes_per_line = 16;
 parameter icache_base_address = 0;      
 parameter icache_limit = 0;                    
  
-`line 767 "/tmp/lm32-customizer/tmp.v"
+`line 768 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -84653,7 +84660,7 @@ parameter icache_limit = 0;
           
                         
 
-`line 775 "/tmp/lm32-customizer/tmp.v"
+`line 776 "/tmp/lm32-customizer/tmp.v"
 
 parameter dcache_associativity = 1;    
 parameter dcache_sets = 512;                      
@@ -84661,36 +84668,36 @@ parameter dcache_bytes_per_line = 16;
 parameter dcache_base_address = 0;      
 parameter dcache_limit = 0;                    
  
-`line 781 "/tmp/lm32-customizer/tmp.v"
+`line 782 "/tmp/lm32-customizer/tmp.v"
 
 
   
                           
 
-`line 785 "/tmp/lm32-customizer/tmp.v"
+`line 786 "/tmp/lm32-customizer/tmp.v"
 
 parameter watchpoints = 0;
  
-`line 787 "/tmp/lm32-customizer/tmp.v"
+`line 788 "/tmp/lm32-customizer/tmp.v"
 
   
                           
 
-`line 790 "/tmp/lm32-customizer/tmp.v"
+`line 791 "/tmp/lm32-customizer/tmp.v"
 
 parameter breakpoints = 0;
  
-`line 792 "/tmp/lm32-customizer/tmp.v"
+`line 793 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 794 "/tmp/lm32-customizer/tmp.v"
+`line 795 "/tmp/lm32-customizer/tmp.v"
 
 parameter interrupts =  32;                         
  
    
 
-`line 798 "/tmp/lm32-customizer/tmp.v"
+`line 799 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -84701,23 +84708,23 @@ input clk_i;
   
                                    
 
-`line 807 "/tmp/lm32-customizer/tmp.v"
+`line 808 "/tmp/lm32-customizer/tmp.v"
     
 input rst_i;                                    
 
   
-`line 810 "/tmp/lm32-customizer/tmp.v"
+`line 811 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] interrupt;          
  
-`line 812 "/tmp/lm32-customizer/tmp.v"
+`line 813 "/tmp/lm32-customizer/tmp.v"
 
 
   
                
                              
 
-`line 817 "/tmp/lm32-customizer/tmp.v"
+`line 818 "/tmp/lm32-customizer/tmp.v"
     
 
   
@@ -84726,18 +84733,18 @@ input [ (32-1):0] interrupt;
                 
   
 
-`line 824 "/tmp/lm32-customizer/tmp.v"
+`line 825 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 826 "/tmp/lm32-customizer/tmp.v"
+`line 827 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] I_DAT_I;                 
 input I_ACK_I;                                  
 input I_ERR_I;                                  
 input I_RTY_I;                                  
  
-`line 831 "/tmp/lm32-customizer/tmp.v"
+`line 832 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] D_DAT_I;                 
@@ -84765,7 +84772,7 @@ input D_RTY_I;
     
 
 
-`line 857 "/tmp/lm32-customizer/tmp.v"
+`line 858 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -84774,7 +84781,7 @@ input D_RTY_I;
   
     
 
-`line 864 "/tmp/lm32-customizer/tmp.v"
+`line 865 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -84787,11 +84794,11 @@ input D_RTY_I;
            
     
 
-`line 875 "/tmp/lm32-customizer/tmp.v"
+`line 876 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 877 "/tmp/lm32-customizer/tmp.v"
+`line 878 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] I_DAT_O;                
 wire   [ (32-1):0] I_DAT_O;
@@ -84812,7 +84819,7 @@ wire   I_LOCK_O;
 output [ (2-1):0] I_BTE_O;               
 wire   [ (2-1):0] I_BTE_O;
  
-`line 896 "/tmp/lm32-customizer/tmp.v"
+`line 897 "/tmp/lm32-customizer/tmp.v"
 
 
 output [ (32-1):0] D_DAT_O;                
@@ -84843,7 +84850,7 @@ wire   [ (2-1):0] D_BTE_O;
   
                                      
 
-`line 925 "/tmp/lm32-customizer/tmp.v"
+`line 926 "/tmp/lm32-customizer/tmp.v"
 
 reg valid_f;                                    
 reg valid_d;                                    
@@ -84891,21 +84898,21 @@ reg x_result_sel_csr_x;
                     
  
 
-`line 971 "/tmp/lm32-customizer/tmp.v"
+`line 972 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 972 "/tmp/lm32-customizer/tmp.v"
+`line 973 "/tmp/lm32-customizer/tmp.v"
     
 wire x_result_sel_shift_d;                      
 reg x_result_sel_shift_x;
  
-`line 975 "/tmp/lm32-customizer/tmp.v"
+`line 976 "/tmp/lm32-customizer/tmp.v"
 
   
                         
  
 
-`line 979 "/tmp/lm32-customizer/tmp.v"
+`line 980 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_logic_d;                      
 reg x_result_sel_logic_x;
@@ -84913,7 +84920,7 @@ reg x_result_sel_logic_x;
                         
  
 
-`line 985 "/tmp/lm32-customizer/tmp.v"
+`line 986 "/tmp/lm32-customizer/tmp.v"
 
 wire x_result_sel_add_d;                        
 reg x_result_sel_add_x;
@@ -84925,7 +84932,7 @@ reg m_result_sel_compare_m;
  
  
 
-`line 995 "/tmp/lm32-customizer/tmp.v"
+`line 996 "/tmp/lm32-customizer/tmp.v"
 
 wire w_result_sel_load_d;                       
 reg w_result_sel_load_x;
@@ -84937,7 +84944,7 @@ reg w_result_sel_load_w;
  
  
 
-`line 1005 "/tmp/lm32-customizer/tmp.v"
+`line 1006 "/tmp/lm32-customizer/tmp.v"
 
 wire x_bypass_enable_d;                         
 reg x_bypass_enable_x;                          
@@ -84969,7 +84976,7 @@ reg [ (3-1):0] condition_x;
                                     
                                      
 
-`line 1035 "/tmp/lm32-customizer/tmp.v"
+`line 1036 "/tmp/lm32-customizer/tmp.v"
 
 wire scall_d;                                   
 reg scall_x;    
@@ -84980,7 +84987,7 @@ reg eret_m;
   
  
 
-`line 1044 "/tmp/lm32-customizer/tmp.v"
+`line 1045 "/tmp/lm32-customizer/tmp.v"
 
   
                                      
@@ -84991,7 +84998,7 @@ reg eret_m;
  
 
 
-`line 1053 "/tmp/lm32-customizer/tmp.v"
+`line 1054 "/tmp/lm32-customizer/tmp.v"
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -84999,7 +85006,7 @@ wire csr_write_enable_q_x;
   
        
 
-`line 1059 "/tmp/lm32-customizer/tmp.v"
+`line 1060 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85008,7 +85015,7 @@ wire csr_write_enable_q_x;
  
   
 
-`line 1066 "/tmp/lm32-customizer/tmp.v"
+`line 1067 "/tmp/lm32-customizer/tmp.v"
 
 
 reg [ (32-1):0] d_result_0;                
@@ -85025,7 +85032,7 @@ reg [ (32-1):0] operand_w;
 
 
   
-`line 1081 "/tmp/lm32-customizer/tmp.v"
+`line 1082 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] reg_data_live_0;          
 reg [ (32-1):0] reg_data_live_1;  
@@ -85033,15 +85040,15 @@ reg use_buf;
 reg [ (32-1):0] reg_data_buf_0;
 reg [ (32-1):0] reg_data_buf_1;
  
-`line 1087 "/tmp/lm32-customizer/tmp.v"
+`line 1088 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1088 "/tmp/lm32-customizer/tmp.v"
+`line 1089 "/tmp/lm32-customizer/tmp.v"
 
  
      
 
-`line 1091 "/tmp/lm32-customizer/tmp.v"
+`line 1092 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] reg_data_0;               
 wire [ (32-1):0] reg_data_1;               
@@ -85076,7 +85083,7 @@ wire [ (32-1):0] logic_result_x;
              
               
 
-`line 1124 "/tmp/lm32-customizer/tmp.v"
+`line 1125 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85090,7 +85097,7 @@ wire [ (32-1):0] logic_result_x;
  
            
 
-`line 1136 "/tmp/lm32-customizer/tmp.v"
+`line 1137 "/tmp/lm32-customizer/tmp.v"
 
   
                                
@@ -85098,27 +85105,27 @@ wire [ (32-1):0] logic_result_x;
                               
  
 
-`line 1142 "/tmp/lm32-customizer/tmp.v"
+`line 1143 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1143 "/tmp/lm32-customizer/tmp.v"
+`line 1144 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] shifter_result_x;         
  
-`line 1145 "/tmp/lm32-customizer/tmp.v"
+`line 1146 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
         
 
-`line 1150 "/tmp/lm32-customizer/tmp.v"
+`line 1151 "/tmp/lm32-customizer/tmp.v"
 
   
                                  
  
 
-`line 1154 "/tmp/lm32-customizer/tmp.v"
+`line 1155 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85129,7 +85136,7 @@ wire [ (32-1):0] shifter_result_x;
  
                            
 
-`line 1163 "/tmp/lm32-customizer/tmp.v"
+`line 1164 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85137,23 +85144,23 @@ wire [ (32-1):0] shifter_result_x;
                          
   
 
-`line 1169 "/tmp/lm32-customizer/tmp.v"
+`line 1170 "/tmp/lm32-customizer/tmp.v"
 
 
 
   
-`line 1172 "/tmp/lm32-customizer/tmp.v"
+`line 1173 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] interrupt_csr_read_data_x;
  
-`line 1174 "/tmp/lm32-customizer/tmp.v"
+`line 1175 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] cfg;                      
 wire [ (32-1):0] cfg2;                     
   
                           
 
-`line 1179 "/tmp/lm32-customizer/tmp.v"
+`line 1180 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] csr_read_data_x;           
 
@@ -85166,14 +85173,14 @@ wire [ ((32-2)+2-1):2] pc_w;
   
                           
 
-`line 1190 "/tmp/lm32-customizer/tmp.v"
+`line 1191 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1191 "/tmp/lm32-customizer/tmp.v"
+`line 1192 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] instruction_f;     
  
-`line 1193 "/tmp/lm32-customizer/tmp.v"
+`line 1194 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85185,7 +85192,7 @@ wire [ (32-1):0] instruction_d;
                       
                            
 
-`line 1203 "/tmp/lm32-customizer/tmp.v"
+`line 1204 "/tmp/lm32-customizer/tmp.v"
 
   
           
@@ -85194,7 +85201,7 @@ wire [ (32-1):0] instruction_d;
                                  
                        
 
-`line 1210 "/tmp/lm32-customizer/tmp.v"
+`line 1211 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85206,7 +85213,7 @@ wire [ (32-1):0] instruction_d;
                       
                            
 
-`line 1220 "/tmp/lm32-customizer/tmp.v"
+`line 1221 "/tmp/lm32-customizer/tmp.v"
 
 wire [ (32-1):0] load_data_w;              
 wire stall_wb_load;                             
@@ -85232,7 +85239,7 @@ wire stall_wb_load;
                                  
 
 
-`line 1244 "/tmp/lm32-customizer/tmp.v"
+`line 1245 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85253,7 +85260,7 @@ reg condition_met_m;
       
                              
 
-`line 1263 "/tmp/lm32-customizer/tmp.v"
+`line 1264 "/tmp/lm32-customizer/tmp.v"
 
 wire branch_taken_m;                            
 
@@ -85267,14 +85274,14 @@ reg [ (32-2)+2-1:8] eba;
   
                   
 
-`line 1275 "/tmp/lm32-customizer/tmp.v"
+`line 1276 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (3-1):0] eid_x;                      
   
                         
                         
 
-`line 1280 "/tmp/lm32-customizer/tmp.v"
+`line 1281 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85293,14 +85300,14 @@ reg [ (3-1):0] eid_x;
  
  
 
-`line 1297 "/tmp/lm32-customizer/tmp.v"
+`line 1298 "/tmp/lm32-customizer/tmp.v"
 
 wire exception_x;                               
 reg exception_m;
 reg exception_w;
 wire exception_q_w;
  
-`line 1302 "/tmp/lm32-customizer/tmp.v"
+`line 1303 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85308,38 +85315,38 @@ wire exception_q_w;
                             
 
 
-`line 1308 "/tmp/lm32-customizer/tmp.v"
+`line 1309 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1309 "/tmp/lm32-customizer/tmp.v"
+`line 1310 "/tmp/lm32-customizer/tmp.v"
 
 wire interrupt_exception;                       
  
-`line 1311 "/tmp/lm32-customizer/tmp.v"
+`line 1312 "/tmp/lm32-customizer/tmp.v"
 
   
                        
                        
 
-`line 1315 "/tmp/lm32-customizer/tmp.v"
+`line 1316 "/tmp/lm32-customizer/tmp.v"
 
   
             
                    
 
-`line 1319 "/tmp/lm32-customizer/tmp.v"
+`line 1320 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1322 "/tmp/lm32-customizer/tmp.v"
+`line 1323 "/tmp/lm32-customizer/tmp.v"
 
 wire system_call_exception;                     
 
   
                          
 
-`line 1327 "/tmp/lm32-customizer/tmp.v"
+`line 1328 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -85433,7 +85440,7 @@ lm32_instruction_unit_minimal #(
              
             
 
-`line 1364 "/tmp/lm32-customizer/tmp.v"
+`line 1365 "/tmp/lm32-customizer/tmp.v"
 
     .exception_m            (exception_m),
     .branch_taken_m         (branch_taken_m),
@@ -85442,24 +85449,24 @@ lm32_instruction_unit_minimal #(
   
                      
 
-`line 1371 "/tmp/lm32-customizer/tmp.v"
+`line 1372 "/tmp/lm32-customizer/tmp.v"
 
   
           
             
                  
 
-`line 1376 "/tmp/lm32-customizer/tmp.v"
+`line 1377 "/tmp/lm32-customizer/tmp.v"
 
   
      
       
            
 
-`line 1381 "/tmp/lm32-customizer/tmp.v"
+`line 1382 "/tmp/lm32-customizer/tmp.v"
         
   
-`line 1382 "/tmp/lm32-customizer/tmp.v"
+`line 1383 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_i                (I_DAT_I),
@@ -85467,7 +85474,7 @@ lm32_instruction_unit_minimal #(
     .i_err_i                (I_ERR_I),
     .i_rty_i                (I_RTY_I),
  
-`line 1388 "/tmp/lm32-customizer/tmp.v"
+`line 1389 "/tmp/lm32-customizer/tmp.v"
 
   
            
@@ -85475,7 +85482,7 @@ lm32_instruction_unit_minimal #(
             
                
 
-`line 1394 "/tmp/lm32-customizer/tmp.v"
+`line 1395 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -85490,15 +85497,15 @@ lm32_instruction_unit_minimal #(
       
            
 
-`line 1407 "/tmp/lm32-customizer/tmp.v"
+`line 1408 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1410 "/tmp/lm32-customizer/tmp.v"
+`line 1411 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1411 "/tmp/lm32-customizer/tmp.v"
+`line 1412 "/tmp/lm32-customizer/tmp.v"
 
     
     .i_dat_o                (I_DAT_O),
@@ -85511,25 +85518,25 @@ lm32_instruction_unit_minimal #(
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
  
-`line 1422 "/tmp/lm32-customizer/tmp.v"
+`line 1423 "/tmp/lm32-customizer/tmp.v"
 
   
              
        
 
-`line 1426 "/tmp/lm32-customizer/tmp.v"
+`line 1427 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1429 "/tmp/lm32-customizer/tmp.v"
+`line 1430 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1430 "/tmp/lm32-customizer/tmp.v"
+`line 1431 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_f          (instruction_f),
  
-`line 1432 "/tmp/lm32-customizer/tmp.v"
+`line 1433 "/tmp/lm32-customizer/tmp.v"
 
     .instruction_d          (instruction_d)
     );
@@ -85545,38 +85552,38 @@ lm32_decoder_minimal decoder (
   
       
 
-`line 1446 "/tmp/lm32-customizer/tmp.v"
+`line 1447 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1447 "/tmp/lm32-customizer/tmp.v"
+`line 1448 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_shift     (x_result_sel_shift_d),
  
-`line 1449 "/tmp/lm32-customizer/tmp.v"
+`line 1450 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 1452 "/tmp/lm32-customizer/tmp.v"
+`line 1453 "/tmp/lm32-customizer/tmp.v"
     
     .x_result_sel_logic     (x_result_sel_logic_d),
   
           
 
-`line 1456 "/tmp/lm32-customizer/tmp.v"
+`line 1457 "/tmp/lm32-customizer/tmp.v"
 
     .x_result_sel_add       (x_result_sel_add_d),
     .m_result_sel_compare   (m_result_sel_compare_d),
   
            
 
-`line 1461 "/tmp/lm32-customizer/tmp.v"
+`line 1462 "/tmp/lm32-customizer/tmp.v"
     
     .w_result_sel_load      (w_result_sel_load_d),
   
            
 
-`line 1465 "/tmp/lm32-customizer/tmp.v"
+`line 1466 "/tmp/lm32-customizer/tmp.v"
 
     .x_bypass_enable        (x_bypass_enable_d),
     .m_bypass_enable        (m_bypass_enable_d),
@@ -85597,24 +85604,24 @@ lm32_decoder_minimal decoder (
   
                   
 
-`line 1484 "/tmp/lm32-customizer/tmp.v"
+`line 1485 "/tmp/lm32-customizer/tmp.v"
 
   
                  
                 
 
-`line 1488 "/tmp/lm32-customizer/tmp.v"
+`line 1489 "/tmp/lm32-customizer/tmp.v"
 
   
                    
 
-`line 1491 "/tmp/lm32-customizer/tmp.v"
+`line 1492 "/tmp/lm32-customizer/tmp.v"
 
   
                      
                     
 
-`line 1495 "/tmp/lm32-customizer/tmp.v"
+`line 1496 "/tmp/lm32-customizer/tmp.v"
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -85624,19 +85631,19 @@ lm32_decoder_minimal decoder (
   
                
 
-`line 1503 "/tmp/lm32-customizer/tmp.v"
+`line 1504 "/tmp/lm32-customizer/tmp.v"
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
                        
 
-`line 1508 "/tmp/lm32-customizer/tmp.v"
+`line 1509 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1511 "/tmp/lm32-customizer/tmp.v"
+`line 1512 "/tmp/lm32-customizer/tmp.v"
 
     .csr_write_enable       (csr_write_enable_d)
     ); 
@@ -85674,12 +85681,12 @@ lm32_load_store_unit_minimal #(
   
                      
 
-`line 1547 "/tmp/lm32-customizer/tmp.v"
+`line 1548 "/tmp/lm32-customizer/tmp.v"
 
   
                 
 
-`line 1550 "/tmp/lm32-customizer/tmp.v"
+`line 1551 "/tmp/lm32-customizer/tmp.v"
 
     
     .d_dat_i                (D_DAT_I),
@@ -85694,7 +85701,7 @@ lm32_load_store_unit_minimal #(
        
            
 
-`line 1563 "/tmp/lm32-customizer/tmp.v"
+`line 1564 "/tmp/lm32-customizer/tmp.v"
     
   
           
@@ -85702,7 +85709,7 @@ lm32_load_store_unit_minimal #(
                  
        
 
-`line 1569 "/tmp/lm32-customizer/tmp.v"
+`line 1570 "/tmp/lm32-customizer/tmp.v"
 
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
@@ -85757,7 +85764,7 @@ lm32_logic_op logic_op (
            
     
 
-`line 1622 "/tmp/lm32-customizer/tmp.v"
+`line 1623 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85774,7 +85781,7 @@ lm32_logic_op logic_op (
                          
     
 
-`line 1637 "/tmp/lm32-customizer/tmp.v"
+`line 1638 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85807,11 +85814,11 @@ lm32_logic_op logic_op (
             
     
 
-`line 1668 "/tmp/lm32-customizer/tmp.v"
+`line 1669 "/tmp/lm32-customizer/tmp.v"
 
               
   
-`line 1670 "/tmp/lm32-customizer/tmp.v"
+`line 1671 "/tmp/lm32-customizer/tmp.v"
 
 
 lm32_interrupt_minimal interrupt_unit (
@@ -85826,17 +85833,17 @@ lm32_interrupt_minimal interrupt_unit (
          
             
 
-`line 1683 "/tmp/lm32-customizer/tmp.v"
+`line 1684 "/tmp/lm32-customizer/tmp.v"
 
     .exception              (exception_q_w), 
  
-`line 1685 "/tmp/lm32-customizer/tmp.v"
+`line 1686 "/tmp/lm32-customizer/tmp.v"
 
     .eret_q_x               (eret_q_x),
   
                    
 
-`line 1689 "/tmp/lm32-customizer/tmp.v"
+`line 1690 "/tmp/lm32-customizer/tmp.v"
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -85847,7 +85854,7 @@ lm32_interrupt_minimal interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
-`line 1698 "/tmp/lm32-customizer/tmp.v"
+`line 1699 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85899,7 +85906,7 @@ lm32_interrupt_minimal interrupt_unit (
             
     
 
-`line 1748 "/tmp/lm32-customizer/tmp.v"
+`line 1749 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -85942,13 +85949,13 @@ lm32_interrupt_minimal interrupt_unit (
                    
     
 
-`line 1789 "/tmp/lm32-customizer/tmp.v"
+`line 1790 "/tmp/lm32-customizer/tmp.v"
 
 
 
 
   
-`line 1793 "/tmp/lm32-customizer/tmp.v"
+`line 1794 "/tmp/lm32-customizer/tmp.v"
 
    
            
@@ -86067,7 +86074,7 @@ lm32_interrupt_minimal interrupt_unit (
       .rdata_o	(regfile_data_1)
       );
  
-`line 1910 "/tmp/lm32-customizer/tmp.v"
+`line 1911 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -86137,7 +86144,7 @@ lm32_interrupt_minimal interrupt_unit (
       
       
 
-`line 1978 "/tmp/lm32-customizer/tmp.v"
+`line 1979 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -86146,23 +86153,23 @@ lm32_interrupt_minimal interrupt_unit (
 
 
   
-`line 1985 "/tmp/lm32-customizer/tmp.v"
+`line 1986 "/tmp/lm32-customizer/tmp.v"
 
 
 assign reg_data_0 = use_buf ? reg_data_buf_0 : reg_data_live_0;
 assign reg_data_1 = use_buf ? reg_data_buf_1 : reg_data_live_1;
  
-`line 1989 "/tmp/lm32-customizer/tmp.v"
+`line 1990 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 1990 "/tmp/lm32-customizer/tmp.v"
+`line 1991 "/tmp/lm32-customizer/tmp.v"
 
  
 
    
    
 
-`line 1995 "/tmp/lm32-customizer/tmp.v"
+`line 1996 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -86252,7 +86259,7 @@ end
    
    
 
-`line 2083 "/tmp/lm32-customizer/tmp.v"
+`line 2084 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -86261,16 +86268,16 @@ end
     
          
 
-`line 2090 "/tmp/lm32-customizer/tmp.v"
+`line 2091 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 2092 "/tmp/lm32-customizer/tmp.v"
+`line 2093 "/tmp/lm32-customizer/tmp.v"
 
 
 assign shifter_result_x = {operand_0_x[ 32-1] & sign_extend_x, operand_0_x[ 32-1:1]};
  
-`line 2095 "/tmp/lm32-customizer/tmp.v"
+`line 2096 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -86301,24 +86308,24 @@ begin
   
                   
 
-`line 2124 "/tmp/lm32-customizer/tmp.v"
+`line 2125 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2127 "/tmp/lm32-customizer/tmp.v"
+`line 2128 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2128 "/tmp/lm32-customizer/tmp.v"
+`line 2129 "/tmp/lm32-customizer/tmp.v"
 
                : x_result_sel_shift_x ? shifter_result_x
  
-`line 2130 "/tmp/lm32-customizer/tmp.v"
+`line 2131 "/tmp/lm32-customizer/tmp.v"
 
   
                   
 
-`line 2133 "/tmp/lm32-customizer/tmp.v"
+`line 2134 "/tmp/lm32-customizer/tmp.v"
 
                : logic_result_x;
 end
@@ -86330,7 +86337,7 @@ begin
   
                   
 
-`line 2143 "/tmp/lm32-customizer/tmp.v"
+`line 2144 "/tmp/lm32-customizer/tmp.v"
 
                : operand_m; 
 end
@@ -86342,7 +86349,7 @@ begin
   
                    
 
-`line 2153 "/tmp/lm32-customizer/tmp.v"
+`line 2154 "/tmp/lm32-customizer/tmp.v"
 
                 : operand_w;
 end
@@ -86356,7 +86363,7 @@ end
                                  
                               
 
-`line 2165 "/tmp/lm32-customizer/tmp.v"
+`line 2166 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -86402,55 +86409,55 @@ assign kill_f =    (   (valid_d ==  1'b1)
       
                    
 
-`line 2209 "/tmp/lm32-customizer/tmp.v"
+`line 2210 "/tmp/lm32-customizer/tmp.v"
 
   
                     
 
-`line 2212 "/tmp/lm32-customizer/tmp.v"
+`line 2213 "/tmp/lm32-customizer/tmp.v"
 
                   
                    
 
-`line 2215 "/tmp/lm32-customizer/tmp.v"
+`line 2216 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_d =    (branch_taken_m ==  1'b1) 
       
                    
 
-`line 2220 "/tmp/lm32-customizer/tmp.v"
+`line 2221 "/tmp/lm32-customizer/tmp.v"
 
   
                         
 
-`line 2223 "/tmp/lm32-customizer/tmp.v"
+`line 2224 "/tmp/lm32-customizer/tmp.v"
                 
                   
                    
 
-`line 2226 "/tmp/lm32-customizer/tmp.v"
+`line 2227 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_x =    (branch_flushX_m ==  1'b1) 
                   
                    
 
-`line 2231 "/tmp/lm32-customizer/tmp.v"
+`line 2232 "/tmp/lm32-customizer/tmp.v"
 
                 ;
 assign kill_m =     1'b0
                   
                    
 
-`line 2236 "/tmp/lm32-customizer/tmp.v"
+`line 2237 "/tmp/lm32-customizer/tmp.v"
 
                 ;                
 assign kill_w =     1'b0
                   
                    
 
-`line 2241 "/tmp/lm32-customizer/tmp.v"
+`line 2242 "/tmp/lm32-customizer/tmp.v"
                 
                 ;
 
@@ -86467,13 +86474,13 @@ assign kill_w =     1'b0
 
                               
 
-`line 2256 "/tmp/lm32-customizer/tmp.v"
+`line 2257 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2260 "/tmp/lm32-customizer/tmp.v"
+`line 2261 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -86482,20 +86489,20 @@ assign kill_w =     1'b0
                                          
      
 
-`line 2267 "/tmp/lm32-customizer/tmp.v"
+`line 2268 "/tmp/lm32-customizer/tmp.v"
 
 
   
      
 
-`line 2271 "/tmp/lm32-customizer/tmp.v"
+`line 2272 "/tmp/lm32-customizer/tmp.v"
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
                                    
 
-`line 2276 "/tmp/lm32-customizer/tmp.v"
+`line 2277 "/tmp/lm32-customizer/tmp.v"
 
 			       );
 
@@ -86530,42 +86537,42 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 
          
 
-`line 2309 "/tmp/lm32-customizer/tmp.v"
+`line 2310 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_x =           (system_call_exception ==  1'b1)
   
                                
                                
 
-`line 2314 "/tmp/lm32-customizer/tmp.v"
+`line 2315 "/tmp/lm32-customizer/tmp.v"
 
   
                                
 
-`line 2317 "/tmp/lm32-customizer/tmp.v"
+`line 2318 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2318 "/tmp/lm32-customizer/tmp.v"
+`line 2319 "/tmp/lm32-customizer/tmp.v"
 
                             || (   (interrupt_exception ==  1'b1)
   
                                    
 
-`line 2322 "/tmp/lm32-customizer/tmp.v"
+`line 2323 "/tmp/lm32-customizer/tmp.v"
                             
   
  				   
 				   
 
-`line 2326 "/tmp/lm32-customizer/tmp.v"
+`line 2327 "/tmp/lm32-customizer/tmp.v"
 
                                )
  
-`line 2328 "/tmp/lm32-customizer/tmp.v"
+`line 2329 "/tmp/lm32-customizer/tmp.v"
 
                             ;
  
-`line 2330 "/tmp/lm32-customizer/tmp.v"
+`line 2331 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -86586,7 +86593,7 @@ begin
           
     
 
-`line 2349 "/tmp/lm32-customizer/tmp.v"
+`line 2350 "/tmp/lm32-customizer/tmp.v"
 
   
             
@@ -86596,36 +86603,36 @@ begin
           
     
 
-`line 2357 "/tmp/lm32-customizer/tmp.v"
+`line 2358 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
      
 
-`line 2362 "/tmp/lm32-customizer/tmp.v"
+`line 2363 "/tmp/lm32-customizer/tmp.v"
 
   
             
           
     
 
-`line 2367 "/tmp/lm32-customizer/tmp.v"
+`line 2368 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2368 "/tmp/lm32-customizer/tmp.v"
+`line 2369 "/tmp/lm32-customizer/tmp.v"
 
          if (   (interrupt_exception ==  1'b1)
   
                 
 
-`line 2372 "/tmp/lm32-customizer/tmp.v"
+`line 2373 "/tmp/lm32-customizer/tmp.v"
                             
             )
         eid_x =  3'h6;
     else
  
-`line 2376 "/tmp/lm32-customizer/tmp.v"
+`line 2377 "/tmp/lm32-customizer/tmp.v"
 
         eid_x =  3'h7;
 end
@@ -86645,7 +86652,7 @@ assign stall_d =   (stall_x ==  1'b1)
   
 			   
 
-`line 2394 "/tmp/lm32-customizer/tmp.v"
+`line 2395 "/tmp/lm32-customizer/tmp.v"
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -86669,7 +86676,7 @@ assign stall_d =   (stall_x ==  1'b1)
                        
 		   
 
-`line 2416 "/tmp/lm32-customizer/tmp.v"
+`line 2417 "/tmp/lm32-customizer/tmp.v"
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -86682,7 +86689,7 @@ assign stall_x =    (stall_m ==  1'b1)
                         
                      
 
-`line 2427 "/tmp/lm32-customizer/tmp.v"
+`line 2428 "/tmp/lm32-customizer/tmp.v"
 
   
                  
@@ -86693,7 +86700,7 @@ assign stall_x =    (stall_m ==  1'b1)
 			
 		    
 
-`line 2436 "/tmp/lm32-customizer/tmp.v"
+`line 2437 "/tmp/lm32-customizer/tmp.v"
 
                  ;
 
@@ -86701,7 +86708,7 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
                     
 
-`line 2442 "/tmp/lm32-customizer/tmp.v"
+`line 2443 "/tmp/lm32-customizer/tmp.v"
 
                  || (   (D_CYC_O ==  1'b1)
                      && (   (store_m ==  1'b1)
@@ -86719,46 +86726,46 @@ assign stall_m =    (stall_wb_load ==  1'b1)
        
 
   
-`line 2458 "/tmp/lm32-customizer/tmp.v"
+`line 2459 "/tmp/lm32-customizer/tmp.v"
 
 		         || ((store_x ==  1'b1) && (interrupt_exception ==  1'b1))
  
-`line 2460 "/tmp/lm32-customizer/tmp.v"
+`line 2461 "/tmp/lm32-customizer/tmp.v"
 
                          || (load_m ==  1'b1)
                          || (load_x ==  1'b1)
                         ) 
                     ) 
  
-`line 2465 "/tmp/lm32-customizer/tmp.v"
+`line 2466 "/tmp/lm32-customizer/tmp.v"
                  
   
                          
 
-`line 2468 "/tmp/lm32-customizer/tmp.v"
+`line 2469 "/tmp/lm32-customizer/tmp.v"
                                     
   
                          
                              
 
-`line 2472 "/tmp/lm32-customizer/tmp.v"
+`line 2473 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2473 "/tmp/lm32-customizer/tmp.v"
+`line 2474 "/tmp/lm32-customizer/tmp.v"
 
                  || (I_CYC_O ==  1'b1)            
  
-`line 2475 "/tmp/lm32-customizer/tmp.v"
+`line 2476 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 2476 "/tmp/lm32-customizer/tmp.v"
+`line 2477 "/tmp/lm32-customizer/tmp.v"
                                
   
                                   
                         
                     
 
-`line 2481 "/tmp/lm32-customizer/tmp.v"
+`line 2482 "/tmp/lm32-customizer/tmp.v"
 
                  ;      
 
@@ -86766,24 +86773,24 @@ assign stall_m =    (stall_wb_load ==  1'b1)
   
          
 
-`line 2487 "/tmp/lm32-customizer/tmp.v"
+`line 2488 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2491 "/tmp/lm32-customizer/tmp.v"
+`line 2492 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2494 "/tmp/lm32-customizer/tmp.v"
+`line 2495 "/tmp/lm32-customizer/tmp.v"
 
   
          
          
 
-`line 2498 "/tmp/lm32-customizer/tmp.v"
+`line 2499 "/tmp/lm32-customizer/tmp.v"
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
@@ -86791,14 +86798,14 @@ assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
          
 
-`line 2504 "/tmp/lm32-customizer/tmp.v"
+`line 2505 "/tmp/lm32-customizer/tmp.v"
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
                   
 
-`line 2509 "/tmp/lm32-customizer/tmp.v"
+`line 2510 "/tmp/lm32-customizer/tmp.v"
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
@@ -86806,13 +86813,13 @@ assign store_q_x = (store_x ==  1'b1)
   
                   
 
-`line 2515 "/tmp/lm32-customizer/tmp.v"
+`line 2516 "/tmp/lm32-customizer/tmp.v"
 
                   ;
   
          
 
-`line 2519 "/tmp/lm32-customizer/tmp.v"
+`line 2520 "/tmp/lm32-customizer/tmp.v"
                               
 assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
@@ -86821,11 +86828,11 @@ assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
          
                  
 
-`line 2526 "/tmp/lm32-customizer/tmp.v"
+`line 2527 "/tmp/lm32-customizer/tmp.v"
 
 assign exception_q_w = ((exception_w ==  1'b1) && (valid_w ==  1'b1));        
  
-`line 2528 "/tmp/lm32-customizer/tmp.v"
+`line 2529 "/tmp/lm32-customizer/tmp.v"
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -86843,110 +86850,110 @@ assign cfg = {
   
               
 
-`line 2544 "/tmp/lm32-customizer/tmp.v"
+`line 2545 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2546 "/tmp/lm32-customizer/tmp.v"
+`line 2547 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2549 "/tmp/lm32-customizer/tmp.v"
+`line 2550 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2551 "/tmp/lm32-customizer/tmp.v"
+`line 2552 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2554 "/tmp/lm32-customizer/tmp.v"
+`line 2555 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2556 "/tmp/lm32-customizer/tmp.v"
+`line 2557 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2559 "/tmp/lm32-customizer/tmp.v"
+`line 2560 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2561 "/tmp/lm32-customizer/tmp.v"
+`line 2562 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2564 "/tmp/lm32-customizer/tmp.v"
+`line 2565 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2566 "/tmp/lm32-customizer/tmp.v"
+`line 2567 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2569 "/tmp/lm32-customizer/tmp.v"
+`line 2570 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2571 "/tmp/lm32-customizer/tmp.v"
+`line 2572 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2574 "/tmp/lm32-customizer/tmp.v"
+`line 2575 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2576 "/tmp/lm32-customizer/tmp.v"
+`line 2577 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2579 "/tmp/lm32-customizer/tmp.v"
+`line 2580 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2581 "/tmp/lm32-customizer/tmp.v"
+`line 2582 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2584 "/tmp/lm32-customizer/tmp.v"
+`line 2585 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2586 "/tmp/lm32-customizer/tmp.v"
+`line 2587 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2589 "/tmp/lm32-customizer/tmp.v"
+`line 2590 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2591 "/tmp/lm32-customizer/tmp.v"
+`line 2592 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2594 "/tmp/lm32-customizer/tmp.v"
+`line 2595 "/tmp/lm32-customizer/tmp.v"
 
                1'b0,
  
-`line 2596 "/tmp/lm32-customizer/tmp.v"
+`line 2597 "/tmp/lm32-customizer/tmp.v"
 
    
               
 
-`line 2599 "/tmp/lm32-customizer/tmp.v"
+`line 2600 "/tmp/lm32-customizer/tmp.v"
 
                1'b0
  
-`line 2601 "/tmp/lm32-customizer/tmp.v"
+`line 2602 "/tmp/lm32-customizer/tmp.v"
 
               };
 
@@ -86955,20 +86962,20 @@ assign cfg2 = {
   
 		     
 
-`line 2608 "/tmp/lm32-customizer/tmp.v"
+`line 2609 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0,
  
-`line 2610 "/tmp/lm32-customizer/tmp.v"
+`line 2611 "/tmp/lm32-customizer/tmp.v"
 
   
 		     
 
-`line 2613 "/tmp/lm32-customizer/tmp.v"
+`line 2614 "/tmp/lm32-customizer/tmp.v"
 
 		      1'b0
  
-`line 2615 "/tmp/lm32-customizer/tmp.v"
+`line 2616 "/tmp/lm32-customizer/tmp.v"
 
 		     };
    
@@ -86987,7 +86994,7 @@ assign cfg2 = {
 
 		 
 
-`line 2632 "/tmp/lm32-customizer/tmp.v"
+`line 2633 "/tmp/lm32-customizer/tmp.v"
  
   
          
@@ -87000,7 +87007,7 @@ assign cfg2 = {
 
 		   
 
-`line 2643 "/tmp/lm32-customizer/tmp.v"
+`line 2644 "/tmp/lm32-customizer/tmp.v"
  
 
 
@@ -87011,31 +87018,31 @@ always @(*)
 begin
     case (csr_x)
   
-`line 2652 "/tmp/lm32-customizer/tmp.v"
+`line 2653 "/tmp/lm32-customizer/tmp.v"
 
      3'h0,
      3'h1,
      3'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
-`line 2656 "/tmp/lm32-customizer/tmp.v"
+`line 2657 "/tmp/lm32-customizer/tmp.v"
 
   
          
 
-`line 2659 "/tmp/lm32-customizer/tmp.v"
+`line 2660 "/tmp/lm32-customizer/tmp.v"
 
      3'h6:  csr_read_data_x = cfg;
      3'h7:  csr_read_data_x = {eba, 8'h00};
   
         
 
-`line 2664 "/tmp/lm32-customizer/tmp.v"
+`line 2665 "/tmp/lm32-customizer/tmp.v"
 
   
           
         
 
-`line 2668 "/tmp/lm32-customizer/tmp.v"
+`line 2669 "/tmp/lm32-customizer/tmp.v"
 
      3'ha: csr_read_data_x = cfg2;
       
@@ -87060,7 +87067,7 @@ begin
                
               
 
-`line 2691 "/tmp/lm32-customizer/tmp.v"
+`line 2692 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
@@ -87082,7 +87089,7 @@ end
     
 
 
-`line 2711 "/tmp/lm32-customizer/tmp.v"
+`line 2712 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -87095,7 +87102,7 @@ end
             
 
 
-`line 2722 "/tmp/lm32-customizer/tmp.v"
+`line 2723 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -87115,7 +87122,7 @@ end
     
 
 
-`line 2740 "/tmp/lm32-customizer/tmp.v"
+`line 2741 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -87147,7 +87154,7 @@ end
  
 
 
-`line 2770 "/tmp/lm32-customizer/tmp.v"
+`line 2771 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -87160,10 +87167,10 @@ end
           
  
 
-`line 2781 "/tmp/lm32-customizer/tmp.v"
+`line 2782 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 2782 "/tmp/lm32-customizer/tmp.v"
+`line 2783 "/tmp/lm32-customizer/tmp.v"
 
 
 always @(posedge clk_i  )
@@ -87182,11 +87189,11 @@ begin
   
                   
 
-`line 2799 "/tmp/lm32-customizer/tmp.v"
+`line 2800 "/tmp/lm32-customizer/tmp.v"
 
             valid_f <=  1'b1;
  
-`line 2801 "/tmp/lm32-customizer/tmp.v"
+`line 2802 "/tmp/lm32-customizer/tmp.v"
             
         else if (stall_f ==  1'b0)
             valid_f <=  1'b0;            
@@ -87227,7 +87234,7 @@ begin
   
                  
 
-`line 2840 "/tmp/lm32-customizer/tmp.v"
+`line 2841 "/tmp/lm32-customizer/tmp.v"
         
         operand_0_x <= { 32{1'b0}};
         operand_1_x <= { 32{1'b0}};
@@ -87237,38 +87244,38 @@ begin
   
           
 
-`line 2848 "/tmp/lm32-customizer/tmp.v"
+`line 2849 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2849 "/tmp/lm32-customizer/tmp.v"
+`line 2850 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_shift_x <=  1'b0;
  
-`line 2851 "/tmp/lm32-customizer/tmp.v"
+`line 2852 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2854 "/tmp/lm32-customizer/tmp.v"
+`line 2855 "/tmp/lm32-customizer/tmp.v"
     
         x_result_sel_logic_x <=  1'b0;
   
           
 
-`line 2858 "/tmp/lm32-customizer/tmp.v"
+`line 2859 "/tmp/lm32-customizer/tmp.v"
 
         x_result_sel_add_x <=  1'b0;
         m_result_sel_compare_x <=  1'b0;
   
           
 
-`line 2863 "/tmp/lm32-customizer/tmp.v"
+`line 2864 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_x <=  1'b0;
   
           
 
-`line 2867 "/tmp/lm32-customizer/tmp.v"
+`line 2868 "/tmp/lm32-customizer/tmp.v"
 
         x_bypass_enable_x <=  1'b0;
         m_bypass_enable_x <=  1'b0;
@@ -87285,13 +87292,13 @@ begin
   
           
 
-`line 2882 "/tmp/lm32-customizer/tmp.v"
+`line 2883 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
 
-`line 2886 "/tmp/lm32-customizer/tmp.v"
+`line 2887 "/tmp/lm32-customizer/tmp.v"
 
         branch_x <=  1'b0;
         branch_predict_x <=  1'b0;
@@ -87300,20 +87307,20 @@ begin
   
           
 
-`line 2893 "/tmp/lm32-customizer/tmp.v"
+`line 2894 "/tmp/lm32-customizer/tmp.v"
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
           
 
-`line 2898 "/tmp/lm32-customizer/tmp.v"
+`line 2899 "/tmp/lm32-customizer/tmp.v"
 
   
           
           
 
-`line 2902 "/tmp/lm32-customizer/tmp.v"
+`line 2903 "/tmp/lm32-customizer/tmp.v"
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
@@ -87322,13 +87329,13 @@ begin
   
           
 
-`line 2909 "/tmp/lm32-customizer/tmp.v"
+`line 2910 "/tmp/lm32-customizer/tmp.v"
     
         w_result_sel_load_m <=  1'b0;
   
           
 
-`line 2913 "/tmp/lm32-customizer/tmp.v"
+`line 2914 "/tmp/lm32-customizer/tmp.v"
 
         m_bypass_enable_m <=  1'b0;
         branch_m <=  1'b0;
@@ -87340,7 +87347,7 @@ begin
   
           
 
-`line 2923 "/tmp/lm32-customizer/tmp.v"
+`line 2924 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
@@ -87348,20 +87355,20 @@ begin
   
           
 
-`line 2929 "/tmp/lm32-customizer/tmp.v"
+`line 2930 "/tmp/lm32-customizer/tmp.v"
 
   
           
                   
 
-`line 2933 "/tmp/lm32-customizer/tmp.v"
+`line 2934 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
   
           
 
-`line 2938 "/tmp/lm32-customizer/tmp.v"
+`line 2939 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
@@ -87369,16 +87376,16 @@ begin
           
                   
 
-`line 2944 "/tmp/lm32-customizer/tmp.v"
+`line 2945 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <=  1'b0;
  
-`line 2946 "/tmp/lm32-customizer/tmp.v"
+`line 2947 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 2949 "/tmp/lm32-customizer/tmp.v"
+`line 2950 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -87390,7 +87397,7 @@ begin
   
                      
 
-`line 2959 "/tmp/lm32-customizer/tmp.v"
+`line 2960 "/tmp/lm32-customizer/tmp.v"
         
             operand_0_x <= d_result_0;
             operand_1_x <= d_result_1;
@@ -87400,38 +87407,38 @@ begin
   
               
 
-`line 2967 "/tmp/lm32-customizer/tmp.v"
+`line 2968 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 2968 "/tmp/lm32-customizer/tmp.v"
+`line 2969 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_shift_x <= x_result_sel_shift_d;
  
-`line 2970 "/tmp/lm32-customizer/tmp.v"
+`line 2971 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 2973 "/tmp/lm32-customizer/tmp.v"
+`line 2974 "/tmp/lm32-customizer/tmp.v"
     
             x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
-`line 2977 "/tmp/lm32-customizer/tmp.v"
+`line 2978 "/tmp/lm32-customizer/tmp.v"
 
             x_result_sel_add_x <= x_result_sel_add_d;
             m_result_sel_compare_x <= m_result_sel_compare_d;
   
               
 
-`line 2982 "/tmp/lm32-customizer/tmp.v"
+`line 2983 "/tmp/lm32-customizer/tmp.v"
     
             w_result_sel_load_x <= w_result_sel_load_d;
   
               
 
-`line 2986 "/tmp/lm32-customizer/tmp.v"
+`line 2987 "/tmp/lm32-customizer/tmp.v"
 
             x_bypass_enable_x <= x_bypass_enable_d;
             m_bypass_enable_x <= m_bypass_enable_d;
@@ -87450,31 +87457,31 @@ begin
   
               
 
-`line 3003 "/tmp/lm32-customizer/tmp.v"
+`line 3004 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3006 "/tmp/lm32-customizer/tmp.v"
+`line 3007 "/tmp/lm32-customizer/tmp.v"
 
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
               
 
-`line 3011 "/tmp/lm32-customizer/tmp.v"
+`line 3012 "/tmp/lm32-customizer/tmp.v"
 
             scall_x <= scall_d;
   
               
 
-`line 3015 "/tmp/lm32-customizer/tmp.v"
+`line 3016 "/tmp/lm32-customizer/tmp.v"
 
             eret_x <= eret_d;
   
                
 
-`line 3019 "/tmp/lm32-customizer/tmp.v"
+`line 3020 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_x <= write_enable_d;
         end
@@ -87488,7 +87495,7 @@ begin
   
               
 
-`line 3031 "/tmp/lm32-customizer/tmp.v"
+`line 3032 "/tmp/lm32-customizer/tmp.v"
     
             if (exception_x ==  1'b1)
             begin
@@ -87496,7 +87503,7 @@ begin
   
                   
 
-`line 3037 "/tmp/lm32-customizer/tmp.v"
+`line 3038 "/tmp/lm32-customizer/tmp.v"
 
             end
             else
@@ -87505,27 +87512,27 @@ begin
   
                   
 
-`line 3044 "/tmp/lm32-customizer/tmp.v"
+`line 3045 "/tmp/lm32-customizer/tmp.v"
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
   
               
 
-`line 3049 "/tmp/lm32-customizer/tmp.v"
+`line 3050 "/tmp/lm32-customizer/tmp.v"
 
             load_m <= load_x;
             store_m <= store_x;
       
                 
 
-`line 3054 "/tmp/lm32-customizer/tmp.v"
+`line 3055 "/tmp/lm32-customizer/tmp.v"
 
             branch_m <= branch_x;
 	    branch_predict_m <= branch_predict_x;
 	    branch_predict_taken_m <= branch_predict_taken_x;
  
-`line 3058 "/tmp/lm32-customizer/tmp.v"
+`line 3059 "/tmp/lm32-customizer/tmp.v"
 
   
 	   
@@ -87540,14 +87547,14 @@ begin
              
                   
 
-`line 3071 "/tmp/lm32-customizer/tmp.v"
+`line 3072 "/tmp/lm32-customizer/tmp.v"
 
             if (exception_x ==  1'b1)
                 write_idx_m <=  5'd30;
             else 
                 write_idx_m <= write_idx_x;
  
-`line 3076 "/tmp/lm32-customizer/tmp.v"
+`line 3077 "/tmp/lm32-customizer/tmp.v"
 
             condition_met_m <= condition_met_x;
   
@@ -87561,34 +87568,34 @@ begin
 	   
 	       
 
-`line 3088 "/tmp/lm32-customizer/tmp.v"
+`line 3089 "/tmp/lm32-customizer/tmp.v"
 
             branch_target_m <= exception_x ==  1'b1 ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
  
-`line 3090 "/tmp/lm32-customizer/tmp.v"
+`line 3091 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3093 "/tmp/lm32-customizer/tmp.v"
+`line 3094 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 3096 "/tmp/lm32-customizer/tmp.v"
+`line 3097 "/tmp/lm32-customizer/tmp.v"
 
             eret_m <= eret_q_x;
   
                
 
-`line 3100 "/tmp/lm32-customizer/tmp.v"
+`line 3101 "/tmp/lm32-customizer/tmp.v"
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
               
                       
 
-`line 3105 "/tmp/lm32-customizer/tmp.v"
+`line 3106 "/tmp/lm32-customizer/tmp.v"
 
         end
         
@@ -87606,7 +87613,7 @@ begin
 
 					 
 
-`line 3121 "/tmp/lm32-customizer/tmp.v"
+`line 3122 "/tmp/lm32-customizer/tmp.v"
 
 	end
                 
@@ -87614,17 +87621,17 @@ begin
   
                       
 
-`line 3127 "/tmp/lm32-customizer/tmp.v"
+`line 3128 "/tmp/lm32-customizer/tmp.v"
 
         operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
  
-`line 3129 "/tmp/lm32-customizer/tmp.v"
+`line 3130 "/tmp/lm32-customizer/tmp.v"
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
           
 
-`line 3133 "/tmp/lm32-customizer/tmp.v"
+`line 3134 "/tmp/lm32-customizer/tmp.v"
 
         write_idx_w <= write_idx_m;
   
@@ -87634,18 +87641,18 @@ begin
            
 
 
-`line 3141 "/tmp/lm32-customizer/tmp.v"
+`line 3142 "/tmp/lm32-customizer/tmp.v"
 
         write_enable_w <= write_enable_m;
   
           
           
 
-`line 3146 "/tmp/lm32-customizer/tmp.v"
+`line 3147 "/tmp/lm32-customizer/tmp.v"
 
         exception_w <= exception_m;
  
-`line 3148 "/tmp/lm32-customizer/tmp.v"
+`line 3149 "/tmp/lm32-customizer/tmp.v"
 
   
               
@@ -87655,13 +87662,13 @@ begin
 	   
             
 
-`line 3156 "/tmp/lm32-customizer/tmp.v"
+`line 3157 "/tmp/lm32-customizer/tmp.v"
 
     end
 end
 
   
-`line 3160 "/tmp/lm32-customizer/tmp.v"
+`line 3161 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -87693,11 +87700,11 @@ begin
     end
 end
  
-`line 3190 "/tmp/lm32-customizer/tmp.v"
+`line 3191 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 3192 "/tmp/lm32-customizer/tmp.v"
+`line 3193 "/tmp/lm32-customizer/tmp.v"
 
  
 
@@ -87743,7 +87750,7 @@ end
         
 
 
-`line 3236 "/tmp/lm32-customizer/tmp.v"
+`line 3237 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -87807,7 +87814,7 @@ end
     
 
 
-`line 3298 "/tmp/lm32-customizer/tmp.v"
+`line 3299 "/tmp/lm32-customizer/tmp.v"
 
       
 
@@ -87820,14 +87827,14 @@ end
 initial
 begin
   
-`line 3309 "/tmp/lm32-customizer/tmp.v"
+`line 3310 "/tmp/lm32-customizer/tmp.v"
 
     reg_0.ram[0] = { 32{1'b0}};
     reg_1.ram[0] = { 32{1'b0}};
  
       
 
-`line 3314 "/tmp/lm32-customizer/tmp.v"
+`line 3315 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -87917,7 +87924,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -88231,12 +88238,12 @@ module lm32_load_store_unit_minimal (
   
     
 
-`line 3392 "/tmp/lm32-customizer/tmp.v"
+`line 3393 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 3395 "/tmp/lm32-customizer/tmp.v"
+`line 3396 "/tmp/lm32-customizer/tmp.v"
 
     
     d_dat_i,
@@ -88251,7 +88258,7 @@ module lm32_load_store_unit_minimal (
     
     
 
-`line 3408 "/tmp/lm32-customizer/tmp.v"
+`line 3409 "/tmp/lm32-customizer/tmp.v"
     
   
     
@@ -88259,7 +88266,7 @@ module lm32_load_store_unit_minimal (
     
     
 
-`line 3414 "/tmp/lm32-customizer/tmp.v"
+`line 3415 "/tmp/lm32-customizer/tmp.v"
 			     
     load_data_w,
     stall_wb_load,
@@ -88320,13 +88327,13 @@ input [ 1:0] size_x;
   
                                             
 
-`line 3473 "/tmp/lm32-customizer/tmp.v"
+`line 3474 "/tmp/lm32-customizer/tmp.v"
 
 
      
                        
 
-`line 3477 "/tmp/lm32-customizer/tmp.v"
+`line 3478 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (32-1):0] d_dat_i;                         
@@ -88348,7 +88355,7 @@ input d_rty_i;
  
    
 
-`line 3497 "/tmp/lm32-customizer/tmp.v"
+`line 3498 "/tmp/lm32-customizer/tmp.v"
 
 
      
@@ -88361,7 +88368,7 @@ input d_rty_i;
                              
                                
 
-`line 3508 "/tmp/lm32-customizer/tmp.v"
+`line 3509 "/tmp/lm32-customizer/tmp.v"
 
    
 output [ (32-1):0] load_data_w;                    
@@ -88415,7 +88422,7 @@ reg [ (32-1):0] data_w;
                                           
                       
 
-`line 3560 "/tmp/lm32-customizer/tmp.v"
+`line 3561 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
@@ -88426,14 +88433,14 @@ reg [ (32-1):0] data_w;
                         
                   
 
-`line 3569 "/tmp/lm32-customizer/tmp.v"
+`line 3570 "/tmp/lm32-customizer/tmp.v"
 
 wire wb_select_x;                                       
   
                                       
   
 
-`line 3574 "/tmp/lm32-customizer/tmp.v"
+`line 3575 "/tmp/lm32-customizer/tmp.v"
 
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
@@ -88587,7 +88594,7 @@ endfunction
    
           
 
-`line 3671 "/tmp/lm32-customizer/tmp.v"
+`line 3672 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -88623,7 +88630,7 @@ endfunction
                   
     
 
-`line 3705 "/tmp/lm32-customizer/tmp.v"
+`line 3706 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -88635,14 +88642,14 @@ endfunction
             
                              
 
-`line 3715 "/tmp/lm32-customizer/tmp.v"
+`line 3716 "/tmp/lm32-customizer/tmp.v"
 
 
   
             
                              
 
-`line 3720 "/tmp/lm32-customizer/tmp.v"
+`line 3721 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -88656,24 +88663,24 @@ endfunction
 
                      
 
-`line 3732 "/tmp/lm32-customizer/tmp.v"
+`line 3733 "/tmp/lm32-customizer/tmp.v"
 
 	  
    assign wb_select_x =     1'b1
   
                           
 
-`line 3737 "/tmp/lm32-customizer/tmp.v"
+`line 3738 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3740 "/tmp/lm32-customizer/tmp.v"
+`line 3741 "/tmp/lm32-customizer/tmp.v"
 
   
                          
 
-`line 3743 "/tmp/lm32-customizer/tmp.v"
+`line 3744 "/tmp/lm32-customizer/tmp.v"
 
                      ;
 
@@ -88710,7 +88717,7 @@ end
        
        
 
-`line 3778 "/tmp/lm32-customizer/tmp.v"
+`line 3779 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -88720,7 +88727,7 @@ end
        
        
 
-`line 3786 "/tmp/lm32-customizer/tmp.v"
+`line 3787 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -88743,7 +88750,7 @@ end
            
 	                            
 
-`line 3807 "/tmp/lm32-customizer/tmp.v"
+`line 3808 "/tmp/lm32-customizer/tmp.v"
 
    
   
@@ -88781,7 +88788,7 @@ end
   
  
 
-`line 3843 "/tmp/lm32-customizer/tmp.v"
+`line 3844 "/tmp/lm32-customizer/tmp.v"
 
    
    
@@ -88798,7 +88805,7 @@ end
                     
   
  
-`line 3858 "/tmp/lm32-customizer/tmp.v"
+`line 3859 "/tmp/lm32-customizer/tmp.v"
 
     
    
@@ -88806,18 +88813,18 @@ end
                      
                     
   
-`line 3864 "/tmp/lm32-customizer/tmp.v"
+`line 3865 "/tmp/lm32-customizer/tmp.v"
 
    
    assign data_m = wb_data_m;
    
-`line 3867 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 3868 "/tmp/lm32-customizer/tmp.v"
 
- 
+  
 `line 3869 "/tmp/lm32-customizer/tmp.v"
+
+ 
+`line 3870 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -88866,7 +88873,7 @@ assign d_bte_o =  2'b00;
     
 
 
-`line 3916 "/tmp/lm32-customizer/tmp.v"
+`line 3917 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -88892,7 +88899,7 @@ begin
                   
           
 
-`line 3940 "/tmp/lm32-customizer/tmp.v"
+`line 3941 "/tmp/lm32-customizer/tmp.v"
                 
     end
     else
@@ -88901,7 +88908,7 @@ begin
         
           
 
-`line 3947 "/tmp/lm32-customizer/tmp.v"
+`line 3948 "/tmp/lm32-customizer/tmp.v"
                 
         
         if (d_cyc_o ==  1'b1)
@@ -88917,7 +88924,7 @@ begin
                 
                 
 
-`line 3961 "/tmp/lm32-customizer/tmp.v"
+`line 3962 "/tmp/lm32-customizer/tmp.v"
                 
                 begin
                     
@@ -88930,7 +88937,7 @@ begin
                 
                   
 
-`line 3972 "/tmp/lm32-customizer/tmp.v"
+`line 3973 "/tmp/lm32-customizer/tmp.v"
 
                 
                 wb_data_m <= d_dat_i;
@@ -88958,19 +88965,19 @@ begin
             
              
 
-`line 3998 "/tmp/lm32-customizer/tmp.v"
+`line 3999 "/tmp/lm32-customizer/tmp.v"
             
                  if (   (store_q_m ==  1'b1)
                      && (stall_m ==  1'b0)
   
                         
 
-`line 4003 "/tmp/lm32-customizer/tmp.v"
+`line 4004 "/tmp/lm32-customizer/tmp.v"
 
   
 		        
 
-`line 4006 "/tmp/lm32-customizer/tmp.v"
+`line 4007 "/tmp/lm32-customizer/tmp.v"
 			
                     )
             begin
@@ -89025,17 +89032,17 @@ begin
   
           
 
-`line 4059 "/tmp/lm32-customizer/tmp.v"
+`line 4060 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4062 "/tmp/lm32-customizer/tmp.v"
+`line 4063 "/tmp/lm32-customizer/tmp.v"
 
   
           
 
-`line 4065 "/tmp/lm32-customizer/tmp.v"
+`line 4066 "/tmp/lm32-customizer/tmp.v"
 
         wb_select_m <=  1'b0;        
     end
@@ -89050,17 +89057,17 @@ begin
   
               
 
-`line 4078 "/tmp/lm32-customizer/tmp.v"
+`line 4079 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4081 "/tmp/lm32-customizer/tmp.v"
+`line 4082 "/tmp/lm32-customizer/tmp.v"
 
   
               
 
-`line 4084 "/tmp/lm32-customizer/tmp.v"
+`line 4085 "/tmp/lm32-customizer/tmp.v"
 
             wb_select_m <= wb_select_x;
         end
@@ -89181,7 +89188,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -89467,15 +89474,12 @@ endmodule
 
 
   
-`line 4165 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4166 "/tmp/lm32-customizer/tmp.v"
 
-
-
   
-`line 4169 "/tmp/lm32-customizer/tmp.v"
+`line 4167 "/tmp/lm32-customizer/tmp.v"
+
+
 
   
 `line 4170 "/tmp/lm32-customizer/tmp.v"
@@ -89609,6 +89613,9 @@ endmodule
   
 `line 4213 "/tmp/lm32-customizer/tmp.v"
 
+  
+`line 4214 "/tmp/lm32-customizer/tmp.v"
+
 
 
 
@@ -89624,38 +89631,38 @@ module lm32_decoder_minimal (
   
     
 
-`line 4228 "/tmp/lm32-customizer/tmp.v"
+`line 4229 "/tmp/lm32-customizer/tmp.v"
     
   
-`line 4229 "/tmp/lm32-customizer/tmp.v"
+`line 4230 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_shift,
  
-`line 4231 "/tmp/lm32-customizer/tmp.v"
+`line 4232 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4234 "/tmp/lm32-customizer/tmp.v"
+`line 4235 "/tmp/lm32-customizer/tmp.v"
     
     x_result_sel_logic,
   
     
 
-`line 4238 "/tmp/lm32-customizer/tmp.v"
+`line 4239 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add,
     m_result_sel_compare,
   
       
 
-`line 4243 "/tmp/lm32-customizer/tmp.v"
+`line 4244 "/tmp/lm32-customizer/tmp.v"
     
     w_result_sel_load,
   
     
 
-`line 4247 "/tmp/lm32-customizer/tmp.v"
+`line 4248 "/tmp/lm32-customizer/tmp.v"
 
     x_bypass_enable,
     m_bypass_enable,
@@ -89676,24 +89683,24 @@ module lm32_decoder_minimal (
   
     
 
-`line 4266 "/tmp/lm32-customizer/tmp.v"
+`line 4267 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4270 "/tmp/lm32-customizer/tmp.v"
+`line 4271 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4273 "/tmp/lm32-customizer/tmp.v"
+`line 4274 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 4277 "/tmp/lm32-customizer/tmp.v"
+`line 4278 "/tmp/lm32-customizer/tmp.v"
 
     branch,
     branch_reg,
@@ -89703,19 +89710,19 @@ module lm32_decoder_minimal (
   
     
 
-`line 4285 "/tmp/lm32-customizer/tmp.v"
+`line 4286 "/tmp/lm32-customizer/tmp.v"
 
     scall,
     eret,
   
     
 
-`line 4290 "/tmp/lm32-customizer/tmp.v"
+`line 4291 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 4293 "/tmp/lm32-customizer/tmp.v"
+`line 4294 "/tmp/lm32-customizer/tmp.v"
 
     csr_write_enable
     );
@@ -89740,21 +89747,21 @@ reg    x_result_sel_csr;
  
     
 
-`line 4316 "/tmp/lm32-customizer/tmp.v"
+`line 4317 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4317 "/tmp/lm32-customizer/tmp.v"
+`line 4318 "/tmp/lm32-customizer/tmp.v"
     
 output x_result_sel_shift;
 reg    x_result_sel_shift;
  
-`line 4320 "/tmp/lm32-customizer/tmp.v"
+`line 4321 "/tmp/lm32-customizer/tmp.v"
 
   
  
     
 
-`line 4324 "/tmp/lm32-customizer/tmp.v"
+`line 4325 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_logic;
 reg    x_result_sel_logic;
@@ -89762,7 +89769,7 @@ reg    x_result_sel_logic;
  
     
 
-`line 4330 "/tmp/lm32-customizer/tmp.v"
+`line 4331 "/tmp/lm32-customizer/tmp.v"
 
 output x_result_sel_add;
 reg    x_result_sel_add;
@@ -89772,7 +89779,7 @@ reg    m_result_sel_compare;
  
     
 
-`line 4338 "/tmp/lm32-customizer/tmp.v"
+`line 4339 "/tmp/lm32-customizer/tmp.v"
 
 output w_result_sel_load;
 reg    w_result_sel_load;
@@ -89780,7 +89787,7 @@ reg    w_result_sel_load;
  
     
 
-`line 4344 "/tmp/lm32-customizer/tmp.v"
+`line 4345 "/tmp/lm32-customizer/tmp.v"
 
 output x_bypass_enable;
 wire   x_bypass_enable;
@@ -89818,7 +89825,7 @@ wire   [ 3:0] logic_op;
  
    
 
-`line 4380 "/tmp/lm32-customizer/tmp.v"
+`line 4381 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -89826,13 +89833,13 @@ wire   [ 3:0] logic_op;
  
    
 
-`line 4386 "/tmp/lm32-customizer/tmp.v"
+`line 4387 "/tmp/lm32-customizer/tmp.v"
 
   
  
    
 
-`line 4390 "/tmp/lm32-customizer/tmp.v"
+`line 4391 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -89840,7 +89847,7 @@ wire   [ 3:0] logic_op;
  
    
 
-`line 4396 "/tmp/lm32-customizer/tmp.v"
+`line 4397 "/tmp/lm32-customizer/tmp.v"
 
 output branch;
 wire   branch;
@@ -89856,7 +89863,7 @@ wire bi_unconditional;
  
    
 
-`line 4410 "/tmp/lm32-customizer/tmp.v"
+`line 4411 "/tmp/lm32-customizer/tmp.v"
 
 output scall;
 wire   scall;
@@ -89866,13 +89873,13 @@ wire   eret;
  
    
 
-`line 4418 "/tmp/lm32-customizer/tmp.v"
+`line 4419 "/tmp/lm32-customizer/tmp.v"
 
   
   
     
 
-`line 4422 "/tmp/lm32-customizer/tmp.v"
+`line 4423 "/tmp/lm32-customizer/tmp.v"
 
 output csr_write_enable;
 wire   csr_write_enable;
@@ -89977,7 +89984,7 @@ assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
        
 
-`line 4470 "/tmp/lm32-customizer/tmp.v"
+`line 4471 "/tmp/lm32-customizer/tmp.v"
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -89987,12 +89994,12 @@ assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
        
 
-`line 4478 "/tmp/lm32-customizer/tmp.v"
+`line 4479 "/tmp/lm32-customizer/tmp.v"
 
   
         
 
-`line 4481 "/tmp/lm32-customizer/tmp.v"
+`line 4482 "/tmp/lm32-customizer/tmp.v"
 
 assign op_nor    = instruction[ 30:26] ==  5'b00001;
 assign op_or     = instruction[ 30:26] ==  5'b01110;
@@ -90004,13 +90011,13 @@ assign op_sb     = instruction[ 31:26] ==  6'b001100;
       
       
 
-`line 4491 "/tmp/lm32-customizer/tmp.v"
+`line 4492 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sh     = instruction[ 31:26] ==  6'b000011;
   
                
 
-`line 4495 "/tmp/lm32-customizer/tmp.v"
+`line 4496 "/tmp/lm32-customizer/tmp.v"
 
 assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
@@ -90032,36 +90039,36 @@ assign call = op_call | op_calli;
   
        
 
-`line 4515 "/tmp/lm32-customizer/tmp.v"
+`line 4516 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4516 "/tmp/lm32-customizer/tmp.v"
+`line 4517 "/tmp/lm32-customizer/tmp.v"
 
 assign shift = op_sr | op_sru;
  
-`line 4518 "/tmp/lm32-customizer/tmp.v"
+`line 4519 "/tmp/lm32-customizer/tmp.v"
 
   
    
      
 
-`line 4522 "/tmp/lm32-customizer/tmp.v"
+`line 4523 "/tmp/lm32-customizer/tmp.v"
 
   
      
 
-`line 4525 "/tmp/lm32-customizer/tmp.v"
+`line 4526 "/tmp/lm32-customizer/tmp.v"
 
   
    
 
-`line 4528 "/tmp/lm32-customizer/tmp.v"
+`line 4529 "/tmp/lm32-customizer/tmp.v"
 
   
     
    
 
-`line 4532 "/tmp/lm32-customizer/tmp.v"
+`line 4533 "/tmp/lm32-customizer/tmp.v"
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -90085,25 +90092,25 @@ begin
   
       
 
-`line 4554 "/tmp/lm32-customizer/tmp.v"
+`line 4555 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4555 "/tmp/lm32-customizer/tmp.v"
+`line 4556 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_shift =  1'b0;
  
-`line 4557 "/tmp/lm32-customizer/tmp.v"
+`line 4558 "/tmp/lm32-customizer/tmp.v"
 
   
       
 
-`line 4560 "/tmp/lm32-customizer/tmp.v"
+`line 4561 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_logic =  1'b0;
           
       
 
-`line 4564 "/tmp/lm32-customizer/tmp.v"
+`line 4565 "/tmp/lm32-customizer/tmp.v"
 
     x_result_sel_add =  1'b0;
     if (op_rcsr)
@@ -90122,21 +90129,21 @@ begin
                       
 
 
-`line 4581 "/tmp/lm32-customizer/tmp.v"
+`line 4582 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 4582 "/tmp/lm32-customizer/tmp.v"
+`line 4583 "/tmp/lm32-customizer/tmp.v"
 
     else if (shift)
         x_result_sel_shift =  1'b1;        
  
-`line 4585 "/tmp/lm32-customizer/tmp.v"
+`line 4586 "/tmp/lm32-customizer/tmp.v"
 
   
       
           
 
-`line 4589 "/tmp/lm32-customizer/tmp.v"
+`line 4590 "/tmp/lm32-customizer/tmp.v"
         
     else if (logical) 
         x_result_sel_logic =  1'b1;
@@ -90144,7 +90151,7 @@ begin
       
           
 
-`line 4595 "/tmp/lm32-customizer/tmp.v"
+`line 4596 "/tmp/lm32-customizer/tmp.v"
 
     else 
         x_result_sel_add =  1'b1;        
@@ -90155,7 +90162,7 @@ begin
   
       
 
-`line 4604 "/tmp/lm32-customizer/tmp.v"
+`line 4605 "/tmp/lm32-customizer/tmp.v"
 
 
     
@@ -90163,7 +90170,7 @@ begin
   
        
 
-`line 4610 "/tmp/lm32-customizer/tmp.v"
+`line 4611 "/tmp/lm32-customizer/tmp.v"
 
 end
 
@@ -90174,35 +90181,35 @@ assign x_bypass_enable =  arith
                          
                          
 
-`line 4619 "/tmp/lm32-customizer/tmp.v"
+`line 4620 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4622 "/tmp/lm32-customizer/tmp.v"
+`line 4623 "/tmp/lm32-customizer/tmp.v"
 
   
                          
                          
 
-`line 4626 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 4627 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 4628 "/tmp/lm32-customizer/tmp.v"
 
                         | shift
  
-`line 4629 "/tmp/lm32-customizer/tmp.v"
+`line 4630 "/tmp/lm32-customizer/tmp.v"
                   
   
                           
 
-`line 4632 "/tmp/lm32-customizer/tmp.v"
+`line 4633 "/tmp/lm32-customizer/tmp.v"
                         
   
                          
 
-`line 4635 "/tmp/lm32-customizer/tmp.v"
+`line 4636 "/tmp/lm32-customizer/tmp.v"
 
                         | op_rcsr
                         ;
@@ -90211,7 +90218,7 @@ assign m_bypass_enable = x_bypass_enable
   
                          
 
-`line 4642 "/tmp/lm32-customizer/tmp.v"
+`line 4643 "/tmp/lm32-customizer/tmp.v"
 
                         | cmp
                         ;
@@ -90241,7 +90248,7 @@ assign logic_op = instruction[29:26];
 
    
 
-`line 4670 "/tmp/lm32-customizer/tmp.v"
+`line 4671 "/tmp/lm32-customizer/tmp.v"
 
 
 assign branch = bra | call;
@@ -90250,20 +90257,20 @@ assign condition = instruction[28:26];
   
      
 
-`line 4677 "/tmp/lm32-customizer/tmp.v"
+`line 4678 "/tmp/lm32-customizer/tmp.v"
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
        
 
-`line 4682 "/tmp/lm32-customizer/tmp.v"
+`line 4683 "/tmp/lm32-customizer/tmp.v"
 
   
 
    
 
-`line 4686 "/tmp/lm32-customizer/tmp.v"
+`line 4687 "/tmp/lm32-customizer/tmp.v"
 
 
 assign csr_write_enable = op_wcsr;
@@ -90366,7 +90373,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -91072,7 +91079,7 @@ endmodule
 
 
 
-`line 5169 "/tmp/lm32-customizer/tmp.v"
+`line 5170 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -91147,7 +91154,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -91904,7 +91911,7 @@ endmodule
 
 
 
-`line 5675 "/tmp/lm32-customizer/tmp.v"
+`line 5676 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -91980,7 +91987,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -92579,7 +92586,7 @@ endmodule
 
 
 
-`line 6024 "/tmp/lm32-customizer/tmp.v"
+`line 6025 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -92669,7 +92676,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -92976,7 +92983,7 @@ module lm32_instruction_unit_minimal (
     
     
 
-`line 6095 "/tmp/lm32-customizer/tmp.v"
+`line 6096 "/tmp/lm32-customizer/tmp.v"
 
     exception_m,
     branch_taken_m,
@@ -92985,24 +92992,24 @@ module lm32_instruction_unit_minimal (
   
     
 
-`line 6102 "/tmp/lm32-customizer/tmp.v"
+`line 6103 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
     
 
-`line 6107 "/tmp/lm32-customizer/tmp.v"
+`line 6108 "/tmp/lm32-customizer/tmp.v"
         
   
     
     
     
 
-`line 6112 "/tmp/lm32-customizer/tmp.v"
+`line 6113 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6113 "/tmp/lm32-customizer/tmp.v"
+`line 6114 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_i,
@@ -93010,7 +93017,7 @@ module lm32_instruction_unit_minimal (
     i_err_i,
     i_rty_i,
  
-`line 6119 "/tmp/lm32-customizer/tmp.v"
+`line 6120 "/tmp/lm32-customizer/tmp.v"
 
   
     
@@ -93018,7 +93025,7 @@ module lm32_instruction_unit_minimal (
     
     
 
-`line 6125 "/tmp/lm32-customizer/tmp.v"
+`line 6126 "/tmp/lm32-customizer/tmp.v"
 
     
     
@@ -93033,15 +93040,15 @@ module lm32_instruction_unit_minimal (
     
     
 
-`line 6138 "/tmp/lm32-customizer/tmp.v"
+`line 6139 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6141 "/tmp/lm32-customizer/tmp.v"
+`line 6142 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6142 "/tmp/lm32-customizer/tmp.v"
+`line 6143 "/tmp/lm32-customizer/tmp.v"
 
     
     i_dat_o,
@@ -93054,25 +93061,25 @@ module lm32_instruction_unit_minimal (
     i_lock_o,
     i_bte_o,
  
-`line 6153 "/tmp/lm32-customizer/tmp.v"
+`line 6154 "/tmp/lm32-customizer/tmp.v"
 
   
     
     
 
-`line 6157 "/tmp/lm32-customizer/tmp.v"
+`line 6158 "/tmp/lm32-customizer/tmp.v"
 
   
     
 
-`line 6160 "/tmp/lm32-customizer/tmp.v"
-
-  
 `line 6161 "/tmp/lm32-customizer/tmp.v"
+
+  
+`line 6162 "/tmp/lm32-customizer/tmp.v"
 
     instruction_f,
  
-`line 6163 "/tmp/lm32-customizer/tmp.v"
+`line 6164 "/tmp/lm32-customizer/tmp.v"
     
     instruction_d
     );
@@ -93115,7 +93122,7 @@ input [ ((32-2)+2-1):2] branch_predict_address_d;
                                     
                      
 
-`line 6204 "/tmp/lm32-customizer/tmp.v"
+`line 6205 "/tmp/lm32-customizer/tmp.v"
 
 input exception_m;
 input branch_taken_m;                                   
@@ -93125,14 +93132,14 @@ input [ ((32-2)+2-1):2] branch_target_m;
   
                                             
 
-`line 6212 "/tmp/lm32-customizer/tmp.v"
+`line 6213 "/tmp/lm32-customizer/tmp.v"
 
   
                             
                              
  
 
-`line 6217 "/tmp/lm32-customizer/tmp.v"
+`line 6218 "/tmp/lm32-customizer/tmp.v"
         
 
   
@@ -93140,18 +93147,18 @@ input [ ((32-2)+2-1):2] branch_target_m;
                    
                                         
 
-`line 6223 "/tmp/lm32-customizer/tmp.v"
+`line 6224 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6225 "/tmp/lm32-customizer/tmp.v"
+`line 6226 "/tmp/lm32-customizer/tmp.v"
 
 input [ (32-1):0] i_dat_i;                         
 input i_ack_i;                                          
 input i_err_i;                                          
 input i_rty_i;                                          
  
-`line 6230 "/tmp/lm32-customizer/tmp.v"
+`line 6231 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -93160,7 +93167,7 @@ input i_rty_i;
                    
                       
 
-`line 6237 "/tmp/lm32-customizer/tmp.v"
+`line 6238 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93188,28 +93195,28 @@ reg    [ ((32-2)+2-1):2] pc_w;
                                  
    
 
-`line 6263 "/tmp/lm32-customizer/tmp.v"
+`line 6264 "/tmp/lm32-customizer/tmp.v"
 
 
   
                       
                           
 
-`line 6268 "/tmp/lm32-customizer/tmp.v"
+`line 6269 "/tmp/lm32-customizer/tmp.v"
    
 
   
-`line 6270 "/tmp/lm32-customizer/tmp.v"
+`line 6271 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_dat_o;                        
   
      
 
-`line 6274 "/tmp/lm32-customizer/tmp.v"
+`line 6275 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (32-1):0] i_dat_o;
  
-`line 6276 "/tmp/lm32-customizer/tmp.v"
+`line 6277 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] i_adr_o;                        
 reg    [ (32-1):0] i_adr_o;
@@ -93219,11 +93226,11 @@ output [ (4-1):0] i_sel_o;
   
      
 
-`line 6284 "/tmp/lm32-customizer/tmp.v"
+`line 6285 "/tmp/lm32-customizer/tmp.v"
 
 wire   [ (4-1):0] i_sel_o;
  
-`line 6286 "/tmp/lm32-customizer/tmp.v"
+`line 6287 "/tmp/lm32-customizer/tmp.v"
 
 output i_stb_o;                                         
 reg    i_stb_o;
@@ -93231,11 +93238,11 @@ output i_we_o;
   
     
 
-`line 6292 "/tmp/lm32-customizer/tmp.v"
+`line 6293 "/tmp/lm32-customizer/tmp.v"
 
 wire   i_we_o;
  
-`line 6294 "/tmp/lm32-customizer/tmp.v"
+`line 6295 "/tmp/lm32-customizer/tmp.v"
 
 output [ (3-1):0] i_cti_o;                       
 reg    [ (3-1):0] i_cti_o;
@@ -93244,7 +93251,7 @@ reg    i_lock_o;
 output [ (2-1):0] i_bte_o;                       
 wire   [ (2-1):0] i_bte_o;
  
-`line 6301 "/tmp/lm32-customizer/tmp.v"
+`line 6302 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -93253,22 +93260,22 @@ wire   [ (2-1):0] i_bte_o;
                              
    
 
-`line 6308 "/tmp/lm32-customizer/tmp.v"
+`line 6309 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                       
     
 
-`line 6313 "/tmp/lm32-customizer/tmp.v"
+`line 6314 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6314 "/tmp/lm32-customizer/tmp.v"
+`line 6315 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_f;           
 wire   [ (32-1):0] instruction_f;
  
-`line 6317 "/tmp/lm32-customizer/tmp.v"
+`line 6318 "/tmp/lm32-customizer/tmp.v"
 
 output [ (32-1):0] instruction_d;           
 reg    [ (32-1):0] instruction_d;
@@ -93282,7 +93289,7 @@ reg [ ((32-2)+2-1):2] pc_a;
   
                        
 
-`line 6329 "/tmp/lm32-customizer/tmp.v"
+`line 6330 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -93296,43 +93303,43 @@ reg [ ((32-2)+2-1):2] pc_a;
                                           
                         
 
-`line 6341 "/tmp/lm32-customizer/tmp.v"
+`line 6342 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6342 "/tmp/lm32-customizer/tmp.v"
+`line 6343 "/tmp/lm32-customizer/tmp.v"
 
 reg [ (32-1):0] wb_data_f;                  
  
-`line 6344 "/tmp/lm32-customizer/tmp.v"
+`line 6345 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6345 "/tmp/lm32-customizer/tmp.v"
+`line 6346 "/tmp/lm32-customizer/tmp.v"
 
   
                                       
                                        
                  
 
-`line 6350 "/tmp/lm32-customizer/tmp.v"
+`line 6351 "/tmp/lm32-customizer/tmp.v"
 
   
-`line 6351 "/tmp/lm32-customizer/tmp.v"
+`line 6352 "/tmp/lm32-customizer/tmp.v"
 
  
                
 
-`line 6354 "/tmp/lm32-customizer/tmp.v"
+`line 6355 "/tmp/lm32-customizer/tmp.v"
 
   
                                          
 
-`line 6357 "/tmp/lm32-customizer/tmp.v"
+`line 6358 "/tmp/lm32-customizer/tmp.v"
 
 
   
                                          
 
-`line 6361 "/tmp/lm32-customizer/tmp.v"
+`line 6362 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93448,7 +93455,7 @@ endfunction
 	                         
 	    
 
-`line 6420 "/tmp/lm32-customizer/tmp.v"
+`line 6421 "/tmp/lm32-customizer/tmp.v"
     
  
   
@@ -93482,7 +93489,7 @@ endfunction
                        
     
 
-`line 6452 "/tmp/lm32-customizer/tmp.v"
+`line 6453 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93501,7 +93508,7 @@ endfunction
        
                               
 
-`line 6469 "/tmp/lm32-customizer/tmp.v"
+`line 6470 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93513,7 +93520,7 @@ begin
           
      
 
-`line 6479 "/tmp/lm32-customizer/tmp.v"
+`line 6480 "/tmp/lm32-customizer/tmp.v"
     
       if (branch_taken_m ==  1'b1)
 	if ((branch_mispredict_taken_m ==  1'b1) && (exception_m ==  1'b0))
@@ -93524,7 +93531,7 @@ begin
           
           
 
-`line 6488 "/tmp/lm32-customizer/tmp.v"
+`line 6489 "/tmp/lm32-customizer/tmp.v"
 
       else
 	if ( (valid_d ==  1'b1) && (branch_predict_taken_d ==  1'b1) )
@@ -93535,7 +93542,7 @@ begin
               
 	   
 
-`line 6497 "/tmp/lm32-customizer/tmp.v"
+`line 6498 "/tmp/lm32-customizer/tmp.v"
         
             pc_a = pc_f + 1'b1;
 end
@@ -93544,7 +93551,7 @@ end
   
            
 
-`line 6504 "/tmp/lm32-customizer/tmp.v"
+`line 6505 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -93555,7 +93562,7 @@ end
    
 
 
-`line 6513 "/tmp/lm32-customizer/tmp.v"
+`line 6514 "/tmp/lm32-customizer/tmp.v"
 
   
  
@@ -93564,33 +93571,33 @@ end
    
 
 
-`line 6520 "/tmp/lm32-customizer/tmp.v"
+`line 6521 "/tmp/lm32-customizer/tmp.v"
 
 assign instruction_f = wb_data_f;
  
-`line 6522 "/tmp/lm32-customizer/tmp.v"
-
- 
 `line 6523 "/tmp/lm32-customizer/tmp.v"
 
+ 
+`line 6524 "/tmp/lm32-customizer/tmp.v"
+
 
 
   
-`line 6526 "/tmp/lm32-customizer/tmp.v"
+`line 6527 "/tmp/lm32-customizer/tmp.v"
 
   
 
-`line 6528 "/tmp/lm32-customizer/tmp.v"
+`line 6529 "/tmp/lm32-customizer/tmp.v"
 
 assign i_dat_o = 32'd0;
 assign i_we_o =  1'b0;
 assign i_sel_o = 4'b1111;
  
-`line 6532 "/tmp/lm32-customizer/tmp.v"
+`line 6533 "/tmp/lm32-customizer/tmp.v"
 
 assign i_bte_o =  2'b00;
  
-`line 6534 "/tmp/lm32-customizer/tmp.v"
+`line 6535 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -93621,7 +93628,7 @@ assign i_bte_o =  2'b00;
     
 
 
-`line 6563 "/tmp/lm32-customizer/tmp.v"
+`line 6564 "/tmp/lm32-customizer/tmp.v"
 
                      
 
@@ -93681,7 +93688,7 @@ end
     
 
 
-`line 6621 "/tmp/lm32-customizer/tmp.v"
+`line 6622 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93697,7 +93704,7 @@ end
     
 
 
-`line 6635 "/tmp/lm32-customizer/tmp.v"
+`line 6636 "/tmp/lm32-customizer/tmp.v"
 
 
   
@@ -93712,11 +93719,11 @@ end
      
 
 
-`line 6648 "/tmp/lm32-customizer/tmp.v"
+`line 6649 "/tmp/lm32-customizer/tmp.v"
 
 
   
-`line 6650 "/tmp/lm32-customizer/tmp.v"
+`line 6651 "/tmp/lm32-customizer/tmp.v"
 
 
                   
@@ -93835,7 +93842,7 @@ end
     
 
 
-`line 6767 "/tmp/lm32-customizer/tmp.v"
+`line 6768 "/tmp/lm32-customizer/tmp.v"
 
 always @(posedge clk_i  )
 begin
@@ -93850,7 +93857,7 @@ begin
   
           
 
-`line 6780 "/tmp/lm32-customizer/tmp.v"
+`line 6781 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -93874,7 +93881,7 @@ begin
                   
             
 
-`line 6802 "/tmp/lm32-customizer/tmp.v"
+`line 6803 "/tmp/lm32-customizer/tmp.v"
 
         end
         else
@@ -93884,7 +93891,7 @@ begin
    
                    
 
-`line 6810 "/tmp/lm32-customizer/tmp.v"
+`line 6811 "/tmp/lm32-customizer/tmp.v"
        
                )
             begin
@@ -93892,7 +93899,7 @@ begin
        
                   
 
-`line 6816 "/tmp/lm32-customizer/tmp.v"
+`line 6817 "/tmp/lm32-customizer/tmp.v"
 
                 i_adr_o <= {pc_a, 2'b00};
                 i_cyc_o <=  1'b1;
@@ -93900,7 +93907,7 @@ begin
   
                   
 
-`line 6822 "/tmp/lm32-customizer/tmp.v"
+`line 6823 "/tmp/lm32-customizer/tmp.v"
 
             end
 	    else
@@ -93909,14 +93916,14 @@ begin
    
 		       
 
-`line 6829 "/tmp/lm32-customizer/tmp.v"
+`line 6830 "/tmp/lm32-customizer/tmp.v"
        
 	           )
 		begin
   
 		      
 
-`line 6834 "/tmp/lm32-customizer/tmp.v"
+`line 6835 "/tmp/lm32-customizer/tmp.v"
 
 		end
 	    end
@@ -93924,10 +93931,10 @@ begin
     end
 end
  
-`line 6840 "/tmp/lm32-customizer/tmp.v"
+`line 6841 "/tmp/lm32-customizer/tmp.v"
 
  
-`line 6841 "/tmp/lm32-customizer/tmp.v"
+`line 6842 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -93939,7 +93946,7 @@ begin
   
           
 
-`line 6851 "/tmp/lm32-customizer/tmp.v"
+`line 6852 "/tmp/lm32-customizer/tmp.v"
 
     end
     else
@@ -93950,7 +93957,7 @@ begin
   
               
 
-`line 6860 "/tmp/lm32-customizer/tmp.v"
+`line 6861 "/tmp/lm32-customizer/tmp.v"
 
         end
     end
@@ -94027,7 +94034,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -94750,7 +94757,7 @@ endmodule
 
 
 
-`line 7334 "/tmp/lm32-customizer/tmp.v"
+`line 7335 "/tmp/lm32-customizer/tmp.v"
 
 
 
@@ -94822,7 +94829,7 @@ endmodule
  
 
 
- 
+
 
  
 
@@ -95122,17 +95129,17 @@ module lm32_interrupt_minimal (
     
     
 
-`line 7380 "/tmp/lm32-customizer/tmp.v"
+`line 7381 "/tmp/lm32-customizer/tmp.v"
 
     exception,
  
-`line 7382 "/tmp/lm32-customizer/tmp.v"
+`line 7383 "/tmp/lm32-customizer/tmp.v"
 
     eret_q_x,
   
     
 
-`line 7386 "/tmp/lm32-customizer/tmp.v"
+`line 7387 "/tmp/lm32-customizer/tmp.v"
 
     csr,
     csr_write_data,
@@ -95164,17 +95171,17 @@ input stall_x;
                        
                            
 
-`line 7416 "/tmp/lm32-customizer/tmp.v"
+`line 7417 "/tmp/lm32-customizer/tmp.v"
 
 input exception;                                
  
-`line 7418 "/tmp/lm32-customizer/tmp.v"
+`line 7419 "/tmp/lm32-customizer/tmp.v"
 
 input eret_q_x;                                 
   
                                   
 
-`line 7422 "/tmp/lm32-customizer/tmp.v"
+`line 7423 "/tmp/lm32-customizer/tmp.v"
 
 
 input [ (3-1):0] csr;                      
@@ -95206,7 +95213,7 @@ reg eie;
   
                                          
 
-`line 7452 "/tmp/lm32-customizer/tmp.v"
+`line 7453 "/tmp/lm32-customizer/tmp.v"
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -95228,11 +95235,11 @@ assign ie_csr_read_data = {{ 32-3{1'b0}},
   
                            
 
-`line 7472 "/tmp/lm32-customizer/tmp.v"
+`line 7473 "/tmp/lm32-customizer/tmp.v"
 
                            1'b0,
  
-`line 7474 "/tmp/lm32-customizer/tmp.v"
+`line 7475 "/tmp/lm32-customizer/tmp.v"
                              
                            eie, 
                            ie
@@ -95250,11 +95257,11 @@ begin
   
                                     
 
-`line 7490 "/tmp/lm32-customizer/tmp.v"
+`line 7491 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                     
  
-`line 7492 "/tmp/lm32-customizer/tmp.v"
+`line 7493 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -95275,11 +95282,11 @@ begin
   
                                      
 
-`line 7511 "/tmp/lm32-customizer/tmp.v"
+`line 7512 "/tmp/lm32-customizer/tmp.v"
 
                                     1'b0,                                    
  
-`line 7513 "/tmp/lm32-customizer/tmp.v"
+`line 7514 "/tmp/lm32-customizer/tmp.v"
 
                                     eie, 
                                     ie
@@ -95296,7 +95303,7 @@ endgenerate
 
 
   
-`line 7528 "/tmp/lm32-customizer/tmp.v"
+`line 7529 "/tmp/lm32-customizer/tmp.v"
 
    reg [ 10:0] eie_delay  = 0;
 
@@ -95316,7 +95323,7 @@ always @(posedge clk_i  )
   
                            
 
-`line 7546 "/tmp/lm32-customizer/tmp.v"
+`line 7547 "/tmp/lm32-customizer/tmp.v"
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -95341,7 +95348,7 @@ always @(posedge clk_i  )
                             
         
 
-`line 7569 "/tmp/lm32-customizer/tmp.v"
+`line 7570 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -95350,7 +95357,7 @@ always @(posedge clk_i  )
             ie               <=  1'b0;
         end
  
-`line 7576 "/tmp/lm32-customizer/tmp.v"
+`line 7577 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
         begin
@@ -95373,7 +95380,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7597 "/tmp/lm32-customizer/tmp.v"
+`line 7598 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -95385,7 +95392,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7607 "/tmp/lm32-customizer/tmp.v"
+`line 7608 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h1)
@@ -95409,7 +95416,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7629 "/tmp/lm32-customizer/tmp.v"
+`line 7630 "/tmp/lm32-customizer/tmp.v"
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -95432,7 +95439,7 @@ always @(posedge clk_i  )
                        
         
 
-`line 7650 "/tmp/lm32-customizer/tmp.v"
+`line 7651 "/tmp/lm32-customizer/tmp.v"
 
         if (exception ==  1'b1)
         begin
@@ -95441,7 +95448,7 @@ always @(posedge clk_i  )
             ie          <=  1'b0;
         end
  
-`line 7657 "/tmp/lm32-customizer/tmp.v"
+`line 7658 "/tmp/lm32-customizer/tmp.v"
 
         else if (stall_x ==  1'b0)
           begin
@@ -95462,7 +95469,7 @@ always @(posedge clk_i  )
                 
                        
 
-`line 7676 "/tmp/lm32-customizer/tmp.v"
+`line 7677 "/tmp/lm32-customizer/tmp.v"
 
             else if (csr_write_enable ==  1'b1)
             begin
@@ -95474,7 +95481,7 @@ always @(posedge clk_i  )
   
                       
 
-`line 7686 "/tmp/lm32-customizer/tmp.v"
+`line 7687 "/tmp/lm32-customizer/tmp.v"
 
                 end
                 if (csr ==  3'h2)
