@@ -7,17 +7,19 @@ use work.wishbone_pkg.all;
 entity xwb_bus_fanout is
   
   generic (
-    g_num_outputs    : natural;
-    g_bits_per_slave : integer := 14);
+    g_num_outputs          : natural;
+    g_bits_per_slave       : integer := 14;
+    g_address_granularity  : t_wishbone_address_granularity;
+    g_slave_interface_mode : t_wishbone_interface_mode);
 
   port (
     clk_sys_i : in std_logic;
     rst_n_i   : in std_logic;
 
-    slave_i : in t_wishbone_slave_in;
+    slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
 
-    master_i : in t_wishbone_master_in_array(0 to g_num_outputs-1);
+    master_i : in  t_wishbone_master_in_array(0 to g_num_outputs-1);
     master_o : out t_wishbone_master_out_array(0 to g_num_outputs-1)
     );
 
@@ -26,7 +28,7 @@ end xwb_bus_fanout;
 architecture rtl of xwb_bus_fanout is
 
   constant c_periph_addr_bits : integer := 3;
-  
+
   signal periph_addr     : std_logic_vector(c_periph_addr_bits - 1 downto 0);
   signal periph_addr_reg : std_logic_vector(c_periph_addr_bits - 1 downto 0);
 
@@ -37,11 +39,30 @@ architecture rtl of xwb_bus_fanout is
   signal data_in_muxed : std_logic_vector(31 downto 0);
 
   signal cycle_in_progress : std_logic;
-  signal ack_prev : std_logic;
-  
+  signal ack_prev          : std_logic;
+
+  signal adp_in  : t_wishbone_master_in;
+  signal adp_out : t_wishbone_master_out;
 begin  -- rtl
 
-  periph_addr <= slave_i.adr(g_bits_per_slave+c_periph_addr_bits-1 downto g_bits_per_slave);
+
+  U_Slave_Adapter : wb_slave_adapter
+    generic map (
+      g_master_use_struct  => true,
+      g_master_mode        => CLASSIC,
+      g_master_granularity => g_address_granularity,
+      g_slave_use_struct   => true,
+      g_slave_mode         => g_slave_interface_mode,
+      g_slave_granularity  => g_address_granularity)
+    port map (
+      clk_sys_i => clk_sys_i,
+      rst_n_i   => rst_n_i,
+      slave_i   => slave_i,
+      slave_o   => slave_o,
+      master_i  => adp_in,
+      master_o  => adp_out);
+
+  periph_addr <= adp_out.adr(g_bits_per_slave+c_periph_addr_bits-1 downto g_bits_per_slave);
 
   onehot_decode : process (periph_addr)  -- periph_sel <= onehot_decode(periph_addr)
     variable temp1 : std_logic_vector (periph_sel'high downto 0);
@@ -80,28 +101,35 @@ begin  -- rtl
     end if;
   end process;
 
-
   p_arbitrate : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
         cycle_in_progress <= '0';
-        ack_prev <= '0';
-        periph_addr_reg <= (others => '0');
-        periph_sel_reg <= (others => '0');
+        ack_prev          <= '0';
+        periph_addr_reg   <= (others => '0');
+        periph_sel_reg    <= (others => '0');
+        adp_in.dat <= (others => '0');
+        adp_in.ack <= '0';
       else
         periph_sel_reg  <= periph_sel;
         periph_addr_reg <= periph_addr;
 
         if(cycle_in_progress = '0') then
-          if(slave_i.cyc = '1') then
+          if(adp_out.cyc = '1' and adp_in.ack = '0') then
             cycle_in_progress <= '1';
           end if;
           ack_prev <= '0';
+          adp_in.ack<='0';
         else
-          slave_o.dat <= data_in_muxed;
---          ack <= ack_muxed;
-          ack_prev <= ack_muxed;
+          adp_in.dat <= data_in_muxed;
+          ack_prev   <= ack_muxed;
+          if(ack_prev = '0' and ack_muxed = '1') then
+            adp_in.ack <= '1';
+          else
+            adp_in.ack <= '0';
+          end if;
+          
           if(ack_muxed = '1') then
             cycle_in_progress <= '0';
           end if;
@@ -110,20 +138,19 @@ begin  -- rtl
     end if;
   end process;
 
-  slave_o.ack <= ack_prev and slave_i.stb;
-  
+--  adp_in.ack <= ack_prev and adp_out.stb;
+
   gen_outputs : for i in 0 to g_num_outputs-1 generate
-    master_o(i).cyc <= slave_i.cyc and periph_sel(i);
-    master_o(i).adr <= slave_i.adr;
-    master_o(i).dat <= slave_i.dat;
-    master_o(i).stb <= slave_i.stb and not (not cycle_in_progress and ack_prev);
-    master_o(i).we  <= slave_i.we;
-    master_o(i).sel <= slave_i.sel;
+    master_o(i).cyc <= adp_out.cyc and periph_sel(i);
+    master_o(i).adr <= adp_out.adr;
+    master_o(i).dat <= adp_out.dat;
+    master_o(i).stb <= adp_out.stb and not (not cycle_in_progress and ack_prev);
+    master_o(i).we  <= adp_out.we;
+    master_o(i).sel <= adp_out.sel;
   end generate gen_outputs;
 
-
-  slave_o.err   <= '0';
-  slave_o.stall <= '0';
-  slave_o.rty   <= '0';
+  adp_in.err   <= '0';
+  adp_in.stall <= '0';
+  adp_in.rty   <= '0';
   
 end rtl;
