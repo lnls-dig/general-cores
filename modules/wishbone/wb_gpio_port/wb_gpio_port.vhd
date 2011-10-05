@@ -1,21 +1,24 @@
 ------------------------------------------------------------------------------
 -- Title      : Wishbone GPIO port
--- Project    : White Rabbit Switch
+-- Project    : General Core Collection (gencores) Library
 ------------------------------------------------------------------------------
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-09-26
+-- Last update: 2011-10-05
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
--- Description: Bidirectional GPIO port of configurable width (1 to 32 bits).
+-- Description: Bidirectional GPIO port of configurable width (1 to 256 bits).
 -------------------------------------------------------------------------------
--- Copyright (c) 2010 Tomasz Wlostowski
+-- Copyright (c) 2010, 2011 CERN
+--
+-- 
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2010-05-18  1.0      twlostow        Created
+-- 2010-10-04  1.1      twlostow        Added WB slave adapter
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -44,7 +47,7 @@ entity wb_gpio_port is
     wb_cyc_i   : in  std_logic;
     wb_stb_i   : in  std_logic;
     wb_we_i    : in  std_logic;
-    wb_adr_i   : in  std_logic_vector(5 downto 0);
+    wb_adr_i   : in  std_logic_vector(7 downto 0);
     wb_dat_i   : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
     wb_dat_o   : out std_logic_vector(c_wishbone_data_width-1 downto 0);
     wb_ack_o   : out std_logic;
@@ -88,8 +91,8 @@ architecture behavioral of wb_gpio_port is
   signal resized_addr : std_logic_vector(c_wishbone_address_width-1 downto 0);
 begin
 
-  resized_addr(5 downto 0) <= wb_adr_i;
-  resized_addr(c_wishbone_address_width-1 downto 6) <= (others => '0');
+  resized_addr(7 downto 0) <= wb_adr_i;
+  resized_addr(c_wishbone_address_width-1 downto 8) <= (others => '0');
 
   U_Adapter : wb_slave_adapter
     generic map (

@@ -45,7 +45,7 @@ architecture rtl of xwb_gpio_port is
       wb_cyc_i   : in    std_logic;
       wb_stb_i   : in    std_logic;
       wb_we_i    : in    std_logic;
-      wb_adr_i   : in    std_logic_vector(5 downto 0);
+      wb_adr_i   : in    std_logic_vector(7 downto 0);
       wb_dat_i   : in    std_logic_vector(c_wishbone_data_width-1 downto 0);
       wb_dat_o   : out   std_logic_vector(c_wishbone_data_width-1 downto 0);
       wb_ack_o   : out   std_logic;
@@ -71,7 +71,7 @@ begin  -- rtl
       wb_cyc_i   => slave_i.cyc,
       wb_stb_i   => slave_i.stb,
       wb_we_i    => slave_i.we,
-      wb_adr_i   => slave_i.adr(5 downto 0),
+      wb_adr_i   => slave_i.adr(7 downto 0),
       wb_dat_i   => slave_i.dat(31 downto 0),
       wb_dat_o   => slave_o.dat(31 downto 0),
       wb_ack_o   => slave_o.ack,
