@@ -1,4 +1,4 @@
 #!/bin/bash
 
 mkdir -p doc
-wbgen2 -D ./doc/wb_uart.html -V uart_wb_slave.vhd -C ../../../../software/include/hw/wb_uart.h --cstyle defines --lang vhdl -K ../../../sim/wb_uart_defs.v uart.wb 
+wbgen2 -D ./doc/wb_simple_uart.html -V simple_uart_wb.vhd -p simple_uart_pkg.vhd --cstyle struct -C wb_uart.h --hstyle record --lang vhdl simple_uart_wb.wb 
