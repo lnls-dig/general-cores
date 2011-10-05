@@ -169,25 +169,25 @@ begin  -- rtl
 
   p_gen_control : process(slave_in, slave_out, master_in, master_out)
   begin
-    if(g_slave_mode = PIPELINED and g_master_mode = CLASSIC) then
+    if(g_master_mode = PIPELINED and g_slave_mode = CLASSIC) then
       if(fsm_state = IDLE) then
         master_out.stb <= slave_in.stb;
       else
         master_out.stb <= '0';
       end if;
       slave_out.stall <= '0';
-    elsif(g_slave_mode = CLASSIC and g_master_mode = PIPELINED) then
+    elsif(g_master_mode = CLASSIC and g_slave_mode = PIPELINED) then
 
       if(fsm_state = WAIT4ACK) then
         master_out.stb <= '1';
       else
         master_out.stb <= slave_in.stb;
       end if;
-      
-      if(master_out.cyc = '1') then
-        slave_out.stall <= '0';
+
+      if(fsm_state = WAIT4ACK) then
+        slave_out.stall <= not slave_out.ack;
       else
-        slave_out.stall <= not master_in.ack;
+        slave_out.stall <= '0';
       end if;
     else
       master_out.stb  <= slave_in.stb;
