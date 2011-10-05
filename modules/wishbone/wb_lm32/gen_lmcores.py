@@ -19,8 +19,8 @@ LM32_features = [ "CFG_PL_MULTIPLY_ENABLED",
 									"CFG_BUS_ERRORS_ENABLED" ];
 
 LM32_files = [
-"src/lm32_mc_arithmetic.v",
 "src/lm32_top.v",
+"src/lm32_mc_arithmetic.v",
 "src/lm32_cpu.v",
 "src/lm32_load_store_unit.v",
 "src/lm32_decoder.v",
@@ -112,7 +112,7 @@ def gen_customized_version(profile_name, feats):
 
 	ftmp.close();		
 	
-	os.system("vlog -quiet -nologo -E " + tmp_dir+"/lm32_"+profile_name+".v " + tmp_dir + "/tmp.v +incdir+src +incdir+" +tmp_dir);
+	os.system("vlog -quiet -nologo -E " + tmp_dir+"/lm32_"+profile_name+".v " + tmp_dir + "/tmp.v  +incdir+" +tmp_dir+" +incdir+src");
 	os.system("cat "+tmp_dir+"/lm32_*.v > generated/lm32_allprofiles.v")
 
 def parse_profiles():
@@ -212,6 +212,20 @@ architecture rtl of xwb_lm32 is \n""");
          return '0';
       end if;
    end b2l;
+
+ function strip_undefined
+    (x           : std_logic_vector) return std_logic_vector is
+    variable tmp : std_logic_vector(x'left downto 0);
+  begin
+    for i  in 0 to x'left loop
+      if(x(i)='X' or x(i)='U' or x(i)='Z') then
+        tmp(i) := '0';
+      else
+        tmp(i) := x(i);
+      end if;
+    end loop;  -- i
+    return tmp;
+  end strip_undefined;
    
    constant dcache_burst_length : natural := f_eval_d_burst_length(g_profile);
    constant icache_burst_length : natural := f_eval_i_burst_length(g_profile);
@@ -250,11 +264,11 @@ port map(
       rst_i	=> rst,
       interrupt	=> irq_i,
       -- Pass slave responses through unmodified
-      I_DAT_I	=> iwb_i.DAT,
+      I_DAT_I	=> strip_undefined(iwb_i.DAT),
       I_ACK_I	=> iwb_i.ACK,
       I_ERR_I	=> iwb_i.ERR,
       I_RTY_I	=> iwb_i.RTY,
-      D_DAT_I	=> dwb_i.DAT,
+      D_DAT_I	=> strip_undefined(dwb_i.DAT),
       D_ACK_I	=> dwb_i.ACK,
       D_ERR_I	=> dwb_i.ERR,
       D_RTY_I	=> dwb_i.RTY,
