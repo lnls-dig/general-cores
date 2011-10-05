@@ -3,8 +3,8 @@
 peripheral {
 	 name = "Simple Wishbone UART";
 	 description = "A simple Wishbone UART (8N1 mode) with programmable baud rate. ";
-	 prefix = "UART";
-	 hdl_entity = "uart_wb_slave";
+	 prefix = "uart";
+	 hdl_entity = "simple_uart_wb";
 
 	 reg {
 			name = "Status Register";
@@ -41,9 +41,7 @@ peripheral {
 				 description = "Baudrate setting. The value can be calculated using the following equation:\
 				 BRATE = ((Baudrate * 8) << 9 + (ClockFreq >> 8)) / (ClockFreq >> 7)";
 				 size = 32;
-				 type = SLV;
-				 access_bus = READ_WRITE;
-				 access_dev = READ_ONLY;
+				 type = PASS_THROUGH;
 			};
 	 };
 
@@ -55,18 +53,13 @@ peripheral {
 				 name = "Transmit data";
 				 prefix = "TX_DATA";
 				 size = 8;
-				 type = SLV;
-				 access_bus = READ_WRITE;
-				 access_dev = READ_WRITE;
-				 load = LOAD_EXT;
+				 type = PASS_THROUGH;
 			};
 	 };
 	 
 	 reg {
 			name = "Receive data regsiter";
 			prefix = "RDR";
-			
-
 			field {
 				 ack_read = "rdr_rack_o";
 				 name = "Received data";
@@ -77,4 +70,56 @@ peripheral {
 				 access_dev = WRITE_ONLY;
 			};
 	 };
+
+   reg {
+      name = "Host VUART Tx register";
+      prefix = "HOST_TDR";
+
+      field {
+         name = "TX Data";
+         prefix = "DATA";
+         type = PASS_THROUGH;
+         size = 8;
+      };
+
+      field {
+         name = "TX Ready";
+         prefix = "RDY";
+         type= BIT;
+         access_dev= WRITE_ONLY;
+         access_bus=READ_ONLY;
+      };
+   };
+
+   reg {
+      name = "Host VUART Rx register";
+      prefix = "HOST_RDR";
+
+      field {
+         ack_read = "host_rack_o";
+         name = "RX Data";
+         prefix = "DATA";
+         type = SLV;
+         size = 8;
+         access_dev= WRITE_ONLY;
+         access_bus=READ_ONLY;
+      };
+
+      field {
+         name = "RX Ready";
+         prefix = "RDY";
+         type= BIT;
+         access_dev= WRITE_ONLY;
+         access_bus=READ_ONLY;
+      };
+
+      field {
+         name = "RX FIFO Count";
+         prefix = "COUNT";
+         type = SLV;
+         size = 16;
+         access_dev= WRITE_ONLY;
+         access_bus=READ_ONLY;
+      };
+   };
 };
