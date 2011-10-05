@@ -1,1 +1,1 @@
-files = ["wb_tics.vhd"];
+files = ["wb_tics.vhd", "xwb_tics.vhd"];
