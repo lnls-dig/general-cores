@@ -12,7 +12,6 @@ modules =  { "local" :
 						"wb_uart",
 						"wb_vic",
 						"wb_spi",
-						"wb_virtual_uart",
 						"wb_crossbar",
 						"wb_lm32",
 						"wb_slave_adapter",
