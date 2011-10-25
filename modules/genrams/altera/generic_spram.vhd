@@ -47,7 +47,7 @@ entity generic_spram is
     clk_i   : in std_logic;             -- clock input
 
     -- byte write enable, actiwe when g_with_byte_enable == true
-    bwe_i : in std_logic_vector(g_data_width/8-1 downto 0);
+    bwe_i : in std_logic_vector((g_data_width+7)/8-1 downto 0);
 
     -- global write enable (masked by bwe_i if g_with_byte_enable = true)
     we_i : in std_logic;
