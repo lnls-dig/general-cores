@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-09-26
+-- Last update: 2011-10-05
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ entity generic_dpram is
 
     -- Port A
     clka_i : in  std_logic;
-    bwea_i : in  std_logic_vector(g_data_width/8-1 downto 0);
+    bwea_i : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
     wea_i  : in  std_logic;
     aa_i   : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
     da_i   : in  std_logic_vector(g_data_width-1 downto 0);
@@ -58,7 +58,7 @@ entity generic_dpram is
     -- Port B
 
     clkb_i : in  std_logic;
-    bweb_i : in  std_logic_vector(g_data_width/8-1 downto 0);
+    bweb_i : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
     web_i  : in  std_logic;
     ab_i   : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
     db_i   : in  std_logic_vector(g_data_width-1 downto 0);
