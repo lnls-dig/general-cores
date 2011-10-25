@@ -2,3 +2,8 @@
 \#*
 .\#*
 *.*~
+work
+*.wlf
+*.vstf
+*.patch
+modelsim.ini
