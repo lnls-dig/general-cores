@@ -38,6 +38,7 @@ BSCAN_SPARTAN6 #(
 	.TDO(tdo)
 );
 
-update_delay <= g_update;
+always@(posedge tck)
+	update_delay <= g_update;
 
 endmodule
