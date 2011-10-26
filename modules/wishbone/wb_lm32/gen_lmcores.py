@@ -113,8 +113,8 @@ def gen_customized_version(profile_name, feats):
 	ftmp.close();		
 	
 	os.system("vlog -quiet -nologo -E " + tmp_dir+"/lm32_"+profile_name+".v " + tmp_dir + "/tmp.v  +incdir+" +tmp_dir+" +incdir+src");
-	os.system("cat "+tmp_dir+"/lm32_*.v > generated/lm32_allprofiles.v")
-
+	os.system("cat "+tmp_dir+"/lm32_*.v | egrep -v '`line' > generated/lm32_allprofiles.v")
+	
 def parse_profiles():
 	f = open("lm32.profiles", "r")
 	p = map(lambda x: x.rstrip(" \n").rsplit(' '), f.readlines())
