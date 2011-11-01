@@ -1,48 +1,21 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/g_with_virtual_uart
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/g_with_physical_uart
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/g_interface_mode
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/g_address_granularity
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/clk_sys_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/rst_n_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_adr_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_dat_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_dat_o
-add wave -noupdate /main/DUT/U_CPU/dwb_o
-add wave -noupdate /main/DUT/U_CPU/dwb_i
-add wave -noupdate /main/DUT/U_CPU/iwb_o
-add wave -noupdate /main/DUT/U_CPU/iwb_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_cyc_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_sel_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_stb_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_we_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_ack_o
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_stall_o
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/uart_rxd_i
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/uart_txd_o
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/rx_ready_reg
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/rx_ready
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/uart_bcr
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/rdr_rack
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/host_rack
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/baud_tick
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/baud_tick8
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/resized_addr
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_in
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/wb_out
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/regs_in
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/regs_out
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/fifo_empty
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/fifo_full
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/fifo_rd
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/fifo_wr
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/fifo_count
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/phys_rx_ready
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/phys_tx_busy
-add wave -noupdate /main/DUT/U_UART/U_Wrapped_UART/phys_rx_data
+add wave -noupdate /main/DUT/U_Intercon/g_num_masters
+add wave -noupdate /main/DUT/U_Intercon/g_num_slaves
+add wave -noupdate /main/DUT/U_Intercon/g_registered
+add wave -noupdate /main/DUT/U_Intercon/clk_sys_i
+add wave -noupdate /main/DUT/U_Intercon/rst_n_i
+add wave -noupdate /main/DUT/U_Intercon/slave_i
+add wave -noupdate /main/DUT/U_Intercon/slave_o
+add wave -noupdate /main/DUT/U_Intercon/master_i
+add wave -noupdate /main/DUT/U_Intercon/master_o
+add wave -noupdate /main/DUT/U_Intercon/cfg_address_i
+add wave -noupdate /main/DUT/U_Intercon/cfg_mask_i
+add wave -noupdate /main/DUT/U_Intercon/previous
+add wave -noupdate /main/DUT/U_Intercon/granted
+add wave -noupdate /main/DUT/U_Intercon/issue
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {5032567 ps} 0}
+WaveRestoreCursors {{Cursor 1} {4093545 ps} 0}
 configure wave -namecolwidth 350
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -57,4 +30,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {1751287 ps} {8313847 ps}
+WaveRestoreZoom {3879920 ps} {4290080 ps}

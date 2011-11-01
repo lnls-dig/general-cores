@@ -1,6 +1,6 @@
 make
 
-vsim -L XilinxCoreLib -L secureip work.main -voptargs="+acc"
+vsim -L XilinxCoreLib -L secureip -L unisim work.main -voptargs="+acc"
 radix -hexadecimal
 do wave.do
 set StdArithNoWarnings 1
