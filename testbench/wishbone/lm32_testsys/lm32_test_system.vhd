@@ -50,7 +50,7 @@ begin  -- rtl
 
   U_CPU : xwb_lm32
     generic map (
-      g_profile => "minimal")
+      g_profile => "medium")
     port map (
       clk_sys_i => clk_sys_i,
       rst_n_i   => rst_n_i,
