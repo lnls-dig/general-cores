@@ -176,7 +176,7 @@ package body memory_loader_pkg is
           data_tmp := resize(unsigned(f_hexstring_to_slv(f_get_token(ls, 3), 8)), mem_width);
           data_int := to_integer(data_tmp);
 
-          report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
+--          report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
           
           for i in 0 to mem_width-1 loop
             mem(addr, i) := std_logic(data_tmp(i));
