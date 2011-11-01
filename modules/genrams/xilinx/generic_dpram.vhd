@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-10-05
+-- Last update: 2011-10-27
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -118,13 +118,13 @@ architecture syn of generic_dpram is
 begin
 
   gen_single_clock : if(g_dual_clock = false) generate
-    clka_int <= clka_i after 1ns;
-    clkb_int <= clka_i after 1ns;
+    clka_int <= clka_i;-- after 1ns;
+    clkb_int <= clka_i;-- after 1ns;
   end generate gen_single_clock;
 
   gen_dual_clock : if(g_dual_clock = true) generate
-    clka_int <= clka_i after 1ns;
-    clkb_int <= clkb_i after 1ns;
+    clka_int <= clka_i;-- after 1ns;
+    clkb_int <= clkb_i;-- after 1ns;
   end generate gen_dual_clock;
 
   wea_rep <= (others => wea_i);
