@@ -105,18 +105,26 @@ module sockit_owm #(
 // local parameters
 //////////////////////////////////////////////////////////////////////////////
 
+function integer clogb2;               
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+     value = value >> 1;
+end
+endfunction
+
 // size of combined power and select registers
 localparam PDW = (BDW==32) ? 24 : 8;
 
 // size of boudrate generator counter (divider for normal mode is largest)
-localparam CDW = CDR_E ? ((BDW==32) ? 16 : 8) : $clog2(CDR_N);
+localparam CDW = CDR_E ? ((BDW==32) ? 16 : 8) : clogb2(CDR_N);
 
 // size of port select signal
-localparam SDW = $clog2(OWN);
+localparam SDW = clogb2(OWN);
 
 // size of cycle timing counter
 localparam TDW =       (T_RSTH_O+T_RSTL_O) >       (T_RSTH_N+T_RSTL_N)
-               ? $clog2(T_RSTH_O+T_RSTL_O) : $clog2(T_RSTH_N+T_RSTL_N);
+               ? clogb2(T_RSTH_O+T_RSTL_O) : clogb2(T_RSTH_N+T_RSTL_N);
 
 //////////////////////////////////////////////////////////////////////////////
 // local signals
