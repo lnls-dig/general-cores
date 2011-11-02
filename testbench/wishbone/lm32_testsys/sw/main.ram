@@ -138,7 +138,7 @@ write 88 2B9D0004
 write 89 379C0004
 write 8a C3A00000
 write 8b 78012000
-write 8c 38210100
+write 8c 38210000
 write 8d 3402147B
 write 8e 58220004
 write 8f C3A00000
@@ -146,7 +146,7 @@ write 90 379CFFFC
 write 91 5B9D0004
 write 92 78022000
 write 93 202300FF
-write 94 38420100
+write 94 38420000
 write 95 28410000
 write 96 20210001
 write 97 5C20FFFE
@@ -159,12 +159,12 @@ write 9d 2B9D0004
 write 9e 379C0004
 write 9f C3A00000
 write a0 78012000
-write a1 38210100
+write a1 38210000
 write a2 28210000
 write a3 20210002
 write a4 C3A00000
 write a5 78012000
-write a6 38210100
+write a6 38210000
 write a7 2821000C
 write a8 202100FF
 write a9 C3A00000

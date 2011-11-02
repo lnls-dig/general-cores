@@ -1,21 +1,16 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /main/DUT/U_Intercon/g_num_masters
-add wave -noupdate /main/DUT/U_Intercon/g_num_slaves
-add wave -noupdate /main/DUT/U_Intercon/g_registered
-add wave -noupdate /main/DUT/U_Intercon/clk_sys_i
-add wave -noupdate /main/DUT/U_Intercon/rst_n_i
-add wave -noupdate /main/DUT/U_Intercon/slave_i
-add wave -noupdate /main/DUT/U_Intercon/slave_o
-add wave -noupdate /main/DUT/U_Intercon/master_i
-add wave -noupdate /main/DUT/U_Intercon/master_o
-add wave -noupdate /main/DUT/U_Intercon/cfg_address_i
-add wave -noupdate /main/DUT/U_Intercon/cfg_mask_i
-add wave -noupdate /main/DUT/U_Intercon/previous
-add wave -noupdate /main/DUT/U_Intercon/granted
-add wave -noupdate /main/DUT/U_Intercon/issue
+add wave -noupdate /main/DUT/U_CPU/D_STB_O
+add wave -noupdate /main/DUT/U_CPU/D_ADR
+add wave -noupdate /main/DUT/U_CPU/D_CYC
+add wave -noupdate /main/DUT/U_CPU/D_CTI
+add wave -noupdate /main/DUT/U_CPU/dwb_o
+add wave -noupdate /main/DUT/U_CPU/dwb_i
+add wave -noupdate /main/DUT/U_CPU/data_was_busy
+add wave -noupdate /main/DUT/U_CPU/data_addr_reg
+add wave -noupdate /main/DUT/U_CPU/data_remaining
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {4093545 ps} 0}
+WaveRestoreCursors {{Cursor 1} {2672526 ps} 0}
 configure wave -namecolwidth 350
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -30,4 +25,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {3879920 ps} {4290080 ps}
+WaveRestoreZoom {2262366 ps} {3082686 ps}
