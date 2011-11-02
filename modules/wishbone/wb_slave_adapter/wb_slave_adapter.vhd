@@ -187,7 +187,7 @@ begin  -- rtl
       if(fsm_state = WAIT4ACK) then
         slave_out.stall <= not slave_out.ack;
       else
-        slave_out.stall <= '0';
+        slave_out.stall <= slave_in.stb;
       end if;
     else
       master_out.stb  <= slave_in.stb;
