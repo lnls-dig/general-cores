@@ -77,7 +77,7 @@ begin  -- rtl
 
   U_DPRAM : xwb_dpram
     generic map (
-      g_size                  => 8192,
+      g_size                  => 16384, -- must agree with sw/target/lm32/ram.ld:LENGTH / 4
       g_init_file             => "sw/main.ram",
       g_must_have_init_file   => true,
       g_slave1_interface_mode => PIPELINED,
