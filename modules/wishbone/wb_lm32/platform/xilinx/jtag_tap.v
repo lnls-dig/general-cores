@@ -12,6 +12,7 @@ module jtag_tap(
 
 // Unfortunately the exit1 state for DR (e1dr) is mising
 // We can simulate it by interpretting 'update' as e1dr and delaying 'update'
+wire sel;
 wire g_capture;
 wire g_shift;
 wire g_update;
