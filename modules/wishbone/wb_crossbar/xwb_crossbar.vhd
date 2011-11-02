@@ -65,17 +65,20 @@ architecture rtl of xwb_crossbar is
   type matrix is array (g_num_masters-1 downto 0, g_num_slaves downto 0) of std_logic;
   type column is array (g_num_masters-1 downto 0) of std_logic;
   type row is array (g_num_slaves downto 0) of std_logic;
-
+  
+  -- Add an 'error' device to the list of slaves
+  signal master_ie : t_wishbone_master_in_array(g_num_slaves downto 0);
+  signal master_oe : t_wishbone_master_out_array(g_num_slaves downto 0);
+  signal virtual_ERR : std_logic;
+  
   -- synchronous signals:
   signal previous : matrix;             -- Previously connected pairs
 
   -- (a)synchronous signals (depending on generic):
   signal granted : matrix;  -- The connections to form this cycle selected previous bus
-  signal issue   : column;              -- Did last cycle issue a request
   
   procedure main_logic(
     signal granted  : out matrix;
-    signal issue    : out column;
     signal slave_i  : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
     signal previous : in  matrix) is
     variable acc, tmp : std_logic;
@@ -85,14 +88,13 @@ architecture rtl of xwb_crossbar is
     variable mbusy    : column;  -- Does the master's previous connection persist?
   begin
     -- A slave is busy iff it services an in-progress cycle
-    for slave in g_num_slaves-1 downto 0 loop
+    for slave in g_num_slaves downto 0 loop
       acc := '0';
       for master in g_num_masters-1 downto 0 loop
         acc := acc or (previous(master, slave) and slave_i(master).CYC);
       end loop;
       sbusy(slave) := acc;
     end loop;
-    sbusy(g_num_slaves) := '0';  -- Special case because the 'error device' supports multiple masters
 
     -- A master is busy iff it services an in-progress cycle
     for master in g_num_masters-1 downto 0 loop
@@ -121,7 +123,7 @@ architecture rtl of xwb_crossbar is
 
     -- Arbitrate among the requesting masters
     -- Policy: lowest numbered master first
-    for slave in g_num_slaves-1 downto 0 loop
+    for slave in g_num_slaves downto 0 loop
       acc := '0';
       -- It is possible to break the chain of LUTs here using a sort of kogge-stone network
       -- This probably only makes sense if you have more than 32 masters
@@ -129,11 +131,6 @@ architecture rtl of xwb_crossbar is
         selected(master, slave) := request(master, slave) and not acc;
         acc                     := acc or request(master, slave);
       end loop;
-    end loop;
-
-    -- Multiple masters can be granted access to the 'error device'
-    for master in g_num_masters-1 downto 0 loop
-      selected(master, g_num_slaves) := request(master, g_num_slaves);
     end loop;
 
     -- Determine the master granted access
@@ -146,11 +143,6 @@ architecture rtl of xwb_crossbar is
           granted(master, slave) <= selected(master, slave);
         end if;
       end loop;
-    end loop;
-
-    -- Record strobe status for virtual error device
-    for master in g_num_masters-1 downto 0 loop
-      issue(master) <= slave_i(master).CYC and slave_i(master).STB;
     end loop;
   end main_logic;
 
@@ -189,9 +181,7 @@ architecture rtl of xwb_crossbar is
 
   -- Select the slave pins the master will receive
   procedure master_logic(signal o        : out t_wishbone_slave_out;
-                         signal master_i : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-                         signal issue    : in  column;
-                         signal previous : in  matrix;
+                         signal master_i : in  t_wishbone_master_in_array(g_num_slaves downto 0);
                          signal granted  : in  matrix;
                          master          :     integer) is
     variable acc          : t_wishbone_slave_out;
@@ -199,14 +189,14 @@ architecture rtl of xwb_crossbar is
   begin
     acc := (
       ACK   => '0',
-      ERR   => issue(master) and previous(master, g_num_slaves),  -- Error device connected and strobed?
+      ERR   => '0',
       RTY   => '0',
-      STALL => granted(master, g_num_slaves),
+      STALL => '0',
       DAT   => (others => '0'),
-      INT => '0');
+      INT   => '0');
 
     -- We use inverted logic on STALL so that if no slave granted => stall
-    for slave in g_num_slaves-1 downto 0 loop
+    for slave in g_num_slaves downto 0 loop
       granted_data := (others => granted(master, slave));
       acc := (
         ACK   => acc.ACK or (master_i(slave).ACK and granted(master, slave)),
@@ -214,16 +204,34 @@ architecture rtl of xwb_crossbar is
         RTY   => acc.RTY or (master_i(slave).RTY and granted(master, slave)),
         STALL => acc.STALL or (not master_i(slave).STALL and granted(master, slave)),
         DAT   => acc.DAT or (master_i(slave).DAT and granted_data),
-        INT =>'0');
+        INT   => '0');
     end loop;
     acc.STALL := not acc.STALL;
 
     o <= acc;
   end master_logic;
 begin
+  -- The virtual error slave is pretty straight-forward:
+  master_o <= master_oe(g_num_slaves-1 downto 0);
+  master_ie(g_num_slaves-1 downto 0) <= master_i;
+  
+  master_ie(g_num_slaves) <= (
+    ACK   => '0', 
+    ERR   => virtual_ERR,
+    RTY   => '0', 
+    STALL => '0',
+    DAT   => (others => '0'),
+    INT   => '0');
+  virtual_error_slave : process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      virtual_ERR <= master_oe(g_num_slaves).CYC and master_oe(g_num_slaves).STB;
+    end if;
+  end process virtual_error_slave;
+
   -- If async determine granted devices
   granted_matrix : if not g_registered generate
-    main_logic(granted, issue, slave_i, previous);
+    main_logic(granted, slave_i, previous);
   end generate;
 
   granted_driver : if g_registered generate
@@ -232,22 +240,21 @@ begin
       if rising_edge(clk_sys_i) then
         if rst_n_i = '0' then
           granted <= (others => (others => '0'));
-          issue   <= (others => '0');
         else
-          main_logic(granted, issue, slave_i, granted);
+          main_logic(granted, slave_i, granted);
         end if;
       end if;
     end process;
   end generate;
 
   -- Make the slave connections
-  slave_matrix : for slave in g_num_slaves-1 downto 0 generate
-    slave_logic(master_o(slave), slave_i, granted, slave);
+  slave_matrix : for slave in g_num_slaves downto 0 generate
+    slave_logic(master_oe(slave), slave_i, granted, slave);
   end generate;
 
   -- Make the master connections
   master_matrix : for master in g_num_masters-1 downto 0 generate
-    master_logic(slave_o(master), master_i, issue, previous, granted, master);
+    master_logic(slave_o(master), master_ie, granted, master);
   end generate;
 
   -- Store the current grant to the previous registers
