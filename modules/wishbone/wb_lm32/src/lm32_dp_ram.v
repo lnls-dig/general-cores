@@ -26,7 +26,7 @@ assign rdata_o = ram[raddr_r];
 
 integer i;
 initial begin
-	for (i=0;i<(1<<addr_depth)-1;i=i+1)
+	for (i=0;i<addr_depth-1;i=i+1)
 		ram[i] = 0;
 end
 
