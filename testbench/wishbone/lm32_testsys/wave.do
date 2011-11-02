@@ -1,11 +1,11 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /main/DUT/U_CPU/D_STB_O
-add wave -noupdate /main/DUT/U_CPU/D_ADR
-add wave -noupdate /main/DUT/U_CPU/D_CYC
-add wave -noupdate /main/DUT/U_CPU/D_CTI
+add wave -noupdate /main/clk_sys
 add wave -noupdate /main/DUT/U_CPU/dwb_o
 add wave -noupdate /main/DUT/U_CPU/dwb_i
+add wave -noupdate /main/DUT/U_Intercon/granted
+add wave -noupdate /main/DUT/U_CPU/gen_profile_medium/U_Wrapped_LM32/D_STB_O
+add wave -noupdate /main/DUT/U_CPU/gen_profile_medium/U_Wrapped_LM32/D_ACK_I
 add wave -noupdate /main/DUT/U_CPU/data_was_busy
 add wave -noupdate /main/DUT/U_CPU/data_addr_reg
 add wave -noupdate /main/DUT/U_CPU/data_remaining
