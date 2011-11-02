@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-10-27
+-- Last update: 2011-10-05
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -130,8 +130,8 @@ begin
   wea_rep <= (others => wea_i);
   web_rep <= (others => web_i);
 
-  s_we_a <= bwea_i;
-  s_we_b <= bweb_i;
+  s_we_a <= bwea_i and wea_rep;
+  s_we_b <= bweb_i and web_rep;
 
   gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "read_first") generate
 
