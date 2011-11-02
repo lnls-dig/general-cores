@@ -234,7 +234,7 @@ begin
           granted <= (others => (others => '0'));
           issue   <= (others => '0');
         else
-          main_logic(granted, issue, slave_i, previous);
+          main_logic(granted, issue, slave_i, granted);
         end if;
       end if;
     end process;
