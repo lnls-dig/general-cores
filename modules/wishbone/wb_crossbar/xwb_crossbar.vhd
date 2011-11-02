@@ -78,9 +78,9 @@ architecture rtl of xwb_crossbar is
   signal granted : matrix;
   
   procedure main_logic(
-    signal granted  : out matrix;
-    signal slave_i  : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-    signal previous : in  matrix) is
+    signal matrix_new : out matrix;
+    signal matrix_old : in  matrix;
+    signal slave_i : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0)) is
     variable acc, tmp : std_logic;
     variable request  : matrix;  -- Which slaves do the masters address log(S) 
     variable selected : matrix;  -- Which master wins arbitration  log(M) request
@@ -91,7 +91,7 @@ architecture rtl of xwb_crossbar is
     for slave in g_num_slaves downto 0 loop
       acc := '0';
       for master in g_num_masters-1 downto 0 loop
-        acc := acc or (previous(master, slave) and slave_i(master).CYC);
+        acc := acc or (matrix_old(master, slave) and slave_i(master).CYC);
       end loop;
       sbusy(slave) := acc;
     end loop;
@@ -100,7 +100,7 @@ architecture rtl of xwb_crossbar is
     for master in g_num_masters-1 downto 0 loop
       acc := '0';
       for slave in g_num_slaves downto 0 loop
-        acc := acc or previous(master, slave);
+        acc := acc or matrix_old(master, slave);
       end loop;
       mbusy(master) := acc and slave_i(master).CYC;
     end loop;
@@ -138,9 +138,9 @@ architecture rtl of xwb_crossbar is
     for slave in g_num_slaves downto 0 loop
       for master in g_num_masters-1 downto 0 loop
         if sbusy(slave) = '1' or mbusy(master) = '1' then
-          granted(master, slave) <= previous(master, slave);
+          matrix_new(master, slave) <= matrix_old(master, slave);
         else
-          granted(master, slave) <= selected(master, slave);
+          matrix_new(master, slave) <= selected(master, slave);
         end if;
       end loop;
     end loop;
@@ -255,5 +255,5 @@ begin
   end generate;
 
   -- The main crossbar logic:
-  main_logic(matrix_new, slave_i, matrix_old);
+  main_logic(matrix_new, matrix_old, slave_i);
 end rtl;
