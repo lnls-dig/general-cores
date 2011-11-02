@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-10-04
+-- Last update: 2011-11-02
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -101,4 +101,8 @@ begin  -- rtl
       uart_rxd_i => uart_rxd_i,
       uart_txd_o => uart_txd_o);
 
+  slave_o.err <= '0';
+  slave_o.rty <= '0';
+  slave_o.int <='0';
+  
 end rtl;
