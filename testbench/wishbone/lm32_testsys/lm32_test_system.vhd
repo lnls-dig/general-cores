@@ -35,13 +35,13 @@ architecture rtl of lm32_test_system is
 
 
   constant c_cfg_base_addr : t_wishbone_address_array(c_cnx_master_ports-1 downto 0) :=
-    (0 => x"00000000",                  -- CPU I-mem
-     1 => x"10000000",                  -- CPU D-mem
+    (0 => x"00000000",                  -- 64KB of fpga memory
+     1 => x"10000000",                  -- The second port to the same memory
      2 => x"20000000");                 -- Peripherals
 
   constant c_cfg_base_mask : t_wishbone_address_array(c_cnx_master_ports-1 downto 0) :=
-    (0 => x"f0000000",
-     1 => x"f0000000",
+    (0 => x"ffff0000",
+     1 => x"ffff0000",
      2 => x"f0000000");
 
   signal owr_en_slv, owr_in_slv : std_logic_vector(0 downto 0);
