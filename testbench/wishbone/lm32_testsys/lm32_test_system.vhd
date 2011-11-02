@@ -92,60 +92,60 @@ begin  -- rtl
       slave2_i  => cnx_master_out(1),
       slave2_o  => cnx_master_in(1));
 
-  U_peripheral_Fanout : xwb_bus_fanout
-    generic map (
-      g_num_outputs          => c_peripherals,
-      g_bits_per_slave       => 8,
-      g_address_granularity  => BYTE,
-      g_slave_interface_mode => PIPELINED)
-    port map (
-      clk_sys_i => clk_sys_i,
-      rst_n_i   => rst_n_i,
-      slave_i   => cnx_master_out(2),
-      slave_o   => cnx_master_in(2),
-      master_i  => periph_in,
-      master_o  => periph_out);
+  --U_peripheral_Fanout : xwb_bus_fanout
+  --  generic map (
+  --    g_num_outputs          => c_peripherals,
+  --    g_bits_per_slave       => 8,
+  --    g_address_granularity  => BYTE,
+  --    g_slave_interface_mode => PIPELINED)
+  --  port map (
+  --    clk_sys_i => clk_sys_i,
+  --    rst_n_i   => rst_n_i,
+  --    slave_i   => cnx_master_out(2),
+  --    slave_o   => cnx_master_in(2),
+  --    master_i  => periph_in,
+  --    master_o  => periph_out);
 
-  U_GPIO : xwb_gpio_port
-    generic map (
-      g_interface_mode         => CLASSIC,
-      g_address_granularity    => BYTE,
-      g_num_pins               => 32,
-      g_with_builtin_tristates => true)
-    port map (
-      clk_sys_i => clk_sys_i,
-      rst_n_i   => rst_n_i,
-      slave_i   => periph_out(0),
-      slave_o   => periph_in(0),
-      gpio_b    => gpio_b,
-      gpio_in_i => x"00000000"
-      );
+  --U_GPIO : xwb_gpio_port
+  --  generic map (
+  --    g_interface_mode         => CLASSIC,
+  --    g_address_granularity    => BYTE,
+  --    g_num_pins               => 32,
+  --    g_with_builtin_tristates => true)
+  --  port map (
+  --    clk_sys_i => clk_sys_i,
+  --    rst_n_i   => rst_n_i,
+  --    slave_i   => periph_out(0),
+  --    slave_o   => periph_in(0),
+  --    gpio_b    => gpio_b,
+  --    gpio_in_i => x"00000000"
+  --    );
 
   U_UART : xwb_simple_uart
     generic map (
-      g_interface_mode      => CLASSIC,
+      g_interface_mode      => PIPELINED,
       g_address_granularity => BYTE)
     port map (
       clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
-      slave_i    => periph_out(1),
-      slave_o    => periph_in(1),
+      slave_i    => cnx_master_out(2),
+      slave_o    => cnx_master_in(2),
       uart_rxd_i => rxd_i,
       uart_txd_o => txd_o);
 
-  U_OneWire : xwb_onewire_master
-    generic map (
-      g_interface_mode      => CLASSIC,
-      g_address_granularity => BYTE,
-      g_num_ports           => 1)
-    port map (
-      clk_sys_i => clk_sys_i,
-      rst_n_i   => rst_n_i,
-      slave_i   => periph_out(2),
-      slave_o   => periph_in(2),
-      owr_en_o  => owr_en_slv,
-      owr_i     => owr_in_slv);
+  --U_OneWire : xwb_onewire_master
+  --  generic map (
+  --    g_interface_mode      => CLASSIC,
+  --    g_address_granularity => BYTE,
+  --    g_num_ports           => 1)
+  --  port map (
+  --    clk_sys_i => clk_sys_i,
+  --    rst_n_i   => rst_n_i,
+  --    slave_i   => periph_out(2),
+  --    slave_o   => periph_in(2),
+  --    owr_en_o  => owr_en_slv,
+  --    owr_i     => owr_in_slv);
 
-  onewire_b <= '0' when owr_en_slv(0) = '1' else 'Z';
-  owr_in_slv(0) <= onewire_b;
+  --onewire_b <= '0' when owr_en_slv(0) = '1' else 'Z';
+  --owr_in_slv(0) <= onewire_b;
 end rtl;

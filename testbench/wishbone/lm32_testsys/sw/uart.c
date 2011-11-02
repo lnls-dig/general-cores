@@ -3,7 +3,7 @@
 
 #define CPU_CLOCK 1000000
 #define UART_BAUDRATE 10000
-#define BASE_UART 0x20000100
+#define BASE_UART 0x20000000
 
 #include "wb_uart.h"
 
