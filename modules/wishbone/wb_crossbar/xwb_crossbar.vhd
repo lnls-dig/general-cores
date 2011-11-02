@@ -71,11 +71,11 @@ architecture rtl of xwb_crossbar is
   signal master_oe : t_wishbone_master_out_array(g_num_slaves downto 0);
   signal virtual_ERR : std_logic;
   
-  -- synchronous signals:
-  signal previous : matrix;             -- Previously connected pairs
+  signal matrix_old : matrix; -- Registered connection matrix
+  signal matrix_new : matrix; -- The new values of the matrix
 
-  -- (a)synchronous signals (depending on generic):
-  signal granted : matrix;  -- The connections to form this cycle selected previous bus
+  -- Either matrix_old or matrix_new, depending on g_registered
+  signal granted : matrix;
   
   procedure main_logic(
     signal granted  : out matrix;
@@ -228,24 +228,21 @@ begin
       virtual_ERR <= master_oe(g_num_slaves).CYC and master_oe(g_num_slaves).STB;
     end if;
   end process virtual_error_slave;
-
-  -- If async determine granted devices
-  granted_matrix : if not g_registered generate
-    main_logic(granted, slave_i, previous);
-  end generate;
-
-  granted_driver : if g_registered generate
-    process(clk_sys_i)
-    begin
-      if rising_edge(clk_sys_i) then
-        if rst_n_i = '0' then
-          granted <= (others => (others => '0'));
-        else
-          main_logic(granted, slave_i, granted);
-        end if;
+  
+  -- Copy the matrix to a register:
+  main : process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        matrix_old <= (others => (others => '0'));
+      else
+        matrix_old <= matrix_new;
       end if;
-    end process;
-  end generate;
+    end if;
+  end process main;
+  
+  -- Is the crossbar combinatorial or registered
+  granted <= matrix_old when g_registered else matrix_new;
 
   -- Make the slave connections
   slave_matrix : for slave in g_num_slaves downto 0 generate
@@ -257,16 +254,6 @@ begin
     master_logic(slave_o(master), master_ie, granted, master);
   end generate;
 
-  -- Store the current grant to the previous registers
-  main : process(clk_sys_i)
-  begin
-    if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' then
-        previous <= (others => (others => '0'));
-      else
-        previous <= granted;
-      end if;
-    end if;
-  end process main;
-  
+  -- The main crossbar logic:
+  main_logic(matrix_new, slave_i, matrix_old);
 end rtl;
