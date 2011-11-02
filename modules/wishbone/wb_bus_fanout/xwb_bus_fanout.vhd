@@ -27,7 +27,18 @@ end xwb_bus_fanout;
 
 architecture rtl of xwb_bus_fanout is
 
-  constant c_periph_addr_bits : integer := 3;
+  function f_log2_ceil(N : natural) return positive is
+  begin
+    if N <= 2 then
+      return 1;
+    elsif N mod 2 = 0 then
+      return 1 + f_log2_ceil(N/2);
+    else
+      return 1 + f_log2_ceil((N+1)/2);
+    end if;
+  end;
+  
+  constant c_periph_addr_bits : integer := f_log2_ceil(g_num_outputs);
 
   signal periph_addr     : std_logic_vector(c_periph_addr_bits - 1 downto 0);
   signal periph_addr_reg : std_logic_vector(c_periph_addr_bits - 1 downto 0);
