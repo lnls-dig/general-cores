@@ -23,8 +23,17 @@
 -- slave simultaneously, the lowest numbered master is granted access.
 -- 
 -- The implementation of this crossbar locks a master to a slave so long as
--- CYC_O is held high. If the master tries to address outside the slave's
--- address range, ERR_I will be raised.
+-- CYC_O is held high. 
+-- 
+-- Synthesis/timing relevant facts:
+--   (m)asters, (s)laves, masked (a)ddress bits
+--   
+--   Area required       = O(ms log(ma))
+--   Arbitration depth   = O(log(msa))
+--   Master->Slave depth = O(log(m))
+--   Slave->Master depth = O(log(s))
+-- 
+--   If g_registered = false, arbitration depth is added to M->S and S->M.
 --
 -------------------------------------------------------------------------------
 -- Copyright (c) 2011 GSI / Wesley W. Terpstra
