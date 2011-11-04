@@ -31,6 +31,7 @@
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author          Description
+-- 2011-11-04  2.0      wterpstra       timing improvements
 -- 2011-06-08  1.0      wterpstra       import from SVN
 -------------------------------------------------------------------------------
 
@@ -62,9 +63,8 @@ entity xwb_crossbar is
 end xwb_crossbar;
 
 architecture rtl of xwb_crossbar is
+  -- Crossbar connection matrix
   type matrix is array (g_num_masters-1 downto 0, g_num_slaves downto 0) of std_logic;
-  type column is array (g_num_masters-1 downto 0) of std_logic;
-  type row is array (g_num_slaves downto 0) of std_logic;
   
   -- Add an 'error' device to the list of slaves
   signal master_ie : t_wishbone_master_in_array(g_num_slaves downto 0);
@@ -77,59 +77,125 @@ architecture rtl of xwb_crossbar is
   -- Either matrix_old or matrix_new, depending on g_registered
   signal granted : matrix;
   
-  procedure main_logic(
-    signal matrix_new : out matrix;
-    signal matrix_old : in  matrix;
-    signal slave_i : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0)) is
-    variable acc, tmp : std_logic;
-    variable request  : matrix;  -- Which slaves do the masters address log(S) 
-    variable selected : matrix;  -- Which master wins arbitration  log(M) request
-    variable sbusy    : row;  -- Does the slave's  previous connection persist?
-    variable mbusy    : column;  -- Does the master's previous connection persist?
+  -- If any of the bits are '1', the whole thing is '1'
+  -- This function makes the check explicitly have logarithmic depth.
+  function vector_OR(x : std_logic_vector)
+    return std_logic 
+  is
+    constant len : integer := x'length;
+    constant mid : integer := len / 2;
+    alias y : std_logic_vector(len-1 downto 0) is x;
+  begin
+    if len = 1 
+    then return y(0);
+    else return vector_OR(y(len-1 downto mid)) or
+                vector_OR(y(mid-1 downto 0));
+    end if;
+  end vector_OR;
+  
+  -- Kogge-Stone network of ORs.
+  -- A log(n) deep, n-wide circuit where:
+  --   output(i) = OR_{j<=i} input(j)
+  function ks_OR(input : std_logic_vector)
+    return std_logic_vector
+  is
+    -- 1 => 0    2 => 1    3..4 => 2     5..8 => 3
+    function log2(i : natural) return natural is
+    begin
+      if i <= 1
+      then return 0;
+      else return log2((i+1)/2) + 1;
+      end if;
+    end log2;
+    
+    -- 0 => 1    1 => 2      2 => 4      3 => 8
+    function pow2(i : natural) return natural is
+    begin
+      if i = 0
+      then return 1;
+      else return pow2(i-1)*2;
+      end if;
+    end pow2;
+    
+    constant width  : natural := input'length;
+    constant stages : natural := log2(width);
+    variable prev   : std_logic_vector(width-1 downto 0);
+    variable output : std_logic_vector(width-1 downto 0);
+  begin
+    prev := input;
+    for l in 0 to stages-1 loop
+      for i in 0 to width-1 loop
+        if i >= pow2(l)
+        then output(i) := prev(i) or prev(i-pow2(l));
+        else output(i) := prev(i);
+        end if;
+      end loop;
+      prev := output;
+    end loop;
+    return output;
+  end ks_OR;
+  
+  -- Impure because it accesses cfg_{address_i, mask_i}
+  impure function matrix_logic(
+    matrix_old : matrix;
+    slave_i    : t_wishbone_slave_in_array(g_num_masters-1 downto 0))
+    return matrix
+  is
+    subtype row    is std_logic_vector(g_num_masters-1 downto 0);
+    subtype column is std_logic_vector(g_num_slaves    downto 0);
+    
+    variable tmp        : std_logic;
+    variable tmp_column : column;
+    variable tmp_row    : row;
+    
+    variable request    : matrix;  -- Which slaves do the masters address log(S) 
+    variable selected   : matrix;  -- Which master wins arbitration  log(M) request
+    variable sbusy      : column;  -- Does the slave's  previous connection persist?
+    variable mbusy      : row;     -- Does the master's previous connection persist?
+    variable matrix_new : matrix;
   begin
     -- A slave is busy iff it services an in-progress cycle
     for slave in g_num_slaves downto 0 loop
-      acc := '0';
       for master in g_num_masters-1 downto 0 loop
-        acc := acc or (matrix_old(master, slave) and slave_i(master).CYC);
+        tmp_row(master) := matrix_old(master, slave) and slave_i(master).CYC;
       end loop;
-      sbusy(slave) := acc;
+      sbusy(slave) := vector_OR(tmp_row);
     end loop;
-
+    
     -- A master is busy iff it services an in-progress cycle
     for master in g_num_masters-1 downto 0 loop
-      acc := '0';
       for slave in g_num_slaves downto 0 loop
-        acc := acc or matrix_old(master, slave);
+        tmp_column(slave) := matrix_old(master, slave);
       end loop;
-      mbusy(master) := acc and slave_i(master).CYC;
+      mbusy(master) := vector_OR(tmp_column) and slave_i(master).CYC;
     end loop;
 
     -- Decode the request address to see if master wants access
     for master in g_num_masters-1 downto 0 loop
-      acc := '0';
       for slave in g_num_slaves-1 downto 0 loop
-        if (slave_i(master).ADR and  cfg_mask_i(slave)) = cfg_address_i(slave) then
-          tmp := '1';
-        else
-          tmp := '0';
-        end if;
-        acc                    := acc or tmp;
+        tmp := not vector_OR((slave_i(master).ADR and cfg_mask_i(slave)) xor cfg_address_i(slave));
+        tmp_column(slave) := tmp;
         request(master, slave) := slave_i(master).CYC and slave_i(master).STB and tmp;
       end loop;
+      tmp_column(g_num_slaves) := '0';
       -- If no slaves match request, bind to 'error device'
-      request(master, g_num_slaves) := slave_i(master).CYC and slave_i(master).STB and not acc;
+      request(master, g_num_slaves) := slave_i(master).CYC and slave_i(master).STB and not vector_OR(tmp_column);
     end loop;
 
     -- Arbitrate among the requesting masters
     -- Policy: lowest numbered master first
     for slave in g_num_slaves downto 0 loop
-      acc := '0';
-      -- It is possible to break the chain of LUTs here using a sort of kogge-stone network
-      -- This probably only makes sense if you have more than 32 masters
+      -- OR together all the requests by higher priority masters
       for master in 0 to g_num_masters-1 loop
-        selected(master, slave) := request(master, slave) and not acc;
-        acc                     := acc or request(master, slave);
+        tmp_row(master) := request(master, slave);
+      end loop;
+      tmp_row := ks_OR(tmp_row);
+      
+      -- Grant to highest priority master
+      selected(0, slave) := request(0, slave); -- master 0 always wins
+      for master in 1 to g_num_masters-1 loop
+        selected(master, slave) := -- only if requested and no lower requests
+          not tmp_row(master-1) and request(master, slave);
       end loop;
     end loop;
 
@@ -138,77 +204,110 @@ architecture rtl of xwb_crossbar is
     for slave in g_num_slaves downto 0 loop
       for master in g_num_masters-1 downto 0 loop
         if sbusy(slave) = '1' or mbusy(master) = '1' then
-          matrix_new(master, slave) <= matrix_old(master, slave);
+          matrix_new(master, slave) := matrix_old(master, slave);
         else
-          matrix_new(master, slave) <= selected(master, slave);
+          matrix_new(master, slave) := selected(master, slave);
         end if;
       end loop;
     end loop;
-  end main_logic;
+    
+    return matrix_new;
+  end matrix_logic;
 
   -- Select the master pins the slave will receive
-  procedure slave_logic(signal o       : out t_wishbone_master_out;
-                        signal slave_i : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-                        signal granted : in  matrix;
-                        slave          :     integer) is
-    variable acc             : t_wishbone_master_out;
-    variable granted_address : t_wishbone_address;
-    variable granted_select  : t_wishbone_byte_select;
-    variable granted_data    : t_wishbone_data;
+  function slave_logic(slave   : integer;
+                       granted : matrix;
+                       slave_i : t_wishbone_slave_in_array(g_num_masters-1 downto 0))
+    return t_wishbone_master_out
+  is
+    subtype row is std_logic_vector(g_num_masters-1 downto 0);
+    type matrix is array (natural range <>) of row;
+    
+    function matrix_OR(x : matrix)
+      return std_logic_vector is
+      variable result : std_logic_vector(x'LENGTH-1 downto 0);
+    begin
+      for i in x'LENGTH-1 downto 0 loop
+        result(i) := vector_OR(x(i));
+      end loop;
+      return result;
+    end matrix_OR;
+    
+    variable CYC_row    : row;
+    variable STB_row    : row;
+    variable ADR_matrix : matrix(c_wishbone_address_width-1 downto 0);
+    variable SEL_matrix : matrix((c_wishbone_address_width/8)-1 downto 0);
+    variable WE_row     : row;
+    variable DAT_matrix : matrix(c_wishbone_data_width-1 downto 0);
   begin
-    acc := (
-      CYC => '0',
-      STB => '0',
-      ADR => (others => '0'),
-      SEL => (others => '0'),
-      WE  => '0',
-      DAT => (others => '0'));
-
+    -- Rename all the signals ready for big_or
     for master in g_num_masters-1 downto 0 loop
-      granted_address := (others => granted(master, slave));
-      granted_select  := (others => granted(master, slave));
-      granted_data    := (others => granted(master, slave));
-      acc := (
-        CYC => acc.CYC or (slave_i(master).CYC and granted(master, slave)),
-        STB => acc.STB or (slave_i(master).STB and granted(master, slave)),
-        ADR => acc.ADR or (slave_i(master).ADR and granted_address),
-        SEL => acc.SEL or (slave_i(master).SEL and granted_select),
-        WE  => acc.WE or (slave_i(master).WE and granted(master, slave)),
-        DAT => acc.DAT or (slave_i(master).DAT and granted_data));
+      CYC_row(master) := slave_i(master).CYC and granted(master, slave);
+      STB_row(master) := slave_i(master).STB and granted(master, slave);
+      for bit in c_wishbone_address_width-1 downto 0 loop
+        ADR_matrix(bit)(master) := slave_i(master).ADR(bit) and granted(master, slave);
+      end loop;
+      for bit in (c_wishbone_address_width/8)-1 downto 0 loop
+        SEL_matrix(bit)(master) := slave_i(master).SEL(bit) and granted(master, slave);
+      end loop;
+      WE_row(master) := slave_i(master).WE and granted(master, slave);
+      for bit in c_wishbone_data_width-1 downto 0 loop
+        DAT_matrix(bit)(master) := slave_i(master).DAT(bit) and granted(master, slave);
+      end loop;
     end loop;
-    o <= acc;
+    
+    return (
+       CYC => vector_OR(CYC_row),
+       STB => vector_OR(STB_row),
+       ADR => matrix_OR(ADR_matrix),
+       SEL => matrix_OR(SEL_matrix),
+       WE  => vector_OR(WE_row),
+       DAT => matrix_OR(DAT_matrix));
   end slave_logic;
 
   -- Select the slave pins the master will receive
-  procedure master_logic(signal o        : out t_wishbone_slave_out;
-                         signal master_i : in  t_wishbone_master_in_array(g_num_slaves downto 0);
-                         signal granted  : in  matrix;
-                         master          :     integer) is
-    variable acc          : t_wishbone_slave_out;
-    variable granted_data : t_wishbone_data;
+  function master_logic(master    : integer;
+                        granted   : matrix;
+                        master_ie : t_wishbone_master_in_array(g_num_slaves downto 0))
+    return t_wishbone_slave_out
+  is
+    subtype row is std_logic_vector(g_num_slaves downto 0);
+    type matrix is array (natural range <>) of row;
+    
+    function matrix_OR(x : matrix)
+      return std_logic_vector is
+      variable result : std_logic_vector(x'LENGTH-1 downto 0);
+    begin
+      for i in x'LENGTH-1 downto 0 loop
+        result(i) := vector_OR(x(i));
+      end loop;
+      return result;
+    end matrix_OR;
+    
+    variable ACK_row    : row;
+    variable ERR_row    : row;
+    variable RTY_row    : row;
+    variable STALL_row  : row;
+    variable DAT_matrix : matrix(c_wishbone_data_width-1 downto 0);
   begin
-    acc := (
-      ACK   => '0',
-      ERR   => '0',
-      RTY   => '0',
-      STALL => '0',
-      DAT   => (others => '0'),
-      INT   => '0');
-
     -- We use inverted logic on STALL so that if no slave granted => stall
     for slave in g_num_slaves downto 0 loop
-      granted_data := (others => granted(master, slave));
-      acc := (
-        ACK   => acc.ACK or (master_i(slave).ACK and granted(master, slave)),
-        ERR   => acc.ERR or (master_i(slave).ERR and granted(master, slave)),
-        RTY   => acc.RTY or (master_i(slave).RTY and granted(master, slave)),
-        STALL => acc.STALL or (not master_i(slave).STALL and granted(master, slave)),
-        DAT   => acc.DAT or (master_i(slave).DAT and granted_data),
-        INT   => '0');
+      ACK_row(slave) := master_ie(slave).ACK and granted(master, slave);
+      ERR_row(slave) := master_ie(slave).ERR and granted(master, slave);
+      RTY_row(slave) := master_ie(slave).RTY and granted(master, slave);
+      STALL_row(slave) := not master_ie(slave).STALL and granted(master, slave);
+      for bit in c_wishbone_data_width-1 downto 0 loop
+        DAT_matrix(bit)(slave) := master_ie(slave).DAT(bit) and granted(master, slave);
+      end loop;
     end loop;
-    acc.STALL := not acc.STALL;
-
-    o <= acc;
+    
+    return (
+      ACK => vector_OR(ACK_row),
+      ERR => vector_OR(ERR_row),
+      RTY => vector_OR(RTY_row),
+      STALL => not vector_OR(STALL_row),
+      DAT => matrix_OR(DAT_matrix),
+      INT => '0');
   end master_logic;
 begin
   -- The virtual error slave is pretty straight-forward:
@@ -230,6 +329,7 @@ begin
   end process virtual_error_slave;
   
   -- Copy the matrix to a register:
+  matrix_new <= matrix_logic(matrix_old, slave_i);
   main : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
@@ -246,14 +346,11 @@ begin
 
   -- Make the slave connections
   slave_matrix : for slave in g_num_slaves downto 0 generate
-    slave_logic(master_oe(slave), slave_i, granted, slave);
+    master_oe(slave) <= slave_logic(slave, granted, slave_i);
   end generate;
 
   -- Make the master connections
   master_matrix : for master in g_num_masters-1 downto 0 generate
-    master_logic(slave_o(master), master_ie, granted, master);
+    slave_o(master) <= master_logic(master, granted, master_ie);
   end generate;
-
-  -- The main crossbar logic:
-  main_logic(matrix_new, matrix_old, slave_i);
 end rtl;
