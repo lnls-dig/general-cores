@@ -61,14 +61,17 @@ def __import_coregen_files():
 ## "Normal" manifest        ##
 ##############################
 
-print ("[genrams] action = " + action + ", target = " + target)
+print ("[genrams] action = " + action + ", target = " + target, ", syn_device = ", syn_device[0:4].upper())
 
 if (target == "altera"):
 	modules = {"local" : "altera"}
-elif (target == "xilinx" and action == "synthesis"):
+elif (target == "xilinx" and action == "synthesis" and syn_device[0:4].upper()=="XC6S"):
 	__import_coregen_files()
-	modules = {"local" : ["xilinx", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
+	modules = {"local" : ["xilinx", "xilinx/spartan6", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
+elif (target == "xilinx" and action == "synthesis" and syn_device[0:4].upper()=="XC6V"):
+	__import_coregen_files()
+	modules = {"local" : ["xilinx", "xilinx/virtex6", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
 elif (target == "xilinx" and action == "simulation"):
-	modules = {"local" : ["xilinx", "xilinx/sim_stub"]}
+	modules = {"local" : ["xilinx/spartan6", "xilinx/sim_stub"]}
 else:
 	modules = {"local" : "altera"}
