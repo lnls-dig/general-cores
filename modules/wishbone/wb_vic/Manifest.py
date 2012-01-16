@@ -1,3 +1,4 @@
 files = ["vic_prio_enc.vhd",
-				"wb_slave_vic.wb",
-				"wb_vic.vhd"]
+         "wb_slave_vic.vhd",
+         "wb_vic.vhd",
+         "xwb_vic.vhd"]
