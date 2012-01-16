@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2011-05-27
+-- Last update: 2012-01-17
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -145,6 +145,30 @@ package gencores_pkg is
       synced_o : out std_logic;
       npulse_o : out std_logic;
       ppulse_o : out std_logic);
+  end component;
+
+  component gc_pulse_synchronizer
+    port (
+      clk_in_i  : in  std_logic;
+      clk_out_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      d_ready_o : out std_logic;
+      d_p_i     : in  std_logic;
+      q_p_o     : out std_logic);
+  end component;
+
+  component gc_frequency_meter
+    generic (
+      g_with_internal_timebase : boolean;
+      g_clk_sys_freq           : integer;
+      g_counter_bits           : integer);
+    port (
+      clk_sys_i    : in  std_logic;
+      clk_in_i     : in  std_logic;
+      rst_n_i      : in  std_logic;
+      pps_p1_i     : in  std_logic;
+      freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
+      freq_valid_o : out std_logic);
   end component;
   
 end package;
