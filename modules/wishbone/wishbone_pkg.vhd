@@ -459,5 +459,39 @@ package wishbone_pkg is
       slave_o   : out t_wishbone_slave_out;
       desc_o    : out t_wishbone_device_descriptor);
   end component;
-  
+
+  component wb_vic
+    generic (
+      g_interface_mode      : t_wishbone_interface_mode;
+      g_address_granularity : t_wishbone_address_granularity;
+      g_num_interrupts      : natural);
+    port (
+      clk_sys_i    : in  std_logic;
+      rst_n_i      : in  std_logic;
+      wb_adr_i     : in  std_logic_vector(c_wishbone_address_width-1 downto 0);
+      wb_dat_i     : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
+      wb_dat_o     : out std_logic_vector(c_wishbone_data_width-1 downto 0);
+      wb_cyc_i     : in  std_logic;
+      wb_sel_i     : in  std_logic_vector(c_wishbone_data_width/8-1 downto 0);
+      wb_stb_i     : in  std_logic;
+      wb_we_i      : in  std_logic;
+      wb_ack_o     : out std_logic;
+      wb_stall_o   : out std_logic;
+      irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);
+      irq_master_o : out std_logic);
+  end component;
+
+  component xwb_vic
+    generic (
+      g_interface_mode      : t_wishbone_interface_mode;
+      g_address_granularity : t_wishbone_address_granularity;
+      g_num_interrupts      : natural);
+    port (
+      clk_sys_i    : in  std_logic;
+      rst_n_i      : in  std_logic;
+      slave_i      : in  t_wishbone_slave_in;
+      slave_o      : out t_wishbone_slave_out;
+      irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);
+      irq_master_o : out std_logic);
+  end component;
 end wishbone_pkg;
