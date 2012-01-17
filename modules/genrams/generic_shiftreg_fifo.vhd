@@ -63,30 +63,32 @@ entity generic_shiftreg_fifo is
     q_o  : out std_logic_vector(g_data_width-1 downto 0);
     rd_i : in  std_logic;
 
-    full_o  : out std_logic;
-    empty_o : out std_logic
+    full_o        : out std_logic;
+    almost_full_o : out std_logic;
+    q_valid_o: out std_logic
     );
 
 end generic_shiftreg_fifo;
 
 architecture rtl of generic_shiftreg_fifo is
 
-  constant c_srl_length  : integer := g_size;  -- set to srl 'type' 16 or 32 bit length
+  constant c_srl_length : integer := g_size;  -- set to srl 'type' 16 or 32 bit length
 
-  type   t_srl_array is array (c_srl_length - 1 downto 0) of std_logic_vector (g_data_width - 1 downto 0);
+  type t_srl_array is array (c_srl_length - 1 downto 0) of std_logic_vector (g_data_width - 1 downto 0);
 
   signal fifo_store : t_srl_array;
-  signal pointer : integer range 0 to c_srl_length - 1;
+  signal pointer    : integer range 0 to c_srl_length - 1;
 
   signal pointer_zero : std_logic;
   signal pointer_full : std_logic;
-  signal valid_write  : std_logic;
+  signal pointer_almost_full : STD_LOGIC;
   signal empty        : std_logic := '1';
   signal valid_count  : std_logic;
   signal do_write     : std_logic;
 begin
 
 -- Valid write, high when valid to write data to the store.
+
   do_write <= '1' when (rd_i = '1' and we_i = '1')
               or (we_i = '1' and pointer_full = '0') else '0';
 
@@ -102,7 +104,7 @@ begin
 
   q_o <= fifo_store(pointer);
 
-  p_empty_logic: process(clk_i)
+  p_empty_logic : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -128,7 +130,7 @@ begin
     (we_i = '0' and rd_i = '1' and pointer_zero = '0')
     ) else '0';
 
-  p_gen_address: process(clk_i)
+  p_gen_address : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if valid_count = '1' then
@@ -142,10 +144,13 @@ begin
   end process;
 
   -- Detect when pointer is zero and maximum
-  pointer_zero <= '1' when pointer = 0                else '0';
-  pointer_full <= '1' when pointer = c_srl_length - 1 else '0';
+  pointer_zero        <= '1' when pointer = 0                else '0';
+  pointer_full        <= '1' when pointer = c_srl_length - 1 else '0';
+  pointer_almost_full <= '1' when pointer_full = '1' or pointer = c_srl_length - 2 else '0';
+
 
   -- assign internal signals to outputs
-  full_o  <= pointer_full;
-  empty_o <= empty;
+  full_o        <= pointer_full;
+  almost_full_o <= pointer_almost_full;
+  q_valid_o       <= not empty;
 end rtl;
