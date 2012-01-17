@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-01-16
+-- Last update: 2012-01-17
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ use ieee.std_logic_1164.all;
 package genram_pkg is
 
   function f_log2_size (A : natural) return natural;
-  
+
   -- Single-port synchronous RAM
   component generic_spram
     generic (
@@ -154,14 +154,16 @@ package genram_pkg is
       g_data_width : integer;
       g_size       : integer);
     port (
-      rst_n_i : in  std_logic := '1';
-      clk_i   : in  std_logic;
-      d_i     : in  std_logic_vector(g_data_width-1 downto 0);
-      we_i    : in  std_logic;
-      q_o     : out std_logic_vector(g_data_width-1 downto 0);
-      rd_i    : in  std_logic;
-      full_o  : out std_logic;
-      empty_o : out std_logic);
+      rst_n_i       : in  std_logic := '1';
+      clk_i         : in  std_logic;
+      d_i           : in  std_logic_vector(g_data_width-1 downto 0);
+      we_i          : in  std_logic;
+      q_o           : out std_logic_vector(g_data_width-1 downto 0);
+      rd_i          : in  std_logic;
+      full_o        : out std_logic;
+      almost_full_o : out std_logic;
+      q_valid_o     : out std_logic
+      );
   end component;
   
 end genram_pkg;
