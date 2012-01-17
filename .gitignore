@@ -7,3 +7,8 @@ work
 *.vstf
 *.patch
 modelsim.ini
+*.html
+*.h
+*.o
+*.bin
+*.elf
