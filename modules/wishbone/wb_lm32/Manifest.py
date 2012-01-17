@@ -12,6 +12,6 @@ files = [	"generated/xwb_lm32.vhd",
 if(target == "altera"):
 	files.extend(["platform/generic/lm32_multiplier.v", "platform/altera/jtag_tap.v"]);
 elif (target == "xilinx" and syn_device[0:4].upper()=="XC6S"): # Spartan6
-	files.extend(["platform/xilinx/lm32_multiplier.v", "platform/xilinx/jtag_tap.v"])
+	files.extend(["platform/spartan6/lm32_multiplier.v", "platform/spartan6/jtag_tap.v"])
 else:
 	files.extend(["platform/generic/lm32_multiplier.v", "platform/generic/jtag_tap.v"]);
