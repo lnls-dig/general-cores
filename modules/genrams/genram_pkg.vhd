@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-01-17
+-- Last update: 2012-01-24
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -41,7 +41,9 @@ use ieee.std_logic_1164.all;
 
 package genram_pkg is
 
-  function f_log2_size (A : natural) return natural;
+  function f_log2_size (A       : natural) return natural;
+  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
+
 
   -- Single-port synchronous RAM
   component generic_spram
@@ -54,10 +56,10 @@ package genram_pkg is
     port (
       rst_n_i : in  std_logic;
       clk_i   : in  std_logic;
-      bwe_i   : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
+      bwe_i   : in  std_logic_vector((g_data_width+7)/8-1 downto 0):= f_gen_dummy_vec('1', (g_data_width+7)/8);
       we_i    : in  std_logic;
       a_i     : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
-      d_i     : in  std_logic_vector(g_data_width-1 downto 0);
+      d_i     : in  std_logic_vector(g_data_width-1 downto 0) := f_gen_dummy_vec('0', g_data_width);
       q_o     : out std_logic_vector(g_data_width-1 downto 0));
   end component;
 
@@ -72,16 +74,16 @@ package genram_pkg is
     port (
       rst_n_i : in  std_logic := '1';
       clka_i  : in  std_logic;
-      bwea_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
-      wea_i   : in  std_logic;
+      bwea_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0) := f_gen_dummy_vec('1', (g_data_width+7)/8);
+      wea_i   : in  std_logic := '0';
       aa_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
-      da_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      da_i    : in  std_logic_vector(g_data_width-1 downto 0) := f_gen_dummy_vec('0', g_data_width);
       qa_o    : out std_logic_vector(g_data_width-1 downto 0);
       clkb_i  : in  std_logic;
-      bweb_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
-      web_i   : in  std_logic;
+      bweb_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0) := f_gen_dummy_vec('1', (g_data_width+7)/8);
+      web_i   : in  std_logic := '0';
       ab_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
-      db_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      db_i    : in  std_logic_vector(g_data_width-1 downto 0) := f_gen_dummy_vec('0', g_data_width);
       qb_o    : out std_logic_vector(g_data_width-1 downto 0));
   end component;
 
@@ -179,6 +181,15 @@ package body genram_pkg is
     end loop;
     return(63);
   end function f_log2_size;
+
+  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector is
+    variable tmp : std_logic_vector(size-1 downto 0);
+  begin
+    for i in 0 to size-1 loop
+      tmp(i) := val;
+    end loop;  -- i
+    return tmp;
+  end f_gen_dummy_vec;
 
 
 end genram_pkg;
