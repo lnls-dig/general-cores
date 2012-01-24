@@ -65,7 +65,7 @@ entity generic_shiftreg_fifo is
 
     full_o        : out std_logic;
     almost_full_o : out std_logic;
-    q_valid_o: out std_logic
+    q_valid_o     : out std_logic
     );
 
 end generic_shiftreg_fifo;
@@ -79,12 +79,12 @@ architecture rtl of generic_shiftreg_fifo is
   signal fifo_store : t_srl_array;
   signal pointer    : integer range 0 to c_srl_length - 1;
 
-  signal pointer_zero : std_logic;
-  signal pointer_full : std_logic;
-  signal pointer_almost_full : STD_LOGIC;
-  signal empty        : std_logic := '1';
-  signal valid_count  : std_logic;
-  signal do_write     : std_logic;
+  signal pointer_zero        : std_logic;
+  signal pointer_full        : std_logic;
+  signal pointer_almost_full : std_logic;
+  signal empty               : std_logic := '1';
+  signal valid_count         : std_logic;
+  signal do_write            : std_logic;
 begin
 
 -- Valid write, high when valid to write data to the store.
@@ -96,7 +96,11 @@ begin
   p_data_srl : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if do_write = '1' then
+      if rst_n_i = '0'then
+        for i in 0 to c_srl_length-1 loop
+          fifo_store(i) <= (others => '0');
+        end loop;  -- i
+      elsif do_write = '1' then
         fifo_store <= fifo_store(fifo_store'left - 1 downto 0) & d_i;
       end if;
     end if;
@@ -144,13 +148,13 @@ begin
   end process;
 
   -- Detect when pointer is zero and maximum
-  pointer_zero        <= '1' when pointer = 0                else '0';
-  pointer_full        <= '1' when pointer = c_srl_length - 1 else '0';
+  pointer_zero        <= '1' when pointer = 0                                      else '0';
+  pointer_full        <= '1' when pointer = c_srl_length - 1                       else '0';
   pointer_almost_full <= '1' when pointer_full = '1' or pointer = c_srl_length - 2 else '0';
 
 
   -- assign internal signals to outputs
   full_o        <= pointer_full;
   almost_full_o <= pointer_almost_full;
-  q_valid_o       <= not empty;
+  q_valid_o     <= not empty;
 end rtl;
