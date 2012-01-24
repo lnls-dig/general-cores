@@ -117,15 +117,6 @@ architecture syn of generic_dpram is
 
 begin
 
-  gen_single_clock : if(g_dual_clock = false) generate
-    clka_int <= clka_i;-- after 1ns;
-    clkb_int <= clka_i;-- after 1ns;
-  end generate gen_single_clock;
-
-  gen_dual_clock : if(g_dual_clock = true) generate
-    clka_int <= clka_i;-- after 1ns;
-    clkb_int <= clkb_i;-- after 1ns;
-  end generate gen_dual_clock;
 
   wea_rep <= (others => wea_i);
   web_rep <= (others => web_i);
@@ -136,9 +127,9 @@ begin
   gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "read_first") generate
 
 
-    process (clka_int)
+    process (clka_i)
     begin
-      if rising_edge(clka_int) then
+      if rising_edge(clka_i) then
         qa_o <= ram(to_integer(unsigned(aa_i)));
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
@@ -149,9 +140,9 @@ begin
     end process;
 
 
-    process (clkb_int)
+    process (clkb_i)
     begin
-      if rising_edge(clkb_int) then
+      if rising_edge(clkb_i) then
         qb_o <= ram(to_integer(unsigned(ab_i)));
         for i in 0 to c_num_bytes-1 loop
           if s_we_b(i) = '1' then
@@ -171,9 +162,9 @@ begin
 
   gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "read_first") generate
 
-    process(clka_int)
+    process(clka_i)
     begin
-      if rising_edge(clka_int) then
+      if rising_edge(clka_i) then
         qa_o <= ram(to_integer(unsigned(aa_i)));
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
@@ -182,9 +173,9 @@ begin
     end process;
 
 
-    process(clkb_int)
+    process(clkb_i)
     begin
-      if rising_edge(clkb_int) then
+      if rising_edge(clkb_i) then
         qb_o <= ram(to_integer(unsigned(ab_i)));
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
@@ -197,9 +188,9 @@ begin
 
   gen_without_byte_enable_writefirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "write_first") generate
 
-    process(clka_int)
+    process(clka_i)
     begin
-      if rising_edge(clka_int) then
+      if rising_edge(clka_i) then
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
           qa_o                            <= da_i;
@@ -210,9 +201,9 @@ begin
     end process;
 
 
-    process(clkb_int)
+    process(clkb_i)
     begin
-      if rising_edge(clkb_int) then
+      if rising_edge(clkb_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
           qb_o                            <= db_i;
