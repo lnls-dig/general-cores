@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-01-17
+-- Last update: 2012-01-30
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -15,7 +15,7 @@
 -- in the WR and other OHWR projects.
 -------------------------------------------------------------------------------
 --
--- Copyright (c) 2009-2011 CERN
+-- Copyright (c) 2009-2012 CERN
 --
 -- This source file is free software; you can redistribute it   
 -- and/or modify it under the terms of the GNU Lesser General   
@@ -58,14 +58,14 @@ package gencores_pkg is
 
   component gc_crc_gen
     generic (
-      g_polynomial              : std_logic_vector := x"04C11DB7";
-      g_init_value              : std_logic_vector := x"ffffffff";
-      g_residue                 : std_logic_vector := x"38fb2284";
+      g_polynomial              : std_logic_vector       := x"04C11DB7";
+      g_init_value              : std_logic_vector       := x"ffffffff";
+      g_residue                 : std_logic_vector       := x"38fb2284";
       g_data_width              : integer range 2 to 256 := 16;
       g_half_width              : integer range 2 to 256 := 8;
-      g_sync_reset              : integer range 0 to 1 := 1;
-      g_dual_width              : integer range 0 to 1 := 0;
-      g_registered_match_output : boolean := true);
+      g_sync_reset              : integer range 0 to 1   := 1;
+      g_dual_width              : integer range 0 to 1   := 0;
+      g_registered_match_output : boolean                := true);
     port (
       clk_i   : in  std_logic;
       rst_i   : in  std_logic;
@@ -115,7 +115,7 @@ package gencores_pkg is
       pll_pbgr_p_ki_i   : in  std_logic_vector(g_coef_bits-1 downto 0));
   end component;
 
-    
+
   component gc_serial_dac
     generic (
       g_num_data_bits  : integer;
@@ -133,7 +133,7 @@ package gencores_pkg is
       dac_sclk_o    : out std_logic;
       dac_sdata_o   : out std_logic;
       busy_o        : out std_logic);
-  end component;        
+  end component;
 
   component gc_sync_ffs
     generic (
@@ -170,6 +170,51 @@ package gencores_pkg is
       freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
       freq_valid_o : out std_logic);
   end component;
-  
+
+  procedure f_rr_arbitrate (
+    signal req       : in  std_logic_vector;
+    signal pre_grant : in  std_logic_vector;
+    signal grant     : out std_logic_vector);
+
 end package;
+
+package body gencores_pkg is
+
+-- Simple round-robin arbiter:
+-- req = requests (1 = pending request),
+-- pre_grant = previous grant vector (1 cycle delay)
+-- grant = new grant vector
+  
+  procedure f_rr_arbitrate (
+    signal req       : in  std_logic_vector;
+    signal pre_grant : in  std_logic_vector;
+    signal grant     : out std_logic_vector)is
+
+    variable reqs  : std_logic_vector(req'length - 1 downto 0);
+    variable gnts  : std_logic_vector(req'length - 1 downto 0);
+    variable gnt   : std_logic_vector(req'length - 1 downto 0);
+    variable gntM  : std_logic_vector(req'length - 1 downto 0);
+    variable zeros : std_logic_vector(req'length - 1 downto 0);
+    
+  begin
+    zeros := (others => '0');
+
+    -- bit twiddling magic :
+    gnt  := req and std_logic_vector(unsigned(not req) + 1);
+    reqs := req and not (std_logic_vector(unsigned(pre_grant) - 1) or pre_grant);
+    gnts := reqs and std_logic_vector(unsigned(not reqs)+1);
+
+    if(reqs = zeros) then
+      gntM := gnt;
+    else
+      gntM := gnts;
+    end if;
+
+    if((req and pre_grant) = zeros) then
+      grant     <= gntM;
+    end if;
+    
+  end f_rr_arbitrate;
+
+end gencores_pkg;
 
