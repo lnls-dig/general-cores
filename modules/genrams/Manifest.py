@@ -39,10 +39,16 @@ def __import_coregen_module(path, name, work_dir):
 def __import_coregen_files():
 	xilinx_dir =  __os.getenv("XILINX");
 	if xilinx_dir == None:
-		print("[genrams] FATAL ERROR: XILINX environment variable not set. Do you have ISE installed?")
+		print("[genrams] FATAL ERROR: XILINX environment variable not set. It must provide the path to ISE_DS directory in ISE installation folder (follow Xilinx instructions).")
 		__os.exit(-1)
 
+
+
 	coregen_path = xilinx_dir + "/ISE/coregen/ip/xilinx/primary/com/xilinx/ip/"
+	if not __os.path.isdir(coregen_path):
+		print("[genrams]: FATAL ERROR: XILINX environment variable seems to be set incorrectly. It must point to ISE_DS directory in the ISE installation folder. For example: XILINX=/opt/Xilinx/ISE_DS")
+		__os.exit(-1)
+
 	work_dir = __manifest + "/coregen_ip";
 
 
@@ -61,7 +67,7 @@ def __import_coregen_files():
 ## "Normal" manifest        ##
 ##############################
 
-print ("[genrams] action = " + action + ", target = " + target, ", syn_device = ", syn_device[0:4].upper())
+#print ("[genrams] action = " + action + ", target = " + target, ", syn_device = ", syn_device[0:4].upper())
 
 if (target == "altera"):
 	modules = {"local" : "altera"}
@@ -72,6 +78,6 @@ elif (target == "xilinx" and action == "synthesis" and syn_device[0:4].upper()==
 	__import_coregen_files()
 	modules = {"local" : ["xilinx", "xilinx/virtex6", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
 elif (target == "xilinx" and action == "simulation"):
-	modules = {"local" : ["xilinx/spartan6", "xilinx/sim_stub"]}
+	modules = {"local" : ["xilinx", "xilinx/spartan6", "xilinx/sim_stub"]}
 else:
 	modules = {"local" : "altera"}
