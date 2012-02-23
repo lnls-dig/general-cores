@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-01-30
+-- Last update: 2012-02-20
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -44,7 +44,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.genram_pkg.all;
+
 package gencores_pkg is
+
 
   component gc_extend_pulse
     generic (
@@ -171,12 +174,28 @@ package gencores_pkg is
       freq_valid_o : out std_logic);
   end component;
 
+  component gc_arbitrated_mux
+    generic (
+      g_num_inputs : integer;
+      g_width      : integer);
+    port (
+      clk_i        : in  std_logic;
+      rst_n_i      : in  std_logic;
+      d_i          : in  std_logic_vector(g_num_inputs * g_width-1 downto 0);
+      d_valid_i    : in  std_logic_vector(g_num_inputs-1 downto 0);
+      d_req_o      : out std_logic_vector(g_num_inputs-1 downto 0);
+      q_o          : out std_logic_vector(g_width-1 downto 0);
+      q_valid_o    : out std_logic;
+      q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
+  end component;
+  
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
 
 end package;
+
 
 package body gencores_pkg is
 
@@ -211,10 +230,12 @@ package body gencores_pkg is
     end if;
 
     if((req and pre_grant) = zeros) then
-      grant     <= gntM;
+      grant <= gntM;
     end if;
     
   end f_rr_arbitrate;
+
+
 
 end gencores_pkg;
 
