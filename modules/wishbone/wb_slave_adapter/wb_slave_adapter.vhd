@@ -68,10 +68,10 @@ architecture rtl of wb_slave_adapter is
     return integer is
   begin
     case c_wishbone_data_width is
-      when 8  => return 0;
-      when 16 => return 1;
-      when 32 => return 2;
-      when 64 => return 3;
+      when 8      => return 0;
+      when 16     => return 1;
+      when 32     => return 2;
+      when 64     => return 3;
       when others =>
         report "wb_slave_adapter: invalid c_wishbone_data_width (we support 8, 16, 32 and 64)" severity failure;
     end case;
@@ -92,6 +92,7 @@ architecture rtl of wb_slave_adapter is
   signal master_out : t_wishbone_master_out;
   signal slave_in   : t_wishbone_slave_in;
   signal slave_out  : t_wishbone_slave_out;
+  signal stored_we  : std_logic;
   
 begin  -- rtl
 
@@ -154,7 +155,10 @@ begin  -- rtl
       else
         case fsm_state is
           when IDLE =>
+
             if(slave_in.stb = '1' and (master_in.stall = '0' or g_master_mode = CLASSIC) and master_in.ack = '0') then
+              stored_we <= slave_in.we;
+
               fsm_state <= WAIT4ACK;
             end if;
           when WAIT4ACK =>
@@ -175,13 +179,16 @@ begin  -- rtl
       else
         master_out.stb <= '0';
       end if;
+      master_out.we <= slave_in.we;
       slave_out.stall <= '0';
     elsif(g_master_mode = CLASSIC and g_slave_mode = PIPELINED) then
 
       if(fsm_state = WAIT4ACK) then
         master_out.stb <= '1';
+        master_out.we  <= stored_we;
       else
         master_out.stb <= slave_in.stb;
+        master_out.we  <= slave_in.we;
       end if;
 
       if(fsm_state = WAIT4ACK) then
@@ -190,6 +197,7 @@ begin  -- rtl
         slave_out.stall <= slave_in.stb;
       end if;
     else
+      master_out.we <= slave_in.we;
       master_out.stb  <= slave_in.stb;
       slave_out.stall <= master_in.stall;
     end if;
@@ -198,7 +206,7 @@ begin  -- rtl
   master_out.dat <= slave_in.dat;
   master_out.cyc <= slave_in.cyc;
   master_out.sel <= slave_in.sel;
-  master_out.we  <= slave_in.we;
+--  master_out.we  <= slave_in.we;
 
   slave_out.ack <= master_in.ack;
   slave_out.err <= master_in.err;
