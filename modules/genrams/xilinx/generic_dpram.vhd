@@ -97,7 +97,6 @@ architecture syn of generic_dpram is
         n := n+1;
         pos := pos + 1;
       end loop;
-      pos := pos + 1;
     end loop;
     return tmp;
   end f_memarray_to_ramtype;
