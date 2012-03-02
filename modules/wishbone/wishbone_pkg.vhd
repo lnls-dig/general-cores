@@ -49,7 +49,7 @@ package wishbone_pkg is
 
 
 
-  type t_wishbone_address_array is array(integer range <>) of t_wishbone_address;
+  type t_wishbone_address_array is array(natural range <>) of t_wishbone_address;
   type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
   type t_wishbone_slave_out_array is array (natural range <>) of t_wishbone_slave_out;
   type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
@@ -67,6 +67,27 @@ package wishbone_pkg is
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
 
+
+------------------------------------------------------------------------------
+-- SDWB declaration
+------------------------------------------------------------------------------
+  constant c_sdwb_device_length : natural := 512; -- bits
+  type t_sdwb_device is record
+    vendor        : std_logic_vector(63 downto 0);
+    device        : std_logic_vector(31 downto 0);
+    wbd_width     : std_logic_vector(7 downto 0);
+    wbd_reserved  : std_logic_vector(7 downto 0);
+    wbd_ver_major : std_logic_vector(7 downto 0);
+    wbd_ver_minor : std_logic_vector(7 downto 0);
+    hdl_base      : std_logic_vector(63 downto 0);
+    hdl_size      : std_logic_vector(63 downto 0);
+    wbd_flags     : std_logic_vector(31 downto 0);
+    hdl_class     : std_logic_vector(31 downto 0);
+    hdl_version   : std_logic_vector(31 downto 0);
+    hdl_date      : std_logic_vector(31 downto 0);
+    description   : string(1 to 16);
+  end record t_sdwb_device;
+  type t_sdwb_devices_array is array(natural range <>) of t_sdwb_device;
 
 ------------------------------------------------------------------------------
 -- Components declaration
@@ -189,6 +210,23 @@ package wishbone_pkg is
       master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0);
       cfg_address_i : in  t_wishbone_address_array(g_num_slaves-1 downto 0);
       cfg_mask_i    : in  t_wishbone_address_array(g_num_slaves-1 downto 0));
+  end component;
+
+  component xwb_sdwb_crossbar
+    generic (
+      g_num_masters : integer;
+      g_num_slaves  : integer;
+      g_registered  : boolean;
+      g_address     : t_wishbone_address_array;
+      g_mask        : t_wishbone_address_array;
+      g_sdwb_addr   : t_wishbone_address);
+    port (
+      clk_sys_i     : in  std_logic;
+      rst_n_i       : in  std_logic;
+      slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
+      slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+      master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
+      master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
   component xwb_dpram
