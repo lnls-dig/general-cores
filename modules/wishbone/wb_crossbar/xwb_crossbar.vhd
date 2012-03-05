@@ -77,18 +77,24 @@ architecture rtl of xwb_crossbar is
   function f_ranges_ok
     return boolean
   is
-    variable zero : t_wishbone_address := (others => '0');
+    constant zero : t_wishbone_address := (others => '0');
   begin
     for i in 0 to g_num_slaves-2 loop
       for j in i+1 to g_num_slaves-1 loop
-        assert not (((g_mask(i) and g_mask(j)) and (g_address(i) xor g_address(j))) = zero)
+        assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero)
         report "Address ranges must be distinct (slaves " & 
-	       Integer'image(i) & "[" & Integer'image(to_integer(unsigned(g_address(i)))) & "/" &
-	                                Integer'image(to_integer(unsigned(g_mask(i)))) & "] & " & 
-	       Integer'image(j) & "[" & Integer'image(to_integer(unsigned(g_address(j)))) & "/" &
-	                                Integer'image(to_integer(unsigned(g_mask(j)))) & "])"
+	       Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
+	                                Integer'image(to_integer(unsigned(c_mask(i)))) & "] & " & 
+	       Integer'image(j) & "[" & Integer'image(to_integer(unsigned(c_address(j)))) & "/" &
+	                                Integer'image(to_integer(unsigned(c_mask(j)))) & "])"
         severity Failure;
       end loop;
+    end loop;
+    for i in 0 to g_num_slaves-1 loop
+      report "Mapping slave #" & 
+             Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
+                                      Integer'image(to_integer(unsigned(c_mask(i)))) & "]"
+      severity Note;
     end loop;
     return true;
   end f_ranges_ok;
