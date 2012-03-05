@@ -14,6 +14,8 @@ entity sdwb_rom is
 end sdwb_rom;
 
 architecture rtl of sdwb_rom is
+  alias c_layout : t_sdwb_device_array(g_layout'length downto 1) is g_layout;
+  
   function f_ceil_log2(x : natural) return natural is
   begin
     if x <= 1
@@ -27,8 +29,7 @@ architecture rtl of sdwb_rom is
   constant c_rom_description : string(1 to 16) := "WB4-Crossbar-GSI";
 
   -- The ROM must describe all slaves and the crossbar itself
-  alias c_layout : t_sdwb_device_array(1 to g_layout'length) is g_layout;
-  constant c_used_entries : natural := g_layout'length + 1;
+  constant c_used_entries : natural := c_layout'length + 1;
   constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
   constant c_sdwb_words   : natural := c_sdwb_device_length / c_wishbone_data_width;
   constant c_rom_words    : natural := c_rom_entries * c_sdwb_words;
