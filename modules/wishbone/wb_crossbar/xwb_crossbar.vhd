@@ -73,6 +73,27 @@ architecture rtl of xwb_crossbar is
   alias c_address : t_wishbone_address_array(g_num_slaves-1 downto 0) is g_address;
   alias c_mask    : t_wishbone_address_array(g_num_slaves-1 downto 0) is g_mask;
 
+  -- Confirm that no address ranges overlap
+  function f_ranges_ok
+    return boolean
+  is
+    variable zero : t_wishbone_address := (others => '0');
+  begin
+    for i in 0 to g_num_slaves-2 loop
+      for j in i+1 to g_num_slaves-1 loop
+        assert not (((g_mask(i) and g_mask(j)) and (g_address(i) xor g_address(j))) = zero)
+        report "Address ranges must be distinct (slaves " & 
+	       Integer'image(i) & "[" & Integer'image(to_integer(unsigned(g_address(i)))) & "/" &
+	                                Integer'image(to_integer(unsigned(g_mask(i)))) & "] & " & 
+	       Integer'image(j) & "[" & Integer'image(to_integer(unsigned(g_address(j)))) & "/" &
+	                                Integer'image(to_integer(unsigned(g_mask(j)))) & "])"
+        severity Failure;
+      end loop;
+    end loop;
+    return true;
+  end f_ranges_ok;
+  constant c_ok : boolean := f_ranges_ok;
+
   -- Crossbar connection matrix
   type matrix is array (g_num_masters-1 downto 0, g_num_slaves downto 0) of std_logic;
   
@@ -363,6 +384,4 @@ begin
   master_matrix : for master in g_num_masters-1 downto 0 generate
     slave_o(master) <= master_logic(master, granted, master_ie);
   end generate;
-  
-  -- !!! check for overlap
 end rtl;

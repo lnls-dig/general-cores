@@ -65,11 +65,21 @@ architecture rtl of xwb_sdwb_crossbar is
   
   function f_addresses return t_wishbone_address_array is
     variable result : t_wishbone_address_array(g_layout'range);
+    variable extend : unsigned(63 downto 0) := (others => '0');
   begin
     for i in g_layout'range loop
       result(i) := std_logic_vector(g_layout(i).wbd_begin(c_wishbone_address_width-1 downto 0));
-      -- !!! report if address is too big
-      -- !!! report if end < begin
+      
+      -- Range must be valid
+      assert g_layout(i).wbd_begin <= g_layout(i).wbd_end
+      report "Wishbone slave device #" & Integer'image(i) & " (" & g_layout(i).description & ") wbd_begin address must precede wbd_end address."
+      severity Failure;
+      
+      -- Address must fit
+      extend(c_wishbone_address_width-1 downto 0) := unsigned(result(i));
+      assert g_layout(i).wbd_begin = extend
+      report "Wishbone slave device #" & Integer'image(i) & " (" & g_layout(i).description & ") wbd_begin does not fit in t_wishbone_address."
+      severity Failure;
     end loop;
     return result;
   end f_addresses;
@@ -77,12 +87,23 @@ architecture rtl of xwb_sdwb_crossbar is
   function f_masks return t_wishbone_address_array is
     variable result : t_wishbone_address_array(g_layout'range);
     variable size : unsigned(63 downto 0);
+    variable zero : unsigned(63 downto 0) := (others => '0');
   begin
     for i in g_layout'range loop
-      size := (g_layout(i).wbd_end - g_layout(i).wbd_begin);
-      -- !!! report if size not a power of 2
-      -- !!! report if address is misaligned
-      result(i) := std_logic_vector(c_bus_bits - size);
+      size := g_layout(i).wbd_end - g_layout(i).wbd_begin;
+      
+      -- size must be of the form 000000...00001111...1
+      assert (size and (size + to_unsigned(1, 64))) = zero
+      report "Wishbone slave device #" & Integer'image(i) & " (" & g_layout(i).description & ") has an address range size that is not a power of 2 minus one (" & Integer'image(to_integer(size)) & "). This is not supported by this crossbar."
+      severity Failure;
+      
+      -- the base address must be aligned to the size
+      assert (g_layout(i).wbd_begin and size) = zero
+      report "Wishbone slave device #" & Integer'image(i) & " (" & g_layout(i).description & ") wbd_begin address is not aligned. This is not supported by this crossbar."
+      severity Failure;
+      
+      size := c_bus_bits - size;
+      result(i) := std_logic_vector(size(c_wishbone_address_width-1 downto 0));
     end loop;
     return result;
   end f_masks;

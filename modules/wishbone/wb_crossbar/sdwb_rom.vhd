@@ -41,16 +41,16 @@ architecture rtl of sdwb_rom is
     variable res : t_rom := (others => (others => '0'));
     variable sdwb_device : std_logic_vector(0 to c_sdwb_device_length-1) := (others => '0');
   begin
-    sdwb_device(  0 to 127) := not x"40f6e98c29eae24c7e6461ae8d2af247";          -- magic
-    sdwb_device(128 to 191) := std_logic_vector(g_bus_end);                      -- bus_end
-    sdwb_device(192 to 207) := std_logic_vector(to_unsigned(c_used_entries, 8)); -- sdwb_records
-    sdwb_device(208 to 215) := x"01";                                            -- sdwb_ver_major
-    sdwb_device(216 to 223) := x"00";                                            -- sdwb_ver_minor
-    sdwb_device(224 to 255) := x"00000651";                                      -- bus_vendor (GSI)
-    sdwb_device(256 to 287) := x"00000004";                                      -- bus_device
-    sdwb_device(288 to 319) := std_logic_vector(to_unsigned(c_version, 32));     -- bus_version
-    sdwb_device(320 to 351) := std_logic_vector(to_unsigned(c_date,    32));     -- bus_date
-    sdwb_device(352 to 383) := x"00000000";                                      -- bus_flags
+    sdwb_device(  0 to 127) := not x"40f6e98c29eae24c7e6461ae8d2af247";           -- magic
+    sdwb_device(128 to 191) := std_logic_vector(g_bus_end);                       -- bus_end
+    sdwb_device(192 to 207) := std_logic_vector(to_unsigned(c_used_entries, 16)); -- sdwb_records
+    sdwb_device(208 to 215) := x"01";                                             -- sdwb_ver_major
+    sdwb_device(216 to 223) := x"00";                                             -- sdwb_ver_minor
+    sdwb_device(224 to 255) := x"00000651";                                       -- bus_vendor (GSI)
+    sdwb_device(256 to 287) := x"eef0b198";                                       -- bus_device
+    sdwb_device(288 to 319) := std_logic_vector(to_unsigned(c_version, 32));      -- bus_version
+    sdwb_device(320 to 351) := std_logic_vector(to_unsigned(c_date,    32));      -- bus_date
+    sdwb_device(352 to 383) := x"00000000";                                       -- bus_flags
     for i in 1 to 16 loop
       sdwb_device(376+i*8 to 383+i*8) := 
         std_logic_vector(to_unsigned(character'pos(c_rom_description(i)), 8));
@@ -77,7 +77,7 @@ architecture rtl of sdwb_rom is
       for i in 1 to 16 loop
         -- string to ascii
         sdwb_device(376+i*8 to 383+i*8) := 
-          std_logic_vector(to_unsigned(character'pos(g_layout(slave).description(i)), 8));
+          std_logic_vector(to_unsigned(character'pos(c_layout(slave).description(i)), 8));
       end loop;
       
       for i in 0 to c_sdwb_words-1 loop

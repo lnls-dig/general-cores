@@ -88,6 +88,10 @@ package wishbone_pkg is
     description        : string(1 to 16);
   end record t_sdwb_device;
   type t_sdwb_device_array is array(natural range <>) of t_sdwb_device;
+  
+  -- Used to configure a device at a certain address
+  function f_sdwb_set_address(device : t_sdwb_device; address : t_wishbone_address)
+    return t_sdwb_device;
 
 ------------------------------------------------------------------------------
 -- Components declaration
@@ -542,4 +546,21 @@ package wishbone_pkg is
       irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);
       irq_master_o : out std_logic);
   end component;
+end wishbone_pkg;
+
+package body wishbone_pkg is
+  -- Used to configure a device at a certain address
+  function f_sdwb_set_address(device : t_sdwb_device; address : t_wishbone_address)
+    return t_sdwb_device
+  is
+    variable result : t_sdwb_device;
+  begin
+    result := device;
+    result.wbd_begin := (others => '0');
+    
+    result.wbd_begin(c_wishbone_address_width-1 downto 0) := unsigned(address);
+    result.wbd_end := result.wbd_begin + (device.wbd_end - device.wbd_begin);
+    
+    return result;
+  end;
 end wishbone_pkg;
