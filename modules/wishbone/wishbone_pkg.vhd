@@ -63,9 +63,13 @@ package wishbone_pkg is
   constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_slave_in : t_wishbone_slave_in :=
-    ('X', 'X', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
+    ('0', 'X', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
+  constant cc_dummy_master_out : t_wishbone_master_out := cc_dummy_slave_in;
+  
+  -- Dangerous! Will stall a bus.
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
+  constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
 
   -- A generally useful function.
   function f_ceil_log2(x : natural) return natural;
