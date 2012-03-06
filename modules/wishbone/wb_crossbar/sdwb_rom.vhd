@@ -16,14 +16,6 @@ end sdwb_rom;
 architecture rtl of sdwb_rom is
   alias c_layout : t_sdwb_device_array(g_layout'length downto 1) is g_layout;
   
-  function f_ceil_log2(x : natural) return natural is
-  begin
-    if x <= 1
-    then return 0;
-    else return f_ceil_log2((x+1)/2) +1;
-    end if;
-  end f_ceil_log2;
-
   constant c_version : natural := 1;
   constant c_date    : natural := 16#20120305#;
   constant c_rom_description : string(1 to 16) := "WB4-Crossbar-GSI";

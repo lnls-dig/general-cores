@@ -26,14 +26,6 @@ architecture rtl of xwb_sdwb_crossbar is
   alias c_layout : t_sdwb_device_array(g_num_slaves-1 downto 0) is g_layout;
 
   -- Step 1. Place the SDWB ROM on the bus
-  function f_ceil_log2(x : natural) return natural is
-  begin
-    if x <= 1
-    then return 0;
-    else return f_ceil_log2((x+1)/2) +1;
-    end if;
-  end f_ceil_log2;
-  
   -- How much space does the ROM need?
   constant c_used_entries : natural := c_layout'length + 1;
   constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
@@ -110,7 +102,12 @@ architecture rtl of xwb_sdwb_crossbar is
       -- size must be of the form 000000...00001111...1
       assert (size and (size + to_unsigned(1, 64))) = zero
       report "Wishbone slave device #" & Integer'image(i) & " (" & c_layout(i).description & ") has an address range size that is not a power of 2 minus one (" & Integer'image(to_integer(size)) & "). This is not supported by the crossbar."
-      severity Failure;
+      severity Warning;
+      
+      -- fix the size up to the form 000...0001111...11
+      for j in c_wishbone_address_width-2 downto 0 loop
+        size(j) := size(j) or size(j+1);
+      end loop;
       
       -- the base address must be aligned to the size
       assert (c_layout(i).wbd_begin and size) = zero
