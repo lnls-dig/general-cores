@@ -249,10 +249,7 @@ package wishbone_pkg is
       slave_o       : out t_wishbone_slave_out);
   end component;
   
-  function f_xwb_dpram(
-      g_size                  : natural;
-      g_slave1_granularity    : t_wishbone_address_granularity := WORD;
-      g_slave2_granularity    : t_wishbone_address_granularity := WORD) return t_sdwb_device;
+  function f_xwb_dpram(g_size : natural) return t_sdwb_device;
   component xwb_dpram
     generic (
       g_size                  : natural;
@@ -648,12 +645,11 @@ package body wishbone_pkg is
     result.dev_version := x"00000001";
     result.dev_date    := x"20120305";
     result.description := "WB4-Bridge-GSI  ";
+    
+    return result;
   end f_xwb_sdwb_crossbar_sdwb;
   
-  function f_xwb_dpram(
-      g_size                  : natural;
-      g_slave1_granularity    : t_wishbone_address_granularity := WORD;
-      g_slave2_granularity    : t_wishbone_address_granularity := WORD) return t_sdwb_device
+  function f_xwb_dpram(g_size : natural) return t_sdwb_device
   is
     variable result : t_sdwb_device;
   begin
