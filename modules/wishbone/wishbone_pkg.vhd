@@ -222,7 +222,11 @@ package wishbone_pkg is
       master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
-  function f_xwb_sdwb_crossbar_sdwb(
+  -- Use the f_xwb_bridge_*_sdwb to bridge a crossbar to another
+  function f_xwb_bridge_manual_sdwb( -- take a manual bus size
+      g_bus_end     : t_wishbone_address;
+      g_sdwb_addr   : t_wishbone_address) return t_sdwb_device;
+  function f_xwb_bridge_layout_sdwb( -- determine bus size from layout
       g_wraparound  : boolean := true;
       g_layout      : t_sdwb_device_array;
       g_sdwb_addr   : t_wishbone_address) return t_sdwb_device;
@@ -253,6 +257,7 @@ package wishbone_pkg is
       slave_o       : out t_wishbone_slave_out);
   end component;
   
+  -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdwb_device;
   component xwb_dpram
     generic (
@@ -587,13 +592,40 @@ package body wishbone_pkg is
     return result;
   end;
   
-  function f_xwb_sdwb_crossbar_sdwb(
+  function f_xwb_bridge_manual_sdwb(
+    g_bus_end     : t_wishbone_address;
+    g_sdwb_addr   : t_wishbone_address) return t_sdwb_device
+  is
+    variable result : t_sdwb_device;
+  begin
+    result.wbd_begin  := x"0000000000000000";
+    result.wbd_end    := x"0000000000000000";
+    result.sdwb_child := x"0000000000000000";
+    
+    result.wbd_end   (c_wishbone_address_width-1 downto 0) := unsigned(g_bus_end);
+    result.sdwb_child(c_wishbone_address_width-1 downto 0) := unsigned(g_sdwb_addr);
+    
+    result.wbd_flags := x"05"; -- present, bigendian, child
+    result.wbd_width := std_logic_vector(to_unsigned(c_wishbone_address_width/4 - 1, 8));
+    
+    result.abi_ver_major := x"01";
+    result.abi_ver_minor := x"00";
+    result.abi_class     := x"00000002"; -- bridge device
+    
+    result.dev_vendor  := x"00000651"; -- GSI
+    result.dev_device  := x"eef0b198";
+    result.dev_version := x"00000001";
+    result.dev_date    := x"20120305";
+    result.description := "WB4-Bridge-GSI  ";
+    
+    return result;
+  end f_xwb_bridge_manual_sdwb;
+  
+  function f_xwb_bridge_layout_sdwb(
     g_wraparound  : boolean := true;
     g_layout      : t_sdwb_device_array;
     g_sdwb_addr   : t_wishbone_address) return t_sdwb_device
   is
-    variable result : t_sdwb_device;
-    
     alias c_layout : t_sdwb_device_array(g_layout'length-1 downto 0) is g_layout;
 
     -- How much space does the ROM need?
@@ -605,7 +637,6 @@ package body wishbone_pkg is
     -- Step 2. Find the size of the bus
     function f_bus_end return unsigned is
       variable result : unsigned(63 downto 0);
-      constant zero : t_wishbone_address := (others => '0');
     begin
       if not g_wraparound then
         result := (others => '0');
@@ -630,28 +661,11 @@ package body wishbone_pkg is
       end if;
       return result;
     end f_bus_end;
+    
+    constant bus_end : unsigned(63 downto 0) := f_bus_end;
   begin
-    result.wbd_begin  := x"0000000000000000";
-    result.sdwb_child := x"0000000000000000";
-    
-    result.wbd_end    := f_bus_end;
-    result.sdwb_child(c_wishbone_address_width-1 downto 0) := unsigned(g_sdwb_addr);
-    
-    result.wbd_flags := x"05"; -- present, bigendian, child
-    result.wbd_width := std_logic_vector(to_unsigned(c_wishbone_address_width/4 - 1, 8));
-    
-    result.abi_ver_major := x"01";
-    result.abi_ver_minor := x"00";
-    result.abi_class     := x"00000002"; -- bridge device
-    
-    result.dev_vendor  := x"00000651"; -- GSI
-    result.dev_device  := x"eef0b198";
-    result.dev_version := x"00000001";
-    result.dev_date    := x"20120305";
-    result.description := "WB4-Bridge-GSI  ";
-    
-    return result;
-  end f_xwb_sdwb_crossbar_sdwb;
+    return f_xwb_bridge_manual_sdwb(std_logic_vector(f_bus_end(c_wishbone_address_width-1 downto 0)), g_sdwb_addr);
+  end f_xwb_bridge_layout_sdwb;
   
   function f_xwb_dpram(g_size : natural) return t_sdwb_device
   is
@@ -660,7 +674,7 @@ package body wishbone_pkg is
     result.wbd_begin  := x"0000000000000000";
     result.sdwb_child := x"0000000000000000";
     
-    result.wbd_end    := to_unsigned(g_size-1, 64);
+    result.wbd_end    := to_unsigned(g_size*4-1, 64);
     
     result.wbd_flags := x"01"; -- present, bigendian, no-child
     result.wbd_width := std_logic_vector(to_unsigned(c_wishbone_address_width/4 - 1, 8));
