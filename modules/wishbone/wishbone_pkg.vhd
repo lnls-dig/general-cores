@@ -67,7 +67,9 @@ package wishbone_pkg is
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
 
-
+  -- A generally useful function.
+  function f_ceil_log2(x : natural) return natural;
+  
 ------------------------------------------------------------------------------
 -- SDWB declaration
 ------------------------------------------------------------------------------
@@ -216,6 +218,10 @@ package wishbone_pkg is
       master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
+  function f_xwb_sdwb_crossbar_sdwb(
+      g_wraparound  : boolean := true;
+      g_layout      : t_sdwb_device_array;
+      g_sdwb_addr   : t_wishbone_address) return t_sdwb_device;
   component xwb_sdwb_crossbar
     generic (
       g_num_masters : integer;
@@ -243,6 +249,10 @@ package wishbone_pkg is
       slave_o       : out t_wishbone_slave_out);
   end component;
   
+  function f_xwb_dpram(
+      g_size                  : natural;
+      g_slave1_granularity    : t_wishbone_address_granularity := WORD;
+      g_slave2_granularity    : t_wishbone_address_granularity := WORD) return t_sdwb_device;
   component xwb_dpram
     generic (
       g_size                  : natural;
@@ -549,6 +559,14 @@ package wishbone_pkg is
 end wishbone_pkg;
 
 package body wishbone_pkg is
+  function f_ceil_log2(x : natural) return natural is
+  begin
+    if x <= 1
+    then return 0;
+    else return f_ceil_log2((x+1)/2) +1;
+    end if;
+  end f_ceil_log2;
+  
   -- Used to configure a device at a certain address
   function f_sdwb_set_address(device : t_sdwb_device; address : t_wishbone_address)
     return t_sdwb_device
@@ -561,6 +579,102 @@ package body wishbone_pkg is
     result.wbd_begin(c_wishbone_address_width-1 downto 0) := unsigned(address);
     result.wbd_end := result.wbd_begin + (device.wbd_end - device.wbd_begin);
     
+    -- If it has a child, remap the SDWB record address as well
+    if result.wbd_flags(2) = '1' then
+      result.sdwb_child := result.wbd_begin + (device.sdwb_child  - device.wbd_begin);
+    end if;
     return result;
   end;
+  
+  function f_xwb_sdwb_crossbar_sdwb(
+    g_wraparound  : boolean := true;
+    g_layout      : t_sdwb_device_array;
+    g_sdwb_addr   : t_wishbone_address) return t_sdwb_device
+  is
+    variable result : t_sdwb_device;
+    
+    alias c_layout : t_sdwb_device_array(g_layout'length-1 downto 0) is g_layout;
+
+    -- How much space does the ROM need?
+    constant c_used_entries : natural := c_layout'length + 1;
+    constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+    constant c_sdwb_bytes   : natural := c_sdwb_device_length / 8;
+    constant c_rom_bytes    : natural := c_rom_entries * c_sdwb_bytes;
+    
+    -- Step 2. Find the size of the bus
+    function f_bus_end return unsigned is
+      variable result : unsigned(63 downto 0);
+      constant zero : t_wishbone_address := (others => '0');
+    begin
+      if not g_wraparound then
+        result := (others => '0');
+        for i in 0 to c_wishbone_address_width-1 loop
+          result(i) := '1';
+        end loop;
+      else
+        -- The ROM will be an addressed slave as well
+        result := (others => '0');
+        result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdwb_addr);
+        result := result + to_unsigned(c_rom_bytes, 64) - 1;
+        
+        for i in c_layout'range loop
+          if c_layout(i).wbd_end > result then
+            result := c_layout(i).wbd_end;
+          end if;
+        end loop;
+        -- round result up to a power of two -1
+        for i in 62 downto 0 loop
+          result(i) := result(i) or result(i+1);
+        end loop;
+      end if;
+      return result;
+    end f_bus_end;
+  begin
+    result.wbd_begin  := x"0000000000000000";
+    result.sdwb_child := x"0000000000000000";
+    
+    result.wbd_end    := f_bus_end;
+    result.sdwb_child(c_wishbone_address_width-1 downto 0) := unsigned(g_sdwb_addr);
+    
+    result.wbd_flags := x"05"; -- present, bigendian, child
+    result.wbd_width := std_logic_vector(to_unsigned(c_wishbone_address_width/4 - 1, 8));
+    
+    result.abi_ver_major := x"01";
+    result.abi_ver_minor := x"00";
+    result.abi_class     := x"00000002"; -- bridge device
+    
+    result.dev_vendor  := x"00000651"; -- GSI
+    result.dev_device  := x"eef0b198";
+    result.dev_version := x"00000001";
+    result.dev_date    := x"20120305";
+    result.description := "WB4-Bridge-GSI  ";
+  end f_xwb_sdwb_crossbar_sdwb;
+  
+  function f_xwb_dpram(
+      g_size                  : natural;
+      g_slave1_granularity    : t_wishbone_address_granularity := WORD;
+      g_slave2_granularity    : t_wishbone_address_granularity := WORD) return t_sdwb_device
+  is
+    variable result : t_sdwb_device;
+  begin
+    result.wbd_begin  := x"0000000000000000";
+    result.sdwb_child := x"0000000000000000";
+    
+    result.wbd_end    := to_unsigned(g_size-1, 64);
+    
+    result.wbd_flags := x"01"; -- present, bigendian, no-child
+    result.wbd_width := std_logic_vector(to_unsigned(c_wishbone_address_width/4 - 1, 8));
+    
+    result.abi_ver_major := x"01";
+    result.abi_ver_minor := x"00";
+    result.abi_class     := x"00000002"; -- bridge device
+    
+    result.dev_vendor  := x"0000CE43"; -- CERN
+    result.dev_device  := x"66cfeb52";
+    result.dev_version := x"00000001";
+    result.dev_date    := x"20120305";
+    result.description := "WB4-BlockRAM    ";
+    
+    return result;
+  end f_xwb_dpram;
 end wishbone_pkg;
