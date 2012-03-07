@@ -683,7 +683,7 @@ package body wishbone_pkg is
     result.abi_ver_minor := x"00";
     result.abi_class     := x"00000002"; -- bridge device
     
-    result.dev_vendor  := x"0000CE43"; -- CERN
+    result.dev_vendor  := x"0000CE42"; -- CERN
     result.dev_device  := x"66cfeb52";
     result.dev_version := x"00000001";
     result.dev_date    := x"20120305";
