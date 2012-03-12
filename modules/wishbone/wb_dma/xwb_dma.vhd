@@ -39,19 +39,19 @@ entity xwb_dma is
   );
   port(
     -- Common wishbone signals
-    clk        : in  std_logic;
-    rst        : in  std_logic;
+    clk_i       : in  std_logic;
+    rst_n_i     : in  std_logic;
     -- Slave control port
-    slave_i    : in  t_wishbone_slave_in;
-    slave_o    : out t_wishbone_slave_out;
+    slave_i     : in  t_wishbone_slave_in;
+    slave_o     : out t_wishbone_slave_out;
     -- Master reader port
-    r_master_i : in  t_wishbone_master_in;
-    r_master_o : out t_wishbone_master_out;
+    r_master_i  : in  t_wishbone_master_in;
+    r_master_o  : out t_wishbone_master_out;
     -- Master writer port
-    w_master_i : in  t_wishbone_master_in;
-    w_master_o : out t_wishbone_master_out;
+    w_master_i  : in  t_wishbone_master_in;
+    w_master_o  : out t_wishbone_master_out;
     -- Pulsed high completion signal
-    interrupt  : out std_logic
+    interrupt_o : out std_logic
   );
 end xwb_dma;
 
@@ -137,7 +137,7 @@ begin
   r_master_o.DAT <= (others => '0');
   w_master_o.DAT <= ring(index(write_issue_offset));
   
-  main : process(clk)
+  main : process(clk_i)
     variable read_issue_progress   : boolean;
     variable read_result_progress  : boolean;
     variable write_issue_progress  : boolean;
@@ -155,8 +155,8 @@ begin
     variable ring_empty    : boolean;
     variable done_transfer : boolean;
   begin
-    if (rising_edge(clk)) then
-      if (rst = '1') then
+    if (rising_edge(clk_i)) then
+      if (rst_n_i = '0') then
         read_issue_offset   <= (others => '0');
         read_result_offset  <= (others => '0');
           write_issue_offset  <= (others => '0');
@@ -174,7 +174,7 @@ begin
         w_master_o_STB <= '0';
         slave_o_ACK <= '0';
         slave_o_DAT <= (others => '0');
-        interrupt <= '0';
+        interrupt_o <= '0';
       else
         -- Output any read the user requests
         case to_integer(unsigned(slave_i.ADR(4 downto 2))) is
@@ -236,7 +236,7 @@ begin
                                       (new_read_result_offset  /= new_read_issue_offset));
         w_master_o_STB <= active_high (new_write_issue_offset  /= new_read_result_offset);
         w_master_o_CYC <= active_high (new_write_result_offset /= new_read_result_offset);
-        interrupt      <= active_high (write_result_progress and done_transfer and ring_empty);
+        interrupt_o    <= active_high (write_result_progress and done_transfer and ring_empty);
         
         transfer_count      <= new_transfer_count;
         read_issue_offset   <= new_read_issue_offset;

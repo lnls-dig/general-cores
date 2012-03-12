@@ -178,15 +178,15 @@ package gencores_pkg is
       data_width : natural := 32);
     port(
       -- write port
-      w_clk  : in  std_logic;
-      w_en   : in  std_logic;
-      w_addr : in  std_logic_vector(addr_width-1 downto 0);
-      w_data : in  std_logic_vector(data_width-1 downto 0);
+      w_clk_i  : in  std_logic;
+      w_en_i   : in  std_logic;
+      w_addr_i : in  std_logic_vector(addr_width-1 downto 0);
+      w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- read port
-      r_clk  : in  std_logic;
-      r_en   : in  std_logic;
-      r_addr : in  std_logic_vector(addr_width-1 downto 0);
-      r_data : out std_logic_vector(data_width-1 downto 0));
+      r_clk_i  : in  std_logic;
+      r_en_i   : in  std_logic;
+      r_addr_i : in  std_logic_vector(addr_width-1 downto 0);
+      r_data_o : out std_logic_vector(data_width-1 downto 0));
   end component;
   
   -- A 'Wes' FIFO. Generic FIFO using inferred memory.
@@ -200,22 +200,22 @@ package gencores_pkg is
       addr_width : natural := 4;
       data_width : natural := 32);
     port(
-      rst    : in  std_logic;
+      rst_n_i  : in  std_logic;
       -- write port, only set w_en when w_rdy
-      w_clk  : in  std_logic;
-      w_rdy  : out std_logic;
-      w_en   : in  std_logic;
-      w_data : in  std_logic_vector(data_width-1 downto 0);
+      w_clk_i  : in  std_logic;
+      w_rdy_o  : out std_logic;
+      w_en_i   : in  std_logic;
+      w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- (pre)alloc port, can be unused
-      a_clk  : in  std_logic;
-      a_rdy  : out std_logic;
-      a_en   : in  std_logic;
+      a_clk_i  : in  std_logic;
+      a_rdy_o  : out std_logic;
+      a_en_i   : in  std_logic;
       -- read port, only set r_en when r_rdy
       -- data is valid the cycle after r_en raised
-      r_clk  : in  std_logic;
-      r_rdy  : out std_logic;
-      r_en   : in  std_logic;
-      r_data : out std_logic_vector(data_width-1 downto 0));
+      r_clk_i  : in  std_logic;
+      r_rdy_o  : out std_logic;
+      r_en_i   : in  std_logic;
+      r_data_o : out std_logic_vector(data_width-1 downto 0));
   end component;
  
   procedure f_rr_arbitrate (

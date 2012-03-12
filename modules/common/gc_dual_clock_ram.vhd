@@ -9,15 +9,15 @@ entity gc_dual_clock_ram is
       data_width : natural := 32);
    port(
       -- write port
-      w_clk  : in  std_logic;
-      w_en   : in  std_logic;
-      w_addr : in  std_logic_vector(addr_width-1 downto 0);
-      w_data : in  std_logic_vector(data_width-1 downto 0);
+      w_clk_i  : in  std_logic;
+      w_en_i   : in  std_logic;
+      w_addr_i : in  std_logic_vector(addr_width-1 downto 0);
+      w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- read port
-      r_clk  : in  std_logic;
-      r_en   : in  std_logic;
-      r_addr : in  std_logic_vector(addr_width-1 downto 0);
-      r_data : out std_logic_vector(data_width-1 downto 0));
+      r_clk_i  : in  std_logic;
+      r_en_i   : in  std_logic;
+      r_addr_i : in  std_logic_vector(addr_width-1 downto 0);
+      r_data_o : out std_logic_vector(data_width-1 downto 0));
 end gc_dual_clock_ram;
 
 architecture rtl of gc_dual_clock_ram is
@@ -28,20 +28,20 @@ architecture rtl of gc_dual_clock_ram is
    attribute ramstyle : string;
    attribute ramstyle of ram : signal is "no_rw_check";
 begin
-   write : process(w_clk)
+   write : process(w_clk_i)
    begin
-      if rising_edge(w_clk) then
-         if w_en = '1' then
-            ram(to_integer(unsigned(w_addr))) <= w_data;
+      if rising_edge(w_clk_i) then
+         if w_en_i = '1' then
+            ram(to_integer(unsigned(w_addr_i))) <= w_data_i;
          end if;
       end if;
    end process;
    
-   read : process(r_clk)
+   read : process(r_clk_i)
    begin
-      if rising_edge(r_clk) then
-         if r_en = '1' then
-            r_data <= ram(to_integer(unsigned(r_addr)));
+      if rising_edge(r_clk_i) then
+         if r_en_i = '1' then
+            r_data_o <= ram(to_integer(unsigned(r_addr_i)));
          end if;
       end if;
    end process;

@@ -10,15 +10,15 @@ entity xwb_clock_crossing is
       log2fifo   : natural := 4);
    port(
       -- Common wishbone signals
-      rst        : in  std_logic;
+      rst_n_i      : in  std_logic;
       -- Slave control port
-      slave_clk  : in  std_logic;
-      slave_i    : in  t_wishbone_slave_in;
-      slave_o    : out t_wishbone_slave_out;
+      slave_clk_i  : in  std_logic;
+      slave_i      : in  t_wishbone_slave_in;
+      slave_o      : out t_wishbone_slave_out;
       -- Master reader port
-      master_clk : in  std_logic;
-      master_i   : in  t_wishbone_master_in;
-      master_o   : out t_wishbone_master_out);
+      master_clk_i : in  std_logic;
+      master_i     : in  t_wishbone_master_in;
+      master_o     : out t_wishbone_master_out);
 end xwb_clock_crossing;
 
 architecture rtl of xwb_clock_crossing is
@@ -55,9 +55,9 @@ architecture rtl of xwb_clock_crossing is
 begin
    mfifo : gc_wfifo
       generic map(addr_width => log2fifo, data_width => mlen, sync_depth => sync_depth, gray_code => true)
-      port map(w_clk => slave_clk,  w_rdy => mw_rdy, w_en => mw_en, w_data => msend_vect,
-               r_clk => master_clk, r_rdy => mr_rdy, r_en => mr_en, r_data => mrecv_vect,
-               a_clk => '0', a_rdy => open, a_en => '0', rst => rst);
+      port map(w_clk_i => slave_clk_i,  w_rdy_o => mw_rdy, w_en_i => mw_en, w_data_i => msend_vect,
+               r_clk_i => master_clk_i, r_rdy_o => mr_rdy, r_en_i => mr_en, r_data_o => mrecv_vect,
+               a_clk_i => '0', a_rdy_o => open, a_en_i => '0', rst_n_i => rst_n_i);
 
    msend_vect(mWE_start) <= msend.WE;
    msend_vect(mADR_end downto mADR_start) <= msend.ADR;
@@ -71,9 +71,9 @@ begin
    
    sfifo : gc_wfifo
       generic map(addr_width => log2fifo, data_width => slen, sync_depth => sync_depth, gray_code => true)
-      port map(w_clk => master_clk, w_rdy => open,   w_en => sw_en, w_data => ssend_vect,
-               r_clk => slave_clk,  r_rdy => sr_rdy, r_en => sr_en, r_data => srecv_vect,
-               a_clk => slave_clk,  a_rdy => sa_rdy, a_en => sa_en, rst => rst);
+      port map(w_clk_i => master_clk_i, w_rdy_o => open,   w_en_i => sw_en, w_data_i => ssend_vect,
+               r_clk_i => slave_clk_i,  r_rdy_o => sr_rdy, r_en_i => sr_en, r_data_o => srecv_vect,
+               a_clk_i => slave_clk_i,  a_rdy_o => sa_rdy, a_en_i => sa_en, rst_n_i => rst_n_i);
    
    ssend_vect(sACK_start) <= ssend.ACK;
    ssend_vect(sRTY_start) <= ssend.RTY;
@@ -103,10 +103,10 @@ begin
    master_o.SEL <= mrecv.SEL;
    master_o.DAT <= mrecv.DAT;
    
-   drive_master_port : process(master_clk)
+   drive_master_port : process(master_clk_i)
    begin
-      if rising_edge(master_clk) then
-         if rst = '1' then
+      if rising_edge(master_clk_i) then
+         if rst_n_i = '0' then
             master_o_STB <= '0';
          else
             master_o_STB <= mr_en or (master_o_STB and master_i.STALL);
@@ -128,10 +128,10 @@ begin
    slave_o.RTY <= srecv.RTY and slave_o_PUSH;
    slave_o.ERR <= srecv.ERR and slave_o_PUSH;
    
-   drive_slave_port : process(slave_clk)
+   drive_slave_port : process(slave_clk_i)
    begin
-      if rising_edge(slave_clk) then
-         if rst = '1' then
+      if rising_edge(slave_clk_i) then
+         if rst_n_i = '0' then
             slave_o_PUSH <= '0';
          else
             slave_o_PUSH <= sr_en;

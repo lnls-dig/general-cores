@@ -10,22 +10,22 @@ entity gc_wfifo is
       addr_width : natural := 4;
       data_width : natural := 32);
    port(
-      rst    : in  std_logic;
+      rst_n_i  : in  std_logic;
       -- write port, only set w_en when w_rdy
-      w_clk  : in  std_logic;
-      w_rdy  : out std_logic;
-      w_en   : in  std_logic;
-      w_data : in  std_logic_vector(data_width-1 downto 0);
+      w_clk_i  : in  std_logic;
+      w_rdy_o  : out std_logic;
+      w_en_i   : in  std_logic;
+      w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- (pre)alloc port, can be unused
-      a_clk  : in  std_logic;
-      a_rdy  : out std_logic;
-      a_en   : in  std_logic;
+      a_clk_i  : in  std_logic;
+      a_rdy_o  : out std_logic;
+      a_en_i   : in  std_logic;
       -- read port, only set r_en when r_rdy
       -- data is valid the cycle after r_en raised
-      r_clk  : in  std_logic;
-      r_rdy  : out std_logic;
-      r_en   : in  std_logic;
-      r_data : out std_logic_vector(data_width-1 downto 0));
+      r_clk_i  : in  std_logic;
+      r_rdy_o  : out std_logic;
+      r_en_i   : in  std_logic;
+      r_data_o : out std_logic_vector(data_width-1 downto 0));
 end gc_wfifo;
 
 architecture rtl of gc_wfifo is
@@ -88,16 +88,16 @@ architecture rtl of gc_wfifo is
 begin
    ram : gc_dual_clock_ram
       generic map(addr_width => addr_width, data_width => data_width)
-      port map(w_clk => w_clk, w_en => w_en, w_addr => index(w_idx_bnry), w_data => w_data,
-               r_clk => r_clk, r_en => r_en, r_addr => index(r_idx_bnry), r_data => r_data);
+      port map(w_clk_i => w_clk_i, w_en_i => w_en_i, w_addr_i => index(w_idx_bnry), w_data_i => w_data_i,
+               r_clk_i => r_clk_i, r_en_i => r_en_i, r_addr_i => index(r_idx_bnry), r_data_o => r_data_o);
    
-   read : process(r_clk)
+   read : process(r_clk_i)
       variable idx : counter;
    begin
-      if rising_edge(r_clk) then
-         if rst = '1' then
+      if rising_edge(r_clk_i) then
+         if rst_n_i = '0' then
             idx := (others => '0');
-         elsif r_en = '1' then
+         elsif r_en_i = '1' then
             idx := r_idx_bnry + 1;
          else
             idx := r_idx_bnry;
@@ -108,15 +108,15 @@ begin
       end if;
    end process;
    w_idx_shift_r(0) <= w_idx_gray;
-   r_rdy <= not empty(r_idx_gray, w_idx_shift_r(sync_depth));
+   r_rdy_o <= not empty(r_idx_gray, w_idx_shift_r(sync_depth));
    
-   write : process(w_clk)
+   write : process(w_clk_i)
      variable idx : counter;
    begin
-      if rising_edge(w_clk) then
-         if rst = '1' then
+      if rising_edge(w_clk_i) then
+         if rst_n_i = '0' then
             idx := (others => '0');
-         elsif w_en = '1' then
+         elsif w_en_i = '1' then
             idx := w_idx_bnry + 1;
          else
             idx := w_idx_bnry;
@@ -127,15 +127,15 @@ begin
       end if;
    end process;
    r_idx_shift_w(0) <= r_idx_gray;
-   w_rdy <= not full(w_idx_gray, r_idx_shift_w(sync_depth));
+   w_rdy_o <= not full(w_idx_gray, r_idx_shift_w(sync_depth));
 
-   alloc : process(a_clk)
+   alloc : process(a_clk_i)
      variable idx : counter;
    begin
-      if rising_edge(a_clk) then
-         if rst = '1' then
+      if rising_edge(a_clk_i) then
+         if rst_n_i = '0' then
             idx := (others => '0');
-         elsif a_en = '1' then
+         elsif a_en_i = '1' then
             idx := a_idx_bnry + 1;
          else
             idx := a_idx_bnry;
@@ -146,5 +146,5 @@ begin
       end if;
    end process;
    r_idx_shift_a(0) <= r_idx_gray;
-   a_rdy <= not full(a_idx_gray, r_idx_shift_a(sync_depth));
+   a_rdy_o <= not full(a_idx_gray, r_idx_shift_a(sync_depth));
 end rtl;
