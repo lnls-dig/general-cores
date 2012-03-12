@@ -14,6 +14,8 @@ modules =  { "local" :
 						"wb_lm32",
 						"wb_slave_adapter",
 						"wb_xilinx_fpga_loader",
+						"wb_clock_crossing",
+						"wb_dma",
 						"wbgen2"
 						 ]};
 

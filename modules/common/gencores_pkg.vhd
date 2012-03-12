@@ -171,6 +171,53 @@ package gencores_pkg is
       freq_valid_o : out std_logic);
   end component;
 
+  -- Read during write has an undefined result
+  component gc_dual_clock_ram is
+    generic(
+      addr_width : natural := 4;
+      data_width : natural := 32);
+    port(
+      -- write port
+      w_clk  : in  std_logic;
+      w_en   : in  std_logic;
+      w_addr : in  std_logic_vector(addr_width-1 downto 0);
+      w_data : in  std_logic_vector(data_width-1 downto 0);
+      -- read port
+      r_clk  : in  std_logic;
+      r_en   : in  std_logic;
+      r_addr : in  std_logic_vector(addr_width-1 downto 0);
+      r_data : out std_logic_vector(data_width-1 downto 0));
+  end component;
+  
+  -- A 'Wes' FIFO. Generic FIFO using inferred memory.
+  -- Supports clock domain crossing 
+  -- Should be safe from fast->slow or reversed
+  -- Set sync_depth := 0 and gray_code := false if only one clock
+  component gc_wfifo is
+    generic(
+      sync_depth : natural := 3;
+      gray_code  : boolean := true;
+      addr_width : natural := 4;
+      data_width : natural := 32);
+    port(
+      rst    : in  std_logic;
+      -- write port, only set w_en when w_rdy
+      w_clk  : in  std_logic;
+      w_rdy  : out std_logic;
+      w_en   : in  std_logic;
+      w_data : in  std_logic_vector(data_width-1 downto 0);
+      -- (pre)alloc port, can be unused
+      a_clk  : in  std_logic;
+      a_rdy  : out std_logic;
+      a_en   : in  std_logic;
+      -- read port, only set r_en when r_rdy
+      -- data is valid the cycle after r_en raised
+      r_clk  : in  std_logic;
+      r_rdy  : out std_logic;
+      r_en   : in  std_logic;
+      r_data : out std_logic_vector(data_width-1 downto 0));
+  end component;
+ 
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;

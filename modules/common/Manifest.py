@@ -7,4 +7,6 @@ files = [	"gencores_pkg.vhd",
                 "gc_serial_dac.vhd",
                 "gc_sync_ffs.vhd",
                 "gc_pulse_synchronizer.vhd",
-                "gc_frequency_meter.vhd"];
+                "gc_frequency_meter.vhd",
+                "gc_dual_clock_ram.vhd",
+                "gc_wfifo.vhd"];

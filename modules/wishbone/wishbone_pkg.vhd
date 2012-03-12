@@ -257,6 +257,51 @@ package wishbone_pkg is
       slave_o       : out t_wishbone_slave_out);
   end component;
   
+  component xwb_dma is
+    generic(
+      -- Value 0 cannot stream
+      -- Value 1 only slaves with async ACK can stream
+      -- Value 2 only slaves with combined latency <= 2 can stream
+      -- Value 3 only slaves with combined latency <= 6 can stream
+      -- Value 4 only slaves with combined latency <= 14 can stream
+      -- ....
+      logRingLen : integer := 4
+    );
+    port(
+      -- Common wishbone signals
+      clk        : in  std_logic;
+      rst        : in  std_logic;
+      -- Slave control port
+      slave_i    : in  t_wishbone_slave_in;
+      slave_o    : out t_wishbone_slave_out;
+      -- Master reader port
+      r_master_i : in  t_wishbone_master_in;
+      r_master_o : out t_wishbone_master_out;
+      -- Master writer port
+      w_master_i : in  t_wishbone_master_in;
+      w_master_o : out t_wishbone_master_out;
+      -- Pulsed high completion signal
+      interrupt  : out std_logic
+    );
+  end component;
+  
+  component xwb_clock_crossing is
+    generic(
+      sync_depth : natural := 2;
+      log2fifo   : natural := 4);
+    port(
+      -- Common wishbone signals
+      rst        : in  std_logic;
+      -- Slave control port
+      slave_clk  : in  std_logic;
+      slave_i    : in  t_wishbone_slave_in;
+      slave_o    : out t_wishbone_slave_out;
+      -- Master reader port
+      master_clk : in  std_logic;
+      master_i   : in  t_wishbone_master_in;
+      master_o   : out t_wishbone_master_out);
+  end component;
+  
   -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdwb_device;
   component xwb_dpram
