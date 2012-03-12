@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-02-20
+-- Last update: 2012-03-12
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -231,6 +231,8 @@ package body gencores_pkg is
 
     if((req and pre_grant) = zeros) then
       grant <= gntM;
+    else
+      grant <= pre_grant;
     end if;
     
   end f_rr_arbitrate;
