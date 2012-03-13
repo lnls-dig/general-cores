@@ -160,15 +160,19 @@ architecture rtl of xwb_crossbar is
     variable output : std_logic_vector(width-1 downto 0);
   begin
     prev := input;
-    for l in 0 to stages-1 loop
-      for i in 0 to width-1 loop
-        if i >= pow2(l)
-        then output(i) := prev(i) or prev(i-pow2(l));
-        else output(i) := prev(i);
-        end if;
+    if stages = 0 then
+      output := prev;
+    else
+      for l in 0 to stages-1 loop
+        for i in 0 to width-1 loop
+          if i >= pow2(l)
+          then output(i) := prev(i) or prev(i-pow2(l));
+          else output(i) := prev(i);
+          end if;
+        end loop;
+        prev := output;
       end loop;
-      prev := output;
-    end loop;
+    end if;
     return output;
   end ks_OR;
   
@@ -230,10 +234,12 @@ architecture rtl of xwb_crossbar is
       
       -- Grant to highest priority master
       selected(0, slave) := request(0, slave); -- master 0 always wins
-      for master in 1 to g_num_masters-1 loop
-        selected(master, slave) := -- only if requested and no lower requests
-          not tmp_row(master-1) and request(master, slave);
-      end loop;
+      if g_num_masters > 1 then
+        for master in 1 to g_num_masters-1 loop
+          selected(master, slave) := -- only if requested and no lower requests
+            not tmp_row(master-1) and request(master, slave);
+        end loop;
+      end if;
     end loop;
 
     -- Determine the master granted access
