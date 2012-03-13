@@ -23,6 +23,7 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2011-01-25  1.0      twlostow        Created
+-- 2012-03-13  1.1      wterpstra       Added initial value as array
 -------------------------------------------------------------------------------
 
 
@@ -47,6 +48,7 @@ entity generic_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
+    g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
     g_dual_clock               : boolean := true;
     g_fail_if_file_not_found   : boolean := true
     );
@@ -102,8 +104,16 @@ architecture syn of generic_dpram is
     return tmp;
   end f_memarray_to_ramtype;
 
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(
-    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
+  function f_file_contents return t_meminit_array is
+  begin
+    if g_init_value'length > 0 then
+      return g_init_value;
+    else
+      return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
+    end if;
+  end f_file_contents;
+  
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
