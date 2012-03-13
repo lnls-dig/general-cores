@@ -28,7 +28,7 @@ package wbgen2_pkg is
       wr_b_i    : in  std_logic);
   end component;
 
-  
+
   component wbgen2_eic
     generic (
       g_num_interrupts : natural;
@@ -86,6 +86,7 @@ package wbgen2_pkg is
       g_width      : integer;
       g_usedw_size : integer);
     port (
+      rst_n_i    : in  std_logic := '1';
       rd_clk_i   : in  std_logic;
       rd_req_i   : in  std_logic;
       rd_data_o  : out std_logic_vector(g_width-1 downto 0);
@@ -108,6 +109,7 @@ package wbgen2_pkg is
       g_usedw_size : integer);
     port (
       clk_i      : in  std_logic;
+      rst_n_i    : in  std_logic := '1';
       wr_data_i  : in  std_logic_vector(g_width-1 downto 0);
       wr_req_i   : in  std_logic;
       rd_data_o  : out std_logic_vector(g_width-1 downto 0);

@@ -13,7 +13,10 @@ entity wbgen2_fifo_sync is
 
   port
     (
+
       clk_i     : in std_logic;
+      rst_n_i : in std_logic := '1';
+
       wr_data_i : in std_logic_vector(g_width-1 downto 0);
       wr_req_i  : in std_logic;
 
@@ -88,7 +91,7 @@ begin
       g_with_almost_full       => false,
       g_with_count             => true)
     port map (
-      rst_n_i        => '1',
+      rst_n_i        => rst_n_i,
       clk_i          => clk_i,
       d_i            => wr_data_i,
       we_i           => wr_req_i,
