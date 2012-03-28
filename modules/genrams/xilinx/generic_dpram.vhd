@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-10-05
+-- Last update: 2012-03-16
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -77,141 +77,104 @@ end generic_dpram;
 
 architecture syn of generic_dpram is
 
-  constant c_num_bytes : integer := (g_data_width+7)/8;
+  component generic_dpram_sameclock
+    generic (
+      g_data_width               : natural;
+      g_size                     : natural;
+      g_with_byte_enable         : boolean;
+      g_addr_conflict_resolution : string;
+      g_init_file                : string;
+      g_fail_if_file_not_found   : boolean);
+    port (
+      rst_n_i : in  std_logic := '1';
+      clk_i   : in  std_logic;
+      bwea_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
+      wea_i   : in  std_logic;
+      aa_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      da_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      qa_o    : out std_logic_vector(g_data_width-1 downto 0);
+      bweb_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
+      web_i   : in  std_logic;
+      ab_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      db_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      qb_o    : out std_logic_vector(g_data_width-1 downto 0));
+  end component;  
 
-
-  type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-
-  function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
-    variable tmp    : t_ram_type;
-    variable n, pos : integer;
-  begin
-    pos := 0;
-    while(pos < g_size)loop
-      n := 0;
-      -- avoid ISE loop iteration limit
-      while (pos < g_size and n < 4096) loop
-        for i in 0 to g_data_width-1 loop
-          tmp(pos)(i) := arr(pos, i);
-        end loop;  -- i
-        n := n+1;
-        pos := pos + 1;
-      end loop;
-    end loop;
-    return tmp;
-  end f_memarray_to_ramtype;
-
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(
-    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
-
-  signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
-  signal s_we_b     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_b : std_logic_vector(g_data_width-1 downto 0);
-
-  signal clka_int : std_logic;
-  signal clkb_int : std_logic;
-
-  signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
+  component generic_dpram_dualclock
+    generic (
+      g_data_width               : natural;
+      g_size                     : natural;
+      g_with_byte_enable         : boolean;
+      g_addr_conflict_resolution : string;
+      g_init_file                : string;
+      g_fail_if_file_not_found   : boolean);
+    port (
+      rst_n_i : in  std_logic := '1';
+      clka_i  : in  std_logic;
+      bwea_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
+      wea_i   : in  std_logic;
+      aa_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      da_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      qa_o    : out std_logic_vector(g_data_width-1 downto 0);
+      clkb_i  : in  std_logic;
+      bweb_i  : in  std_logic_vector((g_data_width+7)/8-1 downto 0);
+      web_i   : in  std_logic;
+      ab_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      db_i    : in  std_logic_vector(g_data_width-1 downto 0);
+      qb_o    : out std_logic_vector(g_data_width-1 downto 0));
+  end component;
 
 begin
 
+  gen_single_clk : if(g_dual_clock = false) generate
+  U_RAM_SC: generic_dpram_sameclock
+    generic map (
+      g_data_width               => g_data_width,
+      g_size                     => g_size,
+      g_with_byte_enable         => g_with_byte_enable,
+      g_addr_conflict_resolution => g_addr_conflict_resolution,
+      g_init_file                => g_init_file,
+      g_fail_if_file_not_found   => g_fail_if_file_not_found)
+    port map (
+      rst_n_i => rst_n_i,
+      clk_i   => clka_i,
+      bwea_i  => bwea_i,
+      wea_i   => wea_i,
+      aa_i    => aa_i,
+      da_i    => da_i,
+      qa_o    => qa_o,
+      bweb_i  => bweb_i,
+      web_i   => web_i,
+      ab_i    => ab_i,
+      db_i    => db_i,
+      qb_o    => qb_o); 
 
-  wea_rep <= (others => wea_i);
-  web_rep <= (others => web_i);
-
-  s_we_a <= bwea_i and wea_rep;
-  s_we_b <= bweb_i and web_rep;
-
-  gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "read_first") generate
-
-
-    process (clka_i)
-    begin
-      if rising_edge(clka_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
-        for i in 0 to c_num_bytes-1 loop
-          if s_we_a(i) = '1' then
-            ram(to_integer(unsigned(aa_i)))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
-          end if;
-        end loop;
-      end if;
-    end process;
-
-
-    process (clkb_i)
-    begin
-      if rising_edge(clkb_i) then
-        qb_o <= ram(to_integer(unsigned(ab_i)));
-        for i in 0 to c_num_bytes-1 loop
-          if s_we_b(i) = '1' then
-            ram(to_integer(unsigned(ab_i)))((i+1)*8-1 downto i*8)
-              := db_i((i+1)*8-1 downto i*8);
-          end if;
-        end loop;
-      end if;
-    end process;
     
+  end generate gen_single_clk;
 
-
-
-  end generate gen_with_byte_enable_readfirst;
-
-
-
-  gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "read_first") generate
-
-    process(clka_i)
-    begin
-      if rising_edge(clka_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
-        if(wea_i = '1') then
-          ram(to_integer(unsigned(aa_i))) := da_i;
-        end if;
-      end if;
-    end process;
-
-
-    process(clkb_i)
-    begin
-      if rising_edge(clkb_i) then
-        qb_o <= ram(to_integer(unsigned(ab_i)));
-        if(web_i = '1') then
-          ram(to_integer(unsigned(ab_i))) := db_i;
-        end if;
-      end if;
-    end process;
-
-  end generate gen_without_byte_enable_readfirst;
-
-
-  gen_without_byte_enable_writefirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "write_first") generate
-
-    process(clka_i)
-    begin
-      if rising_edge(clka_i) then
-        if(wea_i = '1') then
-          ram(to_integer(unsigned(aa_i))) := da_i;
-          qa_o                            <= da_i;
-        else
-          qa_o <= ram(to_integer(unsigned(aa_i)));
-        end if;
-      end if;
-    end process;
-
-
-    process(clkb_i)
-    begin
-      if rising_edge(clkb_i) then
-        if(web_i = '1') then
-          ram(to_integer(unsigned(ab_i))) := db_i;
-          qb_o                            <= db_i;
-        else
-          qb_o <= ram(to_integer(unsigned(ab_i)));
-        end if;
-      end if;
-    end process;
-  end generate gen_without_byte_enable_writefirst;
-  
+  gen_dual_clk : if(g_dual_clock = true) generate
+    generic_dpram_dualclock_1: generic_dpram_dualclock
+      generic map (
+        g_data_width               => g_data_width,
+        g_size                     => g_size,
+        g_with_byte_enable         => g_with_byte_enable,
+        g_addr_conflict_resolution => g_addr_conflict_resolution,
+        g_init_file                => g_init_file,
+        g_fail_if_file_not_found   => g_fail_if_file_not_found)
+      port map (
+        rst_n_i => rst_n_i,
+        clka_i  => clka_i,
+        bwea_i  => bwea_i,
+        wea_i   => wea_i,
+        aa_i    => aa_i,
+        da_i    => da_i,
+        qa_o    => qa_o,
+        clkb_i  => clkb_i,
+        bweb_i  => bweb_i,
+        web_i   => web_i,
+        ab_i    => ab_i,
+        db_i    => db_i,
+        qb_o    => qb_o);
+  end generate gen_dual_clk;
 
 end syn;
