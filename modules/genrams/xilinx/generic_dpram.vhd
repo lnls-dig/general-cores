@@ -23,6 +23,7 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2011-01-25  1.0      twlostow        Created
+-- 2012-03-13  1.1      wterpstra       Added initial value as array
 -------------------------------------------------------------------------------
 
 
@@ -39,14 +40,13 @@ entity generic_dpram is
 
   generic (
     -- standard parameters
---G    g_data_width               : natural;
---G    g_size                     : natural;
     g_data_width : natural := 32;
     g_size       : natural := 16384;
 
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
+    g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
     g_dual_clock               : boolean := true;
     g_fail_if_file_not_found   : boolean := true
     );
@@ -84,6 +84,7 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
+      g_init_value               : t_generic_ram_init;
       g_fail_if_file_not_found   : boolean);
     port (
       rst_n_i : in  std_logic := '1';
@@ -107,6 +108,7 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
+      g_init_value               : t_generic_ram_init;
       g_fail_if_file_not_found   : boolean);
     port (
       rst_n_i : in  std_logic := '1';
@@ -134,6 +136,7 @@ begin
       g_with_byte_enable         => g_with_byte_enable,
       g_addr_conflict_resolution => g_addr_conflict_resolution,
       g_init_file                => g_init_file,
+	  g_init_value               => g_init_value,
       g_fail_if_file_not_found   => g_fail_if_file_not_found)
     port map (
       rst_n_i => rst_n_i,
@@ -153,13 +156,14 @@ begin
   end generate gen_single_clk;
 
   gen_dual_clk : if(g_dual_clock = true) generate
-    generic_dpram_dualclock_1: generic_dpram_dualclock
+    U_RAM_DC: generic_dpram_dualclock
       generic map (
         g_data_width               => g_data_width,
         g_size                     => g_size,
         g_with_byte_enable         => g_with_byte_enable,
         g_addr_conflict_resolution => g_addr_conflict_resolution,
         g_init_file                => g_init_file,
+   	    g_init_value               => g_init_value,
         g_fail_if_file_not_found   => g_fail_if_file_not_found)
       port map (
         rst_n_i => rst_n_i,

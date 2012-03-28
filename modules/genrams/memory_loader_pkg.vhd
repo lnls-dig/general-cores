@@ -5,9 +5,12 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
+library work;
+use work.genram_pkg.all;
+
 package memory_loader_pkg is
 
-  type t_meminit_array is array (integer range <>, integer range <>) of std_logic;
+  subtype t_meminit_array is t_generic_ram_init;
 
   function f_hexchar_to_slv (c   : character) return std_logic_vector;
   function f_hexstring_to_slv (s : string; n_digits : integer) return std_logic_vector;

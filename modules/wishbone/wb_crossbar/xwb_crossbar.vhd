@@ -18,9 +18,8 @@
 -- All participants must support the same data bus width. 
 -- 
 -- If a master raises STB_O with an address not mapped by the crossbar,
--- ERR_I will be raised. If the crossbar has overlapping address ranges,
--- the lowest numbered slave is selected. If two masters address the same
--- slave simultaneously, the lowest numbered master is granted access.
+-- ERR_I will be raised. If two masters address the same slave
+-- simultaneously, the lowest numbered master is granted access.
 -- 
 -- The implementation of this crossbar locks a master to a slave so long as
 -- CYC_O is held high. 
@@ -40,6 +39,7 @@
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author          Description
+-- 2012-03-05  3.0      wterpstra       made address generic and check overlap
 -- 2011-11-04  2.0      wterpstra       timing improvements
 -- 2011-06-08  1.0      wterpstra       import from SVN
 -------------------------------------------------------------------------------
@@ -54,8 +54,10 @@ entity xwb_crossbar is
   generic(
     g_num_masters : integer := 2;
     g_num_slaves  : integer := 1;
-    g_registered  : boolean := false
-    );
+    g_registered  : boolean := false;
+    -- Address of the slaves connected
+    g_address     : t_wishbone_address_array;
+    g_mask        : t_wishbone_address_array);
   port(
     clk_sys_i     : in  std_logic;
     rst_n_i       : in  std_logic;
@@ -64,14 +66,40 @@ entity xwb_crossbar is
     slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
     -- Slave connections (INTERCON is a master)
     master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0);
-    -- Address of the slaves connected
-    cfg_address_i : in  t_wishbone_address_array(g_num_slaves-1 downto 0);
-    cfg_mask_i    : in  t_wishbone_address_array(g_num_slaves-1 downto 0)
-    );
+    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
 end xwb_crossbar;
 
 architecture rtl of xwb_crossbar is
+  alias c_address : t_wishbone_address_array(g_num_slaves-1 downto 0) is g_address;
+  alias c_mask    : t_wishbone_address_array(g_num_slaves-1 downto 0) is g_mask;
+
+  -- Confirm that no address ranges overlap
+  function f_ranges_ok
+    return boolean
+  is
+    constant zero : t_wishbone_address := (others => '0');
+  begin
+    for i in 0 to g_num_slaves-2 loop
+      for j in i+1 to g_num_slaves-1 loop
+        assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero)
+        report "Address ranges must be distinct (slaves " & 
+	       Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
+	                                Integer'image(to_integer(unsigned(c_mask(i)))) & "] & " & 
+	       Integer'image(j) & "[" & Integer'image(to_integer(unsigned(c_address(j)))) & "/" &
+	                                Integer'image(to_integer(unsigned(c_mask(j)))) & "])"
+        severity Failure;
+      end loop;
+    end loop;
+    for i in 0 to g_num_slaves-1 loop
+      report "Mapping slave #" & 
+             Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
+                                      Integer'image(to_integer(unsigned(c_mask(i)))) & "]"
+      severity Note;
+    end loop;
+    return true;
+  end f_ranges_ok;
+  constant c_ok : boolean := f_ranges_ok;
+
   -- Crossbar connection matrix
   type matrix is array (g_num_masters-1 downto 0, g_num_slaves downto 0) of std_logic;
   
@@ -132,20 +160,24 @@ architecture rtl of xwb_crossbar is
     variable output : std_logic_vector(width-1 downto 0);
   begin
     prev := input;
-    for l in 0 to stages-1 loop
-      for i in 0 to width-1 loop
-        if i >= pow2(l)
-        then output(i) := prev(i) or prev(i-pow2(l));
-        else output(i) := prev(i);
-        end if;
+    if stages = 0 then
+      output := prev;
+    else
+      for l in 0 to stages-1 loop
+        for i in 0 to width-1 loop
+          if i >= pow2(l)
+          then output(i) := prev(i) or prev(i-pow2(l));
+          else output(i) := prev(i);
+          end if;
+        end loop;
+        prev := output;
       end loop;
-      prev := output;
-    end loop;
+    end if;
     return output;
   end ks_OR;
   
-  -- Impure because it accesses cfg_{address_i, mask_i}
-  impure function matrix_logic(
+  -- Impure because it accesses c_{address, mask}
+  function matrix_logic(
     matrix_old : matrix;
     slave_i    : t_wishbone_slave_in_array(g_num_masters-1 downto 0))
     return matrix
@@ -182,7 +214,7 @@ architecture rtl of xwb_crossbar is
     -- Decode the request address to see if master wants access
     for master in g_num_masters-1 downto 0 loop
       for slave in g_num_slaves-1 downto 0 loop
-        tmp := not vector_OR((slave_i(master).ADR and cfg_mask_i(slave)) xor cfg_address_i(slave));
+        tmp := not vector_OR((slave_i(master).ADR and c_mask(slave)) xor c_address(slave));
         tmp_column(slave) := tmp;
         request(master, slave) := slave_i(master).CYC and slave_i(master).STB and tmp;
       end loop;
@@ -202,10 +234,12 @@ architecture rtl of xwb_crossbar is
       
       -- Grant to highest priority master
       selected(0, slave) := request(0, slave); -- master 0 always wins
-      for master in 1 to g_num_masters-1 loop
-        selected(master, slave) := -- only if requested and no lower requests
-          not tmp_row(master-1) and request(master, slave);
-      end loop;
+      if g_num_masters > 1 then
+        for master in 1 to g_num_masters-1 loop
+          selected(master, slave) := -- only if requested and no lower requests
+            not tmp_row(master-1) and request(master, slave);
+        end loop;
+      end if;
     end loop;
 
     -- Determine the master granted access
