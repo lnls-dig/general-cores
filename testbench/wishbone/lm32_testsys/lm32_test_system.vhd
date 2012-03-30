@@ -64,16 +64,16 @@ begin  -- rtl
     generic map (
       g_num_masters => c_cnx_slave_ports,
       g_num_slaves  => c_cnx_master_ports,
-      g_registered  => true)
+      g_registered  => true,
+      g_address => c_cfg_base_addr,
+      g_mask => c_cfg_base_mask)
     port map (
       clk_sys_i     => clk_sys_i,
       rst_n_i       => rst_n_i,
       slave_i       => cnx_slave_in,
       slave_o       => cnx_slave_out,
       master_i      => cnx_master_in,
-      master_o      => cnx_master_out,
-      cfg_address_i => c_cfg_base_addr,
-      cfg_mask_i    => c_cfg_base_mask);
+      master_o      => cnx_master_out);
 
   U_DPRAM : xwb_dpram
     generic map (

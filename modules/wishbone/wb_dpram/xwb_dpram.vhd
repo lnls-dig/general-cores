@@ -36,6 +36,7 @@ entity xwb_dpram is
   generic(
     g_size                  : natural := 16384;
     g_init_file             : string  := "";
+    g_init_value            : t_xwb_dpram_init := c_xwb_dpram_init_nothing;
     g_must_have_init_file   : boolean := true;
     g_slave1_interface_mode : t_wishbone_interface_mode;
     g_slave2_interface_mode : t_wishbone_interface_mode;
@@ -116,6 +117,7 @@ begin
       g_with_byte_enable         => true,
       g_addr_conflict_resolution => "read_first",
       g_init_file                => g_init_file,
+      g_init_value               => g_init_value,
       g_dual_clock               => false
       )
     port map(

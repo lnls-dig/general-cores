@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2011-10-05
+-- Last update: 2012-01-20
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -21,6 +21,7 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2011-01-25  1.0      twlostow        Created
+-- 2012-03-13  1.1      wterpstra       Added initial value as array
 -------------------------------------------------------------------------------
 
 
@@ -41,6 +42,7 @@ entity generic_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string := "read_first";
     g_init_file                : string := "";
+    g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
     g_dual_clock               : boolean := true;
     g_fail_if_file_not_found : boolean := true
     );
@@ -72,7 +74,7 @@ architecture syn of generic_dpram is
   constant c_num_bytes : integer := g_data_width/8;
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-  type t_ram_word_bs is array (0 to 7) of std_logic_vector(7 downto 0);
+  type t_ram_word_bs is array (0 to 63) of std_logic_vector(7 downto 0);
   type t_ram_type_bs is array (0 to g_size - 1) of t_ram_word_bs;
 
   function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
@@ -115,12 +117,18 @@ architecture syn of generic_dpram is
     return tmp;
   end f_memarray_to_ramtype_bs;
 
-
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(
-    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
-
-  shared variable ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(
-    f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found));
+  function f_file_contents return t_meminit_array is
+  begin
+    if g_init_value'length > 0 then
+      return g_init_value;
+    else
+      return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
+    end if;
+  end f_file_contents;
+  
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
+  shared variable ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(f_file_contents);
+  
   signal q_local_a       : t_ram_word_bs;
   signal q_local_b       : t_ram_word_bs;
 

@@ -13,6 +13,8 @@ entity wbgen2_fifo_async is
 
   port
     (
+      rst_n_i : in std_logic := '1';
+
       rd_clk_i  : in  std_logic;
       rd_req_i  : in  std_logic;
       rd_data_o : out std_logic_vector(g_width-1 downto 0);
@@ -29,7 +31,7 @@ entity wbgen2_fifo_async is
       wr_empty_o : out std_logic;
       wr_full_o  : out std_logic;
       wr_usedw_o : out std_logic_vector(g_usedw_size -1 downto 0)
-    );
+      );
 end wbgen2_fifo_async;
 
 architecture rtl of wbgen2_fifo_async is
@@ -73,7 +75,7 @@ architecture rtl of wbgen2_fifo_async is
 
 begin
 
-  wrapped_fifo: generic_async_fifo
+  wrapped_fifo : generic_async_fifo
     generic map (
       g_data_width             => g_width,
       g_size                   => g_size,
@@ -91,7 +93,7 @@ begin
       g_almost_empty_threshold => 0,
       g_almost_full_threshold  => 0)
     port map (
-      rst_n_i           => '1',
+      rst_n_i           => rst_n_i,
       clk_wr_i          => wr_clk_i,
       d_i               => wr_data_i,
       we_i              => wr_req_i,
@@ -108,5 +110,5 @@ begin
       rd_almost_empty_o => open,
       rd_almost_full_o  => open,
       rd_count_o        => rd_usedw_o);
-  
+
 end rtl;

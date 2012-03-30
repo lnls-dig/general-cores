@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-10-04
+-- Last update: 2012-02-23
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -95,6 +95,8 @@ architecture rtl of wb_onewire_master is
 
   signal adp_out : t_wishbone_master_out;
   signal adp_in  : t_wishbone_master_in;
+
+  signal rdat_int : std_logic_vector(31 downto 0);
   
 begin  -- rtl
 
@@ -130,11 +132,22 @@ begin  -- rtl
       master_o => adp_out);
 
   
-  bus_wen <= adp_out.cyc and adp_out.stb and adp_out.we;
-  bus_ren <= adp_out.cyc and adp_out.stb and not adp_out.we;
+  bus_wen <= adp_out.cyc and adp_out.stb and adp_out.we and not adp_in.ack;
+  bus_ren <= adp_out.cyc and adp_out.stb and not (adp_out.we or adp_in.ack);
 
-  adp_in.ack <= adp_out.stb and adp_out.cyc;
-  rst        <= not rst_n_i;
+  process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        adp_in.ack <= '0';
+      else
+        adp_in.ack <= adp_out.stb and adp_out.cyc and not adp_in.ack;
+        adp_in.dat <= rdat_int;
+      end if;
+    end if;
+  end process;
+
+  rst <= not rst_n_i;
 
   Wrapped_1wire : sockit_owm
     generic map (
@@ -148,7 +161,7 @@ begin  -- rtl
       bus_wen => bus_wen,
       bus_adr => adp_out.adr(0 downto 0),
       bus_wdt => adp_out.dat,
-      bus_rdt => adp_in.dat,
+      bus_rdt => rdat_int,
       bus_irq => adp_in.int,
       owr_p   => owr_pwren_o,
       owr_e   => owr_en_o,

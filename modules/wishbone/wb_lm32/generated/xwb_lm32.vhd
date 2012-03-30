@@ -635,7 +635,7 @@ end generate gen_profile_full_debug;
             if I_CYC = '1' and inst_was_busy = '0' then
                inst_addr := I_ADR;
                if I_CTI = "010" then
-                  inst_length := dcache_burst_length;
+                  inst_length := icache_burst_length;
                else
                   inst_length := 1;
                end if;
