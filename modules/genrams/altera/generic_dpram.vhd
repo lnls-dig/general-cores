@@ -74,7 +74,7 @@ architecture syn of generic_dpram is
   constant c_num_bytes : integer := g_data_width/8;
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-  type t_ram_word_bs is array (0 to 63) of std_logic_vector(7 downto 0);
+  type t_ram_word_bs is array (0 to 7) of std_logic_vector(7 downto 0);
   type t_ram_type_bs is array (0 to g_size - 1) of t_ram_word_bs;
 
   function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
