@@ -9,7 +9,7 @@ entity pcie_wb is
     pcie_rstn_i   : in  std_logic;
     pcie_rx_i     : in  std_logic_vector(3 downto 0);
     pcie_tx_o     : out std_logic_vector(3 downto 0);
-    led_o         : out std_logic);
+    led_o         : out std_logic_vector(0 to 7));
 end pcie_wb;
 
 architecture rtl of pcie_wb is
@@ -26,7 +26,21 @@ architecture rtl of pcie_wb is
       areset : in  std_logic := '0';
       inclk0 : in  std_logic := '0';
       c0     : out std_logic;
+      c1     : out std_logic;
       locked : out std_logic);
+  end component;
+  
+  component flash_loader is
+    port(
+	 	noe_in : in std_logic
+	 );
+  end component;
+  
+  component pow_reset is
+	port (
+      clk    : in     std_logic;        -- 125Mhz
+      nreset : buffer std_logic
+   );
   end component;
   
   component altera_pcie is 
@@ -171,20 +185,46 @@ architecture rtl of pcie_wb is
       signal txelecidle3_ext      : out std_logic);
    end component;
 
+  signal cal_blk_clk : std_logic;
+  signal core_clk_out : std_logic;
+  
   signal reconfig_clk     : std_logic;
   signal reconfig_fromgxb : std_logic_vector(16 downto 0);
   signal reconfig_togxb   : std_logic_vector(3 downto 0);
-  signal core_clk_out     : std_logic;
   
   signal count : unsigned(26 downto 0) := to_unsigned(0, 27);
   signal led_r : std_logic := '0';
+  signal locked : std_logic;
+  
+  signal l2_exit, hotrst_exit, dlup_exit : std_logic;
+  signal npor, crst, srst, rst_reg : std_logic;
+  signal pme_shift : std_logic_vector(4 downto 0);
+  signal ltssm : std_logic_vector(4 downto 0);
+  
+  signal nreset: std_logic;
+  signal test_in: std_logic_vector(39 downto 0);
+  signal busy_reconfig: std_logic;
+  
 begin
+
+	test_in <=  "0000000000000000000000000000000010001000";	-- disable low power state negotiation
+					
+
+  reset : pow_reset
+    port map (
+      clk    => pcie_clk125_i,
+      nreset => nreset
+    );
+
+  flash : flash_loader 
+    port map(
+	 	noe_in => '0');
 
   reconfig : altera_reconfig
     port map(
       reconfig_clk     => reconfig_clk,
       reconfig_fromgxb => reconfig_fromgxb,
-      busy             => open,
+      busy             => busy_reconfig,
       reconfig_togxb   => reconfig_togxb);
    
   pll : altera_pcie_pll
@@ -192,7 +232,8 @@ begin
       areset => '0',
       inclk0 => pcie_clk125_i,
       c0     => reconfig_clk,
-      locked => open);
+		c1     => cal_blk_clk,
+      locked => locked);
       
   pcie : altera_pcie
     port map(
@@ -205,14 +246,14 @@ begin
       core_clk_out         => core_clk_out,
       
       -- Transceiver control
-      cal_blk_clk          => pcie_clk125_i, -- All transceivers in FPGA must use the same calibration clock
+      cal_blk_clk          => cal_blk_clk, -- All transceivers in FPGA must use the same calibration clock
       reconfig_clk         => reconfig_clk,
       fixedclk_serdes      => pcie_clk125_i,
       gxb_powerdown        => '0',
       pll_powerdown        => '0',
       reconfig_togxb       => reconfig_togxb,
       reconfig_fromgxb     => reconfig_fromgxb,
-      busy_altgxb_reconfig => '1',
+      busy_altgxb_reconfig => busy_reconfig,
       
       -- PCIe lanes
       rx_in0               => pcie_rx_i(0),
@@ -339,28 +380,48 @@ begin
       pm_auxpwr            => '0',
       pm_data              => (others => '0'), -- 9 downto 0
       pm_event             => '0',
-      pme_to_cr            => '0',
-      pme_to_sr            => open,
+      pme_to_cr            => pme_shift(pme_shift'length-1),
+      pme_to_sr            => pme_shift(0),
       
       -- Reset and link training
-      npor                 => pcie_rstn_i,
-      srst                 => '0',
-      crst                 => '0',
-      l2_exit              => open,
-      hotrst_exit          => open,
-      dlup_exit            => open,
+      npor                 => npor,
+      srst                 => srst,
+      crst                 => crst,
+      l2_exit              => l2_exit,
+      hotrst_exit          => hotrst_exit,
+      dlup_exit            => dlup_exit,
       suc_spd_neg          => open,
-      ltssm                => open, --  4 downto 0
+      ltssm                => ltssm, --  4 downto 0
       rc_pll_locked        => open,
       reset_status         => open,
       
       -- Debugging signals
       lane_act             => open, --  3 downto 0
-      test_in              => (others => '0'), -- 39 downto 0
+      test_in              => test_in, -- 39 downto 0
       test_out             => open, --  8 downto 0
       
       -- WTF? Not documented
       rc_rx_digitalreset   => open);
+  
+  
+  pme_shifter : process(core_clk_out)
+  begin
+    if rising_edge(core_clk_out) then
+	   pme_shift(pme_shift'length-1 downto 1) <= pme_shift(pme_shift'length-2 downto 0);
+		
+		if (l2_exit and hotrst_exit and dlup_exit) = '0' then
+		  rst_reg <= '1';
+		  crst <= '1';
+		  srst <= '1';
+		else
+		  rst_reg <= '0';
+		  crst <= rst_reg;
+		  srst <= rst_reg;
+		end if;
+	 end if;
+  end process;
+  --npor <= pcie_rstn_i and locked;
+  npor <= nreset and locked;
   
   blink : process(pcie_clk125_i)
   begin
@@ -371,5 +432,9 @@ begin
       end if;
     end if;
   end process;
-  led_o <= led_r;
+  led_o(0) <= led_r;
+  
+  led_o(1 to 2) <= (others => '1');
+  
+  led_o(3 to 7) <= not ltssm;
 end rtl;
