@@ -1131,7 +1131,7 @@ end europa;
 -- Warning: If you modify this section, IP Compiler for PCI Express Wizard may not be able to reproduce your chosen configuration.
 -- 
 -- Retrieval info: <?xml version="1.0"?>
--- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="11.1"  build="216"  iptb_version="1.3.0 Build 216"  format_version="120" >
+-- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="11.1"  build="173"  iptb_version="1.3.0 Build 173"  format_version="120" >
 -- Retrieval info:  <NETLIST_SECTION class="altera.ipbu.flowbase.netlist.model.MVCModel"  active_core="altpcie_hip_pipen1b" >
 -- Retrieval info:   <STATIC_SECTION>
 -- Retrieval info:    <PRIVATES>
@@ -1264,10 +1264,10 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pci_master" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_master_bursts" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_master_concurrent_reads" value="false"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pci_master_data_width" value="32"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pci_master_data_width" value="64"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_maximum_burst_size" value="128"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_maximum_burst_size_a2p" value="128"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pci_maximum_pending_read_transactions_a2p" value="2"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pci_maximum_pending_read_transactions_a2p" value="8"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_non_pref_av_master_port" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_not_target_only_port" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_pref_av_master_port" value="true"  type="STRING"  enable="1" />

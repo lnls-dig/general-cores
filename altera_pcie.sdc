@@ -1,11 +1,7 @@
-create_clock -period "100 MHz" -name {refclk} {pcie_refclk_i}
-derive_pll_clocks -create_base_clocks
-derive_clock_uncertainty
-
 # The refclk assignment may need to be renamed to match design top level port name.
 # May be desireable to move refclk assignment to a top level SDC file.
-#create_clock -period "100 MHz" -name {refclk} {pcie_refclk_i}
-#create_clock -period "125 MHz" -name {fixedclk_serdes} {pcie_clk125_i}
+#create_clock -period "100 MHz" -name {refclk} {refclk}
+#create_clock -period "100 MHz" -name {fixedclk_serdes} {fixedclk_serdes}
 # testin bits are either static or treated asynchronously, cut the paths.
 #set_false_path -to [get_pins -hierarchical {*hssi_pcie_hip|testin[*]} ]
 # SERDES Digital Reset inputs are asynchronous
