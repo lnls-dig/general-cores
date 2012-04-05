@@ -207,7 +207,7 @@ architecture rtl of pcie_wb is
   
 begin
 
-	test_in <=  "0000000000000000000000000000000010001000";	-- disable low power state negotiation
+	test_in <=  (others => '0'); -- ))"0000000000000000000000000000000010001000";	-- disable low power state negotiation
 					
 
   reset : pow_reset
