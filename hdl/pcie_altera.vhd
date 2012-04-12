@@ -205,13 +205,14 @@ architecture rtl of pcie_altera is
   signal pme_shift : std_logic_vector(4 downto 0);
   
   signal rx_st_ready0, rx_st_valid0 : std_logic;
+  signal rx_st_be0 : std_logic_vector(7 downto 0);
   signal rx_st_data0 : std_logic_vector(63 downto 0);
   
   signal r64_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon RX bus
   signal r64_dat, s64_dat : std_logic_vector(63 downto 0);
-  signal s64_need_refill, s64_filling, s64_valid, s64_advance, r64_full : std_logic;
+  signal s64_need_refill, s64_filling, s64_valid, s64_advance, r64_full, r64_skip, s64_skip : std_logic;
   
-  signal r32_word, s32_word, s32_progress, r32_full, s32_need_refill : std_logic;
+  signal r32_word, s32_word, s32_progress, r32_full, s32_need_refill, r32_skip, s32_enter0 : std_logic;
   signal r32_dat0, r32_dat1 : std_logic_vector(31 downto 0);
 begin
 
@@ -260,7 +261,7 @@ begin
       rx_st_mask0          => '0',
       rx_st_ready0         => rx_st_ready0,
       rx_st_bardec0        => open, --  7 downto 0
-      rx_st_be0            => open, --  7 downto 0
+      rx_st_be0            => rx_st_be0, --  7 downto 0
       rx_st_data0          => rx_st_data0, -- 63 downto 0
       rx_st_eop0           => open,
       rx_st_err0           => open,
@@ -432,10 +433,11 @@ begin
   
   -- Advance state if the WB RX bus made progress
   s32_progress <= r32_full and not rx_wb_stall_i;
-  s32_word <= (not r32_word) when s32_progress = '1' else r32_word;
+  s32_word <= (not r32_word and not r32_skip) when s32_progress = '1' else r32_word;
+  s32_enter0 <= (r32_word or r32_skip) and s32_progress;
   
   -- The 32-bit buffers become empty when transitioning to word0
-  s32_need_refill <= not r32_full or (r32_word and s32_progress);
+  s32_need_refill <= not r32_full or s32_enter0;
   
   -- Grab data when we need data and there is some ready
   s64_advance <= s64_valid and s32_need_refill;
@@ -454,6 +456,7 @@ begin
       if s64_advance = '1' then
         r32_dat0 <= s64_dat(31 downto 0);
         r32_dat1 <= s64_dat(63 downto 32);
+        r32_skip <= s64_skip;
       end if;
       
       if s32_word = '1' then
@@ -471,6 +474,7 @@ begin
   
   -- Supply the 64-bit data to the 32-bit stream with possible asynchronous bypass
   s64_dat <= r64_dat when r64_full = '1' else rx_st_data0;
+  s64_skip <= r64_skip when r64_full = '1' else is_zero(rx_st_be0(7 downto 4));
   
   -- Issue a fetch only if we need refill and no fetch is pending
   rx_st_ready0 <= s64_need_refill and is_zero(r64_ready(r64_ready'length-2 downto 0));
@@ -487,6 +491,7 @@ begin
       end if;
       
       r64_dat <= s64_dat;
+      r64_skip <= s64_skip;
     end if;
   end process;
 end rtl;
