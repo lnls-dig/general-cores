@@ -51,12 +51,14 @@ architecture rtl of pcie_tlp is
   signal s_length_eq1, s_length_eq2 : boolean;
   signal s_address_p4 : std_logic_vector(63 downto 0);
   
-  -- Stall bypass mux
+  -- Stall and strobe bypass mux
   signal r_always_stall, r_never_stall : std_logic;
+  signal r_always_stb,   r_never_stb   : std_logic;
 begin
+  rx_wb_stall_o <= r_always_stall or (not r_never_stall and wb_stall_i);
+  wb_stb_o <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
   wb_adr_o <= r_address;
   wb_dat_o <= rx_wb_dat_i;
-  rx_wb_stall_o <= r_always_stall or (not r_never_stall and wb_stall_i);
   
   -- Fields in the rx_data
   s_fmttype     <= rx_wb_dat_i(31 downto 24);
@@ -200,11 +202,12 @@ begin
         end case;
         
         ----------------- Post-transition actions --------------------
-        wb_stb_o <= '0';
         wb_we_o <= 'X';
         wb_sel_o <= (others => 'X');
         r_always_stall <= '0';
         r_never_stall <= '1' ;
+        r_always_stb <= '0';
+        r_never_stb <= '1';
         
         state <= next_state;
         case next_state is
@@ -216,32 +219,32 @@ begin
           when h_low_addr => null;
           when p_w0 =>
             r_never_stall <= '0';
-            wb_stb_o <= rx_wb_stb_i;
+            r_never_stb <= '0';
             wb_sel_o <= r_first_be;
             wb_we_o <= '1';
           when p_wx =>
             r_never_stall <= '0';
-            wb_stb_o <= rx_wb_stb_i;
+            r_never_stb <= '0';
             wb_sel_o <= x"f";
             wb_we_o <= '1';
           when p_we =>
             r_never_stall <= '0';
-            wb_stb_o <= rx_wb_stb_i;
+            r_never_stb <= '0';
             wb_sel_o <= r_last_be;
             wb_we_o <= '1';
           when p_r0 =>
             r_always_stall <= '1';
-            wb_stb_o <= '1';
+            r_always_stb <= '1';
             wb_sel_o <= r_first_be;
             wb_we_o <= '0';
           when p_rx =>
             r_always_stall <= '1';
-            wb_stb_o <= '1';
+            r_always_stb <= '1';
             wb_sel_o <= x"f";
             wb_we_o <= '0';
           when p_re =>
             r_always_stall <= '1';
-            wb_stb_o <= '1';
+            r_always_stb <= '1';
             wb_sel_o <= r_last_be;
             wb_we_o <= '0';
         end case;
