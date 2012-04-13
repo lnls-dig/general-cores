@@ -28,4 +28,22 @@ package pcie_wb_pkg is
       tx_wb_dat_i   : in  std_logic_vector(31 downto 0);
       tx_wb_stall_o : out std_logic);
   end component;
+  
+  component pcie_tlp is
+    port(
+      clk_i         : in std_logic;
+      rstn_i        : in std_logic;
+      
+      rx_wb_stb_i   : in  std_logic;
+      rx_wb_bar_i   : in  std_logic;
+      rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
+      rx_wb_stall_o : out std_logic;
+      
+      wb_stb_o      : out std_logic;
+      wb_adr_o      : out std_logic_vector(63 downto 0);
+      wb_we_o       : out std_logic;
+      wb_dat_o      : out std_logic_vector(31 downto 0);
+      wb_sel_o      : out std_logic_vector(3 downto 0);
+      wb_stall_i    : in  std_logic);
+  end component;
 end pcie_wb_pkg;

@@ -1269,7 +1269,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pci_maximum_burst_size_a2p" value="128"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_maximum_pending_read_transactions_a2p" value="8"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_non_pref_av_master_port" value="true"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pci_not_target_only_port" value="true"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pci_not_target_only_port" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_pref_av_master_port" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_reqn_gntn_pins" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_single_clock" value="false"  type="STRING"  enable="1" />
@@ -1283,21 +1283,21 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_altgx_keyParameters_used" value="{p_pcie_enable_hip=1, p_pcie_number_of_lanes=x4, p_pcie_phy=Arria II GX, p_pcie_rate=Gen1 (2.5 Gbps), p_pcie_txrx_clock=100 MHz}"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_app_signal_interface" value="AvalonST"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_avalon_mm_lite" value="0"  type="INTEGER"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="256 Bytes - 8 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="64 MBytes - 26 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_2" value="64 MBytes - 26 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="128 Bytes - 7 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="16 MBytes - 24 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_2" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_3" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_4" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_5" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_0" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_1" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_2" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_2" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_3" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_4" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_5" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_0" value="1"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_1" value="1"  type="BOOLEAN"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_2" value="1"  type="BOOLEAN"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_2" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_3" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_4" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_5" value="0"  type="BOOLEAN"  enable="1" />
@@ -1478,7 +1478,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "uiFixedTable" value="true"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar0Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar1Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiPCIBar2Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiPCIBar2Type" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar3Type" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar4Type" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar5Type" value="Disable this and all higher BARs"  type="STRING"  enable="1" />

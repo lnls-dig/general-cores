@@ -39,11 +39,13 @@ architecture rtl of pcie_wb is
   
   signal count : unsigned(26 downto 0) := to_unsigned(0, 27);
   signal led_r : std_logic := '0';
-  signal locked, pow_rstn, rstn, stall : std_logic;
+  signal locked, pow_rstn, phy_rstn, rstn, stall : std_logic;
   
   constant stall_pattern : std_logic_vector(15 downto 0) := "1111010110111100";
   signal stall_idx : unsigned(3 downto 0);
   
+  signal rx_wb_stb, rx_wb_stall : std_logic;
+  signal rx_wb_dat : std_logic_vector(31 downto 0);
 begin
 
   reset : pow_reset
@@ -59,23 +61,41 @@ begin
       c0     => cal_blk_clk,
       locked => locked);
       
-  rstn <= pow_rstn and locked;
+  phy_rstn <= pow_rstn and locked;
   
   pcie_phy : pcie_altera port map(
     clk125_i      => clk125_i,
     cal_clk50_i   => cal_blk_clk,
-    rstn_i        => rstn,
-    rstn_o        => open,
+    rstn_i        => phy_rstn,
+    rstn_o        => rstn,
     pcie_refclk_i => pcie_refclk_i,
     pcie_rstn_i   => pcie_rstn_i,
     pcie_rx_i     => pcie_rx_i,
     pcie_tx_o     => pcie_tx_o,
-    -- rest open for now
-    wb_clk_o => wb_clk,
-    rx_wb_stall_i => stall,
-    tx_wb_stb_i => '0',
-    tx_wb_dat_i => (others => '0')
-    );
+    wb_clk_o      => wb_clk,
+    rx_wb_stb_o   => rx_wb_stb,
+    rx_wb_dat_o   => rx_wb_dat,
+    rx_wb_stall_i => rx_wb_stall,
+    -- No TX... yet.
+    tx_wb_stb_i   => '0',
+    tx_wb_dat_i   => (others => '0'),
+    tx_wb_stall_o => open);
+  
+  pcie_logic : pcie_tlp port map(
+    clk_i         => wb_clk,
+    rstn_i        => rstn,
+    
+    rx_wb_stb_i   => rx_wb_stb,
+    rx_wb_bar_i   => '0',
+    rx_wb_dat_i   => rx_wb_dat,
+    rx_wb_stall_o => rx_wb_stall,
+    
+    wb_stb_o      => open,
+    wb_adr_o      => open,
+    wb_we_o       => open,
+    wb_dat_o      => open,
+    wb_sel_o      => open,
+    wb_stall_i    => stall);
   
   blink : process(wb_clk)
   begin

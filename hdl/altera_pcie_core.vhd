@@ -301,10 +301,6 @@ ARCHITECTURE SYN OF altera_pcie_core IS
 		bar1_64bit_mem_space	: STRING;
 		bar1_prefetchable	: STRING;
 		bar1_size_mask	: NATURAL;
-		bar2_io_space	: STRING;
-		bar2_64bit_mem_space	: STRING;
-		bar2_prefetchable	: STRING;
-		bar2_size_mask	: NATURAL;
 		enable_ecrc_check	: STRING;
 		enable_ecrc_gen	: STRING;
 		enable_l1_aspm	: STRING;
@@ -766,15 +762,11 @@ BEGIN
 		bar0_io_space => "false",
 		bar0_64bit_mem_space => "false",
 		bar0_prefetchable => "false",
-		bar0_size_mask => 8,
+		bar0_size_mask => 7,
 		bar1_io_space => "false",
 		bar1_64bit_mem_space => "false",
 		bar1_prefetchable => "false",
-		bar1_size_mask => 26,
-		bar2_io_space => "false",
-		bar2_64bit_mem_space => "false",
-		bar2_prefetchable => "false",
-		bar2_size_mask => 26,
+		bar1_size_mask => 24,
 		enable_ecrc_check => "false",
 		enable_ecrc_gen => "false",
 		enable_l1_aspm => "false",
