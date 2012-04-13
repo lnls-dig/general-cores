@@ -197,8 +197,9 @@ architecture rtl of pcie_altera is
   signal reconfig_fromgxb : std_logic_vector(16 downto 0);
   signal reconfig_togxb   : std_logic_vector(3 downto 0);
   
-  signal tl_cfg_add : std_logic_vector(3 downto 0);
-  signal tl_cfg_ctl : std_logic_vector(31 downto 0);
+  signal tl_cfg_add   : std_logic_vector(3 downto 0);
+  signal tl_cfg_ctl   : std_logic_vector(31 downto 0);
+  signal tl_cfg_delay : std_logic_vector(3 downto 0);
   
   signal l2_exit, hotrst_exit, dlup_exit : std_logic;
   signal npor, crst, srst, rst_reg : std_logic;
@@ -421,7 +422,17 @@ begin
   cfg : process(core_clk_out)
   begin
     if rising_edge(core_clk_out) then
+      -- There is some instability on tl_cfg_ctl.
+      -- We make sure to latch it in the middle of one of its 8 cycle periods
+    
+      tl_cfg_delay(tl_cfg_delay'left downto 1) <= tl_cfg_delay(tl_cfg_delay'left-1 downto 0);
       if tl_cfg_add = x"f" then
+        tl_cfg_delay(0) <= '0';
+      else
+        tl_cfg_delay(0) <= '1';
+      end if;
+      
+      if tl_cfg_delay(tl_cfg_delay'left) = '1' and is_zero(tl_cfg_delay(tl_cfg_delay'left-1 downto 0)) = '1' then
         cfg_busdev <= tl_cfg_ctl(12 downto 0);
       end if;
     end if;
