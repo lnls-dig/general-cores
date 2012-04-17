@@ -12,12 +12,21 @@ entity pcie_tlp is
     rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
     rx_wb_stall_o : out std_logic;
     
+    tx_rdy_i      : out std_logic;
+    tx_alloc_o    : in  std_logic;
+    tx_en_o       : in  std_logic;
+    tx_dat_o      : in  std_logic_vector(31 downto 0);
+    tx_eop_o      : in  std_logic;
+    
     wb_stb_o      : out std_logic;
     wb_adr_o      : out std_logic_vector(63 downto 0);
     wb_we_o       : out std_logic;
     wb_dat_o      : out std_logic_vector(31 downto 0);
     wb_sel_o      : out std_logic_vector(3 downto 0);
-    wb_stall_i    : in  std_logic);
+    wb_stall_i    : in  std_logic;
+    wb_ack_i      : in  std_logic;
+    wb_err_i      : in  std_logic;
+    wb_dat_i      : in  std_logic_vector(31 downto 0));
 end pcie_tlp;
 
 architecture rtl of pcie_tlp is
@@ -54,9 +63,14 @@ architecture rtl of pcie_tlp is
   -- Stall and strobe bypass mux
   signal r_always_stall, r_never_stall : std_logic;
   signal r_always_stb,   r_never_stb   : std_logic;
+  
+  -- Inflight reads and writes
+  signal wb_stb : std_logic;
+  signal r_flight_count : unsigned(4 downto 0);
 begin
   rx_wb_stall_o <= r_always_stall or (not r_never_stall and wb_stall_i);
-  wb_stb_o <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
+  wb_stb <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
+  wb_stb_o <= wb_stb;
   wb_adr_o <= r_address;
   wb_dat_o <= rx_wb_dat_i;
   
@@ -248,6 +262,25 @@ begin
             wb_sel_o <= r_last_be;
             wb_we_o <= '0';
         end case;
+      end if;
+    end if;
+  end process;
+  
+  flight_counter : process(clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (wb_ack_i or wb_err_i) = '1' then
+        if wb_stb = '1' then
+          r_flight_count <= r_flight_count;
+        else
+          r_flight_count <= r_flight_count - 1;
+        end if;
+      else
+        if wb_stb = '1' then
+          r_flight_count <= r_flight_count + 1;
+        else
+          r_flight_count <= r_flight_count;
+        end if;
       end if;
     end if;
   end process;

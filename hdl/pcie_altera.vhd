@@ -23,9 +23,14 @@ entity pcie_altera is
     rx_wb_dat_o   : out std_logic_vector(31 downto 0);
     rx_wb_stall_i : in  std_logic;
     
-    tx_wb_stb_i   : in  std_logic;
-    tx_wb_dat_i   : in  std_logic_vector(31 downto 0);
-    tx_wb_stall_o : out std_logic);
+    -- pre-allocate buffer space used for TX
+    tx_rdy_o      : out std_logic;
+    tx_alloc_i    : in  std_logic; -- may only set '1' if rdy_o = '1'
+    
+    -- push TX data
+    tx_en_i       : in  std_logic; -- may never exceed alloc_i
+    tx_dat_i      : in  std_logic_vector(31 downto 0);
+    tx_eop_i      : in  std_logic); -- Mark last strobe
 end pcie_altera;
 
 architecture rtl of pcie_altera is
@@ -188,6 +193,15 @@ architecture rtl of pcie_altera is
       return '0';
     end if;
   end is_zero;
+  
+  function active_high(x : boolean) return std_logic is
+  begin
+    if x then
+      return '1';
+    else
+      return '0';
+    end if;
+  end active_high;
 
   signal core_clk_out : std_logic;
   signal rstn : std_logic;
@@ -205,6 +219,8 @@ architecture rtl of pcie_altera is
   signal npor, crst, srst, rst_reg : std_logic;
   signal pme_shift : std_logic_vector(4 downto 0);
   
+  -- RX registers and signals
+  
   signal rx_st_ready0, rx_st_valid0 : std_logic;
   signal rx_st_be0 : std_logic_vector(7 downto 0);
   signal rx_st_data0 : std_logic_vector(63 downto 0);
@@ -215,6 +231,31 @@ architecture rtl of pcie_altera is
   
   signal r32_word, s32_word, s32_progress, r32_full, s32_need_refill, r32_skip, s32_enter0 : std_logic;
   signal r32_dat0, r32_dat1 : std_logic_vector(31 downto 0);
+  
+  -- TX registers and signals
+  
+  constant log_bytes  : integer := 9; -- 256 byte maximum TLP, but we allocate twice the space to simplify provisioning
+  constant buf_length : integer := (2**log_bytes)/8;
+  constant buf_bits   : integer := log_bytes-3;
+  type queue_t is array(buf_length-1 downto 0) of std_logic_vector(64 downto 0);
+  
+  signal tx_st_sop0, tx_st_eop0, tx_st_ready0, tx_st_valid0 : std_logic;
+  signal tx_st_data0 : std_logic_vector(63 downto 0);
+  signal s_eop, tx_queue_stall : std_logic;
+  signal r_sop : std_logic := '1';
+  
+  signal queue : queue_t;
+  
+  -- Invariant idxr <= idxe <= idxw <= idxa, extra bit is for wrap-around
+  signal r_idxr, r_idxw, r_idxa, r_idxe, s_idxw_p1 : unsigned(buf_bits downto 0);
+  signal r_delay_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon TX bus
+  
+  signal s_queue_wdat : std_logic_vector(63 downto 0);
+  signal s_queue_wen, s_64to32_full, r_tx32_full, r_pad : std_logic;
+  
+  constant zero32 : std_logic_vector(31 downto 0) := (others => '0');
+  signal r_tx_dat0 : std_logic_vector(31 downto 0);
+  
 begin
 
   reconfig_clk <= cal_clk50_i;
@@ -277,12 +318,12 @@ begin
       r2c_err0             => open,
 
       -- Avalon TX
-      tx_st_data0          => (others => '0'),
-      tx_st_eop0           => '0',
+      tx_st_data0          => tx_st_data0,
+      tx_st_eop0           => tx_st_eop0,
       tx_st_err0           => '0',
-      tx_st_sop0           => '0',
-      tx_st_valid0         => '0',
-      tx_st_ready0         => open,
+      tx_st_sop0           => tx_st_sop0,
+      tx_st_valid0         => tx_st_valid0,
+      tx_st_ready0         => tx_st_ready0,
       tx_fifo_empty0       => open,
       tx_fifo_full0        => open,
       tx_fifo_rdptr0       => open, --  3 downto 0
@@ -490,7 +531,7 @@ begin
   -- Issue a fetch only if we need refill and no fetch is pending
   rx_st_ready0 <= s64_need_refill and is_zero(r64_ready(r64_ready'length-2 downto 0));
   
-  rx_data64: process(core_clk_out)
+  rx_data64 : process(core_clk_out)
   begin
     if rising_edge(core_clk_out) then
       if rstn = '0' then
@@ -503,6 +544,85 @@ begin
       
       r64_dat <= s64_dat;
       r64_skip <= s64_skip;
+    end if;
+  end process;
+  
+  -- TX queue
+  tx_st_data0 <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(63 downto 0);
+  s_eop       <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(64);
+  tx_st_eop0  <= s_eop;
+  tx_st_sop0  <= r_sop;
+  
+  tx_st_valid0 <= active_high(r_idxr /= r_idxe) and r_delay_ready(r_delay_ready'length-1);
+  
+  tx_data64_r : process(core_clk_out)
+  begin
+    if rising_edge(core_clk_out) then
+      if rstn = '0' then
+        r_delay_ready <= (others => '0');
+        r_idxr <= (others => '0');
+        r_sop <= '1';
+      else
+        r_delay_ready <= r_delay_ready(r_delay_ready'length-2 downto 0) & tx_st_ready0;
+        if tx_st_valid0 = '1' then
+          r_idxr <= r_idxr + 1;
+          r_sop <= s_eop;
+        end if;
+      end if;
+    end if;
+  end process;
+  
+  -- can only accept data if A pointer has not wrapped around the buffer to point at the R pointer
+  tx_rdy_o <= active_high(r_idxa(buf_bits-1 downto 0) = r_idxr(buf_bits-1 downto 0)) and
+              active_high(r_idxa(buf_bits) /= r_idxr(buf_bits));
+  
+  s_idxw_p1 <= r_idxw + 1;
+  tx_data64_w : process(core_clk_out)
+  begin
+    if rising_edge(core_clk_out) then
+      if rstn = '0' then
+        r_idxw <= (others => '0');
+        r_idxa <= (others => '0');
+        r_idxe <= (others => '0');
+      else
+        queue(to_integer(r_idxw(buf_bits-1 downto 0))) <= tx_eop_i & s_queue_wdat;
+        
+        if s_queue_wen = '1' then
+          r_idxw <= s_idxw_p1;
+        end if;
+        
+        if (s_queue_wen and tx_eop_i) = '1' then
+          r_idxe <= s_idxw_p1;
+          r_idxa <= s_idxw_p1; -- clear over-allocation
+        end if;
+        
+        if tx_alloc_i = '1' then
+          r_idxa <= r_idxa + 1;
+        end if;
+      end if;
+    end if;
+  end process;
+  
+  s_queue_wdat <= 
+    (zero32 & tx_dat_i) when r_tx32_full = '0' else
+    (tx_dat_i & r_tx_dat0);
+  
+  s_64to32_full <= r_tx32_full or r_pad or tx_eop_i;
+  s_queue_wen <= tx_en_i and s_64to32_full;
+  
+  tx_data32 : process(core_clk_out)
+  begin
+    if rising_edge(core_clk_out) then
+      if rstn = '0' then
+        r_tx_dat0 <= (others => '0');
+        r_tx32_full <= '0';
+        r_pad <= '0';
+      else
+        if tx_en_i = '1' then
+          r_tx_dat0 <= tx_dat_i;
+          r_tx32_full <= not s_64to32_full;
+        end if;
+      end if;
     end if;
   end process;
 end rtl;

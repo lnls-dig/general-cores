@@ -46,6 +46,13 @@ architecture rtl of pcie_wb is
   
   signal rx_wb_stb, rx_wb_stall : std_logic;
   signal rx_wb_dat : std_logic_vector(31 downto 0);
+  
+  signal tx_rdy, tx_alloc, tx_en, tx_eop : std_logic;
+  signal tx_dat : std_logic_vector(31 downto 0);
+  
+  signal wb_stb_o, wb_we_o, wb_ack_i : std_logic;
+  signal wb_dat_o, wb_dat_i, demo_reg : std_logic_vector(31 downto 0);
+  
 begin
 
   reset : pow_reset
@@ -76,10 +83,11 @@ begin
     rx_wb_stb_o   => rx_wb_stb,
     rx_wb_dat_o   => rx_wb_dat,
     rx_wb_stall_i => rx_wb_stall,
-    -- No TX... yet.
-    tx_wb_stb_i   => '0',
-    tx_wb_dat_i   => (others => '0'),
-    tx_wb_stall_o => open);
+    tx_rdy_o      => tx_rdy,
+    tx_alloc_i    => tx_alloc,
+    tx_en_i       => tx_en,
+    tx_dat_i      => tx_dat,
+    tx_eop_i      => tx_eop);
   
   pcie_logic : pcie_tlp port map(
     clk_i         => wb_clk,
@@ -90,12 +98,26 @@ begin
     rx_wb_dat_i   => rx_wb_dat,
     rx_wb_stall_o => rx_wb_stall,
     
-    wb_stb_o      => open,
+    wb_stb_o      => wb_stb_o,
     wb_adr_o      => open,
-    wb_we_o       => open,
-    wb_dat_o      => open,
+    wb_we_o       => wb_we_o,
+    wb_dat_o      => wb_dat_o,
     wb_sel_o      => open,
-    wb_stall_i    => stall);
+    wb_stall_i    => stall,
+    wb_ack_i      => wb_ack_i,
+    wb_err_i      => '0',
+    wb_dat_i      => wb_dat_i);
+  
+  wb_dat_i <= demo_reg;
+  demo : process(wb_clk)
+  begin
+    if rising_edge(wb_clk) then
+      if (wb_stb_o and wb_we_o and not stall) = '1' then
+        demo_reg <= wb_dat_o;
+      end if;
+      wb_ack_i <= wb_stb_o and not stall;
+    end if;
+  end process;
   
   blink : process(wb_clk)
   begin

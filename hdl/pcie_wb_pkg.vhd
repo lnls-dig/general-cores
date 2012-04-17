@@ -24,9 +24,14 @@ package pcie_wb_pkg is
       rx_wb_dat_o   : out std_logic_vector(31 downto 0);
       rx_wb_stall_i : in  std_logic;
       
-      tx_wb_stb_i   : in  std_logic;
-      tx_wb_dat_i   : in  std_logic_vector(31 downto 0);
-      tx_wb_stall_o : out std_logic);
+      -- pre-allocate buffer space used for TX
+      tx_rdy_o      : out std_logic;
+      tx_alloc_i    : in  std_logic; -- may only set '1' if rdy_o = '1'
+      
+      -- push TX data
+      tx_en_i       : in  std_logic; -- may never exceed alloc_i
+      tx_dat_i      : in  std_logic_vector(31 downto 0);
+      tx_eop_i      : in  std_logic); -- Mark last strobe
   end component;
   
   component pcie_tlp is
@@ -39,11 +44,20 @@ package pcie_wb_pkg is
       rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
       rx_wb_stall_o : out std_logic;
       
+      tx_rdy_i      : out std_logic;
+      tx_alloc_o    : in  std_logic;
+      tx_en_o       : in  std_logic;
+      tx_dat_o      : in  std_logic_vector(31 downto 0);
+      tx_eop_o      : in  std_logic;
+      
       wb_stb_o      : out std_logic;
       wb_adr_o      : out std_logic_vector(63 downto 0);
       wb_we_o       : out std_logic;
       wb_dat_o      : out std_logic_vector(31 downto 0);
       wb_sel_o      : out std_logic_vector(3 downto 0);
-      wb_stall_i    : in  std_logic);
+      wb_stall_i    : in  std_logic;
+      wb_ack_i      : in  std_logic;
+      wb_err_i      : in  std_logic;
+      wb_dat_i      : in  std_logic_vector(31 downto 0));
   end component;
 end pcie_wb_pkg;
