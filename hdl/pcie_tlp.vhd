@@ -296,42 +296,42 @@ begin
   
   -- These tables are copied from the PCI express standard:
   s_missing <= 
-    "000" when r_first_be = "1--1" and r_last_be = "0000" else
-    "001" when r_first_be = "01-1" and r_last_be = "0000" else
-    "001" when r_first_be = "1-10" and r_last_be = "0000" else
-    "010" when r_first_be = "0011" and r_last_be = "0000" else
-    "010" when r_first_be = "0110" and r_last_be = "0000" else
-    "010" when r_first_be = "1100" and r_last_be = "0000" else
-    "011" when r_first_be = "0001" and r_last_be = "0000" else
-    "011" when r_first_be = "0010" and r_last_be = "0000" else
-    "011" when r_first_be = "0100" and r_last_be = "0000" else
-    "011" when r_first_be = "1000" and r_last_be = "0000" else
-    "000" when r_first_be = "---1" and r_last_be = "1---" else
-    "001" when r_first_be = "---1" and r_last_be = "01--" else
-    "010" when r_first_be = "---1" and r_last_be = "001-" else
-    "011" when r_first_be = "---1" and r_last_be = "0001" else
-    "001" when r_first_be = "--10" and r_last_be = "1---" else
-    "010" when r_first_be = "--10" and r_last_be = "01--" else
-    "011" when r_first_be = "--10" and r_last_be = "001-" else
-    "100" when r_first_be = "--10" and r_last_be = "0001" else
-    "010" when r_first_be = "-100" and r_last_be = "1---" else
-    "011" when r_first_be = "-100" and r_last_be = "01--" else
-    "100" when r_first_be = "-100" and r_last_be = "001-" else
-    "101" when r_first_be = "-100" and r_last_be = "0001" else
-    "011" when r_first_be = "1000" and r_last_be = "1---" else
-    "100" when r_first_be = "1000" and r_last_be = "01--" else
-    "101" when r_first_be = "1000" and r_last_be = "001-" else
-    "110" when r_first_be = "1000" and r_last_be = "0001" else
+    "000" when std_match(r_first_be, "1--1") and std_match(r_last_be, "0000") else
+    "001" when std_match(r_first_be, "01-1") and std_match(r_last_be, "0000") else
+    "001" when std_match(r_first_be, "1-10") and std_match(r_last_be, "0000") else
+    "010" when std_match(r_first_be, "0011") and std_match(r_last_be, "0000") else
+    "010" when std_match(r_first_be, "0110") and std_match(r_last_be, "0000") else
+    "010" when std_match(r_first_be, "1100") and std_match(r_last_be, "0000") else
+    "011" when std_match(r_first_be, "0001") and std_match(r_last_be, "0000") else
+    "011" when std_match(r_first_be, "0010") and std_match(r_last_be, "0000") else
+    "011" when std_match(r_first_be, "0100") and std_match(r_last_be, "0000") else
+    "011" when std_match(r_first_be, "1000") and std_match(r_last_be, "0000") else
+    "000" when std_match(r_first_be, "---1") and std_match(r_last_be, "1---") else
+    "001" when std_match(r_first_be, "---1") and std_match(r_last_be, "01--") else
+    "010" when std_match(r_first_be, "---1") and std_match(r_last_be, "001-") else
+    "011" when std_match(r_first_be, "---1") and std_match(r_last_be, "0001") else
+    "001" when std_match(r_first_be, "--10") and std_match(r_last_be, "1---") else
+    "010" when std_match(r_first_be, "--10") and std_match(r_last_be, "01--") else
+    "011" when std_match(r_first_be, "--10") and std_match(r_last_be, "001-") else
+    "100" when std_match(r_first_be, "--10") and std_match(r_last_be, "0001") else
+    "010" when std_match(r_first_be, "-100") and std_match(r_last_be, "1---") else
+    "011" when std_match(r_first_be, "-100") and std_match(r_last_be, "01--") else
+    "100" when std_match(r_first_be, "-100") and std_match(r_last_be, "001-") else
+    "101" when std_match(r_first_be, "-100") and std_match(r_last_be, "0001") else
+    "011" when std_match(r_first_be, "1000") and std_match(r_last_be, "1---") else
+    "100" when std_match(r_first_be, "1000") and std_match(r_last_be, "01--") else
+    "101" when std_match(r_first_be, "1000") and std_match(r_last_be, "001-") else
+    "110" when std_match(r_first_be, "1000") and std_match(r_last_be, "0001") else
     "---";
   s_bytes <= std_logic_vector(unsigned(r_length & "00") - s_missing);
   
   s_low_addr(6 downto 2) <= r_address(6 downto 2);
   s_low_addr(1 downto 0) <= 
-    "00" when r_first_be = "0000" else
-    "00" when r_first_be = "---1" else
-    "01" when r_first_be = "--10" else
-    "10" when r_first_be = "-100" else
-    "11" when r_first_be = "1000" else
+    "00" when std_match(r_first_be, "0000") else
+    "00" when std_match(r_first_be, "---1") else
+    "01" when std_match(r_first_be, "--10") else
+    "10" when std_match(r_first_be, "-100") else
+    "11" when std_match(r_first_be, "1000") else
     "--";
   
   -- register: tx_en_o and tx_alloc_o
@@ -427,13 +427,13 @@ begin
   begin
     if rising_edge(clk_i) then
       if (wb_ack_i or wb_err_i) = '1' then
-        if wb_stb = '1' then
+        if (wb_stb and not wb_stall_i) = '1' then
           r_flight_count <= r_flight_count;
         else
           r_flight_count <= r_flight_count - 1;
         end if;
       else
-        if wb_stb = '1' then
+        if (wb_stb and not wb_stall_i) = '1' then
           r_flight_count <= r_flight_count + 1;
         else
           r_flight_count <= r_flight_count;
