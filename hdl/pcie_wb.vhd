@@ -53,6 +53,8 @@ architecture rtl of pcie_wb is
   signal wb_stb_o, wb_we_o, wb_ack_i : std_logic;
   signal wb_dat_o, wb_dat_i, demo_reg : std_logic_vector(31 downto 0);
   
+  signal cfg_busdev : std_logic_vector(12 downto 0);
+  
 begin
 
   reset : pow_reset
@@ -79,10 +81,15 @@ begin
     pcie_rstn_i   => pcie_rstn_i,
     pcie_rx_i     => pcie_rx_i,
     pcie_tx_o     => pcie_tx_o,
+
+    cfg_busdev_o  => cfg_busdev,
+
     wb_clk_o      => wb_clk,
+    
     rx_wb_stb_o   => rx_wb_stb,
     rx_wb_dat_o   => rx_wb_dat,
     rx_wb_stall_i => rx_wb_stall,
+    
     tx_rdy_o      => tx_rdy,
     tx_alloc_i    => tx_alloc,
     tx_en_i       => tx_en,
@@ -98,6 +105,14 @@ begin
     rx_wb_dat_i   => rx_wb_dat,
     rx_wb_stall_o => rx_wb_stall,
     
+    tx_rdy_i      => tx_rdy,
+    tx_alloc_o    => tx_alloc,
+    tx_en_o       => tx_en,
+    tx_dat_o      => tx_dat,
+    tx_eop_o      => tx_eop,
+    
+    cfg_busdev_i  => cfg_busdev,
+      
     wb_stb_o      => wb_stb_o,
     wb_adr_o      => open,
     wb_we_o       => wb_we_o,
@@ -133,5 +148,5 @@ begin
   end process;
   
   led_o(0) <= led_r;
-  led_o(1 to 7) <= (others => '1');
+  led_o(1 to 7) <= not demo_reg(6 downto 0);
 end rtl;

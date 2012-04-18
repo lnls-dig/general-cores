@@ -14,7 +14,7 @@ entity pcie_altera is
     pcie_rx_i     : in  std_logic_vector(3 downto 0);
     pcie_tx_o     : out std_logic_vector(3 downto 0);
     
-    cfg_busdev    : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
+    cfg_busdev_o  : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
     
     -- Simplified wishbone output stream
     wb_clk_o      : out std_logic;
@@ -474,7 +474,7 @@ begin
       end if;
       
       if tl_cfg_delay(tl_cfg_delay'left) = '1' and is_zero(tl_cfg_delay(tl_cfg_delay'left-1 downto 0)) = '1' then
-        cfg_busdev <= tl_cfg_ctl(12 downto 0);
+        cfg_busdev_o <= tl_cfg_ctl(12 downto 0);
       end if;
     end if;
   end process;
@@ -573,8 +573,8 @@ begin
   end process;
   
   -- can only accept data if A pointer has not wrapped around the buffer to point at the R pointer
-  tx_rdy_o <= active_high(r_idxa(buf_bits-1 downto 0) = r_idxr(buf_bits-1 downto 0)) and
-              active_high(r_idxa(buf_bits) /= r_idxr(buf_bits));
+  tx_rdy_o <= active_high(r_idxa(buf_bits-1 downto 0) /= r_idxr(buf_bits-1 downto 0)) or
+              active_high(r_idxa(buf_bits) = r_idxr(buf_bits));
   
   s_idxw_p1 <= r_idxw + 1;
   tx_data64_w : process(core_clk_out)
@@ -597,6 +597,7 @@ begin
         end if;
         
         if tx_alloc_i = '1' then
+          -- !!! insanely wasteful. fix.
           r_idxa <= r_idxa + 1;
         end if;
       end if;

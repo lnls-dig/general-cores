@@ -12,11 +12,13 @@ entity pcie_tlp is
     rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
     rx_wb_stall_o : out std_logic;
     
-    tx_rdy_i      : out std_logic;
-    tx_alloc_o    : in  std_logic;
-    tx_en_o       : in  std_logic;
-    tx_dat_o      : in  std_logic_vector(31 downto 0);
-    tx_eop_o      : in  std_logic;
+    tx_rdy_i      : in  std_logic;
+    tx_alloc_o    : out std_logic;
+    tx_en_o       : out std_logic;
+    tx_dat_o      : out std_logic_vector(31 downto 0);
+    tx_eop_o      : out std_logic;
+    
+    cfg_busdev_i  : in  std_logic_vector(12 downto 0);
     
     wb_stb_o      : out std_logic;
     wb_adr_o      : out std_logic_vector(63 downto 0);
@@ -30,10 +32,11 @@ entity pcie_tlp is
 end pcie_tlp;
 
 architecture rtl of pcie_tlp is
-  type state_type is (h0, h_completion1, h_completion2, h_request, h_high_addr, h_low_addr, p_w0, p_wx, p_we, p_r0, p_rx, p_re);
+  type rx_state_type is (h0, h_completion1, h_completion2, h_request, h_high_addr, h_low_addr, p_w0, p_wx, p_we, p_rs, p_r0, p_rx, p_re);
+  type tx_state_type is (c0, c1, c2, c_block, c_queue);
   
-  signal state : state_type := h0;
-  signal progress : std_logic;
+  signal rx_state : rx_state_type := h0;
+  signal tx_state : tx_state_type := c0;
   
   -- Bar0 Registers
   -- signal csr     : std_logic_vector(63 downto 0); -- bit0: CYC
@@ -43,12 +46,20 @@ architecture rtl of pcie_tlp is
   
   -- Header fields
   signal s_fmttype     : std_logic_vector(7 downto 0);
+  signal s_attr        : std_logic_vector(2 downto 0);
+  signal s_tc          : std_logic_vector(2 downto 0);
   signal s_length      : unsigned(9 downto 0);
   signal s_transaction : std_logic_vector(23 downto 0);
   signal s_last_be     : std_logic_vector(3 downto 0);
   signal s_first_be    : std_logic_vector(3 downto 0);
   
+  signal s_missing     : unsigned(2 downto 0);
+  signal s_bytes       : std_logic_vector(11 downto 0);
+  signal s_low_addr    : std_logic_vector(6 downto 0);
+  
   signal r_fmttype     : std_logic_vector(7 downto 0);
+  signal r_attr        : std_logic_vector(2 downto 0);
+  signal r_tc          : std_logic_vector(2 downto 0);
   signal r_length      : unsigned(9 downto 0);
   signal r_transaction : std_logic_vector(23 downto 0);
   signal r_last_be     : std_logic_vector(3 downto 0);
@@ -67,6 +78,9 @@ architecture rtl of pcie_tlp is
   -- Inflight reads and writes
   signal wb_stb : std_logic;
   signal r_flight_count : unsigned(4 downto 0);
+  
+  signal r_tx_en, r_tx_alloc, r_rx_alloc : std_logic;
+  signal r_pending_ack : unsigned(9 downto 0);
 begin
   rx_wb_stall_o <= r_always_stall or (not r_never_stall and wb_stall_i);
   wb_stb <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
@@ -76,6 +90,8 @@ begin
   
   -- Fields in the rx_data
   s_fmttype     <= rx_wb_dat_i(31 downto 24);
+  s_tc          <= rx_wb_dat_i(22 downto 20);
+  s_attr        <= rx_wb_dat_i(18) & rx_wb_dat_i(13 downto 12);
   s_length      <= unsigned(rx_wb_dat_i(9 downto 0));
   s_transaction <= rx_wb_dat_i(31 downto 8);
   s_last_be     <= rx_wb_dat_i(7 downto 4);
@@ -88,19 +104,21 @@ begin
   s_address_p4 <= r_address(63 downto 24) & 
                   std_logic_vector(unsigned(r_address(23 downto 0)) + to_unsigned(4, 24));
   
-  state_machine : process(clk_i) is
-    variable next_state : state_type;
+  rx_state_machine : process(clk_i) is
+    variable next_state : rx_state_type;
   begin
     if rising_edge(clk_i) then
       if rstn_i = '0' then
-        state <= h0;
+        rx_state <= h0;
       else
       
         ----------------- Pre-transition actions --------------------
-        case state is
+        case rx_state is
           when h0 =>
             r_fmttype <= s_fmttype;
             r_length  <= s_length;
+            r_attr    <= s_attr;
+            r_tc      <= s_tc;
           when h_completion1 => null;
           when h_completion2 =>
             r_transaction <= s_transaction;
@@ -117,14 +135,15 @@ begin
           when p_w0 => null;
           when p_wx => null;
           when p_we => null;
+          when p_rs => null;
           when p_r0 => null;
           when p_rx => null;
           when p_re => null;
         end case;
               
         ----------------- Transition rules --------------------
-        next_state := state;
-        case state is
+        next_state := rx_state;
+        case rx_state is
           when h0 =>
             if rx_wb_stb_i = '1' then
               if s_fmttype(3) = '1' then
@@ -162,7 +181,7 @@ begin
               if r_fmttype(6) = '1' then
                 next_state := p_w0;
               else
-                next_state := p_r0;
+                next_state := p_rs;
               end if;
             end if;
           when p_w0 =>
@@ -188,6 +207,10 @@ begin
           when p_we =>
             if (rx_wb_stb_i and not wb_stall_i) = '1' then
               next_state := h0;
+            end if;
+          when p_rs =>
+            if tx_state = c_queue then
+              next_state := p_r0;
             end if;
           when p_r0 =>
             if (not wb_stall_i) = '1' then
@@ -216,14 +239,15 @@ begin
         end case;
         
         ----------------- Post-transition actions --------------------
-        wb_we_o <= 'X';
-        wb_sel_o <= (others => 'X');
+        wb_we_o <= '-';
+        wb_sel_o <= (others => '-');
         r_always_stall <= '0';
         r_never_stall <= '1' ;
         r_always_stb <= '0';
         r_never_stb <= '1';
+        r_rx_alloc <= '0';
         
-        state <= next_state;
+        rx_state <= next_state;
         case next_state is
           when h0 => null;
           when h_completion1 => null;
@@ -246,21 +270,154 @@ begin
             r_never_stb <= '0';
             wb_sel_o <= r_last_be;
             wb_we_o <= '1';
+          when p_rs => null;
           when p_r0 =>
             r_always_stall <= '1';
-            r_always_stb <= '1';
+            r_always_stb <= tx_rdy_i;
+            r_rx_alloc <= tx_rdy_i;
             wb_sel_o <= r_first_be;
             wb_we_o <= '0';
           when p_rx =>
             r_always_stall <= '1';
-            r_always_stb <= '1';
+            r_always_stb <= tx_rdy_i;
+            r_rx_alloc <= tx_rdy_i;
             wb_sel_o <= x"f";
             wb_we_o <= '0';
           when p_re =>
             r_always_stall <= '1';
-            r_always_stb <= '1';
+            r_always_stb <= tx_rdy_i;
+            r_rx_alloc <= tx_rdy_i;
             wb_sel_o <= r_last_be;
             wb_we_o <= '0';
+        end case;
+      end if;
+    end if;
+  end process;
+  
+  -- These tables are copied from the PCI express standard:
+  s_missing <= 
+    "000" when r_first_be = "1--1" and r_last_be = "0000" else
+    "001" when r_first_be = "01-1" and r_last_be = "0000" else
+    "001" when r_first_be = "1-10" and r_last_be = "0000" else
+    "010" when r_first_be = "0011" and r_last_be = "0000" else
+    "010" when r_first_be = "0110" and r_last_be = "0000" else
+    "010" when r_first_be = "1100" and r_last_be = "0000" else
+    "011" when r_first_be = "0001" and r_last_be = "0000" else
+    "011" when r_first_be = "0010" and r_last_be = "0000" else
+    "011" when r_first_be = "0100" and r_last_be = "0000" else
+    "011" when r_first_be = "1000" and r_last_be = "0000" else
+    "000" when r_first_be = "---1" and r_last_be = "1---" else
+    "001" when r_first_be = "---1" and r_last_be = "01--" else
+    "010" when r_first_be = "---1" and r_last_be = "001-" else
+    "011" when r_first_be = "---1" and r_last_be = "0001" else
+    "001" when r_first_be = "--10" and r_last_be = "1---" else
+    "010" when r_first_be = "--10" and r_last_be = "01--" else
+    "011" when r_first_be = "--10" and r_last_be = "001-" else
+    "100" when r_first_be = "--10" and r_last_be = "0001" else
+    "010" when r_first_be = "-100" and r_last_be = "1---" else
+    "011" when r_first_be = "-100" and r_last_be = "01--" else
+    "100" when r_first_be = "-100" and r_last_be = "001-" else
+    "101" when r_first_be = "-100" and r_last_be = "0001" else
+    "011" when r_first_be = "1000" and r_last_be = "1---" else
+    "100" when r_first_be = "1000" and r_last_be = "01--" else
+    "101" when r_first_be = "1000" and r_last_be = "001-" else
+    "110" when r_first_be = "1000" and r_last_be = "0001" else
+    "---";
+  s_bytes <= std_logic_vector(unsigned(r_length & "00") - s_missing);
+  
+  s_low_addr(6 downto 2) <= r_address(6 downto 2);
+  s_low_addr(1 downto 0) <= 
+    "00" when r_first_be = "0000" else
+    "00" when r_first_be = "---1" else
+    "01" when r_first_be = "--10" else
+    "10" when r_first_be = "-100" else
+    "11" when r_first_be = "1000" else
+    "--";
+  
+  -- register: tx_en_o and tx_alloc_o
+  tx_en_o <= r_tx_en;
+  tx_alloc_o <= r_tx_alloc or r_rx_alloc;
+  tx_state_machine : process(clk_i) is
+    variable next_state : tx_state_type;
+  begin
+    if rising_edge(clk_i) then
+      if rstn_i = '0' then
+        tx_state <= c0;
+        r_tx_en <= '0';
+        r_tx_alloc <= '0';
+      else
+        ----------------- Transition rules --------------------
+        next_state := tx_state;
+        case tx_state is
+          when c0 =>
+            if r_tx_en = '1' then
+              next_state := c1;
+            end if;
+          when c1 =>
+            if r_tx_en = '1' then
+              next_state := c2;
+            end if;
+          when c2 =>
+            if r_tx_en = '1' then
+              if r_flight_count = 0 then
+                next_state := c_queue;
+              else
+                next_state := c_block;
+              end if;
+            end if;
+          when c_block =>
+            if r_flight_count = 0 then
+              next_state := c_queue;
+            end if;
+          when c_queue =>
+            if r_pending_ack = 0 then
+              next_state := c0;
+            end if;
+        end case;
+        
+        ----------------- Post-transition actions --------------------
+        r_tx_en <= '0';
+        r_tx_alloc <= '0';
+        tx_eop_o <= '0';
+        tx_dat_o <= (others => '-');
+        
+        tx_state <= next_state;
+        case next_state is
+          when c0 =>
+            r_pending_ack <= r_length;
+            -- r_length, r_tc, r_attr: all set on exit of h0
+            tx_dat_o <= "01001010" -- Completion with data
+                      & "0" & r_tc & "0" & r_attr(2 downto 2) & "00"
+                      & "00" & r_attr(1 downto 0) & "00" & std_logic_vector(r_length);
+            if r_fmttype(6) = '0' and r_fmttype(3) = '0' and rx_state /= h0 and tx_rdy_i = '1' then
+              r_tx_alloc <= '1';
+              r_tx_en <= '1';
+            end if;
+          when c1 =>
+            -- s_bytes: depends on first_be/last_be: set on exit of h_request
+            tx_dat_o <= cfg_busdev_i & "0000000" & s_bytes;
+            if rx_state /= h_request and tx_rdy_i = '1' then
+              r_tx_alloc <= '1';
+              r_tx_en <= '1';
+            end if;
+          when c2 =>
+            -- s_low_addr: set on exit of h_low_addr
+            tx_dat_o <= r_transaction & "0" & s_low_addr;
+            if rx_state /= h_high_addr and rx_state /= h_low_addr and tx_rdy_i = '1' then
+              r_tx_alloc <= '1';
+              r_tx_en <= '1';
+            end if;
+          when c_block => 
+            null;
+          when c_queue => 
+            tx_dat_o <= wb_dat_i;
+            if r_pending_ack = 1 then
+              tx_eop_o <= '1';
+            end if;
+            if (wb_ack_i or wb_err_i) = '1' then
+              r_tx_en <= '1';
+              r_pending_ack <= r_pending_ack - 1;
+            end if;
         end case;
       end if;
     end if;

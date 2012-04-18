@@ -15,7 +15,7 @@ package pcie_wb_pkg is
       pcie_rx_i     : in  std_logic_vector(3 downto 0);
       pcie_tx_o     : out std_logic_vector(3 downto 0);
       
-      cfg_busdev    : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
+      cfg_busdev_o  : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
       
       -- Simplified wishbone output stream
       wb_clk_o      : out std_logic;
@@ -44,11 +44,13 @@ package pcie_wb_pkg is
       rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
       rx_wb_stall_o : out std_logic;
       
-      tx_rdy_i      : out std_logic;
-      tx_alloc_o    : in  std_logic;
-      tx_en_o       : in  std_logic;
-      tx_dat_o      : in  std_logic_vector(31 downto 0);
-      tx_eop_o      : in  std_logic;
+      tx_rdy_i      : in  std_logic;
+      tx_alloc_o    : out std_logic;
+      tx_en_o       : out std_logic;
+      tx_dat_o      : out std_logic_vector(31 downto 0);
+      tx_eop_o      : out std_logic;
+      
+      cfg_busdev_i  : in  std_logic_vector(12 downto 0);
       
       wb_stb_o      : out std_logic;
       wb_adr_o      : out std_logic_vector(63 downto 0);
