@@ -1507,7 +1507,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "filename" value="altera_pcie_core.vhd"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "quartus_settings">
--- Retrieval info:      <PRIVATE name = "DEVICE" value="EP2AGX125DF25C6ES"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "DEVICE" value="EP2AGX125EF29C5"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "FAMILY" value="Arria II GX"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "serializer"/>

@@ -4,45 +4,28 @@ use ieee.numeric_std.all;
 
 library work;
 use work.pcie_wb_pkg.all;
+use work.wishbone_pkg.all;
 
 entity pcie_wb is
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
---    cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
---    rstn_i        : in  std_logic;
+    cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
+    rstn_i        : in  std_logic;
     
     pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
     pcie_rstn_i   : in  std_logic;
     pcie_rx_i     : in  std_logic_vector(3 downto 0);
     pcie_tx_o     : out std_logic_vector(3 downto 0);
     
-    led_o         : out std_logic_vector(0 to 7));
+    wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
+    master_o      : out t_wishbone_master_out;
+    master_i      : in  t_wishbone_master_in);
 end pcie_wb;
 
 architecture rtl of pcie_wb is
-  component altera_pcie_pll is
-    port(
-      areset : in  std_logic := '0';
-      inclk0 : in  std_logic := '0';
-      c0     : out std_logic;
-      locked : out std_logic);
-  end component;
+  signal internal_wb_clk : std_logic; -- Should be input in final version
   
-  component pow_reset is
-    port (
-      clk    : in     std_logic;        -- 125Mhz
-      nreset : buffer std_logic
-   );
-  end component;
-  
-  signal cal_blk_clk, wb_clk : std_logic; -- Should be input in final version
-  
-  signal count : unsigned(26 downto 0) := to_unsigned(0, 27);
-  signal led_r : std_logic := '0';
-  signal locked, pow_rstn, phy_rstn, rstn, stall : std_logic;
-  
-  constant stall_pattern : std_logic_vector(15 downto 0) := "1111010110111100";
-  signal stall_idx : unsigned(3 downto 0);
+  signal rstn, stall : std_logic;
   
   signal rx_wb_stb, rx_wb_stall : std_logic;
   signal rx_wb_dat : std_logic_vector(31 downto 0);
@@ -51,33 +34,29 @@ architecture rtl of pcie_wb is
   signal tx_rdy, tx_alloc, tx_en, tx_eop, tx_pad : std_logic;
   signal tx_dat : std_logic_vector(31 downto 0);
   
-  signal wb_stb_o, wb_we_o, wb_ack_i : std_logic;
-  signal wb_dat_o, wb_dat_i, demo_reg : std_logic_vector(31 downto 0);
+  signal wb_stb, wb_ack, wb_stall : std_logic;
+  signal wb_adr : std_logic_vector(63 downto 0);
   signal wb_bar : std_logic_vector(2 downto 0);
+  signal wb_dat : std_logic_vector(31 downto 0);
   
   signal cfg_busdev : std_logic_vector(12 downto 0);
   
+  signal slave_i : t_wishbone_slave_in;
+  signal slave_o : t_wishbone_slave_out;
+  
+  -- timing registers
+  signal r_high, r_ack : std_logic;
+  
+  -- control registers
+  signal r_cyc   : std_logic;
+  signal r_addr  : std_logic_vector(31 downto 24);
+  signal r_error : std_logic_vector(63 downto  0);
 begin
 
-  reset : pow_reset
-    port map (
-      clk    => clk125_i,
-      nreset => pow_rstn
-    );
-
-  pll : altera_pcie_pll
-    port map(
-      areset => '0',
-      inclk0 => clk125_i,
-      c0     => cal_blk_clk,
-      locked => locked);
-      
-  phy_rstn <= pow_rstn and locked;
-  
   pcie_phy : pcie_altera port map(
     clk125_i      => clk125_i,
-    cal_clk50_i   => cal_blk_clk,
-    rstn_i        => phy_rstn,
+    cal_clk50_i   => cal_clk50_i,
+    rstn_i        => rstn_i,
     rstn_o        => rstn,
     pcie_refclk_i => pcie_refclk_i,
     pcie_rstn_i   => pcie_rstn_i,
@@ -86,7 +65,7 @@ begin
 
     cfg_busdev_o  => cfg_busdev,
 
-    wb_clk_o      => wb_clk,
+    wb_clk_o      => internal_wb_clk,
     
     rx_wb_stb_o   => rx_wb_stb,
     rx_wb_dat_o   => rx_wb_dat,
@@ -101,7 +80,7 @@ begin
     tx_pad_i      => tx_pad);
   
   pcie_logic : pcie_tlp port map(
-    clk_i         => wb_clk,
+    clk_i         => internal_wb_clk,
     rstn_i        => rstn,
     
     rx_wb_stb_i   => rx_wb_stb,
@@ -118,41 +97,62 @@ begin
     
     cfg_busdev_i  => cfg_busdev,
       
-    wb_stb_o      => wb_stb_o,
-    wb_adr_o      => open,
+    wb_stb_o      => wb_stb,
+    wb_adr_o      => wb_adr,
     wb_bar_o      => wb_bar,
-    wb_we_o       => wb_we_o,
-    wb_dat_o      => wb_dat_o,
-    wb_sel_o      => open,
-    wb_stall_i    => stall,
-    wb_ack_i      => wb_ack_i,
-    wb_err_i      => '0',
-    wb_dat_i      => wb_dat_i);
+    wb_we_o       => slave_i.we,
+    wb_dat_o      => slave_i.dat,
+    wb_sel_o      => slave_i.sel,
+    wb_stall_i    => wb_stall,
+    wb_ack_i      => wb_ack,
+    wb_err_i      => slave_o.err,
+    wb_dat_i      => wb_dat);
   
-  wb_dat_i <= demo_reg;
-  demo : process(wb_clk)
-  begin
-    if rising_edge(wb_clk) then
-      if (wb_stb_o and wb_we_o and not stall) = '1' then
-        demo_reg <= wb_dat_o;
-      end if;
-      wb_ack_i <= wb_stb_o and not stall;
-    end if;
-  end process;
+  clock_crossing : xwb_clock_crossing port map(
+    rst_n_i       => rstn,
+    slave_clk_i   => internal_wb_clk,
+    slave_i       => slave_i,
+    slave_o       => slave_o,
+    master_clk_i  => wb_clk, 
+    master_i      => master_i,
+    master_o      => master_o);
   
-  blink : process(wb_clk)
+  slave_i.stb <= wb_stb        when wb_bar = "001" else '0';
+  wb_stall    <= slave_o.stall when wb_bar = "001" else '0';
+  wb_ack      <= slave_o.ack   when wb_bar = "001" else r_ack;
+  wb_dat      <= slave_o.dat   when wb_bar = "001" else
+                 r_error(63 downto 32) when r_high = '1' else
+                 r_error(31 downto  0);
+  
+  slave_i.cyc <= r_cyc;
+  slave_i.adr(31 downto 24) <= r_addr(31 downto 24);
+  slave_i.adr(23 downto 0)  <= wb_adr(23 downto 0);
+  
+  control : process(internal_wb_clk)
   begin
-    if rising_edge(wb_clk) then
-      count <= count + to_unsigned(1, count'length);
-      if count = 0 then
-        led_r <= not led_r;
+    if rising_edge(internal_wb_clk) then
+      -- Shift in the error register
+      if slave_o.ack = '1' or slave_o.err = '1' then
+        r_error <= r_error(r_error'length-2 downto 0) & slave_o.err;
       end if;
       
-      stall <= stall_pattern(to_integer(stall_idx));
-      stall_idx <= stall_idx + 1;
+      -- Feedback acks one cycle after strobe
+      r_ack <= wb_stb;
+      r_high <= wb_adr(2);
+      
+      -- Is this a write to the register space?
+      if wb_bar = "000" and slave_i.we = '1' then
+        if wb_stb = '1' then
+          -- Cycle line is high bit of register 0
+          if wb_adr(7 downto 2) = "00000" and slave_i.sel(3) = '1' then
+            r_cyc <= slave_i.dat(31);
+          end if;
+          -- Address 20 is low word of address window (register 2)
+          if wb_adr(7 downto 2) = "00101" and slave_i.sel(3) = '1' then
+            r_addr(31 downto 24) <= slave_i.dat(31 downto 24);
+          end if;
+        end if;
+      end if;
     end if;
   end process;
-  
-  led_o(0) <= led_r;
-  led_o(1 to 7) <= not demo_reg(6 downto 0);
 end rtl;
