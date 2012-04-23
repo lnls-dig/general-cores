@@ -21,6 +21,7 @@ package pcie_wb_pkg is
       wb_clk_o      : out std_logic;
       
       rx_wb_stb_o   : out std_logic;
+      rx_wb_bar_o   : out std_logic_vector(2 downto 0);
       rx_wb_dat_o   : out std_logic_vector(31 downto 0);
       rx_wb_stall_i : in  std_logic;
       
@@ -40,7 +41,7 @@ package pcie_wb_pkg is
       rstn_i        : in std_logic;
       
       rx_wb_stb_i   : in  std_logic;
-      rx_wb_bar_i   : in  std_logic;
+      rx_wb_bar_i   : in  std_logic_vector(2 downto 0);
       rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
       rx_wb_stall_o : out std_logic;
       
@@ -54,6 +55,7 @@ package pcie_wb_pkg is
       
       wb_stb_o      : out std_logic;
       wb_adr_o      : out std_logic_vector(63 downto 0);
+      wb_bar_o      : out std_logic_vector(2 downto 0);
       wb_we_o       : out std_logic;
       wb_dat_o      : out std_logic_vector(31 downto 0);
       wb_sel_o      : out std_logic_vector(3 downto 0);

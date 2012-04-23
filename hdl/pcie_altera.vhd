@@ -20,6 +20,7 @@ entity pcie_altera is
     wb_clk_o      : out std_logic;
     
     rx_wb_stb_o   : out std_logic;
+    rx_wb_bar_o   : out std_logic_vector(2 downto 0);
     rx_wb_dat_o   : out std_logic_vector(31 downto 0);
     rx_wb_stall_i : in  std_logic;
     
@@ -221,9 +222,13 @@ architecture rtl of pcie_altera is
   
   -- RX registers and signals
   
-  signal rx_st_ready0, rx_st_valid0 : std_logic;
+  signal rx_st_ready0, rx_st_valid0, rx_st_sop0 : std_logic;
   signal rx_st_be0 : std_logic_vector(7 downto 0);
   signal rx_st_data0 : std_logic_vector(63 downto 0);
+  signal rx_st_bardec0 : std_logic_vector(7 downto 0);
+  
+  signal r_rx_sop : std_logic;
+  signal r_bar : std_logic_vector(2 downto 0);
   
   signal r64_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon RX bus
   signal r64_dat, s64_dat : std_logic_vector(63 downto 0);
@@ -242,7 +247,7 @@ architecture rtl of pcie_altera is
   signal tx_st_sop0, tx_st_eop0, tx_st_ready0, tx_st_valid0 : std_logic;
   signal tx_st_data0 : std_logic_vector(63 downto 0);
   signal s_eop, tx_queue_stall : std_logic;
-  signal r_sop : std_logic := '1';
+  signal r_tx_sop : std_logic := '1';
   
   signal queue : queue_t;
   
@@ -302,12 +307,12 @@ begin
       -- Avalon RX
       rx_st_mask0          => '0',
       rx_st_ready0         => rx_st_ready0,
-      rx_st_bardec0        => open, --  7 downto 0
+      rx_st_bardec0        => rx_st_bardec0, --  7 downto 0
       rx_st_be0            => rx_st_be0, --  7 downto 0
       rx_st_data0          => rx_st_data0, -- 63 downto 0
       rx_st_eop0           => open,
       rx_st_err0           => open,
-      rx_st_sop0           => open,
+      rx_st_sop0           => rx_st_sop0,
       rx_st_valid0         => rx_st_valid0,
       rx_fifo_empty0       => open, -- informative/debug only (ignore in real design)
       rx_fifo_full0        => open, -- informative/debug only (ignore in real design)
@@ -479,6 +484,23 @@ begin
     end if;
   end process;
   
+  -- Record bar
+  rx_wb_bar_o <= r_bar;
+  bardec : process(core_clk_out)
+  begin
+    if rising_edge(core_clk_out) then
+      if rx_st_valid0 = '1' then
+        if r_rx_sop = '1' then
+          -- Decode one-hot
+          r_bar(0) <= (rx_st_bardec0(1) or rx_st_bardec0(3) or rx_st_bardec0(5) or rx_st_bardec0(7));
+          r_bar(1) <= (rx_st_bardec0(2) or rx_st_bardec0(3) or rx_st_bardec0(6) or rx_st_bardec0(7));
+          r_bar(2) <= (rx_st_bardec0(4) or rx_st_bardec0(5) or rx_st_bardec0(6) or rx_st_bardec0(7));
+        end if;
+        r_rx_sop <= rx_st_sop0;
+      end if;
+    end if;
+  end process;
+  
   -- Stream rx data out as wishbone
   rx_wb_stb_o <= r32_full;
   rx_wb_dat_o <= r32_dat0;
@@ -551,7 +573,7 @@ begin
   tx_st_data0 <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(63 downto 0);
   s_eop       <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(64);
   tx_st_eop0  <= s_eop;
-  tx_st_sop0  <= r_sop;
+  tx_st_sop0  <= r_tx_sop;
   
   tx_st_valid0 <= active_high(r_idxr /= r_idxe) and r_delay_ready(r_delay_ready'length-1);
   
@@ -561,12 +583,12 @@ begin
       if rstn = '0' then
         r_delay_ready <= (others => '0');
         r_idxr <= (others => '0');
-        r_sop <= '1';
+        r_tx_sop <= '1';
       else
         r_delay_ready <= r_delay_ready(r_delay_ready'length-2 downto 0) & tx_st_ready0;
         if tx_st_valid0 = '1' then
           r_idxr <= r_idxr + 1;
-          r_sop <= s_eop;
+          r_tx_sop <= s_eop;
         end if;
       end if;
     end if;

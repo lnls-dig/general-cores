@@ -8,7 +8,7 @@ entity pcie_tlp is
     rstn_i        : in std_logic;
     
     rx_wb_stb_i   : in  std_logic;
-    rx_wb_bar_i   : in  std_logic;
+    rx_wb_bar_i   : in  std_logic_vector(2 downto 0);
     rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
     rx_wb_stall_o : out std_logic;
     
@@ -22,6 +22,7 @@ entity pcie_tlp is
     
     wb_stb_o      : out std_logic;
     wb_adr_o      : out std_logic_vector(63 downto 0);
+    wb_bar_o      : out std_logic_vector(2 downto 0);
     wb_we_o       : out std_logic;
     wb_dat_o      : out std_logic_vector(31 downto 0);
     wb_sel_o      : out std_logic_vector(3 downto 0);
@@ -65,6 +66,7 @@ architecture rtl of pcie_tlp is
   signal r_last_be     : std_logic_vector(3 downto 0);
   signal r_first_be    : std_logic_vector(3 downto 0);
   signal r_address     : std_logic_vector(63 downto 0);
+  signal r_bar         : std_logic_vector(2 downto 0);
   
   -- Common subexpressions:
   signal s_length_m1 : unsigned(9 downto 0);
@@ -86,6 +88,7 @@ begin
   wb_stb <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
   wb_stb_o <= wb_stb;
   wb_adr_o <= r_address;
+  wb_bar_o <= r_bar;
   wb_dat_o <= rx_wb_dat_i;
   
   -- Fields in the rx_data
@@ -132,6 +135,7 @@ begin
           when h_low_addr =>
             -- address also stores busnum/devnum/ext/reg for IO ops
             r_address(31 downto 2) <= rx_wb_dat_i(31 downto 2);
+            r_bar <= rx_wb_bar_i;
           when p_w0 => null;
           when p_wx => null;
           when p_we => null;

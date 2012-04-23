@@ -46,12 +46,14 @@ architecture rtl of pcie_wb is
   
   signal rx_wb_stb, rx_wb_stall : std_logic;
   signal rx_wb_dat : std_logic_vector(31 downto 0);
+  signal rx_wb_bar : std_logic_vector(2 downto 0);
   
   signal tx_rdy, tx_alloc, tx_en, tx_eop : std_logic;
   signal tx_dat : std_logic_vector(31 downto 0);
   
   signal wb_stb_o, wb_we_o, wb_ack_i : std_logic;
   signal wb_dat_o, wb_dat_i, demo_reg : std_logic_vector(31 downto 0);
+  signal wb_bar : std_logic_vector(2 downto 0);
   
   signal cfg_busdev : std_logic_vector(12 downto 0);
   
@@ -88,6 +90,7 @@ begin
     
     rx_wb_stb_o   => rx_wb_stb,
     rx_wb_dat_o   => rx_wb_dat,
+    rx_wb_bar_o   => rx_wb_bar,
     rx_wb_stall_i => rx_wb_stall,
     
     tx_rdy_o      => tx_rdy,
@@ -101,8 +104,8 @@ begin
     rstn_i        => rstn,
     
     rx_wb_stb_i   => rx_wb_stb,
-    rx_wb_bar_i   => '0',
     rx_wb_dat_i   => rx_wb_dat,
+    rx_wb_bar_i   => rx_wb_bar,
     rx_wb_stall_o => rx_wb_stall,
     
     tx_rdy_i      => tx_rdy,
@@ -115,6 +118,7 @@ begin
       
     wb_stb_o      => wb_stb_o,
     wb_adr_o      => open,
+    wb_bar_o      => wb_bar,
     wb_we_o       => wb_we_o,
     wb_dat_o      => wb_dat_o,
     wb_sel_o      => open,
