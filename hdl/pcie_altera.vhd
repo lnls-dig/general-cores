@@ -31,7 +31,8 @@ entity pcie_altera is
     -- push TX data
     tx_en_i       : in  std_logic; -- may never exceed alloc_i
     tx_dat_i      : in  std_logic_vector(31 downto 0);
-    tx_eop_i      : in  std_logic); -- Mark last strobe
+    tx_eop_i      : in  std_logic; -- Mark last strobe
+    tx_pad_i      : in  std_logic);
 end pcie_altera;
 
 architecture rtl of pcie_altera is
@@ -256,7 +257,7 @@ architecture rtl of pcie_altera is
   signal r_delay_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon TX bus
   
   signal s_queue_wdat : std_logic_vector(63 downto 0);
-  signal s_queue_wen, s_64to32_full, r_tx32_full, r_pad : std_logic;
+  signal s_queue_wen, s_64to32_full, r_tx32_full : std_logic;
   
   constant zero32 : std_logic_vector(31 downto 0) := (others => '0');
   signal r_tx_dat0 : std_logic_vector(31 downto 0);
@@ -630,7 +631,7 @@ begin
     (zero32 & tx_dat_i) when r_tx32_full = '0' else
     (tx_dat_i & r_tx_dat0);
   
-  s_64to32_full <= r_tx32_full or r_pad or tx_eop_i;
+  s_64to32_full <= r_tx32_full or tx_pad_i or tx_eop_i;
   s_queue_wen <= tx_en_i and s_64to32_full;
   
   tx_data32 : process(core_clk_out)
@@ -639,7 +640,6 @@ begin
       if rstn = '0' then
         r_tx_dat0 <= (others => '0');
         r_tx32_full <= '0';
-        r_pad <= '0';
       else
         if tx_en_i = '1' then
           r_tx_dat0 <= tx_dat_i;

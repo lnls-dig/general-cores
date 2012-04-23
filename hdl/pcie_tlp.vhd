@@ -17,6 +17,7 @@ entity pcie_tlp is
     tx_en_o       : out std_logic;
     tx_dat_o      : out std_logic_vector(31 downto 0);
     tx_eop_o      : out std_logic;
+    tx_pad_o      : out std_logic;
     
     cfg_busdev_i  : in  std_logic_vector(12 downto 0);
     
@@ -383,6 +384,7 @@ begin
         r_tx_en <= '0';
         r_tx_alloc <= '0';
         tx_eop_o <= '0';
+        tx_pad_o <= '0';
         tx_dat_o <= (others => '-');
         
         tx_state <= next_state;
@@ -411,6 +413,7 @@ begin
               r_tx_alloc <= '1';
               r_tx_en <= '1';
             end if;
+            tx_pad_o <= not r_address(2);
           when c_block => 
             null;
           when c_queue => 

@@ -32,7 +32,8 @@ package pcie_wb_pkg is
       -- push TX data
       tx_en_i       : in  std_logic; -- may never exceed alloc_i
       tx_dat_i      : in  std_logic_vector(31 downto 0);
-      tx_eop_i      : in  std_logic); -- Mark last strobe
+      tx_eop_i      : in  std_logic; -- Mark last strobe
+      tx_pad_i      : in  std_logic); -- Is the data misaligned?
   end component;
   
   component pcie_tlp is
@@ -50,6 +51,7 @@ package pcie_wb_pkg is
       tx_en_o       : out std_logic;
       tx_dat_o      : out std_logic_vector(31 downto 0);
       tx_eop_o      : out std_logic;
+      tx_pad_o      : out std_logic;
       
       cfg_busdev_i  : in  std_logic_vector(12 downto 0);
       

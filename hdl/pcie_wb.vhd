@@ -48,7 +48,7 @@ architecture rtl of pcie_wb is
   signal rx_wb_dat : std_logic_vector(31 downto 0);
   signal rx_wb_bar : std_logic_vector(2 downto 0);
   
-  signal tx_rdy, tx_alloc, tx_en, tx_eop : std_logic;
+  signal tx_rdy, tx_alloc, tx_en, tx_eop, tx_pad : std_logic;
   signal tx_dat : std_logic_vector(31 downto 0);
   
   signal wb_stb_o, wb_we_o, wb_ack_i : std_logic;
@@ -97,7 +97,8 @@ begin
     tx_alloc_i    => tx_alloc,
     tx_en_i       => tx_en,
     tx_dat_i      => tx_dat,
-    tx_eop_i      => tx_eop);
+    tx_eop_i      => tx_eop,
+    tx_pad_i      => tx_pad);
   
   pcie_logic : pcie_tlp port map(
     clk_i         => wb_clk,
@@ -113,6 +114,7 @@ begin
     tx_en_o       => tx_en,
     tx_dat_o      => tx_dat,
     tx_eop_o      => tx_eop,
+    tx_pad_o      => tx_pad,
     
     cfg_busdev_i  => cfg_busdev,
       
