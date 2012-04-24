@@ -181,7 +181,7 @@ begin
               next_state := h_low_addr;
             end if;
           when h_low_addr =>
-            if (rx_wb_stb_i and not wb_stall_i) = '1' then
+            if (rx_wb_stb_i and not r_always_stall) = '1' then
               r_bar <= rx_wb_bar_i;
               if r_fmttype(6) = '1' then
                 next_state := p_w0;
