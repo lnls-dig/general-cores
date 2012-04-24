@@ -49,7 +49,7 @@ architecture rtl of pcie_wb is
   
   -- control registers
   signal r_cyc   : std_logic;
-  signal r_addr  : std_logic_vector(31 downto 24);
+  signal r_addr  : std_logic_vector(31 downto 16);
   signal r_error : std_logic_vector(63 downto  0);
 begin
 
@@ -125,8 +125,8 @@ begin
                  r_error(31 downto  0);
   
   slave_i.cyc <= r_cyc;
-  slave_i.adr(31 downto 24) <= r_addr(31 downto 24);
-  slave_i.adr(23 downto 0)  <= wb_adr(23 downto 0);
+  slave_i.adr(r_addr'range) <= r_addr;
+  slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
   
   control : process(internal_wb_clk)
   begin
@@ -136,20 +136,26 @@ begin
         r_error <= r_error(r_error'length-2 downto 0) & slave_o.err;
       end if;
       
-      -- Feedback acks one cycle after strobe
-      r_ack <= wb_stb;
-      r_high <= wb_adr(2);
-      
-      -- Is this a write to the register space?
-      if wb_bar = "000" and slave_i.we = '1' then
-        if wb_stb = '1' then
+      -- Is the control BAR targetted?
+      if wb_bar = "000" then
+        -- Feedback acks one cycle after strobe
+        r_ack <= wb_stb;
+        r_high <= wb_adr(2);
+		  
+		  -- Is this a write to the register space?
+        if wb_stb = '1' and slave_i.we = '1' then
           -- Cycle line is high bit of register 0
-          if wb_adr(7 downto 2) = "00000" and slave_i.sel(3) = '1' then
+          if wb_adr(6 downto 2) = "00000" and slave_i.sel(3) = '1' then
             r_cyc <= slave_i.dat(31);
           end if;
           -- Address 20 is low word of address window (register 2)
-          if wb_adr(7 downto 2) = "00101" and slave_i.sel(3) = '1' then
-            r_addr(31 downto 24) <= slave_i.dat(31 downto 24);
+          if wb_adr(6 downto 2) = "00101" then
+            if slave_i.sel(3) = '1' then
+              r_addr(31 downto 24) <= slave_i.dat(31 downto 24);
+            end if;
+            if slave_i.sel(2) = '1' then
+              r_addr(24 downto 16) <= slave_i.dat(24 downto 16);
+            end if;
           end if;
         end if;
       end if;

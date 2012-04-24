@@ -136,7 +136,6 @@ begin
           when h_low_addr =>
             -- address also stores busnum/devnum/ext/reg for IO ops
             r_address(31 downto 2) <= rx_wb_dat_i(31 downto 2);
-            r_bar <= rx_wb_bar_i;
           when p_w0 => null;
           when p_wx => null;
           when p_we => null;
@@ -182,7 +181,8 @@ begin
               next_state := h_low_addr;
             end if;
           when h_low_addr =>
-            if rx_wb_stb_i = '1' then
+            if (rx_wb_stb_i and not wb_stall_i) = '1' then
+              r_bar <= rx_wb_bar_i;
               if r_fmttype(6) = '1' then
                 next_state := p_w0;
               else
@@ -259,7 +259,11 @@ begin
           when h_completion2 => null;
           when h_request => null;
           when h_high_addr => null;
-          when h_low_addr => null;
+          when h_low_addr =>
+            -- If ACKs are inflight and the bar needs to change, stall
+            if r_bar /= rx_wb_bar_i and r_flight_count /= 0 then
+              r_always_stall <= '1';
+            end if;
           when p_w0 =>
             r_never_stall <= '0';
             r_never_stb <= '0';
