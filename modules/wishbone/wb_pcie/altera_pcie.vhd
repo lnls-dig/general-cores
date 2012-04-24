@@ -1131,7 +1131,7 @@ end europa;
 -- Warning: If you modify this section, IP Compiler for PCI Express Wizard may not be able to reproduce your chosen configuration.
 -- 
 -- Retrieval info: <?xml version="1.0"?>
--- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="11.1"  build="216"  iptb_version="1.3.0 Build 216"  format_version="120" >
+-- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="11.1"  build="173"  iptb_version="1.3.0 Build 173"  format_version="120" >
 -- Retrieval info:  <NETLIST_SECTION class="altera.ipbu.flowbase.netlist.model.MVCModel"  active_core="altpcie_hip_pipen1b" >
 -- Retrieval info:   <STATIC_SECTION>
 -- Retrieval info:    <PRIVATES>
@@ -1284,7 +1284,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_app_signal_interface" value="AvalonST"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_avalon_mm_lite" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="128 Bytes - 7 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="16 MBytes - 24 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="64 KBytes - 16 bits"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_2" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_3" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_4" value="N/A"  type="STRING"  enable="1" />
