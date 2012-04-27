@@ -51,8 +51,8 @@ use work.genram_pkg.all;
 
 entity generic_shiftreg_fifo is
   generic (
-    g_data_width : integer;
-    g_size       : integer
+    g_data_width : integer := 128;
+    g_size       : integer := 32
     );          
   port (
     rst_n_i : in std_logic := '1';
@@ -96,11 +96,11 @@ begin
   p_data_srl : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if rst_n_i = '0'then
-        for i in 0 to c_srl_length-1 loop
-          fifo_store(i) <= (others => '0');
-        end loop;  -- i
-      elsif do_write = '1' then
+--      if rst_n_i = '0'then
+--        for i in 0 to c_srl_length-1 loop
+--          fifo_store(i) <= (others => '0');
+--        end loop;  -- i
+      if do_write = '1' then
         fifo_store <= fifo_store(fifo_store'left - 1 downto 0) & d_i;
       end if;
     end if;
