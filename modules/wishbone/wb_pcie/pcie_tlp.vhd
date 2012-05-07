@@ -73,6 +73,7 @@ architecture rtl of pcie_tlp is
   signal s_length_m1 : unsigned(9 downto 0);
   signal s_length_eq1, s_length_eq2 : boolean;
   signal s_address_p4 : std_logic_vector(63 downto 0);
+  signal s_fmt_is_read : boolean;
   
   -- Stall and strobe bypass mux
   signal r_always_stall, r_never_stall : std_logic;
@@ -100,6 +101,8 @@ begin
   s_transaction <= rx_wb_dat_i(31 downto 8);
   s_last_be     <= rx_wb_dat_i(7 downto 4);
   s_first_be    <= rx_wb_dat_i(3 downto 0);
+  
+  s_fmt_is_read <= r_fmttype(6) = '0' and r_fmttype(3) = '0';
   
   s_length_m1  <= r_length - 1;
   s_length_eq1 <= r_length = 1;
@@ -261,7 +264,7 @@ begin
           when h_high_addr => null;
           when h_low_addr =>
             -- If ACKs are inflight and the bar needs to change, stall
-            if r_bar /= rx_wb_bar_i and r_flight_count /= 0 then
+            if (r_bar /= rx_wb_bar_i or s_fmt_is_read) and r_flight_count /= 0 then
               r_always_stall <= '1';
             end if;
           when p_w0 =>
@@ -399,7 +402,7 @@ begin
             tx_dat_o <= "01001010" -- Completion with data
                       & "0" & r_tc & "0" & r_attr(2 downto 2) & "00"
                       & "00" & r_attr(1 downto 0) & "00" & std_logic_vector(r_length);
-            if r_fmttype(6) = '0' and r_fmttype(3) = '0' and rx_state /= h0 and tx_rdy_i = '1' then
+            if s_fmt_is_read and rx_state /= h0 and tx_rdy_i = '1' then
               r_tx_alloc <= '1';
               r_tx_en <= '1';
             end if;
