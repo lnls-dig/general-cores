@@ -102,7 +102,7 @@ begin
    msend.DAT <= slave_i.DAT;
    
    -- Master clock domain: mFIFO -> master
-   mr_en <= mr_rdy and (not master_o_STB or not master_i.STALL);
+   mr_en <= mr_rdy and (not mrecv.CYC or not master_o_STB or not master_i.STALL);
    master_o.CYC <= mrecv.CYC;
    master_o.STB <= master_o_STB; -- is high outside of CYC. that's ok; it should be ignored.
    master_o.ADR <= mrecv.ADR;
@@ -116,13 +116,13 @@ begin
          if rst_n_i = '0' then
             master_o_STB <= '0';
          else
-            master_o_STB <= mr_en or (master_o_STB and master_i.STALL);
+            master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
          end if;
       end if;
    end process;
    
    -- Master clock domain: master -> sFIFO
-   sw_en <= master_i.ACK or master_i.ERR or master_i.RTY;
+   sw_en <= mrecv.CYC and (master_i.ACK or master_i.ERR or master_i.RTY);
    ssend.ACK <= master_i.ACK;
    ssend.ERR <= master_i.ERR;
    ssend.RTY <= master_i.RTY;
