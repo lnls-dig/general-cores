@@ -106,6 +106,7 @@ begin
     wb_stall_i    => wb_stall,
     wb_ack_i      => wb_ack,
     wb_err_i      => slave_o.err,
+    wb_rty_i      => slave_o.rty,
     wb_dat_i      => wb_dat);
   
   clock_crossing : xwb_clock_crossing port map(
@@ -132,8 +133,8 @@ begin
   begin
     if rising_edge(internal_wb_clk) then
       -- Shift in the error register
-      if slave_o.ack = '1' or slave_o.err = '1' then
-        r_error <= r_error(r_error'length-2 downto 0) & slave_o.err;
+      if slave_o.ack = '1' or slave_o.err = '1' or slave_o.rty = '1' then
+        r_error <= r_error(r_error'length-2 downto 0) & (slave_o.err or slave_o.rty);
       end if;
       
       -- Is the control BAR targetted?

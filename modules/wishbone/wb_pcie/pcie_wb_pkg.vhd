@@ -81,6 +81,7 @@ package pcie_wb_pkg is
       wb_stall_i    : in  std_logic;
       wb_ack_i      : in  std_logic;
       wb_err_i      : in  std_logic;
+      wb_rty_i      : in  std_logic;
       wb_dat_i      : in  std_logic_vector(31 downto 0));
   end component;
 end pcie_wb_pkg;

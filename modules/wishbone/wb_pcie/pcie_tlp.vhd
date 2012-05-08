@@ -30,6 +30,7 @@ entity pcie_tlp is
     wb_stall_i    : in  std_logic;
     wb_ack_i      : in  std_logic;
     wb_err_i      : in  std_logic;
+    wb_rty_i      : in  std_logic;
     wb_dat_i      : in  std_logic_vector(31 downto 0));
 end pcie_tlp;
 
@@ -428,7 +429,7 @@ begin
             if r_pending_ack = 1 then
               tx_eop_o <= '1';
             end if;
-            if (wb_ack_i or wb_err_i) = '1' then
+            if (wb_ack_i or wb_err_i or wb_rty_i) = '1' then
               r_tx_en <= '1';
               r_pending_ack <= r_pending_ack - 1;
             end if;
@@ -440,7 +441,7 @@ begin
   flight_counter : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if (wb_ack_i or wb_err_i) = '1' then
+      if (wb_ack_i or wb_err_i or wb_rty_i) = '1' then
         if (wb_stb and not wb_stall_i) = '1' then
           r_flight_count <= r_flight_count;
         else
