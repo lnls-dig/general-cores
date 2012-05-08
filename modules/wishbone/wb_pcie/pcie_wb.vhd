@@ -121,7 +121,7 @@ begin
   wb_stall    <= slave_o.stall when wb_bar = "001" else '0';
   wb_ack      <= slave_o.ack   when wb_bar = "001" else r_ack;
   wb_dat      <= slave_o.dat   when wb_bar = "001" else
-                 r_error(63 downto 32) when r_high = '1' else
+                 r_error(63 downto 32) when r_high = '0' else
                  r_error(31 downto  0);
   
   slave_i.cyc <= r_cyc;
