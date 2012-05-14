@@ -7,6 +7,8 @@ use work.pcie_wb_pkg.all;
 use work.wishbone_pkg.all;
 
 entity pcie_wb is
+  generic(
+    sdb_addr : t_wishbone_address);
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
     cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
@@ -45,7 +47,7 @@ architecture rtl of pcie_wb is
   signal slave_o : t_wishbone_slave_out;
   
   -- timing registers
-  signal r_high, r_ack : std_logic;
+  signal r_sdb, r_high, r_ack : std_logic;
   
   -- control registers
   signal r_cyc   : std_logic;
@@ -122,8 +124,10 @@ begin
   wb_stall    <= slave_o.stall when wb_bar = "001" else '0';
   wb_ack      <= slave_o.ack   when wb_bar = "001" else r_ack;
   wb_dat      <= slave_o.dat   when wb_bar = "001" else
-                 r_error(63 downto 32) when r_high = '0' else
-                 r_error(31 downto  0);
+                 r_error(63 downto 32) when r_sdb = '0' and r_high = '1' else
+                 r_error(31 downto  0) when r_sdb = '0' and r_high = '0' else
+                 sdb_addr              when r_sdb = '1' and r_high = '0' else
+                 x"00000000";
   
   slave_i.cyc <= r_cyc;
   slave_i.adr(r_addr'range) <= r_addr;
@@ -141,9 +145,10 @@ begin
       if wb_bar = "000" then
         -- Feedback acks one cycle after strobe
         r_ack <= wb_stb;
-        r_high <= wb_adr(2);
-		  
-		  -- Is this a write to the register space?
+        r_high <= not wb_adr(2);
+        r_sdb <= wb_adr(4);
+        
+        -- Is this a write to the register space?
         if wb_stb = '1' and slave_i.we = '1' then
           -- Cycle line is high bit of register 0
           if wb_adr(6 downto 2) = "00000" and slave_i.sel(3) = '1' then

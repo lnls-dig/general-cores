@@ -41,12 +41,6 @@ architecture rtl of pcie_tlp is
   signal rx_state : rx_state_type := h0;
   signal tx_state : tx_state_type := c0;
   
-  -- Bar0 Registers
-  -- signal csr     : std_logic_vector(63 downto 0); -- bit0: CYC
-  -- signal error   : std_logic_vector(63 downto 0);
-  -- signal address : std_logic_vector(63 downto 0);
-  -- signal sdwb    : std_logic_vector(63 downto 0);
-  
   -- Header fields
   signal s_fmttype     : std_logic_vector(7 downto 0);
   signal s_attr        : std_logic_vector(2 downto 0);

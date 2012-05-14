@@ -5,6 +5,8 @@ use work.wishbone_pkg.all;
 
 package pcie_wb_pkg is
   component pcie_wb is
+    generic(
+      sdb_addr : t_wishbone_address);
     port(
       clk125_i      : in  std_logic; -- 125 MHz, free running
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
