@@ -687,8 +687,8 @@ package body wishbone_pkg is
   is
     variable result : std_logic_vector(447 downto 8);
     
-    variable first : unsigned(63 downto 0) := unsigned(sdb_component.addr_first);
-    variable last  : unsigned(63 downto 0) := unsigned(sdb_component.addr_last);
+    constant first : unsigned(63 downto 0) := unsigned(sdb_component.addr_first);
+    constant last  : unsigned(63 downto 0) := unsigned(sdb_component.addr_last);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
