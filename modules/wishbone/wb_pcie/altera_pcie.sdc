@@ -1,9 +1,9 @@
 # The refclk assignment may need to be renamed to match design top level port name.
 # May be desireable to move refclk assignment to a top level SDC file.
-create_clock -period "100 MHz" -name {refclk} {refclk}
-create_clock -period "100 MHz" -name {fixedclk_serdes} {fixedclk_serdes}
+#create_clock -period "100 MHz" -name {refclk} {refclk}
+#create_clock -period "100 MHz" -name {fixedclk_serdes} {fixedclk_serdes}
 # testin bits are either static or treated asynchronously, cut the paths.
-set_false_path -to [get_pins -hierarchical {*hssi_pcie_hip|testin[*]} ]
+#set_false_path -to [get_pins -hierarchical {*hssi_pcie_hip|testin[*]} ]
 # SERDES Digital Reset inputs are asynchronous
 set_false_path -to {*|altera_pcie_serdes:serdes|*|tx_digitalreset_reg0c[0]}
 set_false_path -to {*|altera_pcie_serdes:serdes|*|rx_digitalreset_reg0c[0]}
@@ -26,10 +26,10 @@ set tl_cfg_ctl_wr_setup 1
 # the multicycle setup constraint for tl_cfg_sts_wr can be changed from 1 to 0 in the following variable:  
 set tl_cfg_sts_wr_setup 1
 #
-set_multicycle_path -start -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_ctl_wr}] $tl_cfg_ctl_wr_setup
+#set_multicycle_path -start -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_ctl_wr}] $tl_cfg_ctl_wr_setup
 set_multicycle_path -end -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_ctl[*]}] [expr $tl_cfg_ctl_wr_setup + 2]
 set_multicycle_path -end -hold -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_ctl[*]}] 3
 #
-set_multicycle_path -start -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts_wr}] $tl_cfg_sts_wr_setup
-set_multicycle_path -end -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts[*]}] [expr $tl_cfg_sts_wr_setup + 2]
-set_multicycle_path -end -hold -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts[*]}] 3
+#set_multicycle_path -start -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts_wr}] $tl_cfg_sts_wr_setup
+#set_multicycle_path -end -setup -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts[*]}] [expr $tl_cfg_sts_wr_setup + 2]
+#set_multicycle_path -end -hold -from [get_keepers {*|altera_pcie_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|tl_cfg_sts[*]}] 3
