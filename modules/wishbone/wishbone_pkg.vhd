@@ -286,6 +286,21 @@ package wishbone_pkg is
       slave_o       : out t_wishbone_slave_out);
   end component;
   
+  constant c_xwb_dma_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"000000000000001f",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"cababa56",
+    version       => x"00000001",
+    date          => x"20120518",
+    name          => "WB4-Streaming-DMA_0")));
   component xwb_dma is
     generic(
       -- Value 0 cannot stream
