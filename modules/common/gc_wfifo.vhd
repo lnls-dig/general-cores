@@ -43,6 +43,12 @@ architecture rtl of gc_wfifo is
    signal r_idx_shift_a : counter_shift; -- r_idx_gray in a_clk
    signal w_idx_shift_r : counter_shift; -- w_idx_gray in r_clk
    
+   attribute altera_attribute : string; 
+   -- Quartus 11 sometimes goes crazy and infers an altshift_taps! Stop it.
+   attribute altera_attribute of r_idx_shift_w : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
+   attribute altera_attribute of r_idx_shift_a : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
+   attribute altera_attribute of w_idx_shift_r : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
+   
    function bin2gray(a : unsigned) return unsigned is
       variable o : unsigned(a'length downto 0);
    begin
