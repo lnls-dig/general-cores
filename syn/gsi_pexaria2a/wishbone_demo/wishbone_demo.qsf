@@ -1,0 +1,156 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2011 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 32-bit
+# Version 11.1 Build 216 11/23/2011 Service Pack 1 SJ Full Version
+# Date created = 12:33:22  May 18, 2012
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		wishbone_demo_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Arria II GX"
+set_global_assignment -name DEVICE EP2AGX125DF25C6ES
+set_global_assignment -name TOP_LEVEL_ENTITY wishbone_demo_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "11.1 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "12:33:22  MAY 18, 2012"
+set_global_assignment -name LAST_QUARTUS_VERSION "11.1 SP1"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 2
+
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name SDC_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo.sdc
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_slave_adapter/wb_slave_adapter.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_clock_crossing/xwb_clock_crossing.vhd
+set_global_assignment -name QIP_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.qip
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_tlp.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_altera.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_core.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_serdes.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_reconfig.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dma/xwb_dma.vhd
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/altera/jtag_tap.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/generic/lm32_multiplier.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_shifter.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_ram.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_logic_op.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_dp_ram.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_addsub.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_adder.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/jtag_cores.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_mc_arithmetic.v
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_lm32/generated/xwb_lm32.vhd
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/generated/lm32_allprofiles.v
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_crossbar.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/sdb_rom.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_sdb_crossbar.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dpram/xwb_dpram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wishbone_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_sync_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_spram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_dpram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_async_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/memory_loader_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/genram_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/generic_shiftreg_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_wfifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_clock_ram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_frequency_meter.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_pulse_synchronizer.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_arbitrated_mux.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_sync_ffs.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_serial_dac.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_pi_controller.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_delay_gen.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_extend_pulse.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_moving_average.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_crc_gen.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gencores_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.vhd
+set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo_top.vhd
+set_global_assignment -name QIP_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.qip
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_location_assignment PIN_U23 -to pcie_refclk_i
+set_location_assignment PIN_W1 -to pcie_rstn_i
+set_location_assignment PIN_N23 -to pcie_rx_i[3]
+set_location_assignment PIN_R23 -to pcie_rx_i[2]
+set_location_assignment PIN_W23 -to pcie_rx_i[1]
+set_location_assignment PIN_AA23 -to pcie_rx_i[0]
+set_location_assignment PIN_M21 -to pcie_tx_o[3]
+set_location_assignment PIN_P21 -to pcie_tx_o[2]
+set_location_assignment PIN_V21 -to pcie_tx_o[1]
+set_location_assignment PIN_Y21 -to pcie_tx_o[0]
+set_location_assignment PIN_U9 -to leds_o[0]
+set_location_assignment PIN_V9 -to leds_o[1]
+set_location_assignment PIN_AA7 -to leds_o[2]
+set_location_assignment PIN_AB7 -to leds_o[3]
+set_location_assignment PIN_W9 -to leds_o[4]
+set_location_assignment PIN_W10 -to leds_o[5]
+set_location_assignment PIN_AA10 -to leds_o[6]
+set_location_assignment PIN_AB10 -to leds_o[7]
+set_location_assignment PIN_D11 -to clk125_i
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx_i[3]
+set_location_assignment PIN_N24 -to "pcie_rx_i[3](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx_i[2]
+set_location_assignment PIN_R24 -to "pcie_rx_i[2](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx_i[1]
+set_location_assignment PIN_W24 -to "pcie_rx_i[1](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx_i[0]
+set_location_assignment PIN_AA24 -to "pcie_rx_i[0](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx_o[3]
+set_location_assignment PIN_M22 -to "pcie_tx_o[3](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx_o[2]
+set_location_assignment PIN_P22 -to "pcie_tx_o[2](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx_o[1]
+set_location_assignment PIN_V22 -to "pcie_tx_o[1](n)"
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx_o[0]
+set_location_assignment PIN_Y22 -to "pcie_tx_o[0](n)"
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pcie_rstn_i
+set_instance_assignment -name IO_STANDARD HCSL -to pcie_refclk_i
+set_location_assignment PIN_U24 -to "pcie_refclk_i(n)"
+set_instance_assignment -name IO_STANDARD LVDS -to clk125_i
+set_location_assignment PIN_C11 -to "clk125_i(n)"
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[0]
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
