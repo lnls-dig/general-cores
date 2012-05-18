@@ -6,7 +6,7 @@ use work.gencores_pkg.all;
 
 entity xwb_clock_crossing is
    generic(
-      sync_depth : natural := 2;
+      sync_depth : natural := 3;
       log2fifo   : natural := 4);
    port(
       -- Common wishbone signals
