@@ -46,7 +46,7 @@ architecture rtl of wishbone_demo_top is
     wbd_width     => x"7", -- 8/16/32-bit port granularity
     sdb_component => (
     addr_first    => x"0000000000000000",
-    addr_last     => x"0000000000000003", -- Only 4 bytes large
+    addr_last     => x"0000000000000007", -- Two 4 byte registers
     product => (
     vendor_id     => x"0000000000000651", -- GSI
     device_id     => x"35aa6b95",
@@ -74,7 +74,9 @@ architecture rtl of wishbone_demo_top is
   
   signal gpio_slave_o : t_wishbone_slave_out;
   signal gpio_slave_i : t_wishbone_slave_in;
+  
   signal r_leds : std_logic_vector(7 downto 0);
+  signal r_reset : std_logic;
 begin
   -- Obtain core clocking
   sys_pll_inst : sys_pll -- Altera megafunction
@@ -129,7 +131,7 @@ begin
       g_profile => "medium_icache_debug") -- Including JTAG and I-cache (no divide)
     port map(
       clk_sys_i => clk_sys,
-      rst_n_i   => rstn,
+      rst_n_i   => rstn and not r_reset,
       irq_i     => lm32_interrupt,
       dwb_o     => cbar_slave_i(1), -- Data bus
       dwb_i     => cbar_slave_o(1),
@@ -190,7 +192,20 @@ begin
       -- Detect a write to the register byte
       if gpio_slave_i.cyc = '1' and gpio_slave_i.stb = '1' and
          gpio_slave_i.we = '1' and gpio_slave_i.sel(0) = '1' then
-        r_leds <= gpio_slave_i.dat(7 downto 0);
+	-- Register 0x0 = LEDs, 0x4 = CPU reset
+	if gpio_slave_i.adr(2) = '0' then
+          r_leds <= gpio_slave_i.dat(7 downto 0);
+	else
+	  r_reset <= gpio_slave_i.dat(0);
+	end if;
+      end if;
+      
+      if gpio_slave_i.adr(2) = '0' then
+        gpio_slave_o.dat(31 downto 2) <= (others => '0');
+        gpio_slave_o.dat(0) <= r_reset;
+      else
+        gpio_slave_o.dat(31 downto 8) <= (others => '0');
+        gpio_slave_o.dat(7 downto 0) <= r_leds;
       end if;
     end if;
   end process;
@@ -199,7 +214,4 @@ begin
   gpio_slave_o.err <= '0';
   gpio_slave_o.rty <= '0';
   gpio_slave_o.stall <= '0'; -- This simple example is always ready
-  -- This example only ever outputs one data result
-  gpio_slave_o.dat(31 downto 8) <= (others => '0');
-  gpio_slave_o.dat(7 downto 0) <= r_leds;
 end rtl;
