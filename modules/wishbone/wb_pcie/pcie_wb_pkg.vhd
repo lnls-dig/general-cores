@@ -40,19 +40,46 @@ package pcie_wb_pkg is
       wb_clk_o      : out std_logic;
       
       rx_wb_stb_o   : out std_logic;
-      rx_wb_bar_o   : out std_logic_vector(2 downto 0);
-      rx_wb_dat_o   : out std_logic_vector(31 downto 0);
+      rx_wb_dat_o   : out std_logic_vector(63 downto 0);
       rx_wb_stall_i : in  std_logic;
+      rx_bar_o      : out std_logic_vector(2 downto 0);
       
       -- pre-allocate buffer space used for TX
       tx_rdy_o      : out std_logic;
       tx_alloc_i    : in  std_logic; -- may only set '1' if rdy_o = '1'
       
       -- push TX data
-      tx_en_i       : in  std_logic; -- may never exceed alloc_i
-      tx_dat_i      : in  std_logic_vector(31 downto 0);
-      tx_eop_i      : in  std_logic; -- Mark last strobe
-      tx_pad_i      : in  std_logic); -- Is the data misaligned?
+      tx_wb_stb_i   : in  std_logic; -- may never exceed alloc_i
+      tx_wb_dat_i   : in  std_logic_vector(63 downto 0);
+      tx_eop_i      : in  std_logic); -- Mark last strobe in packet (altera needs this)
+  end component;
+  
+  component pcie_64to32 is
+    port(
+      clk_i            : in  std_logic;
+      rstn_i           : in  std_logic;
+      -- The 64-bit source
+      master64_stb_i   : in  std_logic;
+      master64_dat_i   : in  std_logic_vector(63 downto 0);
+      master64_stall_o : out std_logic;
+      -- The 32-bit sink
+      slave32_stb_o    : out std_logic;
+      slave32_dat_o    : out std_logic_vector(31 downto 0);
+      slave32_stall_i  : in  std_logic);
+  end component;
+  
+  component pcie_32to64 is
+    port(
+      clk_i            : in  std_logic;
+      rstn_i           : in  std_logic;
+      -- The 32-bit source
+      master32_stb_i   : in  std_logic;
+      master32_dat_i   : in  std_logic_vector(31 downto 0);
+      master32_stall_o : out std_logic;
+      -- The 64-bit sink
+      slave64_stb_o    : out std_logic;
+      slave64_dat_o    : out std_logic_vector(63 downto 0);
+      slave64_stall_i  : in  std_logic);
   end component;
   
   component pcie_tlp is
@@ -61,16 +88,16 @@ package pcie_wb_pkg is
       rstn_i        : in std_logic;
       
       rx_wb_stb_i   : in  std_logic;
-      rx_wb_bar_i   : in  std_logic_vector(2 downto 0);
       rx_wb_dat_i   : in  std_logic_vector(31 downto 0);
       rx_wb_stall_o : out std_logic;
+      rx_bar_i      : in  std_logic_vector(2 downto 0);
       
       tx_rdy_i      : in  std_logic;
       tx_alloc_o    : out std_logic;
-      tx_en_o       : out std_logic;
-      tx_dat_o      : out std_logic_vector(31 downto 0);
+      
+      tx_wb_stb_o   : out std_logic;
+      tx_wb_dat_o   : out std_logic_vector(31 downto 0);
       tx_eop_o      : out std_logic;
-      tx_pad_o      : out std_logic;
       
       cfg_busdev_i  : in  std_logic_vector(12 downto 0);
       

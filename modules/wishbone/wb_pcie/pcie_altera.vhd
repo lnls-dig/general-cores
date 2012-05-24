@@ -20,19 +20,18 @@ entity pcie_altera is
     wb_clk_o      : out std_logic;
     
     rx_wb_stb_o   : out std_logic;
-    rx_wb_bar_o   : out std_logic_vector(2 downto 0);
-    rx_wb_dat_o   : out std_logic_vector(31 downto 0);
+    rx_wb_dat_o   : out std_logic_vector(63 downto 0);
     rx_wb_stall_i : in  std_logic;
+    rx_bar_o      : out std_logic_vector(2 downto 0);
     
     -- pre-allocate buffer space used for TX
     tx_rdy_o      : out std_logic;
     tx_alloc_i    : in  std_logic; -- may only set '1' if rdy_o = '1'
     
     -- push TX data
-    tx_en_i       : in  std_logic; -- may never exceed alloc_i
-    tx_dat_i      : in  std_logic_vector(31 downto 0);
-    tx_eop_i      : in  std_logic; -- Mark last strobe
-    tx_pad_i      : in  std_logic);
+    tx_wb_stb_i   : in  std_logic; -- may never exceed alloc_i
+    tx_wb_dat_i   : in  std_logic_vector(63 downto 0);
+    tx_eop_i      : in  std_logic); -- Mark last strobe
 end pcie_altera;
 
 architecture rtl of pcie_altera is
@@ -224,40 +223,28 @@ architecture rtl of pcie_altera is
   -- RX registers and signals
   
   signal rx_st_ready0, rx_st_valid0 : std_logic;
-  signal rx_st_be0 : std_logic_vector(7 downto 0);
   signal rx_st_data0 : std_logic_vector(63 downto 0);
   signal rx_st_bardec0 : std_logic_vector(7 downto 0);
   
-  signal r64_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon RX bus
-  signal r64_dat, s64_dat : std_logic_vector(63 downto 0);
-  signal s64_need_refill, s64_filling, s64_valid, s64_advance, r64_full, r64_skip, s64_skip : std_logic;
-  
-  signal r32_word, s32_word, s32_progress, r32_full, s32_need_refill, r32_skip, s32_enter0 : std_logic;
-  signal r32_dat0, r32_dat1 : std_logic_vector(31 downto 0);
+  signal rx_wb_stb, rx_data_full : std_logic;
+  signal rx_data_cache : std_logic_vector(63 downto 0);
+  signal rx_ready_delay : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon RX bus
   
   -- TX registers and signals
   
-  constant log_bytes  : integer := 9; -- 256 byte maximum TLP, but we allocate twice the space to simplify provisioning
+  constant log_bytes  : integer := 8; -- 256 byte maximum TLP
   constant buf_length : integer := (2**log_bytes)/8;
   constant buf_bits   : integer := log_bytes-3;
   type queue_t is array(buf_length-1 downto 0) of std_logic_vector(64 downto 0);
+  signal queue : queue_t;
   
   signal tx_st_sop0, tx_st_eop0, tx_st_ready0, tx_st_valid0 : std_logic;
   signal tx_st_data0 : std_logic_vector(63 downto 0);
-  signal s_eop, tx_queue_stall : std_logic;
-  signal r_tx_sop : std_logic := '1';
   
-  signal queue : queue_t;
-  
+  signal tx_ready_delay : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon TX bus
+  signal tx_eop, tx_sop : std_logic := '1';
   -- Invariant idxr <= idxe <= idxw <= idxa, extra bit is for wrap-around
-  signal r_idxr, r_idxw, r_idxa, r_idxe, s_idxw_p1 : unsigned(buf_bits downto 0);
-  signal r_delay_ready : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon TX bus
-  
-  signal s_queue_wdat : std_logic_vector(63 downto 0);
-  signal s_queue_wen, s_64to32_full, r_tx32_full : std_logic;
-  
-  constant zero32 : std_logic_vector(31 downto 0) := (others => '0');
-  signal r_tx_dat0 : std_logic_vector(31 downto 0);
+  signal tx_idxr, tx_idxe, tx_idxw, tx_idxa, tx_idxw_p1 : unsigned(buf_bits downto 0);
   
 begin
 
@@ -306,7 +293,7 @@ begin
       rx_st_mask0          => '0',
       rx_st_ready0         => rx_st_ready0,
       rx_st_bardec0        => rx_st_bardec0, --  7 downto 0
-      rx_st_be0            => rx_st_be0, --  7 downto 0
+      rx_st_be0            => open, --  7 downto 0
       rx_st_data0          => rx_st_data0, -- 63 downto 0
       rx_st_eop0           => open,
       rx_st_err0           => open,
@@ -483,152 +470,89 @@ begin
   end process;
   
   -- Decode one-hot
-  rx_wb_bar_o(0) <= (rx_st_bardec0(1) or rx_st_bardec0(3) or rx_st_bardec0(5) or rx_st_bardec0(7));
-  rx_wb_bar_o(1) <= (rx_st_bardec0(2) or rx_st_bardec0(3) or rx_st_bardec0(6) or rx_st_bardec0(7));
-  rx_wb_bar_o(2) <= (rx_st_bardec0(4) or rx_st_bardec0(5) or rx_st_bardec0(6) or rx_st_bardec0(7));
+  rx_bar_o(0) <= (rx_st_bardec0(1) or rx_st_bardec0(3) or rx_st_bardec0(5) or rx_st_bardec0(7));
+  rx_bar_o(1) <= (rx_st_bardec0(2) or rx_st_bardec0(3) or rx_st_bardec0(6) or rx_st_bardec0(7));
+  rx_bar_o(2) <= (rx_st_bardec0(4) or rx_st_bardec0(5) or rx_st_bardec0(6) or rx_st_bardec0(7));
   
-  -- Stream rx data out as wishbone
-  rx_wb_stb_o <= r32_full;
-  rx_wb_dat_o <= r32_dat0;
+  -- Stream RX data out as wishbone
+  -- Wishbone stall is asynchronous, but Avalon ready must appear 2 cycles early
+  -- To fix this, we only push data every 2 cycles and divert a word to a cache if needed
+  rx_wb_stb <= rx_st_valid0 or rx_data_full;
+  rx_wb_stb_o <= rx_wb_stb;
+  rx_wb_dat_o <= rx_data_cache when rx_data_full = '1' else rx_st_data0;
+  rx_st_ready0 <= is_zero(rx_ready_delay(rx_ready_delay'length-1 downto 1)) 
+                  and not (rx_wb_stb and rx_wb_stall_i);
   
-  -- Advance state if the WB RX bus made progress
-  s32_progress <= r32_full and not rx_wb_stall_i;
-  s32_word <= (not r32_word and not r32_skip) when s32_progress = '1' else r32_word;
-  s32_enter0 <= (r32_word or r32_skip) and s32_progress;
-  
-  -- The 32-bit buffers become empty when transitioning to word0
-  s32_need_refill <= not r32_full or s32_enter0;
-  
-  -- Grab data when we need data and there is some ready
-  s64_advance <= s64_valid and s32_need_refill;
-  
-  rx_data32 : process(core_clk_out)
+  rx_path : process(core_clk_out)
   begin
     if rising_edge(core_clk_out) then
       if rstn = '0' then
-        r32_word <= '0';
-        r32_full <= '0';
+        rx_data_full <= '0';
+        rx_ready_delay(rx_ready_delay'length-1 downto 1) <= (others => '0');
       else
-        r32_full <= s64_valid or not s32_need_refill;
-        r32_word <= s32_word;
-      end if;
-      
-      if s64_advance = '1' then
-        r32_dat0 <= s64_dat(31 downto 0);
-        r32_dat1 <= s64_dat(63 downto 32);
-        r32_skip <= s64_skip;
-      end if;
-      
-      if s32_word = '1' then
-        r32_dat0 <= r32_dat1;
+        rx_data_full <= rx_wb_stb and rx_wb_stall_i;
+        rx_ready_delay(rx_ready_delay'length-1 downto 1) <= rx_ready_delay(rx_ready_delay'length-2 downto 0);
+        
+        if rx_st_valid0 = '1' then
+          rx_data_cache <= rx_st_data0;
+        end if;
       end if;
     end if;
   end process;
+  rx_ready_delay(0) <= rx_st_ready0;
   
-  -- Is the Avalon bus filling data this cycle?
-  s64_filling <= rx_st_valid0 and r64_ready(r64_ready'length-1);
-  -- Can we provide data to the 32-bit layer on this cycle?
-  s64_valid <= r64_full or s64_filling;
-  -- We need to refill our buffer if we were empty or just got drained
-  s64_need_refill <= s64_advance or not s64_valid;
+  -- Dump TX out from a FIFO
+  tx_st_data0 <= queue(to_integer(tx_idxr(buf_bits-1 downto 0)))(63 downto 0);
+  tx_eop      <= queue(to_integer(tx_idxr(buf_bits-1 downto 0)))(64);
+  tx_st_eop0  <= tx_eop;
+  tx_st_sop0  <= tx_sop;
   
-  -- Supply the 64-bit data to the 32-bit stream with possible asynchronous bypass
-  s64_dat <= r64_dat when r64_full = '1' else rx_st_data0;
-  s64_skip <= r64_skip when r64_full = '1' else is_zero(rx_st_be0(7 downto 4));
+  tx_st_valid0 <= active_high(tx_idxr /= tx_idxe) and tx_ready_delay(tx_ready_delay'length-1);
   
-  -- Issue a fetch only if we need refill and no fetch is pending
-  rx_st_ready0 <= s64_need_refill and is_zero(r64_ready(r64_ready'length-2 downto 0));
-  
-  rx_data64 : process(core_clk_out)
+  tx_dequeue : process(core_clk_out)
   begin
     if rising_edge(core_clk_out) then
       if rstn = '0' then
-        r64_full <= '0';
-        r64_ready <= (others => '0');
+        tx_ready_delay <= (others => '0');
+        tx_idxr <= (others => '0');
+        tx_sop <= '1';
       else
-        r64_full <= not s64_need_refill;
-        r64_ready <= r64_ready(r64_ready'length-2 downto 0) & rx_st_ready0;
-      end if;
-      
-      r64_dat <= s64_dat;
-      r64_skip <= s64_skip;
-    end if;
-  end process;
-  
-  -- TX queue
-  tx_st_data0 <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(63 downto 0);
-  s_eop       <= queue(to_integer(r_idxr(buf_bits-1 downto 0)))(64);
-  tx_st_eop0  <= s_eop;
-  tx_st_sop0  <= r_tx_sop;
-  
-  tx_st_valid0 <= active_high(r_idxr /= r_idxe) and r_delay_ready(r_delay_ready'length-1);
-  
-  tx_data64_r : process(core_clk_out)
-  begin
-    if rising_edge(core_clk_out) then
-      if rstn = '0' then
-        r_delay_ready <= (others => '0');
-        r_idxr <= (others => '0');
-        r_tx_sop <= '1';
-      else
-        r_delay_ready <= r_delay_ready(r_delay_ready'length-2 downto 0) & tx_st_ready0;
+        tx_ready_delay <= tx_ready_delay(tx_ready_delay'length-2 downto 0) & tx_st_ready0;
         if tx_st_valid0 = '1' then
-          r_idxr <= r_idxr + 1;
-          r_tx_sop <= s_eop;
+          tx_idxr <= tx_idxr + 1;
+          tx_sop <= tx_eop;
         end if;
       end if;
     end if;
   end process;
   
+  -- Enqueue outgoing packets to a FIFO
   -- can only accept data if A pointer has not wrapped around the buffer to point at the R pointer
-  tx_rdy_o <= active_high(r_idxa(buf_bits-1 downto 0) /= r_idxr(buf_bits-1 downto 0)) or
-              active_high(r_idxa(buf_bits) = r_idxr(buf_bits));
+  tx_rdy_o <= active_high(tx_idxa(buf_bits-1 downto 0) /= tx_idxr(buf_bits-1 downto 0)) or
+              active_high(tx_idxa(buf_bits) = tx_idxr(buf_bits));
   
-  s_idxw_p1 <= r_idxw + 1;
-  tx_data64_w : process(core_clk_out)
+  tx_idxw_p1 <= tx_idxw + 1;
+  tx_enqueue : process(core_clk_out)
   begin
     if rising_edge(core_clk_out) then
       if rstn = '0' then
-        r_idxw <= (others => '0');
-        r_idxa <= (others => '0');
-        r_idxe <= (others => '0');
+        tx_idxw <= (others => '0');
+        tx_idxa <= (others => '0');
+        tx_idxe <= (others => '0');
       else
-        queue(to_integer(r_idxw(buf_bits-1 downto 0))) <= tx_eop_i & s_queue_wdat;
+        queue(to_integer(tx_idxw(buf_bits-1 downto 0))) <= tx_eop_i & tx_wb_dat_i;
         
-        if s_queue_wen = '1' then
-          r_idxw <= s_idxw_p1;
+        if tx_wb_stb_i = '1' then
+          tx_idxw <= tx_idxw_p1;
         end if;
         
-        if (s_queue_wen and tx_eop_i) = '1' then
-          r_idxe <= s_idxw_p1;
-          r_idxa <= s_idxw_p1; -- clear over-allocation
+        if (tx_wb_stb_i and tx_eop_i) = '1' then
+          tx_idxe <= tx_idxw_p1;
+          tx_idxa <= tx_idxw_p1; -- clear over-allocation (!!! should not be needed in future)
         end if;
         
         if tx_alloc_i = '1' then
-          -- !!! insanely wasteful. fix.
-          r_idxa <= r_idxa + 1;
-        end if;
-      end if;
-    end if;
-  end process;
-  
-  s_queue_wdat <= 
-    (zero32 & tx_dat_i) when r_tx32_full = '0' else
-    (tx_dat_i & r_tx_dat0);
-  
-  s_64to32_full <= r_tx32_full or tx_pad_i or tx_eop_i;
-  s_queue_wen <= tx_en_i and s_64to32_full;
-  
-  tx_data32 : process(core_clk_out)
-  begin
-    if rising_edge(core_clk_out) then
-      if rstn = '0' then
-        r_tx_dat0 <= (others => '0');
-        r_tx32_full <= '0';
-      else
-        if tx_en_i = '1' then
-          r_tx_dat0 <= tx_dat_i;
-          r_tx32_full <= not s_64to32_full;
+          tx_idxa <= tx_idxa + 1;
         end if;
       end if;
     end if;

@@ -29,12 +29,19 @@ architecture rtl of pcie_wb is
   
   signal rstn, stall : std_logic;
   
-  signal rx_wb_stb, rx_wb_stall : std_logic;
-  signal rx_wb_dat : std_logic_vector(31 downto 0);
-  signal rx_wb_bar : std_logic_vector(2 downto 0);
+  signal rx_wb64_stb, rx_wb64_stall : std_logic;
+  signal rx_wb32_stb, rx_wb32_stall : std_logic;
+  signal rx_wb64_dat : std_logic_vector(63 downto 0);
+  signal rx_wb32_dat : std_logic_vector(31 downto 0);
+  signal rx_bar : std_logic_vector(2 downto 0);
   
-  signal tx_rdy, tx_alloc, tx_en, tx_eop, tx_pad : std_logic;
-  signal tx_dat : std_logic_vector(31 downto 0);
+  signal tx_rdy, tx_eop : std_logic;
+  signal tx64_alloc, tx_wb64_stb : std_logic;
+  signal tx32_alloc, tx_wb32_stb : std_logic;
+  signal tx_wb64_dat : std_logic_vector(63 downto 0);
+  signal tx_wb32_dat : std_logic_vector(31 downto 0);
+  
+  signal tx_alloc_mask : std_logic := '1'; -- Only pass every even tx32_alloc to tx64_alloc.
   
   signal wb_stb, wb_ack, wb_stall : std_logic;
   signal wb_adr : std_logic_vector(63 downto 0);
@@ -69,33 +76,52 @@ begin
 
     wb_clk_o      => internal_wb_clk,
     
-    rx_wb_stb_o   => rx_wb_stb,
-    rx_wb_dat_o   => rx_wb_dat,
-    rx_wb_bar_o   => rx_wb_bar,
-    rx_wb_stall_i => rx_wb_stall,
+    rx_wb_stb_o   => rx_wb64_stb,
+    rx_wb_dat_o   => rx_wb64_dat,
+    rx_wb_stall_i => rx_wb64_stall,
+    rx_bar_o      => rx_bar,
     
     tx_rdy_o      => tx_rdy,
-    tx_alloc_i    => tx_alloc,
-    tx_en_i       => tx_en,
-    tx_dat_i      => tx_dat,
-    tx_eop_i      => tx_eop,
-    tx_pad_i      => tx_pad);
+    tx_alloc_i    => tx64_alloc,
+    
+    tx_wb_stb_i   => tx_wb64_stb,
+    tx_wb_dat_i   => tx_wb64_dat,
+    tx_eop_i      => tx_eop);
+  
+  pcie_rx : pcie_64to32 port map(
+    clk_i            => internal_wb_clk,
+    rstn_i           => rstn,
+    master64_stb_i   => rx_wb64_stb,
+    master64_dat_i   => rx_wb64_dat,
+    master64_stall_o => rx_wb64_stall,
+    slave32_stb_o    => rx_wb32_stb,
+    slave32_dat_o    => rx_wb32_dat,
+    slave32_stall_i  => rx_wb32_stall);
+  
+  pcie_tx : pcie_32to64 port map(
+    clk_i            => internal_wb_clk,
+    rstn_i           => rstn,
+    master32_stb_i   => tx_wb32_stb,
+    master32_dat_i   => tx_wb32_dat,
+    master32_stall_o => open,
+    slave64_stb_o    => tx_wb64_stb,
+    slave64_dat_o    => tx_wb64_dat,
+    slave64_stall_i  => '0');
   
   pcie_logic : pcie_tlp port map(
     clk_i         => internal_wb_clk,
     rstn_i        => rstn,
     
-    rx_wb_stb_i   => rx_wb_stb,
-    rx_wb_dat_i   => rx_wb_dat,
-    rx_wb_bar_i   => rx_wb_bar,
-    rx_wb_stall_o => rx_wb_stall,
+    rx_wb_stb_i   => rx_wb32_stb,
+    rx_wb_dat_i   => rx_wb32_dat,
+    rx_wb_stall_o => rx_wb32_stall,
+    rx_bar_i      => rx_bar,
     
     tx_rdy_i      => tx_rdy,
-    tx_alloc_o    => tx_alloc,
-    tx_en_o       => tx_en,
-    tx_dat_o      => tx_dat,
+    tx_alloc_o    => tx32_alloc,
+    tx_wb_stb_o   => tx_wb32_stb,
+    tx_wb_dat_o   => tx_wb32_dat,
     tx_eop_o      => tx_eop,
-    tx_pad_o      => tx_pad,
     
     cfg_busdev_i  => cfg_busdev,
       
@@ -110,6 +136,18 @@ begin
     wb_err_i      => slave_o.err,
     wb_rty_i      => slave_o.rty,
     wb_dat_i      => wb_dat);
+  
+  tx64_alloc <= tx32_alloc and tx_alloc_mask;
+  alloc : process(internal_wb_clk)
+  begin
+    if rising_edge(internal_wb_clk) then
+      if rstn = '0' then
+        tx_alloc_mask <= '1';
+      else
+        tx_alloc_mask <= tx_alloc_mask xor tx32_alloc;
+      end if;
+    end if;
+  end process;
   
   clock_crossing : xwb_clock_crossing port map(
     rst_n_i       => rstn,
