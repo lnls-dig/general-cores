@@ -201,11 +201,11 @@ begin
       end if;
       
       if gpio_slave_i.adr(2) = '0' then
-        gpio_slave_o.dat(31 downto 2) <= (others => '0');
-        gpio_slave_o.dat(0) <= r_reset;
-      else
         gpio_slave_o.dat(31 downto 8) <= (others => '0');
         gpio_slave_o.dat(7 downto 0) <= r_leds;
+      else
+        gpio_slave_o.dat(31 downto 2) <= (others => '0');
+        gpio_slave_o.dat(0) <= r_reset;
       end if;
     end if;
   end process;
