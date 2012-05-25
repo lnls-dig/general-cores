@@ -57,6 +57,8 @@ set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_clock_crossin
 set_global_assignment -name QIP_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.qip
 set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb_pkg.vhd
 set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_64to32.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_32to64.vhd
 set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_tlp.vhd
 set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_altera.vhd
 set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.vhd
