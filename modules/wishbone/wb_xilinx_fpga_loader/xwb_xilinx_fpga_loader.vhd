@@ -65,7 +65,20 @@ entity xwb_xilinx_fpga_loader is
     xlx_done_i      : in  std_logic;
     xlx_suspend_o   : out std_logic;
 
-    xlx_m_o : out std_logic_vector(1 downto 0)
+    xlx_m_o : out std_logic_vector(1 downto 0);
+
+    -- 1-pulse: boot trigger sequence detected
+    boot_trig_p1_o : out std_logic;
+
+    -- 1-pulse: exit bootloader mode
+    boot_exit_p1_o : out std_logic;
+
+    -- 1: enable bootloader
+    -- 0: disable bootloader (all WB writes except for the trigger register are
+    -- ignored)
+    boot_en_i : in std_logic;
+
+    gpio_o : out std_logic_vector(7 downto 0)
     );
 
 end xwb_xilinx_fpga_loader;
@@ -94,7 +107,12 @@ architecture rtl of xwb_xilinx_fpga_loader is
       xlx_init_b_i    : in  std_logic;
       xlx_done_i      : in  std_logic;
       xlx_suspend_o   : out std_logic;
-      xlx_m_o         : out std_logic_vector(1 downto 0));
+      xlx_m_o         : out std_logic_vector(1 downto 0);
+      boot_trig_p1_o  : out std_logic;
+      boot_exit_p1_o  : out std_logic;
+      boot_en_i       : in  std_logic;
+      gpio_o          : out std_logic_vector(7 downto 0)
+      );
   end component;
 
 begin  -- rtl
@@ -123,7 +141,11 @@ begin  -- rtl
       xlx_init_b_i    => xlx_init_b_i,
       xlx_done_i      => xlx_done_i,
       xlx_suspend_o   => xlx_suspend_o,
-      xlx_m_o         => xlx_m_o);
+      xlx_m_o         => xlx_m_o,
+      boot_trig_p1_o => boot_trig_p1_o,
+      boot_exit_p1_o => boot_exit_p1_o,
+      boot_en_i => boot_en_i,
+      gpio_o => gpio_o);
 
   slave_o.int <= '0';
   slave_o.err <= '0';

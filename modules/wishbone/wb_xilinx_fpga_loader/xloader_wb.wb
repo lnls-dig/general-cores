@@ -105,6 +105,13 @@ peripheral {
          prefix = "SWRST";
          type = MONOSTABLE;                      
       };
+
+      field {
+         name = "Exit bootloader mode";
+         description = "write 1: terminate bootloader mode and go passive (VME only)";
+         prefix = "EXIT";
+         type = MONOSTABLE;                      
+      };
       
       field {
          name = "Serial clock divider"; 
@@ -118,6 +125,31 @@ peripheral {
       };
 	};
 	
+   reg {
+      name = "Bootloader Trigger Register";
+      prefix = "BTRIGR";
+
+      field {
+         name = "Trigger Sequence Input";
+         description = "Write a sequence of 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe, 0xba, 0xbe to enter bootloader mode (VME only)";
+         size = 8;
+         type = PASS_THROUGH;
+      };
+   };
+
+   reg {
+      name = "GPIO Output Register";
+      prefix = "GPIOR";
+
+      field {
+         name = "GPIO Output State";
+         size = 8;
+         type = SLV;
+         access_bus = READ_WRITE;
+         access_dev =READ_ONLY;
+      };
+   };
+
 	fifo_reg {
       size = 256;
 	    direction = BUS_TO_CORE;

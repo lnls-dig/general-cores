@@ -84,7 +84,20 @@ entity wb_xilinx_fpga_loader is
 
 -- FPGA mode select pin. Connect to M1..M0 pins of the FPGA or leave open if
 -- the pins are hardwired on the PCB
-    xlx_m_o : out std_logic_vector(1 downto 0)
+    xlx_m_o : out std_logic_vector(1 downto 0);
+
+    -- 1-pulse: boot trigger sequence detected
+    boot_trig_p1_o : out std_logic := '0';
+
+    -- 1-pulse: exit bootloader mode
+    boot_exit_p1_o : out std_logic := '0';
+
+    -- 1: enable bootloader
+    -- 0: disable bootloader (all WB writes except for the trigger register are
+    -- ignored)
+    boot_en_i : in std_logic;
+
+    gpio_o : out std_logic_vector(7 downto 0)
     );
 
 end wb_xilinx_fpga_loader;
@@ -93,19 +106,22 @@ architecture behavioral of wb_xilinx_fpga_loader is
 
   component xloader_wb
     port (
-      rst_n_i   : in  std_logic;
-      wb_clk_i  : in  std_logic;
-      wb_addr_i : in  std_logic_vector(1 downto 0);
-      wb_data_i : in  std_logic_vector(31 downto 0);
-      wb_data_o : out std_logic_vector(31 downto 0);
-      wb_cyc_i  : in  std_logic;
-      wb_sel_i  : in  std_logic_vector(3 downto 0);
-      wb_stb_i  : in  std_logic;
-      wb_we_i   : in  std_logic;
-      wb_ack_o  : out std_logic;
-      regs_i    : in  t_xldr_in_registers;
-      regs_o    : out t_xldr_out_registers);
+      rst_n_i    : in  std_logic;
+      clk_sys_i  : in  std_logic;
+      wb_adr_i   : in  std_logic_vector(2 downto 0);
+      wb_dat_i   : in  std_logic_vector(31 downto 0);
+      wb_dat_o   : out std_logic_vector(31 downto 0);
+      wb_cyc_i   : in  std_logic;
+      wb_sel_i   : in  std_logic_vector(3 downto 0);
+      wb_stb_i   : in  std_logic;
+      wb_we_i    : in  std_logic;
+      wb_ack_o   : out std_logic;
+      wb_stall_o : out std_logic;
+      regs_i     : in  t_xldr_in_registers;
+      regs_o     : out t_xldr_out_registers);
   end component;
+
+  type t_bootseq_state is (TWORD0, TWORD1, TWORD2, TWORD3, TWORD4, TWORD5, TWORD6, TWORD7, BOOT_READY);
 
   type t_xloader_state is (IDLE, WAIT_INIT, WAIT_INIT2, READ_FIFO, READ_FIFO2, OUTPUT_BIT, CLOCK_EDGE, WAIT_DONE, EXTEND_PROG);
 
@@ -135,7 +151,19 @@ architecture behavioral of wb_xilinx_fpga_loader is
   signal d_last : std_logic;
 
   signal bit_counter : unsigned(4 downto 0);
+  signal boot_state  : t_bootseq_state;
 
+  procedure f_bootseq_step(signal st : out t_bootseq_state; nstate : t_bootseq_state; match_val : std_logic_vector; regs : t_xldr_out_registers) is
+  begin
+    if(regs.btrigr_wr_o = '1') then
+      if(regs.btrigr_o = match_val) then
+        st <= nstate;
+      else
+        st <= TWORD0;
+      end if;
+    end if;
+  end f_bootseq_step;
+  
 begin  -- behavioral
 
 
@@ -218,7 +246,7 @@ begin  -- behavioral
   p_main_fsm : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' or regs_in.csr_swrst_o = '1' then
+      if rst_n_i = '0' or regs_in.csr_swrst_o = '1' or boot_en_i = '0' then
         state           <= IDLE;
         xlx_program_b_o <= '1';
         xlx_cclk_o      <= '0';
@@ -320,7 +348,6 @@ begin  -- behavioral
                 state <= OUTPUT_BIT;
               end if;
             end if;
-            
 
           when WAIT_DONE =>
             if(done_synced = '1') then
@@ -330,7 +357,6 @@ begin  -- behavioral
             end if;
 
             timeout_counter <= timeout_counter - 1;
-
             if(timeout_counter = 0) then
               state                <= IDLE;
               regs_out.csr_error_i <= '1';
@@ -342,16 +368,45 @@ begin  -- behavioral
     end if;
   end process;
 
+  p_detect_boot_trigger : process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if rst_n_i = '0' then
+        boot_trig_p1_o <= '0';
+        boot_state     <= TWORD0;
+      else
+        case boot_state is
+          when TWORD0 =>
+            boot_trig_p1_o <= '0';
+            f_bootseq_step(boot_state, TWORD1, x"de", regs_in);
+          when TWORD1     => f_bootseq_step(boot_state, TWORD2, x"ad", regs_in);
+          when TWORD2     => f_bootseq_step(boot_state, TWORD3, x"be", regs_in);
+          when TWORD3     => f_bootseq_step(boot_state, TWORD4, x"ef", regs_in);
+          when TWORD4     => f_bootseq_step(boot_state, TWORD5, x"ca", regs_in);
+          when TWORD5     => f_bootseq_step(boot_state, TWORD6, x"fe", regs_in);
+          when TWORD6     => f_bootseq_step(boot_state, TWORD7, x"ba", regs_in);
+          when TWORD7     => f_bootseq_step(boot_state, BOOT_READY, x"be", regs_in);
+          when BOOT_READY =>
+            boot_trig_p1_o <= '1';
+            boot_state          <= TWORD0;
+        end case;
+      end if;
+    end if;
+  end process;
+
+  gpio_o <= regs_in.gpior_o;
+  boot_exit_p1_o <= regs_in.csr_exit_o;
+
   regs_out.csr_busy_i    <= '0' when (state = IDLE)                                                            else '1';
   regs_out.fifo_rd_req_i <= '1' when ((regs_in.fifo_rd_empty_o = '0') and (state = IDLE or state = READ_FIFO)) else '0';
 
   U_WB_SLAVE : xloader_wb
     port map (
       rst_n_i   => rst_n_i,
-      wb_clk_i  => clk_sys_i,
-      wb_addr_i => wb_in.adr(1 downto 0),
-      wb_data_i => wb_in.dat(31 downto 0),
-      wb_data_o => wb_out.dat(31 downto 0),
+      clk_sys_i  => clk_sys_i,
+      wb_adr_i => wb_in.adr(2 downto 0),
+      wb_dat_i => wb_in.dat(31 downto 0),
+      wb_dat_o => wb_out.dat(31 downto 0),
       wb_cyc_i  => wb_in.cyc,
       wb_sel_i  => wb_in.sel(3 downto 0),
       wb_stb_i  => wb_in.stb,
