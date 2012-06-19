@@ -155,7 +155,7 @@ peripheral {
 	    direction = BUS_TO_CORE;
       prefix = "FIFO";
       name = "Bitstream FIFO";
-      flags_bus = {FIFO_FULL, FIFO_EMPTY, FIFO_COUNT};
+      flags_bus = {FIFO_CLEAR, FIFO_FULL, FIFO_EMPTY, FIFO_COUNT};
       flags_dev = {FIFO_FULL, FIFO_EMPTY};
 
       field {

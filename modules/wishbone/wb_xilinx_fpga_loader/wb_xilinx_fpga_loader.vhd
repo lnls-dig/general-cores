@@ -13,6 +13,14 @@
 --                xloader_wb, wb_slave_adapter, wishbone_pkg
 -------------------------------------------------------------------------------
 -- Description: Wishbone compatible Xilinx serial port bitstream loader.
+-- Host initiates boot sequence by writing 1 to CSR.START register. Afterwards,
+-- it copies the bitstream to FIFO register. End of configuration is indicated
+-- by CSR.DONE bit (CSR.ERROR = FPGA DONE signal timeout). The actual startup
+-- of the FPGA is triggered by writing 1 to CSR.EXIT bit after loading the
+-- bitstream.
+-- The core also provides a boot sequence detector useful for bootloader
+-- applications which passively monitor the host bus until a certain "magic"
+-- sequence is found, which activates the bootloader mode.
 -------------------------------------------------------------------------------
 --
 -- Copyright (c) 2012 CERN
@@ -86,17 +94,18 @@ entity wb_xilinx_fpga_loader is
 -- the pins are hardwired on the PCB
     xlx_m_o : out std_logic_vector(1 downto 0);
 
-    -- 1-pulse: boot trigger sequence detected
+-- Trigger sequence detector output:
+-- 1-pulse: boot trigger sequence detected
     boot_trig_p1_o : out std_logic := '0';
 
-    -- 1-pulse: exit bootloader mode
+-- Exit bootloader mode, 1-pulse on write 1 to CSR.EXIT
     boot_exit_p1_o : out std_logic := '0';
 
-    -- 1: enable bootloader
-    -- 0: disable bootloader (all WB writes except for the trigger register are
-    -- ignored)
+-- Bootloader enable. When disabled, all WB writes except for the trigger register are
+-- ignored.
     boot_en_i : in std_logic;
 
+-- User-available IO (GPIOR register contents)
     gpio_o : out std_logic_vector(7 downto 0)
     );
 
@@ -123,7 +132,7 @@ architecture behavioral of wb_xilinx_fpga_loader is
 
   type t_bootseq_state is (TWORD0, TWORD1, TWORD2, TWORD3, TWORD4, TWORD5, TWORD6, TWORD7, BOOT_READY);
 
-  type t_xloader_state is (IDLE, WAIT_INIT, WAIT_INIT2, READ_FIFO, READ_FIFO2, OUTPUT_BIT, CLOCK_EDGE, WAIT_DONE, EXTEND_PROG);
+  type t_xloader_state is (IDLE, WAIT_INIT, WAIT_INIT2, READ_FIFO, READ_FIFO2, OUTPUT_BIT, CLOCK_EDGE, WAIT_DONE, EXTEND_PROG, STARTUP_CCLK0, STARTUP_CCLK1, GOT_DONE);
 
   signal state           : t_xloader_state;
   signal clk_div         : unsigned(6 downto 0);
@@ -146,6 +155,9 @@ architecture behavioral of wb_xilinx_fpga_loader is
   -- Last word written to DONE active timeout
   constant c_DONE_TIMEOUT : unsigned(timeout_counter'left downto 0) := to_unsigned(200000, timeout_counter'length);
 
+  -- Number of CCLK cycles after assertion of DONE required to start up the FPGA.
+  constant c_STARTUP_CYCLES : integer := 1024;
+  
   signal d_data : std_logic_vector(31 downto 0);
   signal d_size : std_logic_vector(1 downto 0);
   signal d_last : std_logic;
@@ -163,6 +175,10 @@ architecture behavioral of wb_xilinx_fpga_loader is
       end if;
     end if;
   end f_bootseq_step;
+
+  signal   startup_count    : unsigned(20 downto 0);
+
+  
   
 begin  -- behavioral
 
@@ -246,7 +262,7 @@ begin  -- behavioral
   p_main_fsm : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' or regs_in.csr_swrst_o = '1' or boot_en_i = '0' then
+      if rst_n_i = '0' or regs_in.csr_swrst_o = '1' then
         state           <= IDLE;
         xlx_program_b_o <= '1';
         xlx_cclk_o      <= '0';
@@ -260,7 +276,7 @@ begin  -- behavioral
           when IDLE =>
             
             timeout_counter <= c_INIT_TIMEOUT;
-            if(regs_in.csr_start_o = '1') then
+            if(regs_in.csr_start_o = '1' and boot_en_i = '1') then
               xlx_program_b_o      <= '0';
               regs_out.csr_done_i  <= '0';
               regs_out.csr_error_i <= '0';
@@ -328,7 +344,12 @@ begin  -- behavioral
               xlx_din_o                    <= d_data(31);
               xlx_cclk_o                   <= '0';
               d_data(d_data'left downto 1) <= d_data(d_data'left-1 downto 0);
-              state                        <= CLOCK_EDGE;
+              if(xlx_done_i = '1') then
+                state <= GOT_DONE;
+              else
+                state <= CLOCK_EDGE;
+              end if;
+              
             end if;
             
           when CLOCK_EDGE =>
@@ -362,12 +383,51 @@ begin  -- behavioral
               regs_out.csr_error_i <= '1';
               regs_out.csr_done_i  <= '1';
             end if;
+
+-- DONE pin has just been asserted high. Stop loading the bitstream and wait
+-- for EXIT command.
             
+          when GOT_DONE =>
+            regs_out.csr_done_i  <= '1';
+            regs_out.csr_error_i <= '0';
+            if(regs_in.csr_exit_o = '1') then
+              state         <= STARTUP_CCLK0;
+              startup_count <= (others => '0');
+            end if;
+
+-- After receiving EXIT command, pulse CCLK for several cycles to initiate the
+-- FPGA startup. This is to ensure the freshly configured FPGA keeps all its
+-- pins in hi-z mode until the host bootloader is done (for example in VME
+-- carriers, where a small FPGA, implementing the bootloader shares the VME bus
+-- with the main FPGA.
+          when STARTUP_CCLK0 =>
+            xlx_din_o <= '0';
+            if(tick = '1') then
+              xlx_cclk_o <= '0';
+              state      <= STARTUP_CCLK1;
+            end if;
+
+          when STARTUP_CCLK1 =>
+
+            if(tick = '1') then
+              xlx_cclk_o <= '1';
+              if(startup_count = c_STARTUP_CYCLES) then
+                state <= IDLE;
+              else
+                state <= STARTUP_CCLK0;
+              end if;
+
+              startup_count <= startup_count + 1;
+            end if;
+
         end case;
       end if;
     end if;
   end process;
 
+  -- Bootloader trigger sequence detection.
+  -- Write of 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe, 0xba, 0xbe to BTRIGR
+  -- produces a pulse on boot_trig_p1_o.
   p_detect_boot_trigger : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
@@ -388,13 +448,13 @@ begin  -- behavioral
           when TWORD7     => f_bootseq_step(boot_state, BOOT_READY, x"be", regs_in);
           when BOOT_READY =>
             boot_trig_p1_o <= '1';
-            boot_state          <= TWORD0;
+            boot_state     <= TWORD0;
         end case;
       end if;
     end if;
   end process;
 
-  gpio_o <= regs_in.gpior_o;
+  gpio_o         <= regs_in.gpior_o;
   boot_exit_p1_o <= regs_in.csr_exit_o;
 
   regs_out.csr_busy_i    <= '0' when (state = IDLE)                                                            else '1';
@@ -403,10 +463,10 @@ begin  -- behavioral
   U_WB_SLAVE : xloader_wb
     port map (
       rst_n_i   => rst_n_i,
-      clk_sys_i  => clk_sys_i,
-      wb_adr_i => wb_in.adr(2 downto 0),
-      wb_dat_i => wb_in.dat(31 downto 0),
-      wb_dat_o => wb_out.dat(31 downto 0),
+      clk_sys_i => clk_sys_i,
+      wb_adr_i  => wb_in.adr(2 downto 0),
+      wb_dat_i  => wb_in.dat(31 downto 0),
+      wb_dat_o  => wb_out.dat(31 downto 0),
       wb_cyc_i  => wb_in.cyc,
       wb_sel_i  => wb_in.sel(3 downto 0),
       wb_stb_i  => wb_in.stb,
