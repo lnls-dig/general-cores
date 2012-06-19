@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2011-07-18
+-- Last update: 2012-06-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ entity gc_extend_pulse is
     -- input pulse (synchronou to clk_i)
     pulse_i    : in  std_logic;
     -- extended output pulse
-    extended_o : out std_logic);
+    extended_o : out std_logic := '0');
 end gc_extend_pulse;
 
 architecture rtl of gc_extend_pulse is
