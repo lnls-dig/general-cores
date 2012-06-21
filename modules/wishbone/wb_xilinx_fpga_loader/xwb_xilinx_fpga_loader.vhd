@@ -48,7 +48,8 @@ entity xwb_xilinx_fpga_loader is
 
   generic (
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD
+    g_address_granularity : t_wishbone_address_granularity := WORD;
+    g_idr_value           : std_logic_vector(31 downto 0)  := x"626f6f74"
     );
 
   port (
@@ -88,7 +89,9 @@ architecture rtl of xwb_xilinx_fpga_loader is
   component wb_xilinx_fpga_loader
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
-      g_address_granularity : t_wishbone_address_granularity);
+      g_address_granularity : t_wishbone_address_granularity;
+      g_idr_value           : std_logic_vector(31 downto 0)
+      );
     port (
       clk_sys_i       : in  std_logic;
       rst_n_i         : in  std_logic;
@@ -121,7 +124,8 @@ begin  -- rtl
   U_Wrapped_XLDR : wb_xilinx_fpga_loader
     generic map (
       g_address_granularity => g_address_granularity,
-      g_interface_mode      => g_interface_mode)
+      g_interface_mode      => g_interface_mode,
+      g_idr_value           => g_idr_value)
     port map (
       clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
@@ -142,10 +146,10 @@ begin  -- rtl
       xlx_done_i      => xlx_done_i,
       xlx_suspend_o   => xlx_suspend_o,
       xlx_m_o         => xlx_m_o,
-      boot_trig_p1_o => boot_trig_p1_o,
-      boot_exit_p1_o => boot_exit_p1_o,
-      boot_en_i => boot_en_i,
-      gpio_o => gpio_o);
+      boot_trig_p1_o  => boot_trig_p1_o,
+      boot_exit_p1_o  => boot_exit_p1_o,
+      boot_en_i       => boot_en_i,
+      gpio_o          => gpio_o);
 
   slave_o.int <= '0';
   slave_o.err <= '0';

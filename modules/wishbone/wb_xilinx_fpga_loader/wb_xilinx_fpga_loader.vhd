@@ -58,7 +58,8 @@ use work.xldr_wbgen2_pkg.all;
 entity wb_xilinx_fpga_loader is
   generic(
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD
+    g_address_granularity : t_wishbone_address_granularity := WORD;
+    g_idr_value           : std_logic_vector(31 downto 0)  := x"626f6f74"
     );
   port (
 -- system clock
@@ -157,7 +158,7 @@ architecture behavioral of wb_xilinx_fpga_loader is
 
   -- Number of CCLK cycles after assertion of DONE required to start up the FPGA.
   constant c_STARTUP_CYCLES : integer := 1024;
-  
+
   signal d_data : std_logic_vector(31 downto 0);
   signal d_size : std_logic_vector(1 downto 0);
   signal d_last : std_logic;
@@ -176,7 +177,7 @@ architecture behavioral of wb_xilinx_fpga_loader is
     end if;
   end f_bootseq_step;
 
-  signal   startup_count    : unsigned(20 downto 0);
+  signal startup_count : unsigned(20 downto 0);
 
   
   
@@ -459,6 +460,8 @@ begin  -- behavioral
 
   regs_out.csr_busy_i    <= '0' when (state = IDLE)                                                            else '1';
   regs_out.fifo_rd_req_i <= '1' when ((regs_in.fifo_rd_empty_o = '0') and (state = IDLE or state = READ_FIFO)) else '0';
+
+  regs_out.idr_i <= g_idr_value;
 
   U_WB_SLAVE : xloader_wb
     port map (

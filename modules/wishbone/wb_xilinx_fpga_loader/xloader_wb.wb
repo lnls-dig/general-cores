@@ -149,6 +149,19 @@ peripheral {
          access_dev =READ_ONLY;
       };
    };
+  reg {
+      name = "ID Register";
+      prefix = "IDR";
+
+      field {
+         name = "Identification code";
+         description = "User-defined identification code (g_idr_value generic)";
+         size = 32;
+         type = SLV;
+         access_bus = READ_ONLY;
+         access_dev = WRITE_ONLY;
+      };
+   };
 
 	fifo_reg {
       size = 256;
