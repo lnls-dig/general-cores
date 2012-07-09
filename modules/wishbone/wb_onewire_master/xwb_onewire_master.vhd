@@ -41,6 +41,7 @@ architecture rtl of xwb_onewire_master is
     port (
       clk_sys_i   : in  std_logic;
       rst_n_i     : in  std_logic;
+      
       wb_cyc_i    : in  std_logic;
       wb_sel_i    : in  std_logic_vector(c_wishbone_data_width/8-1 downto 0);
       wb_stb_i    : in  std_logic;
@@ -50,6 +51,8 @@ architecture rtl of xwb_onewire_master is
       wb_dat_o    : out std_logic_vector(c_wishbone_data_width-1 downto 0);
       wb_ack_o    : out std_logic;
       wb_int_o    : out std_logic;
+      wb_stall_o  : out std_logic;
+      
       owr_pwren_o : out std_logic_vector(g_num_ports -1 downto 0);
       owr_en_o    : out std_logic_vector(g_num_ports -1 downto 0);
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
@@ -75,8 +78,8 @@ begin  -- rtl
       wb_dat_i    => slave_i.dat,
       wb_dat_o    => slave_o.dat,
       wb_ack_o    => slave_o.ack,
-      wb_stall_o  => slave_o.stall,
       wb_int_o    => slave_o.int,
+      wb_stall_o  => slave_o.stall,
       owr_pwren_o => owr_pwren_o,
       owr_en_o    => owr_en_o,
       owr_i       => owr_i);
