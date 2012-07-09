@@ -75,6 +75,7 @@ begin  -- rtl
       wb_dat_i    => slave_i.dat,
       wb_dat_o    => slave_o.dat,
       wb_ack_o    => slave_o.ack,
+      wb_stall_o  => slave_o.stall,
       wb_int_o    => slave_o.int,
       owr_pwren_o => owr_pwren_o,
       owr_en_o    => owr_en_o,
