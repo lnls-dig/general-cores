@@ -246,8 +246,8 @@ begin  -- syn
       c_mif_file_name       => "BlankString",
       c_optimization_mode   => 0,
       c_overflow_low        => 0,
-      c_preload_latency     => 1,
-      c_preload_regs        => 0,
+      c_preload_latency     => f_bool_2_int(not g_show_ahead),
+      c_preload_regs        => f_bool_2_int(g_show_ahead),
       c_prim_fifo_type      => "1kx18",
 
       c_prog_empty_thresh_assert_val => g_almost_empty_threshold,
