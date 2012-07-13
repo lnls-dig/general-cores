@@ -27,11 +27,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
 use work.genram_pkg.all;
-use work.v6_fifo_pkg.all;
 
 entity generic_sync_fifo is
 
@@ -73,7 +69,6 @@ end generic_sync_fifo;
 
 architecture syn of generic_sync_fifo is
 
-
   component inferred_sync_fifo
     generic (
       g_data_width             : natural;
@@ -101,37 +96,9 @@ architecture syn of generic_sync_fifo is
       count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
   end component;
 
-  component v6_hwfifo_wraper
-    generic (
-      g_data_width             : natural;
-      g_size                   : natural;
-      g_dual_clock             : boolean;
-      g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer);
-    port (
-      rst_n_i           : in  std_logic := '1';
-      clk_wr_i          : in  std_logic;
-      clk_rd_i          : in  std_logic;
-      d_i               : in  std_logic_vector(g_data_width-1 downto 0);
-      we_i              : in  std_logic;
-      q_o               : out std_logic_vector(g_data_width-1 downto 0);
-      rd_i              : in  std_logic;
-      rd_empty_o        : out std_logic;
-      wr_full_o         : out std_logic;
-      rd_almost_empty_o : out std_logic;
-      wr_almost_full_o  : out std_logic;
-      rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
-      wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
-  end component;
-
-  constant m : t_v6_fifo_mapping := f_v6_fifo_find_mapping(g_data_width, g_size);
-
 begin  -- syn
 
-  gen_inferred : if(m.d_width = 0) generate
-    assert false report "generic_sync_fifo[xilinx]: using inferred BRAM-based FIFO." severity note;
-
-    U_Inferred_FIFO : inferred_sync_fifo
+  U_Inferred_FIFO : inferred_sync_fifo
       generic map (
         g_data_width             => g_data_width,
         g_size                   => g_size,
@@ -158,33 +125,6 @@ begin  -- syn
         almost_full_o  => almost_full_o,
         count_o        => count_o);
 
-  end generate gen_inferred;
-
-  gen_native : if(m.d_width > 0) generate
-
-    U_Native_FIFO: v6_hwfifo_wraper
-      generic map (
-        g_data_width             => g_data_width,
-        g_size                   => g_size,
-        g_dual_clock             => false,
-        g_almost_empty_threshold => g_almost_empty_threshold,
-        g_almost_full_threshold  => g_almost_full_threshold)
-      port map (
-        rst_n_i           => rst_n_i,
-        clk_wr_i          => clk_i,
-        clk_rd_i          => clk_i,
-        d_i               => d_i,
-        we_i              => we_i,
-        q_o               => q_o,
-        rd_i              => rd_i,
-        rd_empty_o        => empty_o,
-        wr_full_o         => full_o,
-        rd_almost_empty_o => almost_empty_o,
-        wr_almost_full_o  => almost_full_o,
-        rd_count_o        => count_o,
-        wr_count_o        => open);
-  end generate gen_native;
-
-
+ 
 
 end syn;
