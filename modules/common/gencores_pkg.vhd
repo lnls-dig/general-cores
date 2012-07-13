@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-03-12
+-- Last update: 2012-07-05
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ package gencores_pkg is
       q_valid_o    : out std_logic;
       q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
   end component;
-  
+
   -- A 'Wes' FIFO. Generic FIFO using inferred memory.
   -- Supports clock domain crossing 
   -- Should be safe from fast->slow or reversed
@@ -233,6 +233,17 @@ package gencores_pkg is
       rstn_o     : out std_logic_vector(g_clocks-1 downto 0));
   end component;
 
+  component gc_rr_arbiter
+    generic (
+      g_size : integer);
+    port (
+      clk_i        : in  std_logic;
+      rst_n_i      : in  std_logic;
+      req_i        : in  std_logic_vector(g_size-1 downto 0);
+      grant_o      : out std_logic_vector(g_size-1 downto 0);
+      grant_comb_o : out std_logic_vector(g_size-1 downto 0));
+  end component;
+  
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
