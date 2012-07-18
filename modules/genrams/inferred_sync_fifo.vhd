@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-07-13
+-- Last update: 2012-07-18
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -42,10 +42,10 @@ entity inferred_sync_fifo is
     g_with_almost_full  : boolean := false;
     g_with_count        : boolean := false;  -- with words counter
 
-    g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer;  -- threshold for almost full flag
+    g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
 
-    g_register_flag_outputs : boolean := true
+    g_register_flag_outputs : boolean := false
     );
 
   port (
@@ -69,19 +69,19 @@ end inferred_sync_fifo;
 
 architecture syn of inferred_sync_fifo is
 
-  constant c_pointer_width : integer := f_log2_size(g_size);
-  signal   rd_ptr, wr_ptr  : unsigned(c_pointer_width-1 downto 0);
-  signal   usedw           : unsigned(c_pointer_width downto 0);
-  signal   full, empty     : std_logic;
-  signal   q_int           : std_logic_vector(g_data_width-1 downto 0);
-  signal   we              : std_logic;
-  signal   guard_bit       : std_logic;
+  constant c_pointer_width                         : integer := f_log2_size(g_size);
+  signal   rd_ptr, wr_ptr, wr_ptr_d0, rd_ptr_muxed : unsigned(c_pointer_width-1 downto 0);
+  signal   usedw                                   : unsigned(c_pointer_width downto 0);
+  signal   full, empty                             : std_logic;
+  signal   q_int                                   : std_logic_vector(g_data_width-1 downto 0);
+  signal   we                                      : std_logic;
+  signal   guard_bit                               : std_logic;
 
-  signal q_reg, q_comb: std_logic_vector(g_data_width-1 downto 0);
-    
+  signal q_reg, q_comb : std_logic_vector(g_data_width-1 downto 0);
+  
 begin  -- syn
 
- --assert g_show_ahead = false report "Show ahead mode not implemented (yet). Sorry" severity failure;
+  --assert g_show_ahead = false report "Show ahead mode not implemented (yet). Sorry" severity failure;
   
   we <= we_i and not full;
 
@@ -99,22 +99,34 @@ begin  -- syn
       aa_i    => std_logic_vector(wr_ptr(c_pointer_width-1 downto 0)),
       da_i    => d_i,
       clkb_i  => '0',
-      ab_i    => std_logic_vector(rd_ptr(c_pointer_width-1 downto 0)),
+      ab_i    => std_logic_vector(rd_ptr_muxed(c_pointer_width-1 downto 0)),
       qb_o    => q_comb);
 
-  p_output_reg: process(clk_i)
-    begin
-      if rising_edge(clk_i) then
-        if rd_i = '1' then
-          q_reg <= q_comb;
-        end if;
+  p_output_reg : process(clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if rd_i = '1' then
+        q_reg <= q_comb;
       end if;
-    end process;
+    end if;
+  end process;
 
+  
+  process(rd_ptr, rd_i)
+  begin
+    if(rd_i = '1' and g_show_ahead) then
+      rd_ptr_muxed <= rd_ptr + 1;
+    elsif((rd_i = '1' and not g_show_ahead) or (g_show_ahead)) then
+      rd_ptr_muxed <= rd_ptr;
+    else
+      rd_ptr_muxed <= rd_ptr - 1;
+    end if;
+  end process;
+  
 --  q_o <= q_comb when g_show_ahead = true else q_reg;
 
   q_o <= q_comb;
- 
+
   p_pointers : process(clk_i)
   begin
     if rising_edge(clk_i) then
@@ -133,7 +145,23 @@ begin  -- syn
     end if;
   end process;
 
-  gen_comb_flags : if(g_register_flag_outputs = false) generate
+  gen_comb_flags_showahead : if(g_show_ahead = true) generate
+
+    process(clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if ((rd_ptr + 1 = wr_ptr and rd_i = '1') or (rd_ptr = wr_ptr)) then
+          empty <= '1';
+        else
+          empty <= '0';
+        end if;
+      end if;
+    end process;
+    full <= '1' when (wr_ptr + 1 = rd_ptr) else '0';
+
+  end generate gen_comb_flags_showahead;
+
+  gen_comb_flags : if(g_register_flag_outputs = false and g_show_ahead = false) generate
     empty <= '1' when (wr_ptr = rd_ptr and guard_bit = '0') else '0';
     full  <= '1' when (wr_ptr = rd_ptr and guard_bit = '1') else '0';
 
@@ -151,7 +179,7 @@ begin  -- syn
     end process;
   end generate gen_comb_flags;
 
-  gen_registered_flags : if(g_register_flag_outputs = true) generate
+  gen_registered_flags : if(g_register_flag_outputs = true and g_show_ahead = false) generate
     p_reg_flags : process(clk_i)
     begin
       if rising_edge(clk_i) then
@@ -228,7 +256,7 @@ begin  -- syn
           if(usedw = g_almost_empty_threshold+1) then
             if(rd_i = '1' and we_i = '0') then
               almost_empty_o <= '1';
-            elsif(we_i = '1' and rd_i= '0') then
+            elsif(we_i = '1' and rd_i = '0') then
               almost_empty_o <= '0';
             end if;
 
