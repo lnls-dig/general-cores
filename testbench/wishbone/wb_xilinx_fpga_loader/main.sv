@@ -33,6 +33,8 @@ module main;
       .clk_sys_i (clk_sys),
       .rst_n_i   (rst_n),
 
+      .boot_en_i(1'b1),
+      
       .wb_adr_i (U_WB.master.adr),
       .wb_dat_i (U_WB.master.dat_o),
       .wb_dat_o (U_WB.master.dat_i),
