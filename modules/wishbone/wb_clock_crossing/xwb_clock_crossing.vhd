@@ -4,21 +4,23 @@ use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 use work.gencores_pkg.all;
 
+-- If you reset one clock domain, you must reset BOTH!
+-- Release of the reset lines may be arbitrarily out-of-phase
 entity xwb_clock_crossing is
    generic(
       sync_depth : natural := 3;
       log2fifo   : natural := 4);
    port(
-      -- Common wishbone signals
-      rst_n_i      : in  std_logic;
       -- Slave control port
-      slave_clk_i  : in  std_logic;
-      slave_i      : in  t_wishbone_slave_in;
-      slave_o      : out t_wishbone_slave_out;
+      slave_clk_i    : in  std_logic;
+      slave_rst_n_i  : in  std_logic;
+      slave_i        : in  t_wishbone_slave_in;
+      slave_o        : out t_wishbone_slave_out;
       -- Master reader port
-      master_clk_i : in  std_logic;
-      master_i     : in  t_wishbone_master_in;
-      master_o     : out t_wishbone_master_out);
+      master_clk_i   : in  std_logic;
+      master_rst_n_i : in  std_logic;
+      master_i       : in  t_wishbone_master_in;
+      master_o       : out t_wishbone_master_out);
 end xwb_clock_crossing;
 
 architecture rtl of xwb_clock_crossing is
@@ -58,9 +60,9 @@ architecture rtl of xwb_clock_crossing is
 begin
    mfifo : gc_wfifo
       generic map(addr_width => log2fifo, data_width => mlen, sync_depth => sync_depth, gray_code => true)
-      port map(w_clk_i => slave_clk_i,  w_rdy_o => mw_rdy, w_en_i => mw_en, w_data_i => msend_vect,
-               r_clk_i => master_clk_i, r_rdy_o => mr_rdy, r_en_i => mr_en, r_data_o => mrecv_vect,
-               a_clk_i => '0', a_rdy_o => open, a_en_i => '0', rst_n_i => rst_n_i);
+      port map(w_clk_i => slave_clk_i,  w_rst_n_i => slave_rst_n_i,  w_rdy_o => mw_rdy, w_en_i => mw_en, w_data_i => msend_vect,
+               r_clk_i => master_clk_i, r_rst_n_i => master_rst_n_i, r_rdy_o => mr_rdy, r_en_i => mr_en, r_data_o => mrecv_vect,
+               a_clk_i => '0',          a_rst_n_i => '0',            a_rdy_o => open,   a_en_i => '0');
 
    msend_vect(mCYC_start) <= msend.CYC;
    msend_vect(mWE_start) <= msend.WE;
@@ -76,9 +78,9 @@ begin
    
    sfifo : gc_wfifo
       generic map(addr_width => log2fifo, data_width => slen, sync_depth => sync_depth, gray_code => true)
-      port map(w_clk_i => master_clk_i, w_rdy_o => open,   w_en_i => sw_en, w_data_i => ssend_vect,
-               r_clk_i => slave_clk_i,  r_rdy_o => sr_rdy, r_en_i => sr_en, r_data_o => srecv_vect,
-               a_clk_i => slave_clk_i,  a_rdy_o => sa_rdy, a_en_i => sa_en, rst_n_i => rst_n_i);
+      port map(w_clk_i => master_clk_i, w_rst_n_i => master_rst_n_i, w_rdy_o => open,   w_en_i => sw_en, w_data_i => ssend_vect,
+               r_clk_i => slave_clk_i,  r_rst_n_i => slave_rst_n_i,  r_rdy_o => sr_rdy, r_en_i => sr_en, r_data_o => srecv_vect,
+               a_clk_i => slave_clk_i,  a_rst_n_i => slave_rst_n_i,  a_rdy_o => sa_rdy, a_en_i => sa_en);
    
    ssend_vect(sACK_start) <= ssend.ACK;
    ssend_vect(sRTY_start) <= ssend.RTY;
@@ -113,7 +115,7 @@ begin
    drive_master_port : process(master_clk_i)
    begin
       if rising_edge(master_clk_i) then
-         if rst_n_i = '0' then
+         if master_rst_n_i = '0' then
             master_o_STB <= '0';
          else
             master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
@@ -138,7 +140,7 @@ begin
    drive_slave_port : process(slave_clk_i)
    begin
       if rising_edge(slave_clk_i) then
-         if rst_n_i = '0' then
+         if slave_rst_n_i = '0' then
             slave_o_PUSH <= '0';
             slave_CYC <= '0';
          else

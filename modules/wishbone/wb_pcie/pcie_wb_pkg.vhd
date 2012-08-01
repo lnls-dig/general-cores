@@ -10,14 +10,14 @@ package pcie_wb_pkg is
     port(
       clk125_i      : in  std_logic; -- 125 MHz, free running
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
-      rstn_i        : in  std_logic;
       
       pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
-      pcie_rstn_i   : in  std_logic;
+      pcie_rstn_i   : in  std_logic; -- Asynchronous "clear sticky" PCIe pin
       pcie_rx_i     : in  std_logic_vector(3 downto 0);
       pcie_tx_o     : out std_logic_vector(3 downto 0);
       
       wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
+      wb_rstn_i     : in  std_logic; -- Reset wishbone bus
       master_o      : out t_wishbone_master_out;
       master_i      : in  t_wishbone_master_in);
   end component;
@@ -26,8 +26,7 @@ package pcie_wb_pkg is
     port(
       clk125_i      : in  std_logic; -- 125 MHz, free running
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
-      rstn_i        : in  std_logic; -- Logical reset
-      rstn_o        : out std_logic; -- If PCIe resets
+      async_rstn    : in  std_logic;
       
       pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
       pcie_rstn_i   : in  std_logic; -- PCIe reset pin
@@ -38,6 +37,7 @@ package pcie_wb_pkg is
       
       -- Simplified wishbone output stream
       wb_clk_o      : out std_logic;
+      wb_rstn_i     : in  std_logic;
       
       rx_wb_stb_o   : out std_logic;
       rx_wb_dat_o   : out std_logic_vector(63 downto 0);

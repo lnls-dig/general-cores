@@ -12,22 +12,21 @@ entity pcie_wb is
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
     cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
-    rstn_i        : in  std_logic;
     
     pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
-    pcie_rstn_i   : in  std_logic;
+    pcie_rstn_i   : in  std_logic; -- Reset PCIe sticky registers
     pcie_rx_i     : in  std_logic_vector(3 downto 0);
     pcie_tx_o     : out std_logic_vector(3 downto 0);
     
     wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
+    wb_rstn_i     : in  std_logic; -- (whatever clock domain you like)
     master_o      : out t_wishbone_master_out;
     master_i      : in  t_wishbone_master_in);
 end pcie_wb;
 
 architecture rtl of pcie_wb is
-  signal internal_wb_clk : std_logic; -- Should be input in final version
-  
-  signal rstn, stall : std_logic;
+  signal internal_wb_clk, internal_wb_rstn, stall : std_logic; 
+  signal internal_wb_rstn_sync : std_logic_vector(3 downto 0) := (others => '0');
   
   signal rx_wb64_stb, rx_wb64_stall : std_logic;
   signal rx_wb32_stb, rx_wb32_stall : std_logic;
@@ -65,8 +64,8 @@ begin
   pcie_phy : pcie_altera port map(
     clk125_i      => clk125_i,
     cal_clk50_i   => cal_clk50_i,
-    rstn_i        => rstn_i,
-    rstn_o        => rstn,
+    async_rstn    => wb_rstn_i,
+    
     pcie_refclk_i => pcie_refclk_i,
     pcie_rstn_i   => pcie_rstn_i,
     pcie_rx_i     => pcie_rx_i,
@@ -75,6 +74,7 @@ begin
     cfg_busdev_o  => cfg_busdev,
 
     wb_clk_o      => internal_wb_clk,
+    wb_rstn_i     => internal_wb_rstn,
     
     rx_wb_stb_o   => rx_wb64_stb,
     rx_wb_dat_o   => rx_wb64_dat,
@@ -90,7 +90,7 @@ begin
   
   pcie_rx : pcie_64to32 port map(
     clk_i            => internal_wb_clk,
-    rstn_i           => rstn,
+    rstn_i           => internal_wb_rstn,
     master64_stb_i   => rx_wb64_stb,
     master64_dat_i   => rx_wb64_dat,
     master64_stall_o => rx_wb64_stall,
@@ -100,7 +100,7 @@ begin
   
   pcie_tx : pcie_32to64 port map(
     clk_i            => internal_wb_clk,
-    rstn_i           => rstn,
+    rstn_i           => internal_wb_rstn,
     master32_stb_i   => tx_wb32_stb,
     master32_dat_i   => tx_wb32_dat,
     master32_stall_o => open,
@@ -110,7 +110,7 @@ begin
   
   pcie_logic : pcie_tlp port map(
     clk_i         => internal_wb_clk,
-    rstn_i        => rstn,
+    rstn_i        => internal_wb_rstn,
     
     rx_wb_stb_i   => rx_wb32_stb,
     rx_wb_dat_i   => rx_wb32_dat,
@@ -137,11 +137,14 @@ begin
     wb_rty_i      => slave_o.rty,
     wb_dat_i      => wb_dat);
   
+  internal_wb_rstn <= internal_wb_rstn_sync(0);
   tx64_alloc <= tx32_alloc and tx_alloc_mask;
   alloc : process(internal_wb_clk)
   begin
     if rising_edge(internal_wb_clk) then
-      if rstn = '0' then
+      internal_wb_rstn_sync <= wb_rstn_i & internal_wb_rstn_sync(internal_wb_rstn_sync'length-1 downto 1);
+      
+      if internal_wb_rstn = '0' then
         tx_alloc_mask <= '1';
       else
         tx_alloc_mask <= tx_alloc_mask xor tx32_alloc;
@@ -150,13 +153,14 @@ begin
   end process;
   
   clock_crossing : xwb_clock_crossing port map(
-    rst_n_i       => rstn,
-    slave_clk_i   => internal_wb_clk,
-    slave_i       => slave_i,
-    slave_o       => slave_o,
-    master_clk_i  => wb_clk, 
-    master_i      => master_i,
-    master_o      => master_o);
+    slave_clk_i    => internal_wb_clk,
+    slave_rst_n_i  => internal_wb_rstn,
+    slave_i        => slave_i,
+    slave_o        => slave_o,
+    master_clk_i   => wb_clk, 
+    master_rst_n_i => wb_rstn_i,
+    master_i       => master_i,
+    master_o       => master_o);
   
   slave_i.stb <= wb_stb        when wb_bar = "001" else '0';
   wb_stall    <= slave_o.stall when wb_bar = "001" else '0';

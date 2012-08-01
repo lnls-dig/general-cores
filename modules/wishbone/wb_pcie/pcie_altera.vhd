@@ -6,8 +6,7 @@ entity pcie_altera is
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
     cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
-    rstn_i        : in  std_logic; -- Power on reset
-    rstn_o        : out std_logic; -- If PCIe resets
+    async_rstn    : in  std_logic;
     
     pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
     pcie_rstn_i   : in  std_logic; -- PCIe reset pin
@@ -17,7 +16,8 @@ entity pcie_altera is
     cfg_busdev_o  : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
     
     -- Simplified wishbone output stream
-    wb_clk_o      : out std_logic;
+    wb_clk_o      : out std_logic; -- core_clk_out (of PCIe Hard-IP)
+    wb_rstn_i     : in  std_logic; -- wb_rstn_i in PCIe clock domain
     
     rx_wb_stb_o   : out std_logic;
     rx_wb_dat_o   : out std_logic_vector(63 downto 0);
@@ -445,9 +445,8 @@ begin
     end if;
   end process;
   
-  npor <= rstn_i and pcie_rstn_i;
-  rstn <= rstn_i or rst_reg;
-  rstn_o <= rstn;
+  npor <= async_rstn and pcie_rstn_i; -- async
+  rstn <= wb_rstn_i and not crst; -- core_clk_out
   
   -- Recover bus:device IDs from config space
   cfg : process(core_clk_out)

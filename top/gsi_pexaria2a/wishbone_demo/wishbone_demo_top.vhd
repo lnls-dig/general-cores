@@ -5,6 +5,7 @@ use IEEE.numeric_std.all;
 library work;
 use work.wishbone_pkg.all;
 use work.pcie_wb_pkg.all;
+use work.gencores_pkg.all;
 
 entity wishbone_demo_top is
   port(
@@ -69,8 +70,14 @@ architecture rtl of wishbone_demo_top is
   signal cbar_master_i : t_wishbone_master_in_array(c_slaves-1 downto 0);
   signal cbar_master_o : t_wishbone_master_out_array(c_slaves-1 downto 0);
 
-  signal clk_sys, clk_cal, rstn, locked : std_logic;
+  signal clk_sys, clk_cal : std_logic;
   signal lm32_interrupt : std_logic_vector(31 downto 0);
+  signal lm32_rstn : std_logic;
+  
+  signal locked : std_logic;
+  signal clk_sys_rstn : std_logic;
+  signal reset_clks : std_logic_vector(0 downto 0);
+  signal reset_rstn : std_logic_vector(0 downto 0);
   
   signal gpio_slave_o : t_wishbone_slave_out;
   signal gpio_slave_i : t_wishbone_slave_in;
@@ -83,12 +90,18 @@ begin
     port map (
       inclk0 => clk125_i,    -- 125Mhz oscillator from board
       areset => '0',
-      c0     => clk_sys,     -- 126MHz system clk (cannot use external pin as clock for RAM blocks)
+      c0     => clk_sys,     -- 130MHz system clk (to test clock crossing from clk125_i)
       c1     => clk_cal,     -- 50Mhz calibration clock for Altera reconfig cores
       locked => locked);     -- '1' when the PLL has locked
   
-  -- Hold the entire WB bus reset until the PLL has locked
-  rstn <= locked;
+  reset : gc_reset
+    port map(
+      free_clk_i => clk125_i,
+      locked_i   => locked,
+      clks_i     => reset_clks,
+      rstn_o     => reset_rstn);
+  reset_clks(0) <= clk_sys;
+  clk_sys_rstn <= reset_rstn(0);
   
   -- The top-most Wishbone B.4 crossbar
   interconnect : xwb_sdb_crossbar
@@ -101,7 +114,7 @@ begin
      g_sdb_addr    => c_sdb_address)
    port map(
      clk_sys_i     => clk_sys,
-     rst_n_i       => rstn,
+     rst_n_i       => clk_sys_rstn,
      -- Master connections (INTERCON is a slave)
      slave_i       => cbar_slave_i,
      slave_o       => cbar_slave_o,
@@ -114,24 +127,25 @@ begin
     generic map(
       sdb_addr => c_sdb_address)
     port map(
-      clk125_i      => clk_sys,       -- Free running clock
+      clk125_i      => clk125_i,      -- Free running clock
       cal_clk50_i   => clk_cal,       -- Transceiver global calibration clock
-      rstn_i        => rstn,          -- Reset for the PCIe decoder logic
       pcie_refclk_i => pcie_refclk_i, -- External PCIe 100MHz bus clock
       pcie_rstn_i   => pcie_rstn_i,   -- External PCIe system reset pin
       pcie_rx_i     => pcie_rx_i,
       pcie_tx_o     => pcie_tx_o,
       wb_clk        => clk_sys,       -- Desired clock for the WB bus
+      wb_rstn_i     => clk_sys_rstn,
       master_o      => cbar_slave_i(0),
       master_i      => cbar_slave_o(0));
   
   -- The LM32 is master 1+2
+  lm32_rstn <= clk_sys_rstn and not r_reset;
   LM32 : xwb_lm32
     generic map(
       g_profile => "medium_icache_debug") -- Including JTAG and I-cache (no divide)
     port map(
       clk_sys_i => clk_sys,
-      rst_n_i   => rstn and not r_reset,
+      rst_n_i   => lm32_rstn,
       irq_i     => lm32_interrupt,
       dwb_o     => cbar_slave_i(1), -- Data bus
       dwb_i     => cbar_slave_o(1),
@@ -145,7 +159,7 @@ begin
   dma : xwb_dma
     port map(
       clk_i       => clk_sys,
-      rst_n_i     => rstn,
+      rst_n_i     => clk_sys_rstn,
       slave_i     => cbar_master_o(2),
       slave_o     => cbar_master_i(2),
       r_master_i  => cbar_slave_o(3),
@@ -164,7 +178,7 @@ begin
       g_slave2_granularity    => WORD)
     port map(
       clk_sys_i => clk_sys,
-      rst_n_i   => rstn,
+      rst_n_i   => clk_sys_rstn,
       -- First port connected to the crossbar
       slave1_i  => cbar_master_o(0),
       slave1_o  => cbar_master_i(0),

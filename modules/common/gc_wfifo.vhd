@@ -10,19 +10,21 @@ entity gc_wfifo is
       addr_width : natural := 4;
       data_width : natural := 32);
    port(
-      rst_n_i  : in  std_logic;
       -- write port, only set w_en when w_rdy
       w_clk_i  : in  std_logic;
+      w_rst_n_i: in  std_logic;
       w_rdy_o  : out std_logic;
       w_en_i   : in  std_logic;
       w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- (pre)alloc port, can be unused
       a_clk_i  : in  std_logic;
+      a_rst_n_i: in  std_logic;
       a_rdy_o  : out std_logic;
       a_en_i   : in  std_logic;
       -- read port, only set r_en when r_rdy
       -- data is valid the cycle after r_en raised
       r_clk_i  : in  std_logic;
+      r_rst_n_i: in  std_logic;
       r_rdy_o  : out std_logic;
       r_en_i   : in  std_logic;
       r_data_o : out std_logic_vector(data_width-1 downto 0));
@@ -101,7 +103,7 @@ begin
       variable idx : counter;
    begin
       if rising_edge(r_clk_i) then
-         if rst_n_i = '0' then
+         if r_rst_n_i = '0' then
             idx := (others => '0');
          elsif r_en_i = '1' then
             idx := r_idx_bnry + 1;
@@ -120,7 +122,7 @@ begin
      variable idx : counter;
    begin
       if rising_edge(w_clk_i) then
-         if rst_n_i = '0' then
+         if w_rst_n_i = '0' then
             idx := (others => '0');
          elsif w_en_i = '1' then
             idx := w_idx_bnry + 1;
@@ -139,7 +141,7 @@ begin
      variable idx : counter;
    begin
       if rising_edge(a_clk_i) then
-         if rst_n_i = '0' then
+         if a_rst_n_i = '0' then
             idx := (others => '0');
          elsif a_en_i = '1' then
             idx := a_idx_bnry + 1;

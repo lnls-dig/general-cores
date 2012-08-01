@@ -218,24 +218,39 @@ package gencores_pkg is
       addr_width : natural := 4;
       data_width : natural := 32);
     port(
-      rst_n_i  : in  std_logic;
       -- write port, only set w_en when w_rdy
       w_clk_i  : in  std_logic;
+      w_rst_n_i: in  std_logic;
       w_rdy_o  : out std_logic;
       w_en_i   : in  std_logic;
       w_data_i : in  std_logic_vector(data_width-1 downto 0);
       -- (pre)alloc port, can be unused
       a_clk_i  : in  std_logic;
+      a_rst_n_i: in  std_logic;
       a_rdy_o  : out std_logic;
       a_en_i   : in  std_logic;
       -- read port, only set r_en when r_rdy
       -- data is valid the cycle after r_en raised
       r_clk_i  : in  std_logic;
+      r_rst_n_i: in  std_logic;
       r_rdy_o  : out std_logic;
       r_en_i   : in  std_logic;
       r_data_o : out std_logic_vector(data_width-1 downto 0));
   end component;
  
+  -- Power-On reset generation
+  component gc_reset is
+    generic(
+      g_clocks    : natural := 1;
+      g_logdelay  : natural := 10;
+      g_syncdepth : natural := 3);
+    port(
+      free_clk_i : in  std_logic;
+      locked_i   : in  std_logic := '1'; -- All the PLL locked signals ANDed together
+      clks_i     : in  std_logic_vector(g_clocks-1 downto 0);
+      rstn_o     : out std_logic_vector(g_clocks-1 downto 0));
+  end component;
+
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
@@ -284,4 +299,3 @@ package body gencores_pkg is
   end f_rr_arbitrate;
 
 end gencores_pkg;
-

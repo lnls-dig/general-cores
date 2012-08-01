@@ -51,61 +51,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name SDC_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo.sdc
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_slave_adapter/wb_slave_adapter.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_clock_crossing/xwb_clock_crossing.vhd
-set_global_assignment -name QIP_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.qip
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb_pkg.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_64to32.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_32to64.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_tlp.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_altera.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_core.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_serdes.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_reconfig.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dma/xwb_dma.vhd
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/altera/jtag_tap.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/generic/lm32_multiplier.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_shifter.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_ram.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_logic_op.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_dp_ram.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_addsub.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_adder.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/jtag_cores.v
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_mc_arithmetic.v
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_lm32/generated/xwb_lm32.vhd
-set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/generated/lm32_allprofiles.v
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_crossbar.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/sdb_rom.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_sdb_crossbar.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dpram/xwb_dpram.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wishbone_pkg.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_sync_fifo.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_spram.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_dpram.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_async_fifo.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/memory_loader_pkg.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/genram_pkg.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/genrams/generic_shiftreg_fifo.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_wfifo.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_clock_ram.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_frequency_meter.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_pulse_synchronizer.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_arbitrated_mux.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_sync_ffs.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_serial_dac.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_pi_controller.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_delay_gen.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_extend_pulse.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_moving_average.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gc_crc_gen.vhd
-set_global_assignment -name VHDL_FILE ../../../modules/common/gencores_pkg.vhd
-set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.vhd
-set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo_top.vhd
-set_global_assignment -name QIP_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.qip
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_location_assignment PIN_U23 -to pcie_refclk_i
 set_location_assignment PIN_W1 -to pcie_rstn_i
@@ -155,4 +100,71 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to leds_o[0]
+set_global_assignment -name STRATIXIII_CONFIGURATION_SCHEME "ACTIVE SERIAL"
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name GENERATE_JAM_FILE ON
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_40MHZ
+set_global_assignment -name SDC_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo.sdc
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_slave_adapter/wb_slave_adapter.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_clock_crossing/xwb_clock_crossing.vhd
+set_global_assignment -name QIP_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.qip
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_wb.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_64to32.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_32to64.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_tlp.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/pcie_altera.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_core.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_pcie_serdes.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_pcie/altera_reconfig.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dma/xwb_dma.vhd
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/altera/jtag_tap.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/platform/generic/lm32_multiplier.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_shifter.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_ram.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_logic_op.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_dp_ram.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_addsub.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_adder.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/jtag_cores.v
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/src/lm32_mc_arithmetic.v
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_lm32/generated/xwb_lm32.vhd
+set_global_assignment -name VERILOG_FILE ../../../modules/wishbone/wb_lm32/generated/lm32_allprofiles.v
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_crossbar.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/sdb_rom.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_crossbar/xwb_sdb_crossbar.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wb_dpram/xwb_dpram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/wishbone/wishbone_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_sync_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_spram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_dpram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/altera/generic_async_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/memory_loader_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/genram_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/genrams/generic_shiftreg_fifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_wfifo.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_clock_ram.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_frequency_meter.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_pulse_synchronizer.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_arbitrated_mux.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_sync_ffs.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_reset.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_serial_dac.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_dual_pi_controller.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_delay_gen.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_extend_pulse.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_moving_average.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gc_crc_gen.vhd
+set_global_assignment -name VHDL_FILE ../../../modules/common/gencores_pkg.vhd
+set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.vhd
+set_global_assignment -name VHDL_FILE ../../../top/gsi_pexaria2a/wishbone_demo/wishbone_demo_top.vhd
+set_global_assignment -name QIP_FILE ../../../top/gsi_pexaria2a/wishbone_demo/sys_pll.qip
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE stp1.stp
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -330,21 +330,23 @@ package wishbone_pkg is
     );
   end component;
   
+  -- If you reset one clock domain, you must reset BOTH!
+  -- Release of the reset lines may be arbitrarily out-of-phase
   component xwb_clock_crossing is
     generic(
       sync_depth : natural := 3;
       log2fifo   : natural := 4);
     port(
-      -- Common wishbone signals
-      rst_n_i      : in  std_logic;
       -- Slave control port
-      slave_clk_i  : in  std_logic;
-      slave_i      : in  t_wishbone_slave_in;
-      slave_o      : out t_wishbone_slave_out;
+      slave_clk_i    : in  std_logic;
+      slave_rst_n_i  : in  std_logic;
+      slave_i        : in  t_wishbone_slave_in;
+      slave_o        : out t_wishbone_slave_out;
       -- Master reader port
-      master_clk_i : in  std_logic;
-      master_i     : in  t_wishbone_master_in;
-      master_o     : out t_wishbone_master_out);
+      master_clk_i   : in  std_logic;
+      master_rst_n_i : in  std_logic;
+      master_i       : in  t_wishbone_master_in;
+      master_o       : out t_wishbone_master_out);
   end component;
   
   subtype t_xwb_dpram_init is t_generic_ram_init;
