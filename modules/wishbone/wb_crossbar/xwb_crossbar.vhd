@@ -83,17 +83,17 @@ architecture rtl of xwb_crossbar is
       for j in i+1 to g_num_slaves-1 loop
         assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero)
         report "Address ranges must be distinct (slaves " & 
-	       Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
-	                                Integer'image(to_integer(unsigned(c_mask(i)))) & "] & " & 
-	       Integer'image(j) & "[" & Integer'image(to_integer(unsigned(c_address(j)))) & "/" &
-	                                Integer'image(to_integer(unsigned(c_mask(j)))) & "])"
+	       Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+	                                f_bits2string(c_mask(i)) & "] & " & 
+	       Integer'image(j) & "[" & f_bits2string(c_address(j)) & "/" &
+	                                f_bits2string(c_mask(j)) & "])"
         severity Failure;
       end loop;
     end loop;
     for i in 0 to g_num_slaves-1 loop
       report "Mapping slave #" & 
-             Integer'image(i) & "[" & Integer'image(to_integer(unsigned(c_address(i)))) & "/" &
-                                      Integer'image(to_integer(unsigned(c_mask(i)))) & "]"
+             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                      f_bits2string(c_mask(i)) & "]"
       severity Note;
     end loop;
     return true;

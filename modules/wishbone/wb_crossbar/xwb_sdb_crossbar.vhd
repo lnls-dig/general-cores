@@ -24,12 +24,23 @@ end xwb_sdb_crossbar;
 
 architecture rtl of xwb_sdb_crossbar is
   alias c_layout : t_sdb_record_array(g_num_slaves-1 downto 0) is g_layout;
+  
+  -- Pretty print device name
+  function f_trim(s : string) return string is
+    variable cut : natural;
+  begin
+    byte : for i in s'length downto 1 loop
+      cut := i;
+      exit byte when s(i) /= ' ';
+    end loop;
+    return s(1 to cut);
+  end f_trim;
 
   -- Step 1. Place the SDB ROM on the bus
   -- How much space does the ROM need?
   constant c_used_entries : natural := c_layout'length + 1;
   constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-  constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
+  constant c_sdb_bytes    : natural := c_sdb_device_length / 8;
   constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
   
   -- Step 2. Find the size of the bus
@@ -40,7 +51,7 @@ architecture rtl of xwb_sdb_crossbar is
   begin
     -- The SDB block must be aligned
     assert (g_sdb_addr and std_logic_vector(to_unsigned(c_rom_bytes - 1, c_wishbone_address_width))) = zero
-    report "SDB address is not aligned. This is not supported by the crossbar."
+    report "SDB address is not aligned (" & f_bits2string(g_sdb_addr) & "). This is not supported by the crossbar."
     severity Failure;
       
     if not g_wraparound then
@@ -82,13 +93,13 @@ architecture rtl of xwb_sdb_crossbar is
       
       -- Range must be valid
       assert unsigned(sdb_component.addr_first) <= unsigned(sdb_component.addr_last)
-      report "Wishbone slave device #" & Integer'image(i) & " (" & sdb_component.product.name & ") wbd_begin address must precede wbd_end address."
+      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") must precede sdb_component.addr_last address (" & f_bits2string(sdb_component.addr_last) & ")."
       severity Failure;
       
       -- Address must fit
       extend(c_wishbone_address_width-1 downto 0) := unsigned(result(i));
       assert unsigned(sdb_component.addr_first) = extend
-      report "Wishbone slave device #" & Integer'image(i) & " (" & sdb_component.product.name & ") wbd_begin does not fit in t_wishbone_address."
+      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & " does not fit in t_wishbone_address."
       severity Failure;
     end loop;
     return result;
@@ -107,7 +118,7 @@ architecture rtl of xwb_sdb_crossbar is
       
       -- size must be of the form 000000...00001111...1
       assert (size and (size + to_unsigned(1, 64))) = zero
-      report "Wishbone slave device #" & Integer'image(i) & " (" & sdb_component.product.name & ") has an address range size that is not a power of 2 minus one (" & Integer'image(to_integer(size)) & "). This is not supported by the crossbar."
+      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") has an address range that is not a power of 2 minus one (" & f_bits2string(std_logic_vector(size)) & "). This is not supported by the crossbar."
       severity Warning;
       
       -- fix the size up to the form 000...0001111...11
@@ -117,7 +128,7 @@ architecture rtl of xwb_sdb_crossbar is
       
       -- the base address must be aligned to the size
       assert (unsigned(sdb_component.addr_first) and size) = zero
-      report "Wishbone slave device #" & Integer'image(i) & " (" & sdb_component.product.name & ") wbd_begin address is not aligned. This is not supported by the crossbar."
+      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") is not aligned. This is not supported by the crossbar."
       severity Failure;
       
       size := c_bus_end - size;

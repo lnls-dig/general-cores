@@ -74,6 +74,7 @@ package wishbone_pkg is
 
   -- A generally useful function.
   function f_ceil_log2(x : natural) return natural;
+  function f_bits2string(s : std_logic_vector) return string;
   
 ------------------------------------------------------------------------------
 -- SDB declaration
@@ -765,8 +766,8 @@ package body wishbone_pkg is
   is
     variable result : t_sdb_record;
     
-    variable first : unsigned(63 downto 0) := unsigned(bridge.sdb_component.addr_first);
-    variable child : unsigned(63 downto 0) := unsigned(bridge.sdb_child);
+    constant first : unsigned(63 downto 0) := unsigned(bridge.sdb_component.addr_first);
+    constant child : unsigned(63 downto 0) := unsigned(bridge.sdb_child);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
@@ -883,4 +884,43 @@ package body wishbone_pkg is
     
     return result;
   end f_xwb_dpram;
+  
+  function f_bits2string(s : std_logic_vector) return string is
+    --- extend length to full hex nibble
+    variable result : string((s'length+7)/4 downto 1);
+    variable s_norm : std_logic_vector(result'length*4-1 downto 0) := (others=>'0');
+    variable cut : natural;
+  begin
+    s_norm(s'length-1 downto 0) := s;
+    for i in result'length-1 downto 0 loop
+      case s_norm(i*4+3 downto i*4) is
+        when "0000" => result(i+1) := '0';
+        when "0001" => result(i+1) := '1';
+        when "0010" => result(i+1) := '2';
+        when "0011" => result(i+1) := '3';
+        when "0100" => result(i+1) := '4';
+        when "0101" => result(i+1) := '5';
+        when "0110" => result(i+1) := '6';
+        when "0111" => result(i+1) := '7';
+        when "1000" => result(i+1) := '8';
+        when "1001" => result(i+1) := '9';
+        when "1010" => result(i+1) := 'a';
+        when "1011" => result(i+1) := 'b';
+        when "1100" => result(i+1) := 'c';
+        when "1101" => result(i+1) := 'd';
+        when "1110" => result(i+1) := 'e';
+        when "1111" => result(i+1) := 'f';
+        when others => result(i+1) := 'X';
+      end case;
+    end loop;
+    
+    -- trim leading 0s
+    strip : for i in result'length downto 1 loop
+      cut := i;
+      exit strip when result(i) /= '0';
+    end loop;
+    
+    return "0x" & result(cut downto 1);
+  end f_bits2string;
+  
 end wishbone_pkg;
