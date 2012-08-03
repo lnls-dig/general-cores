@@ -892,10 +892,12 @@ package body wishbone_pkg is
     variable result : string((s'length+7)/4 downto 1);
     variable s_norm : std_logic_vector(result'length*4-1 downto 0) := (others=>'0');
     variable cut : natural;
+    variable nibble: std_logic_vector(3 downto 0);
   begin
     s_norm(s'length-1 downto 0) := s;
     for i in result'length-1 downto 0 loop
-      case s_norm(i*4+3 downto i*4) is
+      nibble := s_norm(i*4+3 downto i*4);
+      case nibble is
         when "0000" => result(i+1) := '0';
         when "0001" => result(i+1) := '1';
         when "0010" => result(i+1) := '2';
