@@ -19,11 +19,11 @@ architecture rtl of gc_reset is
   type t_shifters is array(natural range <>) of t_shifter;
   
   signal shifters : t_shifters(g_clocks-1 downto 0) := (others => (others => '0')); -- start reset
-  signal locked_count : unsigned(g_syncdepth-1 downto 0) := (others => '0');
+  signal locked_count : unsigned(g_logdelay-1 downto 0) := (others => '0');
   signal master_rstn : std_logic;
 begin
   lock : process(free_clk_i)
-    constant locked_done : unsigned(g_syncdepth-1 downto 0) := (others => '1');
+    constant locked_done : unsigned(g_logdelay-1 downto 0) := (others => '1');
   begin
     if rising_edge(free_clk_i) then
       if locked_i = '0' then
