@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2012-01-10
--- Last update: 2012-01-10
+-- Last update: 2012-08-29
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ architecture rtl of gc_pulse_synchronizer is
 
   constant c_sync_stages : integer := 3;
 
-  signal ready : std_logic;
+  signal ready, d_p_d0 : std_logic;
 
   signal in_ext, out_ext : std_logic;
   signal out_feedback    : std_logic;
@@ -104,8 +104,12 @@ begin  -- rtl
     if rst_n_i = '0' then
       ready  <= '1';
       in_ext <= '0';
+      d_p_d0 <= '0';
     elsif rising_edge(clk_in_i) then
-      if(ready = '1' and d_p_i = '1') then
+
+      d_p_d0 <= d_p_i;
+      
+      if(ready = '1' and d_p_i = '1' and d_p_d0 = '0') then
         in_ext <= '1';
         ready  <= '0';
       elsif(in_ext = '1' and out_feedback = '1') then
