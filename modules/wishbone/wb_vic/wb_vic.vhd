@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2012-01-13
+-- Last update: 2012-09-27
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -45,22 +45,22 @@ entity wb_vic is
     );
 
   port (
-    clk_sys_i : in std_logic;            -- wishbone clock
-    rst_n_i  : in std_logic;            -- reset
+    clk_sys_i : in std_logic;           -- wishbone clock
+    rst_n_i   : in std_logic;           -- reset
 
-    wb_adr_i : in  std_logic_vector(c_wishbone_address_width-1 downto 0);
-    wb_dat_i : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
-    wb_dat_o : out std_logic_vector(c_wishbone_data_width-1 downto 0);
-    wb_cyc_i : in  std_logic;
-    wb_sel_i : in  std_logic_vector(c_wishbone_data_width/8-1 downto 0);
-    wb_stb_i : in  std_logic;
-    wb_we_i  : in  std_logic;
-    wb_ack_o : out std_logic;
+    wb_adr_i   : in  std_logic_vector(c_wishbone_address_width-1 downto 0);
+    wb_dat_i   : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
+    wb_dat_o   : out std_logic_vector(c_wishbone_data_width-1 downto 0);
+    wb_cyc_i   : in  std_logic;
+    wb_sel_i   : in  std_logic_vector(c_wishbone_data_width/8-1 downto 0);
+    wb_stb_i   : in  std_logic;
+    wb_we_i    : in  std_logic;
+    wb_ack_o   : out std_logic;
     wb_stall_o : out std_logic;
 
     irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);  -- IRQ inputs
-    irq_master_o : out std_logic        -- master IRQ output (multiplexed line, to the CPU)
-             
+    irq_master_o : out std_logic  -- master IRQ output (multiplexed line, to the CPU)
+
     );
 
 end wb_vic;
@@ -73,21 +73,23 @@ architecture syn of wb_vic is
       in_i  : in  std_logic_vector(31 downto 0);
       out_o : out std_logic_vector(4 downto 0));
   end component;
-
   component wb_slave_vic
     port (
       rst_n_i            : in  std_logic;
-      wb_clk_i           : in  std_logic;
-      wb_addr_i          : in  std_logic_vector(5 downto 0);
-      wb_data_i          : in  std_logic_vector(31 downto 0);
-      wb_data_o          : out std_logic_vector(31 downto 0);
+      clk_sys_i          : in  std_logic;
+      wb_adr_i           : in  std_logic_vector(5 downto 0);
+      wb_dat_i           : in  std_logic_vector(31 downto 0);
+      wb_dat_o           : out std_logic_vector(31 downto 0);
       wb_cyc_i           : in  std_logic;
       wb_sel_i           : in  std_logic_vector(3 downto 0);
       wb_stb_i           : in  std_logic;
       wb_we_i            : in  std_logic;
       wb_ack_o           : out std_logic;
+      wb_stall_o         : out std_logic;
       vic_ctl_enable_o   : out std_logic;
       vic_ctl_pol_o      : out std_logic;
+      vic_ctl_emu_edge_o : out std_logic;
+      vic_ctl_emu_len_o  : out std_logic_vector(15 downto 0);
       vic_risr_i         : in  std_logic_vector(31 downto 0);
       vic_ier_o          : out std_logic_vector(31 downto 0);
       vic_ier_wr_o       : out std_logic;
@@ -103,13 +105,15 @@ architecture syn of wb_vic is
       vic_ivt_ram_data_o : out std_logic_vector(31 downto 0);
       vic_ivt_ram_rd_i   : in  std_logic);
   end component;
-
   type t_state is (WAIT_IRQ, PROCESS_IRQ, WAIT_ACK, WAIT_MEM, WAIT_IDLE);
 
   signal irqs_i_reg : std_logic_vector(32 downto 0);
 
   signal vic_ctl_enable   : std_logic;
   signal vic_ctl_pol      : std_logic;
+  signal vic_ctl_emu_edge : std_logic;
+  signal vic_ctl_emu_len  : std_logic_vector(15 downto 0);
+
   signal vic_risr         : std_logic_vector(31 downto 0);
   signal vic_ier          : std_logic_vector(31 downto 0);
   signal vic_ier_wr       : std_logic;
@@ -133,9 +137,10 @@ architecture syn of wb_vic is
   signal irq_id_encoded : std_logic_vector(4 downto 0);
   signal state          : t_state;
 
-    signal wb_in  : t_wishbone_slave_in;
+  signal wb_in  : t_wishbone_slave_in;
   signal wb_out : t_wishbone_slave_out;
 
+  signal timeout_count : unsigned(15 downto 0);
   
 begin  -- syn
 
@@ -168,16 +173,16 @@ begin  -- syn
 
   vic_ivt_ram_addr <= current_irq;
 
-  U_Slave_adapter: wb_slave_adapter
+  U_Slave_adapter : wb_slave_adapter
     generic map (
       g_master_use_struct  => true,
-      g_master_mode        => CLASSIC,
+      g_master_mode        => PIPELINED,
       g_master_granularity => WORD,
       g_slave_use_struct   => false,
       g_slave_mode         => g_interface_mode,
       g_slave_granularity  => g_address_granularity)
     port map (
-      clk_sys_i => clk_sys_i,
+      clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
       sl_adr_i   => wb_adr_i,
       sl_dat_i   => wb_dat_i,
@@ -191,27 +196,29 @@ begin  -- syn
       master_i   => wb_out,
       master_o   => wb_in);
 
-  wb_out.stall <= '0';
-  wb_out.rty <= '0';
-  wb_out.err <= '0';
-  wb_out.int <= '0';
+  wb_out.rty   <= '0';
+  wb_out.err   <= '0';
+  wb_out.int   <= '0';
 
-  
+
   U_wb_controller : wb_slave_vic
     port map (
-      rst_n_i   => rst_n_i,
-      wb_clk_i  => clk_sys_i,
-      wb_addr_i => wb_in.adr(5 downto 0),
-      wb_data_i => wb_in.dat,
-      wb_data_o => wb_out.dat,
-      wb_cyc_i  => wb_in.cyc,
-      wb_sel_i  => wb_in.sel,
-      wb_stb_i  => wb_in.stb,
-      wb_we_i   => wb_in.we,
-      wb_ack_o  => wb_out.ack,
+      rst_n_i  => rst_n_i,
+      clk_sys_i => clk_sys_i,
+      wb_adr_i => wb_in.adr(5 downto 0),
+      wb_dat_i => wb_in.dat,
+      wb_dat_o => wb_out.dat,
+      wb_cyc_i => wb_in.cyc,
+      wb_sel_i => wb_in.sel,
+      wb_stb_i => wb_in.stb,
+      wb_we_i  => wb_in.we,
+      wb_ack_o => wb_out.ack,
+      wb_stall_o => wb_out.stall,
 
       vic_ctl_enable_o   => vic_ctl_enable,
       vic_ctl_pol_o      => vic_ctl_pol,
+      vic_ctl_emu_edge_o => vic_ctl_emu_edge,
+      vic_ctl_emu_len_o  => vic_ctl_emu_len,
       vic_risr_i         => vic_risr,
       vic_ier_o          => vic_ier,
       vic_ier_wr_o       => vic_ier_wr,
@@ -313,9 +320,19 @@ begin  -- syn
                 swi_mask <= (others => '0');
               end if;
 
+              timeout_count <= (others => '0');
+
             when WAIT_IDLE =>
-              state <= WAIT_IRQ;
-              
+              if(vic_ctl_emu_edge = '0') then
+                state <= WAIT_IRQ;
+              else
+                irq_master_o  <= not vic_ctl_pol;
+                timeout_count <= timeout_count + 1;
+                if(timeout_count = unsigned(vic_ctl_emu_len)) then
+                  state <= WAIT_IRQ;
+                end if;
+                
+              end if;
           end case;
         end if;
       end if;

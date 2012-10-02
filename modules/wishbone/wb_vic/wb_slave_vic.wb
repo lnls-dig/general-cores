@@ -27,6 +27,25 @@ peripheral {
 				 access_dev = READ_ONLY;
 				 access_bus = READ_WRITE;
 			};
+
+      field {
+				 name = "Emulate Edge sensitive output";
+				 description = "1: Forces a low pulse of EMU_WIDTH clock cycles at each write to EOIR. Useful for edge-only IRQ controllers such as Gennum.\
+                        0: Normal IRQ master line behavior";
+				 prefix = "EMU_EDGE";
+				 type = BIT;
+				 access_dev = READ_ONLY;
+				 access_bus = READ_WRITE;
+			};
+
+      field {
+         name = "Emulated Edge pulse timer";
+         prefix = "EMU_LEN";
+         type = SLV;
+         size = 16;
+				 access_dev = READ_ONLY;
+				 access_bus = READ_WRITE;
+      };
 	 };
 
 	 reg {
