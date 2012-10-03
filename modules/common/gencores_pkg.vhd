@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-07-05
+-- Last update: 2012-09-13
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -242,6 +242,22 @@ package gencores_pkg is
       req_i        : in  std_logic_vector(g_size-1 downto 0);
       grant_o      : out std_logic_vector(g_size-1 downto 0);
       grant_comb_o : out std_logic_vector(g_size-1 downto 0));
+  end component;
+
+  component gc_word_packer
+    generic (
+      g_input_width  : integer;
+      g_output_width : integer);
+    port (
+      clk_i     : in  std_logic;
+      rst_n_i   : in  std_logic;
+      d_i       : in  std_logic_vector(g_input_width-1 downto 0);
+      d_valid_i : in  std_logic;
+      d_req_o   : out std_logic;
+      flush_i   : in  std_logic := '0';
+      q_o       : out std_logic_vector(g_output_width-1 downto 0);
+      q_valid_o : out std_logic;
+      q_req_i   : in  std_logic);
   end component;
   
   procedure f_rr_arbitrate (
