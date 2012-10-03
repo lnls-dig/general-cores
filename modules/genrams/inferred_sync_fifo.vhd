@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-07-18
+-- Last update: 2012-09-18
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ entity inferred_sync_fifo is
     g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
 
-    g_register_flag_outputs : boolean := false
+    g_register_flag_outputs : boolean := true
     );
 
   port (
@@ -194,9 +194,9 @@ begin  -- syn
             empty <= '0';
           end if;
 
-          if(usedw = g_size-1 and we_i = '1' and rd_i = '0') then
+          if(usedw = g_size-2 and we_i = '1' and rd_i = '0') then
             full <= '1';
-          elsif(rd_i = '1' and we_i = '0') then
+          elsif(usedw = g_size-1 and rd_i = '1' and we_i = '0') then
             full <= '0';
           end if;
         end if;
