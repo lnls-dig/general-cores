@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-07-03
+-- Last update: 2012-10-02
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -80,10 +80,10 @@ architecture syn of v6_hwfifo_wraper is
   signal dip_36, dop_36         : std_logic_vector(7 downto 0);
   signal di_wide_36, do_wide_36 : std_logic_vector(79 downto 0);
 
-  signal srst             : std_logic;
+  signal srst, srstreg          : std_logic;
   signal rd_ptr, wr_ptr : std_logic_vector(12 downto 0);
 
- function f_bool_2_int (x : boolean) return integer is
+  function f_bool_2_int (x : boolean) return integer is
   begin
     if(x) then
       return 1;
@@ -92,11 +92,25 @@ architecture syn of v6_hwfifo_wraper is
     end if;
   end f_bool_2_int;
 
+  function f_clamp (x : integer; min_val : integer; max_val : integer)
+    return integer is
+  begin
+    if(x < min_val) then
+      return min_val;
+    elsif(x > max_val) then
+      return max_val;
+    else
+      return x;
+    end if;
+  end f_clamp;
+  
   
 begin  -- syn
 
   srst <= not rst_n_i;
 
+  srstreg <= '0' when g_dual_clock = true else srst;
+  
   gen_fifo36 : if(m.is_36 and m.d_width > 0) generate
     assert false report "generic_sync_fifo[xilinx]: using FIFO36E1 primitive." severity note;
 
@@ -136,7 +150,7 @@ begin  -- syn
         RDEN          => rd_i,
         REGCE         => '1',
         RST           => srst,
-        RSTREG        => srst,
+        RSTREG        => srstreg,
         WRCLK         => clk_wr_i,
         WREN          => we_i);
 
@@ -162,8 +176,8 @@ begin  -- syn
 
     U_Wrapped_FIFO18 : FIFO18E1
       generic map (
-        ALMOST_FULL_OFFSET      => to_bitvector(std_logic_vector(to_unsigned(g_almost_full_threshold, 16))),
-        ALMOST_EMPTY_OFFSET     => to_bitvector(std_logic_vector(to_unsigned(g_almost_empty_threshold, 16))),
+        ALMOST_FULL_OFFSET      => to_bitvector(std_logic_vector(to_unsigned(f_clamp(g_almost_full_threshold,  5, 2043), 16))),
+        ALMOST_EMPTY_OFFSET     => to_bitvector(std_logic_vector(to_unsigned(f_clamp(g_almost_empty_threshold, 5, 2043), 16))),
         DATA_WIDTH              => m.d_width + m.dp_width,
         DO_REG                  => f_bool_2_int(g_dual_clock),
         EN_SYN                  => not g_dual_clock,
@@ -184,7 +198,7 @@ begin  -- syn
         RDEN        => rd_i,
         REGCE       => '1',
         RST         => srst,
-        RSTREG      => srst,
+        RSTREG      => srstreg,
         WRCLK       => clk_wr_i,
         WREN        => we_i);
 
@@ -195,7 +209,7 @@ begin  -- syn
   end generate gen_fifo18;
 
 
-  gen_pointers: if(g_dual_clock = false) generate
+  gen_pointers : if(g_dual_clock = false) generate
     rd_count_o <= std_logic_vector(resize(unsigned(wr_ptr) - unsigned(rd_ptr), rd_count_o'length));
     wr_count_o <= std_logic_vector(resize(unsigned(wr_ptr) - unsigned(rd_ptr), wr_count_o'length));
   end generate gen_pointers;
