@@ -641,6 +641,22 @@ package wishbone_pkg is
       irq_master_o : out std_logic);
   end component;
 
+  constant c_xwb_vic_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"000000000000CE42", -- CERN
+    device_id     => x"00000013",
+    version       => x"00000001",
+    date          => x"20120113",
+    name          => "WB-VIC-Int.Control ")));	 
+  
   component xwb_vic
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
