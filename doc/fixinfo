@@ -1,0 +1,18 @@
+
+;; use:
+;;     emacs -batch -l ./fixinfo.el <file>
+;; or, better:
+;;     emacs -batch --no-site-file -l ./fixinfo.el <file>
+
+(defun fixinfo (file)
+  (find-file-other-window file)
+  (message (concat "Maxing texinfo tree in " file))
+  (texinfo-all-menus-update)
+  (texinfo-every-node-update)
+  (save-buffer)
+  (kill-buffer (current-buffer))
+)
+
+;; loop over command line arguments
+(mapcar 'fixinfo command-line-args-left)
+(kill-emacs)

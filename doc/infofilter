@@ -1,0 +1,21 @@
+#! /usr/bin/sed -f
+
+# allow "%" as a comment char, but only at the beginning of the line
+s/^%/@c /
+#s/[^\\]%.*$//
+s/^\\%/%/
+
+
+#preserve blanks and braces in @example blocks
+/@example/,/@end example/ s/{/@{/g
+/@example/,/@end example/ s/}/@}/g
+/@example/,/@end example/ p
+/@example/,/@end example/ d
+/@smallexample/,/@end smallexample/ s/{/@{/g
+/@smallexample/,/@end smallexample/ s/}/@}/g
+/@smallexample/,/@end smallexample/ p
+/@smallexample/,/@end smallexample/ d
+
+# remove leading blanks
+s/^[ 	]*//
+
