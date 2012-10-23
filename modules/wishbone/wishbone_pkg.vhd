@@ -823,47 +823,91 @@ package body wishbone_pkg is
     g_sdb_addr    : t_wishbone_address) return t_sdb_bridge
   is
     alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
-
+  
     -- How much space does the ROM need?
     constant c_used_entries : natural := c_layout'length + 1;
     constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+    
     constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
     constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
     
-    -- Step 2. Find the size of the bus
-    function f_bus_end return unsigned is
-      variable result : unsigned(63 downto 0);
-      variable sdb_component : t_sdb_component;
-    begin
-      if not g_wraparound then
-        result := (others => '0');
-        for i in 0 to c_wishbone_address_width-1 loop
-          result(i) := '1';
-        end loop;
-      else
-        -- The ROM will be an addressed slave as well
-        result := (others => '0');
-        result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
-        result := result + to_unsigned(c_rom_bytes, 64) - 1;
-        
-        for i in c_layout'range loop
-	  sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
-          if unsigned(sdb_component.addr_last) > result then
-            result := unsigned(sdb_component.addr_last);
-          end if;
-        end loop;
-        -- round result up to a power of two -1
-        for i in 62 downto 0 loop
-          result(i) := result(i) or result(i+1);
-        end loop;
-      end if;
-      return result;
-    end f_bus_end;
-    
-    constant bus_end : unsigned(63 downto 0) := f_bus_end;
+    variable sdb_component : t_sdb_component;
+    variable bus_end : unsigned(63 downto 0);
   begin
-    return f_xwb_bridge_manual_sdb(std_logic_vector(f_bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
+    --  Find the size of the bus
+    if not g_wraparound then
+      bus_end := (others => '0');
+      for i in 0 to c_wishbone_address_width-1 loop
+        bus_end(i) := '1';
+      end loop;
+    else
+      -- The ROM will be an addressed slave as well
+      bus_end := (others => '0');
+      bus_end(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+      bus_end := bus_end + to_unsigned(c_rom_bytes, 64) - 1;
+        
+      for i in c_layout'range loop
+        sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+        if unsigned(sdb_component.addr_last) > bus_end then
+          bus_end := unsigned(sdb_component.addr_last);
+        end if;
+      end loop;
+      -- round result up to a power of two -1
+      for i in 62 downto 0 loop
+        bus_end(i) := bus_end(i) or bus_end(i+1);
+      end loop;
+    end if;
+      
+    return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
+  
+  --function f_xwb_bridge_layout_sdb(
+  --  g_wraparound  : boolean := true;
+  --  g_layout      : t_sdb_record_array;
+  --  g_sdb_addr    : t_wishbone_address) return t_sdb_bridge
+  --is
+  --  alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
+  --
+  --  -- How much space does the ROM need?
+  --  constant c_used_entries : natural := c_layout'length + 1;
+  --  constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+  --  constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
+  --  constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
+  --  
+  --  -- Step 2. Find the size of the bus
+  --  function f_bus_end return unsigned is
+  --    variable result : unsigned(63 downto 0);
+  --    variable sdb_component : t_sdb_component;
+  --  begin
+  --    if not g_wraparound then
+  --      result := (others => '0');
+  --      for i in 0 to c_wishbone_address_width-1 loop
+  --        result(i) := '1';
+  --      end loop;
+  --    else
+  --      -- The ROM will be an addressed slave as well
+  --      result := (others => '0');
+  --      result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+  --      result := result + to_unsigned(c_rom_bytes, 64) - 1;
+  --      
+  --      for i in c_layout'range loop
+  --      sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+  --        if unsigned(sdb_component.addr_last) > result then
+  --          result := unsigned(sdb_component.addr_last);
+  --        end if;
+  --      end loop;
+  --      -- round result up to a power of two -1
+  --      for i in 62 downto 0 loop
+  --        result(i) := result(i) or result(i+1);
+  --      end loop;
+  --    end if;
+  --    return result;
+  --  end f_bus_end;
+  --  
+  --  constant bus_end : unsigned(63 downto 0) := f_bus_end;
+  --begin
+  --  return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
+  --end f_xwb_bridge_layout_sdb;
   
   function f_xwb_dpram(g_size : natural) return t_sdb_device
   is
