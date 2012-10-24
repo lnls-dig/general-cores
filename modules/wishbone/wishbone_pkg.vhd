@@ -126,6 +126,9 @@ package wishbone_pkg is
   function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector; -- (447 downto 8)
   function f_sdb_extract_product(sdb_record : std_logic_vector(319 downto 8))  return t_sdb_product;
   function f_sdb_extract_component(sdb_record : std_logic_vector(447 downto 8)) return t_sdb_component;
+  
+  function f_bus_end(g_wraparound : boolean := true; g_layout : t_sdb_record_array;
+    c_rom_bytes : natural; g_sdb_addr : t_wishbone_address) return unsigned;
 
 ------------------------------------------------------------------------------
 -- Components declaration
@@ -817,6 +820,42 @@ package body wishbone_pkg is
     return result;
   end f_xwb_bridge_manual_sdb;
   
+  function f_bus_end(
+    g_wraparound  : boolean := true;
+    g_layout      : t_sdb_record_array;
+    c_rom_bytes   : natural;
+    g_sdb_addr    : t_wishbone_address) return unsigned
+  is
+    variable result : unsigned(63 downto 0);
+    variable sdb_component : t_sdb_component;
+  begin
+    if not g_wraparound then
+      result := (others => '0');
+      for i in 0 to c_wishbone_address_width-1 loop
+        result(i) := '1';
+      end loop;
+    else
+      -- The ROM will be an addressed slave as well
+      result := (others => '0');
+      result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+      result := result + to_unsigned(c_rom_bytes, 64) - 1;
+       
+      for i in g_layout'range loop
+      sdb_component := f_sdb_extract_component(g_layout(i)(447 downto 8));
+        if unsigned(sdb_component.addr_last) > result then
+          result := unsigned(sdb_component.addr_last);
+        end if;
+      end loop;
+      
+      -- round result up to a power of two -1
+      for i in 62 downto 0 loop
+        result(i) := result(i) or result(i+1);
+      end loop;
+    end if;
+    
+    return result;
+  end f_bus_end;
+  
   function f_xwb_bridge_layout_sdb(
     g_wraparound  : boolean := true;
     g_layout      : t_sdb_record_array;
@@ -834,33 +873,34 @@ package body wishbone_pkg is
     variable sdb_component : t_sdb_component;
     variable bus_end : unsigned(63 downto 0);
   begin
-    --  Find the size of the bus
-    if not g_wraparound then
-      bus_end := (others => '0');
-      for i in 0 to c_wishbone_address_width-1 loop
-        bus_end(i) := '1';
-      end loop;
-    else
-      -- The ROM will be an addressed slave as well
-      bus_end := (others => '0');
-      bus_end(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
-      bus_end := bus_end + to_unsigned(c_rom_bytes, 64) - 1;
-        
-      for i in c_layout'range loop
-        sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
-        if unsigned(sdb_component.addr_last) > bus_end then
-          bus_end := unsigned(sdb_component.addr_last);
-        end if;
-      end loop;
-      -- round result up to a power of two -1
-      for i in 62 downto 0 loop
-        bus_end(i) := bus_end(i) or bus_end(i+1);
-      end loop;
-    end if;
+    ----  Find the size of the bus
+    --if not g_wraparound then
+    --  bus_end := (others => '0');
+    --  for i in 0 to c_wishbone_address_width-1 loop
+    --    bus_end(i) := '1';
+    --  end loop;
+    --else
+    --  -- The ROM will be an addressed slave as well
+    --  bus_end := (others => '0');
+    --  bus_end(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+    --  bus_end := bus_end + to_unsigned(c_rom_bytes, 64) - 1;
+    --    
+    --  for i in c_layout'range loop
+    --    sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+    --    if unsigned(sdb_component.addr_last) > bus_end then
+    --      bus_end := unsigned(sdb_component.addr_last);
+    --    end if;
+    --  end loop;
+    --  -- round result up to a power of two -1
+    --  for i in 62 downto 0 loop
+    --    bus_end(i) := bus_end(i) or bus_end(i+1);
+    --  end loop;
+    --end if;
+    bus_end := f_bus_end(g_wraparound, c_layout, c_rom_bytes, g_sdb_addr);
       
     return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
-  
+
   --function f_xwb_bridge_layout_sdb(
   --  g_wraparound  : boolean := true;
   --  g_layout      : t_sdb_record_array;

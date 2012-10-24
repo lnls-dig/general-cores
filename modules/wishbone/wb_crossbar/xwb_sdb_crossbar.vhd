@@ -44,7 +44,43 @@ architecture rtl of xwb_sdb_crossbar is
   constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
   
   -- Step 2. Find the size of the bus
-  function f_bus_end return unsigned is
+  --function f_bus_end return unsigned is
+  --  variable result : unsigned(63 downto 0);
+  --  variable sdb_component : t_sdb_component;
+  --  constant zero : t_wishbone_address := (others => '0');
+  --begin
+  --  -- The SDB block must be aligned
+  --  assert (g_sdb_addr and std_logic_vector(to_unsigned(c_rom_bytes - 1, c_wishbone_address_width))) = zero
+  --  report "SDB address is not aligned (" & f_bits2string(g_sdb_addr) & "). This is not supported by the crossbar."
+  --  severity Failure;
+  --    
+  --  if not g_wraparound then
+  --    result := (others => '0');
+  --    for i in 0 to c_wishbone_address_width-1 loop
+  --      result(i) := '1';
+  --    end loop;
+  --  else
+  --    -- The ROM will be an addressed slave as well
+  --    result := (others => '0');
+  --    result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+  --    result := result + to_unsigned(c_rom_bytes, 64) - 1;
+  --    
+  --    for i in c_layout'range loop
+  --      sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+  --      if unsigned(sdb_component.addr_last) > result then
+  --        result := unsigned(sdb_component.addr_last);
+  --      end if;
+  --    end loop;
+  --    -- round result up to a power of two -1
+  --    for i in 62 downto 0 loop
+  --      result(i) := result(i) or result(i+1);
+  --    end loop;
+  --  end if;
+  --  return result;
+  --end f_bus_end;
+  
+  -- Step 2. Find the size of the bus
+  function f_bus_end_warn return unsigned is
     variable result : unsigned(63 downto 0);
     variable sdb_component : t_sdb_component;
     constant zero : t_wishbone_address := (others => '0');
@@ -54,32 +90,11 @@ architecture rtl of xwb_sdb_crossbar is
     report "SDB address is not aligned (" & f_bits2string(g_sdb_addr) & "). This is not supported by the crossbar."
     severity Failure;
       
-    if not g_wraparound then
-      result := (others => '0');
-      for i in 0 to c_wishbone_address_width-1 loop
-        result(i) := '1';
-      end loop;
-    else
-      -- The ROM will be an addressed slave as well
-      result := (others => '0');
-      result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
-      result := result + to_unsigned(c_rom_bytes, 64) - 1;
-      
-      for i in c_layout'range loop
-        sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
-        if unsigned(sdb_component.addr_last) > result then
-          result := unsigned(sdb_component.addr_last);
-        end if;
-      end loop;
-      -- round result up to a power of two -1
-      for i in 62 downto 0 loop
-        result(i) := result(i) or result(i+1);
-      end loop;
-    end if;
-    return result;
-  end f_bus_end;
+    return f_bus_end(g_wraparound, c_layout, c_rom_bytes, g_sdb_addr);
+  end f_bus_end_warn;
   
-  constant c_bus_end  : unsigned(63 downto 0) := f_bus_end;
+  --constant c_bus_end  : unsigned(63 downto 0) := f_bus_end;
+  constant c_bus_end  : unsigned(63 downto 0) := f_bus_end_warn;
   
   -- Step 3. Map device address begin values
   function f_addresses return t_wishbone_address_array is
