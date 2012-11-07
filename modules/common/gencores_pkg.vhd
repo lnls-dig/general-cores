@@ -48,7 +48,6 @@ use work.genram_pkg.all;
 
 package gencores_pkg is
 
-
   component gc_extend_pulse
     generic (
       g_width : natural);
@@ -58,6 +57,25 @@ package gencores_pkg is
       pulse_i    : in  std_logic;
       extended_o : out std_logic);
   end component;
+
+  component gc_ext_pulse_sync
+  generic(
+    g_min_pulse_width : natural   := 2;    
+
+    g_clk_frequency   : natural   := 40;   
+    g_output_polarity : std_logic := '1';  
+
+    g_output_retrig   : boolean   := false;
+    g_output_length   : natural   := 1     
+    );
+  port (
+    rst_n_i          : in  std_logic;      
+    clk_i            : in  std_logic;      
+    input_polarity_i : in  std_logic;      
+    pulse_i          : in  std_logic;      
+    pulse_o          : out std_logic       
+  );
+	end component;
 
   component gc_crc_gen
     generic (
