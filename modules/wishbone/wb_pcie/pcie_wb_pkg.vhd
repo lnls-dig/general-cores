@@ -18,9 +18,11 @@ package pcie_wb_pkg is
       
       wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
       wb_rstn_i     : in  std_logic; -- Reset wishbone bus
-      master_o      : out t_wishbone_master_out;
-      master_i      : in  t_wishbone_master_in);
-  end component;
+      master_o      : out t_wishbone_master_out; -- Commands from PC to FPGA
+      master_i      : in  t_wishbone_master_in;
+      slave_i       : in  t_wishbone_slave_in;    -- Command to PC from FPGA
+      slave_o       : out t_wishbone_slave_out);
+end component;
   
   component pcie_altera is
     port(
@@ -34,6 +36,9 @@ package pcie_wb_pkg is
       pcie_tx_o     : out std_logic_vector(3 downto 0);
       
       cfg_busdev_o  : out std_logic_vector(12 downto 0); -- Configured Bus#:Dev#
+      
+      app_msi_req   : in  std_logic; -- Generate an MSI interrupt
+      app_int_sts   : in  std_logic; -- Generate a legacy interrupt
       
       -- Simplified wishbone output stream
       wb_clk_o      : out std_logic;
