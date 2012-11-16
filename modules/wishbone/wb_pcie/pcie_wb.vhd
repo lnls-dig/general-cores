@@ -60,11 +60,12 @@ architecture rtl of pcie_wb is
   
   -- control registers
   signal r_cyc   : std_logic;
+  signal r_int   : std_logic := '0'; -- interrupt mask, starts=0
   signal r_addr  : std_logic_vector(31 downto 16);
   signal r_error : std_logic_vector(63 downto  0);
   
   -- interrupt signals
-  signal app_int_sts, app_msi_req, r_app_int_sts, r_deque : std_logic;
+  signal fifo_full, r_fifo_full, app_int_sts, app_msi_req : std_logic;
 begin
 
   pcie_phy : pcie_altera port map(
@@ -188,18 +189,16 @@ begin
     master_o       => int_master_o);
 
   -- Notify the system when the FIFO is non-empty
-  app_int_sts <= int_master_o.cyc and int_master_o.stb; -- Classic interrupt until FIFO drained
-  app_msi_req <= app_int_sts and not r_app_int_sts; -- Edge-triggered MSI
+  fifo_full <= int_master_o.cyc and int_master_o.stb;
+  app_int_sts <= fifo_full and r_int; -- Classic interrupt until FIFO drained
+  app_msi_req <= fifo_full and not r_fifo_full; -- Edge-triggered MSI
   
-  int_master_i.err <= '0';
   int_master_i.rty <= '0';
-  int_master_i.ack <= r_deque;
-  int_master_i.stall <= not r_deque;
   
   control : process(internal_wb_clk)
   begin
     if rising_edge(internal_wb_clk) then
-      r_app_int_sts <= app_int_sts;
+      r_fifo_full <= fifo_full;
       
       -- Shift in the error register
       if int_slave_o.ack = '1' or int_slave_o.err = '1' or int_slave_o.rty = '1' then
@@ -217,7 +216,9 @@ begin
         case wb_adr(6 downto 2) is
 	  when "00000" => -- Control register high
 	    wb_dat(31) <= r_cyc;
-	    wb_dat(30 downto 0) <= (others => '0');
+	    wb_dat(30) <= '0';
+	    wb_dat(29) <= r_int;
+	    wb_dat(28 downto 0) <= (others => '0');
 	  when "00010" => -- Error flag high
 	    wb_dat <= r_error(63 downto 32);
 	  when "00011" => -- Error flag low
@@ -228,7 +229,7 @@ begin
 	  when "00111" => -- SDWB address low
 	    wb_dat <= sdb_addr;
 	  when "10000" => -- Master FIFO status & flags
-	    wb_dat(31) <= app_int_sts;
+	    wb_dat(31) <= fifo_full;
 	    wb_dat(30) <= int_master_o.we;
 	    wb_dat(29 downto 4) <= (others => '0');
 	    wb_dat(3 downto 0) <= int_master_o.sel;
@@ -241,14 +242,21 @@ begin
 	end case;
 	
 	-- Unless requested to by the PC, don't deque the FPGA->PC FIFO
-        r_deque <= '0';
+        int_master_i.stall <= '1';
+        int_master_i.ack <= '0';
+        int_master_i.err <= '0';
         
         -- Is this a write to the register space?
         if wb_stb = '1' and int_slave_i.we = '1' then
           case wb_adr(6 downto 2) is
             when "00000" => -- Control register high
               if int_slave_i.sel(3) = '1' then
-                r_cyc <= int_slave_i.dat(31);
+	        if int_slave_i.dat(30) = '1' then
+                  r_cyc <= int_slave_i.dat(31);
+		end if;
+		if int_slave_i.dat(28) = '1' then
+		  r_int <= int_slave_i.dat(29);
+		end if;
               end if;
             when "00101" => -- Window offset low
               if int_slave_i.sel(3) = '1' then
@@ -258,9 +266,13 @@ begin
                 r_addr(24 downto 16) <= int_slave_i.dat(24 downto 16);
               end if;
             when "10000" => -- Master FIFO status & flags
-              if int_slave_i.sel(3) = '1' and 
-                 int_slave_i.dat(31) = '0' then
-                r_deque <= '1';
+              if int_slave_i.sel(0) = '1' then
+                case int_slave_i.dat(1 downto 0) is
+                  when "00" => null;
+                  when "01" => int_master_i.stall <= '0';
+                  when "10" => int_master_i.ack <= '1';
+                  when "11" => int_master_i.err <= '1';
+                end case;
               end if;
             when "10101" => -- Master FIFO data low
               int_master_i.dat <= int_slave_i.dat;
