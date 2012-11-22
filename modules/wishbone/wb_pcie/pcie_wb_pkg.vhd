@@ -20,7 +20,7 @@ package pcie_wb_pkg is
       wb_rstn_i     : in  std_logic; -- Reset wishbone bus
       master_o      : out t_wishbone_master_out; -- Commands from PC to FPGA
       master_i      : in  t_wishbone_master_in;
-      slave_i       : in  t_wishbone_slave_in;    -- Command to PC from FPGA
+      slave_i       : in  t_wishbone_slave_in := cc_dummy_slave_in;    -- Command to PC from FPGA
       slave_o       : out t_wishbone_slave_out);
 end component;
   
