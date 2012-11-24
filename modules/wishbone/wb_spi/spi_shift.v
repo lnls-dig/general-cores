@@ -43,11 +43,14 @@
 
 module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
                   pos_edge, neg_edge, rx_negedge, tx_negedge,
-                  tip, last, 
-                  p_in, p_out, s_clk, s_in, s_out);
+                  tip, last,
+                  p_in, p_out, s_clk, s_in, s_out, s_inout);
 
+  // Set to 1 to generate the SPI in 3-wire mode
+  // Ser to 0 to generate the SPI core in 4-wire mode
+  parameter gen_with_tristates = 0;
   parameter Tp = 1;
-  
+
   input                          clk;          // system clock
   input                          rst;          // reset
   input                    [3:0] latch;        // latch signal for storing the data in shift register
@@ -57,7 +60,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   input                          go;           // start stansfer
   input                          pos_edge;     // recognize posedge of sclk
   input                          neg_edge;     // recognize negedge of sclk
-  input                          rx_negedge;   // s_in is sampled on negative edge 
+  input                          rx_negedge;   // s_in is sampled on negative edge
   input                          tx_negedge;   // s_out is driven on negative edge
   output                         tip;          // transfer in progress
   output                         last;         // last bit
@@ -66,28 +69,34 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   input                          s_clk;        // serial clock
   input                          s_in;         // serial in
   output                         s_out;        // serial out
-                                               
-  reg                            s_out;        
+  inout                          s_inout;      // serial in/out
+
+  // for tristate logic
+  reg                            spi_data_oe_n;
+  wire                           spi_din;
+  wire                           spi_dout;
+
+  reg                            s_out;
   reg                            tip;
-                              
+
   reg     [`SPI_CHAR_LEN_BITS:0] cnt;          // data bit count
   reg        [`SPI_MAX_CHAR-1:0] data;         // shift register
   wire    [`SPI_CHAR_LEN_BITS:0] tx_bit_pos;   // next bit position
   wire    [`SPI_CHAR_LEN_BITS:0] rx_bit_pos;   // next bit position
   wire                           rx_clk;       // rx clock enable
   wire                           tx_clk;       // tx clock enable
-  
+
   assign p_out = data;
-  
+
   assign tx_bit_pos = lsb ? {!(|len), len} - cnt : cnt - {{`SPI_CHAR_LEN_BITS{1'b0}},1'b1};
-  assign rx_bit_pos = lsb ? {!(|len), len} - (rx_negedge ? cnt + {{`SPI_CHAR_LEN_BITS{1'b0}},1'b1} : cnt) : 
+  assign rx_bit_pos = lsb ? {!(|len), len} - (rx_negedge ? cnt + {{`SPI_CHAR_LEN_BITS{1'b0}},1'b1} : cnt) :
                             (rx_negedge ? cnt : cnt - {{`SPI_CHAR_LEN_BITS{1'b0}},1'b1});
-  
+
   assign last = !(|cnt);
-  
+
   assign rx_clk = (rx_negedge ? neg_edge : pos_edge) && (!last || s_clk);
   assign tx_clk = (tx_negedge ? neg_edge : pos_edge) && !last;
-  
+
   // Character bit counter
   always @(posedge clk or posedge rst)
   begin
@@ -101,7 +110,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
           cnt <= #Tp !(|len) ? {1'b1, {`SPI_CHAR_LEN_BITS{1'b0}}} : {1'b0, len};
       end
   end
-  
+
   // Transfer in progress
   always @(posedge clk or posedge rst)
   begin
@@ -112,7 +121,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   else if(tip && last && pos_edge)
     tip <= #Tp 1'b0;
   end
-  
+
   // Sending bits to the line
   always @(posedge clk or posedge rst)
   begin
@@ -121,7 +130,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
     else
       s_out <= #Tp (tx_clk || !tip) ? data[tx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] : s_out;
   end
-  
+
   // Receiving bits from the line
   always @(posedge clk or posedge rst)
   begin
@@ -231,8 +240,57 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
 `endif
 `endif
     else
-      data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
+      //data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
+      data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? spi_din : data[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
   end
-  
+
+  // Generate or vector for tristate logic
+  generate
+    if (gen_with_tristates == 1) begin
+
+      // Sending bits to the line
+      always @(posedge clk or posedge rst)
+      begin
+        if (rst)
+          spi_data_oe_n <= #Tp 1'b0;
+        else begin
+
+
+
+
+
+
+
+        else  // no slave selected
+          spi_data_oe_n <= #Tp 1b'0;
+        end
+      end
+
+
+  mmcm_adc_locked_and(0) <= '1';
+  -- ANDing all clock chains mmcm_adc_locked_o
+  gen_mmcm_adc_locked : for i in 0 to chain_intercon'length-1 generate
+    mmcm_adc_locked_and(i+1) <= mmcm_adc_locked_and(i) and adc_clk_chain(i).mmcm_adc_locked;
+  end generate;
+
+  spi_ss_or <=
+
+
+    end
+  endgenerate
+
+
+  // Generate tristate logic
+  generate
+    if (gen_with_tristates == 1) begin
+      //Tri-state buffer for SPI data pin
+      assign s_inout = (!spi_data_oe_n) ? s_out : 1'bz;
+      assign spi_din = s_inout;
+    end
+    else begin  // no tristate
+      assign spi_din = s_in;
+    end
+  endgenerate
+
 endmodule
 

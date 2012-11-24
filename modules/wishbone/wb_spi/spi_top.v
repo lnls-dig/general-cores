@@ -37,7 +37,8 @@
 //// from http://www.opencores.org/lgpl.shtml                     ////
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
-
+// Modified by Lucas Russo <lucas.russo@lnls.br> in order to support
+// SPI 3-wire mode (bidirectional data pin)
 
 `include "spi_defines.v"
 `include "timescale.v"
@@ -49,9 +50,11 @@ module spi_top
   wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_err_o, wb_int_o,
 
   // SPI signals
-  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i
+  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_pad_b
 );
-
+  // Set to 1 to generate the SPI in 3-wire mode
+  // Ser to 0 to generate the SPI core in 4-wire mode
+  parameter gen_with_tristates = 0;
   parameter Tp = 1;
 
   // Wishbone signals
@@ -67,17 +70,18 @@ module spi_top
   output                           wb_ack_o;         // bus cycle acknowledge output
   output                           wb_err_o;         // termination w/ error
   output                           wb_int_o;         // interrupt request signal output
-                                                     
-  // SPI signals                                     
+
+  // SPI signals
   output          [`SPI_SS_NB-1:0] ss_pad_o;         // slave select
   output                           sclk_pad_o;       // serial clock
   output                           mosi_pad_o;       // master out slave in
   input                            miso_pad_i;       // master in slave out
-                                                     
+  inout                            miosio_pad_b;     // master in/out slave in/out (3-wire mode)
+
   reg                     [32-1:0] wb_dat_o;
   reg                              wb_ack_o;
   reg                              wb_int_o;
-                                               
+
   // Internal signals
   reg       [`SPI_DIVIDER_LEN-1:0] divider;          // Divider register
   reg       [`SPI_CTRL_BIT_NB-1:0] ctrl;             // Control and status register
@@ -99,7 +103,7 @@ module spi_top
   wire                             pos_edge;         // recognize posedge of sclk
   wire                             neg_edge;         // recognize negedge of sclk
   wire                             last_bit;         // marks last character bit
-  
+
   // Address decoder
   assign spi_divider_sel = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_DEVIDE);
   assign spi_ctrl_sel    = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_CTRL);
@@ -108,7 +112,7 @@ module spi_top
   assign spi_tx_sel[2]   = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_TX_2);
   assign spi_tx_sel[3]   = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_TX_3);
   assign spi_ss_sel      = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_SS);
-  
+
   // Read from registers
   always @(wb_adr_i or rx or ctrl or divider or ss)
   begin
@@ -137,7 +141,7 @@ module spi_top
       default:      wb_dat = 32'bx;
     endcase
   end
-  
+
   // Wb data out
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -146,7 +150,7 @@ module spi_top
     else
       wb_dat_o <= #Tp wb_dat;
   end
-  
+
   // Wb acknowledge
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -155,10 +159,10 @@ module spi_top
     else
       wb_ack_o <= #Tp wb_cyc_i & wb_stb_i & ~wb_ack_o;
   end
-  
+
   // Wb error
   assign wb_err_o = 1'b0;
-  
+
   // Interrupt
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -169,7 +173,7 @@ module spi_top
     else if (wb_ack_o)
       wb_int_o <= #Tp 1'b0;
   end
-  
+
   // Divider register
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -207,7 +211,7 @@ module spi_top
       `endif
       end
   end
-  
+
   // Ctrl register
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -223,7 +227,7 @@ module spi_top
     else if(tip && last_bit && pos_edge)
       ctrl[`SPI_CTRL_GO] <= #Tp 1'b0;
   end
-  
+
   assign rx_negedge = ctrl[`SPI_CTRL_RX_NEGEDGE];
   assign tx_negedge = ctrl[`SPI_CTRL_TX_NEGEDGE];
   assign go         = ctrl[`SPI_CTRL_GO];
@@ -231,7 +235,7 @@ module spi_top
   assign lsb        = ctrl[`SPI_CTRL_LSB];
   assign ie         = ctrl[`SPI_CTRL_IE];
   assign ass        = ctrl[`SPI_CTRL_ASS];
-  
+
   // Slave select register
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
@@ -269,19 +273,21 @@ module spi_top
       `endif
       end
   end
-  
+
   assign ss_pad_o = ~((ss & {`SPI_SS_NB{tip & ass}}) | (ss & {`SPI_SS_NB{!ass}}));
-  
+
   spi_clgen clgen (.clk_in(wb_clk_i), .rst(wb_rst_i), .go(go), .enable(tip), .last_clk(last_bit),
-                   .divider(divider), .clk_out(sclk_pad_o), .pos_edge(pos_edge), 
+                   .divider(divider), .clk_out(sclk_pad_o), .pos_edge(pos_edge),
                    .neg_edge(neg_edge));
-  
-  spi_shift shift (.clk(wb_clk_i), .rst(wb_rst_i), .len(char_len[`SPI_CHAR_LEN_BITS-1:0]),
-                   .latch(spi_tx_sel[3:0] & {4{wb_we_i}}), .byte_sel(wb_sel_i), .lsb(lsb), 
-                   .go(go), .pos_edge(pos_edge), .neg_edge(neg_edge), 
+
+  spi_shift shift #(.gen_with_tristates(gen_with_tristates))
+                  (.clk(wb_clk_i), .rst(wb_rst_i), .len(char_len[`SPI_CHAR_LEN_BITS-1:0]),
+                   .latch(spi_tx_sel[3:0] & {4{wb_we_i}}), .byte_sel(wb_sel_i), .lsb(lsb),
+                   .go(go), .pos_edge(pos_edge), .neg_edge(neg_edge),
                    .rx_negedge(rx_negedge), .tx_negedge(tx_negedge),
-                   .tip(tip), .last(last_bit), 
-                   .p_in(wb_dat_i), .p_out(rx), 
-                   .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o));
+                   .tip(tip), .last(last_bit),
+                   .p_in(wb_dat_i), .p_out(rx),
+                   .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
+                   .s_inout(miosio_pad_b));
 endmodule
-  
+
