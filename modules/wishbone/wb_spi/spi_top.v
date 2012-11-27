@@ -37,6 +37,7 @@
 //// from http://www.opencores.org/lgpl.shtml                     ////
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
+//
 // Modified by Lucas Russo <lucas.russo@lnls.br> in order to support
 // SPI 3-wire mode (bidirectional data pin)
 
@@ -52,9 +53,9 @@ module spi_top
   // SPI signals
   ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_pad_b
 );
-  // Set to 1 to generate the SPI in 3-wire mode
-  // Ser to 0 to generate the SPI core in 4-wire mode
-  parameter gen_with_tristates = 0;
+  // Set to 1 to generate the SPI core in 3-wire mode
+  // Set to 0 to generate the SPI core in 4-wire mode
+  parameter g_three_wire_mode = 0;
   parameter Tp = 1;
 
   // Wishbone signals
@@ -95,6 +96,7 @@ module spi_top
   wire                             lsb;              // lsb first on line
   wire                             ie;               // interrupt enable
   wire                             ass;              // automatic slave select
+  wire                             dir;              // data pin direction (only for three_wire mode)
   wire                             spi_divider_sel;  // divider register select
   wire                             spi_ctrl_sel;     // ctrl register select
   wire                       [3:0] spi_tx_sel;       // tx_l register select
@@ -235,6 +237,7 @@ module spi_top
   assign lsb        = ctrl[`SPI_CTRL_LSB];
   assign ie         = ctrl[`SPI_CTRL_IE];
   assign ass        = ctrl[`SPI_CTRL_ASS];
+  assign dir        = ctrl[`SPI_CTRL_DIR];
 
   // Slave select register
   always @(posedge wb_clk_i or posedge wb_rst_i)
@@ -280,12 +283,12 @@ module spi_top
                    .divider(divider), .clk_out(sclk_pad_o), .pos_edge(pos_edge),
                    .neg_edge(neg_edge));
 
-  spi_shift shift #(.gen_with_tristates(gen_with_tristates))
+  spi_shift #(.g_three_wire_mode(g_three_wire_mode)) shift
                   (.clk(wb_clk_i), .rst(wb_rst_i), .len(char_len[`SPI_CHAR_LEN_BITS-1:0]),
                    .latch(spi_tx_sel[3:0] & {4{wb_we_i}}), .byte_sel(wb_sel_i), .lsb(lsb),
                    .go(go), .pos_edge(pos_edge), .neg_edge(neg_edge),
                    .rx_negedge(rx_negedge), .tx_negedge(tx_negedge),
-                   .tip(tip), .last(last_bit),
+                   .tip(tip), .last(last_bit), .dir(dir),
                    .p_in(wb_dat_i), .p_out(rx),
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
                    .s_inout(miosio_pad_b));
