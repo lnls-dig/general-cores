@@ -369,6 +369,24 @@ package wishbone_pkg is
       slave2_o  : out t_wishbone_slave_out);
   end component;
 
+
+ constant c_xwb_gpio_port_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"000000000000CE42", -- CERN
+    device_id     => x"64000003",
+    version       => x"00000001",
+    date          => x"20121129",
+    name          => "WB-GPIO-Port       ")));
+  
+  
   component wb_gpio_port
     generic (
       g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
@@ -411,6 +429,23 @@ package wishbone_pkg is
       gpio_oen_o : out   std_logic_vector(g_num_pins-1 downto 0));
   end component;
 
+ constant c_xwb_i2c_master_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"000000000000CE42", -- CERN
+    device_id     => x"64000002",
+    version       => x"00000001",
+    date          => x"20121129",
+    name          => "WB-I2C-Master      ")));
+  
+  
   component wb_i2c_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
@@ -467,6 +502,22 @@ package wishbone_pkg is
       iwb_i     : in  t_wishbone_master_in);
   end component;
 
+ constant c_xwb_onewire_master_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"000000000000CE42", -- CERN
+    device_id     => x"64000001",
+    version       => x"00000001",
+    date          => x"20121129",
+    name          => "WB-OneWire-Master  ")));
+  
   component wb_onewire_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
