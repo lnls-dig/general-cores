@@ -35,7 +35,7 @@ entity pcie_tlp is
 end pcie_tlp;
 
 architecture rtl of pcie_tlp is
-  type rx_state_type is (get_h0, get_h1, get_h2, get_h3, skip_pad, drop_payload, write_stall, write_first, write_middle, write_last, read_stall, read_first, read_middle, read_last, skip_tail);
+  type rx_state_type is (get_h0, get_h1, get_h2, get_h3, skip_pad, drop_payload, write_stall, write_first, write_middle, write_last, read_stall, read_first, read_txstall, read_middle, read_last, skip_tail);
   type tx_state_type is (put_h0, put_h1, put_h2, put_pad, flight_stall, ack_wait, put_tail);
   type tlp_type is (memory_read, memory_write, completion, ignored);
   
@@ -59,7 +59,6 @@ architecture rtl of pcie_tlp is
   signal s_tlp_locked   : std_logic;
   signal s_length_m1    : unsigned(9 downto 0);
   signal s_address_p4   : std_logic_vector(15 downto 0);
-  signal s_watchdog_rst : boolean;
   
   signal s_first_be, s_last_be : std_logic_vector(3 downto 0);
   
@@ -83,7 +82,6 @@ architecture rtl of pcie_tlp is
   signal r_tx_wb_stb, r_tx_alloc, r_rx_alloc : std_logic;
   signal r_pending_ack : unsigned(9 downto 0);
   
-  signal r_watchdog : unsigned(7 downto 0);
 begin
   rx_wb_stall_o <= r_always_stall or (not r_never_stall and wb_stall_i);
   wb_stb <= r_always_stb or (not r_never_stb and rx_wb_stb_i);
@@ -136,17 +134,16 @@ begin
   s_length_eq2  <= r_length = 2;
   s_no_flight   <= r_flight_count = 0;
   
-  s_watchdog_rst <= r_watchdog = x"ff"; -- set to false on a debugged bus
   s_address_p4   <= std_logic_vector(unsigned(r_address) + to_unsigned(4, 16));
   
   rx_state_machine : process(clk_i) is
     variable next_state : rx_state_type;
+    variable tx_next_read : std_logic;
     variable action : rx_state_type;
   begin
     if rising_edge(clk_i) then
-      if rstn_i = '0' or s_watchdog_rst then
+      if rstn_i = '0' then
         rx_state <= get_h0;
-        r_watchdog <= (others => '0');
       else
       
         ----------------- Pre-transition actions --------------------
@@ -167,15 +164,12 @@ begin
               
         ----------------- Transition rules --------------------
         next_state := rx_state;
+        r_rx_alloc <= '0';
         
         -- What sort of action is this?
         case s_tlp_type is
           when memory_read => 
-            if tx_state = ack_wait then
-              action := read_first;
-            else
-              action := read_stall;
-            end if;
+            action := read_stall;
           when memory_write => 
             if rx_bar_i = r_bar or s_no_flight then
               action := write_first;
@@ -194,21 +188,17 @@ begin
             end if;
         end case;
         
-        r_watchdog <= r_watchdog + 1;
         case rx_state is
           when get_h0 =>
-            r_watchdog <= (others => '0');
             if rx_wb_stb_i = '1' then
               next_state := get_h1;
             end if;
           when get_h1 =>
             if rx_wb_stb_i = '1' then
-              r_watchdog <= (others => '0');
               next_state := get_h2;
             end if;
           when get_h2 =>
             if rx_wb_stb_i = '1' then
-              r_watchdog <= (others => '0');
               if s_has_4fields then
                 next_state := get_h3;
               else
@@ -221,7 +211,6 @@ begin
             end if;
           when get_h3 =>
             if rx_wb_stb_i = '1' then
-              r_watchdog <= (others => '0');
               
               if s_has_pad then
                 next_state := skip_pad;
@@ -231,12 +220,10 @@ begin
             end if;
           when skip_pad =>
             if rx_wb_stb_i = '1' then
-              r_watchdog <= (others => '0');
               next_state := action;
             end if;
           when drop_payload =>
             if rx_wb_stb_i = '1' then
-              r_watchdog <= (others => '0');
               if s_length_eq1 then
                 if s_has_tail then
                   next_state := skip_tail;
@@ -248,12 +235,10 @@ begin
             end if;
           when write_stall =>
             if s_no_flight then
-              r_watchdog <= (others => '0');
               next_state := write_first;
             end if;
           when write_first =>
             if (rx_wb_stb_i and not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
               if s_length_eq1 then
                 if s_has_tail then
                   next_state := skip_tail;
@@ -270,7 +255,6 @@ begin
             end if;
           when write_middle =>
             if (rx_wb_stb_i and not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
               if s_length_eq2 then
                 next_state := write_last;
               end if;
@@ -279,7 +263,6 @@ begin
             end if;
           when write_last =>
             if (rx_wb_stb_i and not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
               if s_has_tail then
                 next_state := skip_tail;
               else
@@ -287,13 +270,34 @@ begin
               end if;
             end if;
           when read_stall =>
-            if tx_state = ack_wait then
-              r_watchdog <= (others => '0');
+            if tx_state = ack_wait and tx_rdy_i = '1' then
+              r_rx_alloc <= '1';
               next_state := read_first;
             end if;
-          when read_first =>
-            if (not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
+          when read_first | read_middle | read_last =>
+            if wb_stall_i = '0' then
+              if tx_rdy_i = '0' then
+                next_state := read_txstall;
+              else
+                if s_length_eq1 then
+                  if s_has_tail then
+                    next_state := skip_tail;
+                  else
+                    next_state := get_h0;
+                  end if;
+                elsif s_length_eq2 then
+                  r_rx_alloc <= '1';
+                  next_state := read_last;
+                else
+                  r_rx_alloc <= '1';
+                  next_state := read_middle;
+                end if;
+                r_length <= s_length_m1;
+                r_address <= s_address_p4;
+              end if;
+            end if;
+          when read_txstall =>
+            if tx_rdy_i = '1' then
               if s_length_eq1 then
                 if s_has_tail then
                   next_state := skip_tail;
@@ -301,30 +305,14 @@ begin
                   next_state := get_h0;
                 end if;
               elsif s_length_eq2 then
+                r_rx_alloc <= '1';
                 next_state := read_last;
               else
+                r_rx_alloc <= '1';
                 next_state := read_middle;
               end if;
               r_length <= s_length_m1;
               r_address <= s_address_p4;
-            end if;
-          when read_middle =>
-            if (not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
-              if s_length_eq2 then
-                next_state := read_last;
-              end if;
-              r_length <= s_length_m1;
-              r_address <= s_address_p4;
-            end if;
-          when read_last =>
-            if (not wb_stall_i) = '1' then
-              r_watchdog <= (others => '0');
-              if s_has_tail then
-                next_state := skip_tail;
-              else
-                next_state := get_h0;
-              end if;
             end if;
           when skip_tail =>
             if rx_wb_stb_i = '1' then
@@ -339,7 +327,6 @@ begin
         r_never_stall <= '1' ;
         r_always_stb <= '0';
         r_never_stb <= '1';
-        r_rx_alloc <= '0';
         
         rx_state <= next_state;
         case next_state is
@@ -372,20 +359,19 @@ begin
           when read_first =>
             r_bar <= rx_bar_i;
             r_always_stall <= '1';
-            r_always_stb <= tx_rdy_i;
-            r_rx_alloc <= tx_rdy_i; -- !!! bug, wastes buffer
+            r_always_stb <= '1';
             wb_sel_o <= s_first_be;
             wb_we_o <= '0';
+          when read_txstall =>
+            r_always_stall <= '1';
           when read_middle =>
             r_always_stall <= '1';
-            r_always_stb <= tx_rdy_i;
-            r_rx_alloc <= tx_rdy_i;
+            r_always_stb <= '1';
             wb_sel_o <= x"f";
             wb_we_o <= '0';
           when read_last =>
             r_always_stall <= '1';
-            r_always_stb <= tx_rdy_i;
-            r_rx_alloc <= tx_rdy_i;
+            r_always_stb <= '1';
             wb_sel_o <= s_last_be;
             wb_we_o <= '0';
           when skip_tail => null;
@@ -441,7 +427,7 @@ begin
     variable next_state : tx_state_type;
   begin
     if rising_edge(clk_i) then
-      if rstn_i = '0' or s_watchdog_rst then
+      if rstn_i = '0' then
         tx_state <= put_h0;
         r_tx_wb_stb <= '0';
         r_tx_alloc <= '0';
@@ -508,7 +494,7 @@ begin
             tx_wb_dat_o <= "0100101" & s_tlp_locked -- Completion (Locked) with data
                       & "0" & s_tlp_typecode & "0" & s_tlp_attr(2 downto 2) & "00"
                       & "00" & s_tlp_attr(1 downto 0) & "00" & s_tlp_length;
-            if s_tlp_type = memory_read and rx_state /= get_h0 and tx_rdy_i = '1' then
+            if s_tlp_type = memory_read and rx_state = read_stall and tx_rdy_i = '1' then
               r_tx_alloc <= '1';
               r_tx_wb_stb <= '1';
             end if;
@@ -557,7 +543,7 @@ begin
   flight_counter : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if rstn_i = '0' or s_watchdog_rst then
+      if rstn_i = '0' then
         r_flight_count <= (others => '0');
       else
         if (wb_ack_i or wb_err_i or wb_rty_i) = '1' then

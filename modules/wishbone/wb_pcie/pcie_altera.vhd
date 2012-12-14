@@ -550,7 +550,6 @@ begin
         
         if (tx_wb_stb_i and tx_eop_i) = '1' then
           tx_idxe <= tx_idxw_p1;
-          tx_idxa <= tx_idxw_p1; -- clear over-allocation (!!! should not be needed in future)
         end if;
         
         if tx_alloc_i = '1' then
