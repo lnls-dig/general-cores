@@ -20,8 +20,10 @@ entity pcie_wb is
     
     wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
     wb_rstn_i     : in  std_logic; -- (whatever clock domain you like)
-    master_o      : out t_wishbone_master_out;
-    master_i      : in  t_wishbone_master_in);
+    master_o      : out t_wishbone_master_out;  -- Commands from PC to FPGA
+    master_i      : in  t_wishbone_master_in;
+    slave_i       : in  t_wishbone_slave_in;    -- Command to PC from FPGA
+    slave_o       : out t_wishbone_slave_out);
 end pcie_wb;
 
 architecture rtl of pcie_wb is
@@ -49,16 +51,21 @@ architecture rtl of pcie_wb is
   
   signal cfg_busdev : std_logic_vector(12 downto 0);
   
-  signal slave_i : t_wishbone_slave_in;
-  signal slave_o : t_wishbone_slave_out;
-  
-  -- timing registers
-  signal r_sdb, r_high, r_ack : std_logic;
+  -- Internal WB clock, PC->FPGA
+  signal int_slave_i : t_wishbone_slave_in;
+  signal int_slave_o : t_wishbone_slave_out;
+  -- Internal WB clock: FPGA->PC
+  signal int_master_o : t_wishbone_master_out;
+  signal int_master_i : t_wishbone_master_in;
   
   -- control registers
   signal r_cyc   : std_logic;
+  signal r_int   : std_logic := '0'; -- interrupt mask, starts=0
   signal r_addr  : std_logic_vector(31 downto 16);
   signal r_error : std_logic_vector(63 downto  0);
+  
+  -- interrupt signals
+  signal fifo_full, r_fifo_full, app_int_sts, app_msi_req : std_logic;
 begin
 
   pcie_phy : pcie_altera port map(
@@ -72,6 +79,8 @@ begin
     pcie_tx_o     => pcie_tx_o,
 
     cfg_busdev_o  => cfg_busdev,
+    app_msi_req   => app_msi_req,
+    app_int_sts   => app_int_sts,
 
     wb_clk_o      => internal_wb_clk,
     wb_rstn_i     => internal_wb_rstn,
@@ -128,13 +137,13 @@ begin
     wb_stb_o      => wb_stb,
     wb_adr_o      => wb_adr,
     wb_bar_o      => wb_bar,
-    wb_we_o       => slave_i.we,
-    wb_dat_o      => slave_i.dat,
-    wb_sel_o      => slave_i.sel,
+    wb_we_o       => int_slave_i.we,
+    wb_dat_o      => int_slave_i.dat,
+    wb_sel_o      => int_slave_i.sel,
     wb_stall_i    => wb_stall,
     wb_ack_i      => wb_ack,
-    wb_err_i      => slave_o.err,
-    wb_rty_i      => slave_o.rty,
+    wb_err_i      => int_slave_o.err,
+    wb_rty_i      => int_slave_o.rty,
     wb_dat_i      => wb_dat);
   
   internal_wb_rstn <= internal_wb_rstn_sync(0);
@@ -152,61 +161,126 @@ begin
     end if;
   end process;
   
-  clock_crossing : xwb_clock_crossing port map(
+  PC_to_FPGA_clock_crossing : xwb_clock_crossing port map(
     slave_clk_i    => internal_wb_clk,
     slave_rst_n_i  => internal_wb_rstn,
-    slave_i        => slave_i,
-    slave_o        => slave_o,
+    slave_i        => int_slave_i,
+    slave_o        => int_slave_o,
     master_clk_i   => wb_clk, 
     master_rst_n_i => wb_rstn_i,
     master_i       => master_i,
     master_o       => master_o);
   
-  slave_i.stb <= wb_stb        when wb_bar = "001" else '0';
-  wb_stall    <= slave_o.stall when wb_bar = "001" else '0';
-  wb_ack      <= slave_o.ack   when wb_bar = "001" else r_ack;
-  wb_dat      <= slave_o.dat   when wb_bar = "001" else
-                 r_error(63 downto 32) when r_sdb = '0' and r_high = '1' else
-                 r_error(31 downto  0) when r_sdb = '0' and r_high = '0' else
-                 sdb_addr              when r_sdb = '1' and r_high = '0' else
-                 x"00000000";
+  int_slave_i.stb <= wb_stb        when wb_bar = "001" else '0';
+  wb_stall    <= int_slave_o.stall when wb_bar = "001" else '0';
   
-  slave_i.cyc <= r_cyc;
-  slave_i.adr(r_addr'range) <= r_addr;
-  slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
+  int_slave_i.cyc <= r_cyc;
+  int_slave_i.adr(r_addr'range) <= r_addr;
+  int_slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
+  
+  FPGA_to_PC_clock_crossing : xwb_clock_crossing port map(
+    slave_clk_i    => wb_clk,
+    slave_rst_n_i  => wb_rstn_i,
+    slave_i        => slave_i,
+    slave_o        => slave_o,
+    master_clk_i   => internal_wb_clk, 
+    master_rst_n_i => internal_wb_rstn,
+    master_i       => int_master_i,
+    master_o       => int_master_o);
+
+  -- Notify the system when the FIFO is non-empty
+  fifo_full <= int_master_o.cyc and int_master_o.stb;
+  app_int_sts <= fifo_full and r_int; -- Classic interrupt until FIFO drained
+  app_msi_req <= fifo_full and not r_fifo_full; -- Edge-triggered MSI
+  
+  int_master_i.rty <= '0';
   
   control : process(internal_wb_clk)
   begin
     if rising_edge(internal_wb_clk) then
+      r_fifo_full <= fifo_full;
+      
       -- Shift in the error register
-      if slave_o.ack = '1' or slave_o.err = '1' or slave_o.rty = '1' then
-        r_error <= r_error(r_error'length-2 downto 0) & (slave_o.err or slave_o.rty);
+      if int_slave_o.ack = '1' or int_slave_o.err = '1' or int_slave_o.rty = '1' then
+        r_error <= r_error(r_error'length-2 downto 0) & (int_slave_o.err or int_slave_o.rty);
       end if;
       
-      -- Is the control BAR targetted?
-      if wb_bar = "000" then
+      if wb_bar = "001" then
+	wb_ack <= int_slave_o.ack;
+        wb_dat <= int_slave_o.dat;
+      else -- The control BAR is targetted
         -- Feedback acks one cycle after strobe
-        r_ack <= wb_stb;
-        r_high <= not wb_adr(2);
-        r_sdb <= wb_adr(4);
+        wb_ack <= wb_stb;
+	
+	-- Always output read result (even w/o stb or we)
+        case wb_adr(6 downto 2) is
+	  when "00000" => -- Control register high
+	    wb_dat(31) <= r_cyc;
+	    wb_dat(30) <= '0';
+	    wb_dat(29) <= r_int;
+	    wb_dat(28 downto 0) <= (others => '0');
+	  when "00010" => -- Error flag high
+	    wb_dat <= r_error(63 downto 32);
+	  when "00011" => -- Error flag low
+	    wb_dat <= r_error(31 downto 0);
+	  when "00101" => -- Window offset low
+            wb_dat(r_addr'range) <= r_addr;
+	    wb_dat(r_addr'right-1 downto 0) <= (others => '0');
+	  when "00111" => -- SDWB address low
+	    wb_dat <= sdb_addr;
+	  when "10000" => -- Master FIFO status & flags
+	    wb_dat(31) <= fifo_full;
+	    wb_dat(30) <= int_master_o.we;
+	    wb_dat(29 downto 4) <= (others => '0');
+	    wb_dat(3 downto 0) <= int_master_o.sel;
+	  when "10011" => -- Master FIFO adr low
+	    wb_dat <= int_master_o.adr;
+	  when "10101" => -- Master FIFO dat low
+	    wb_dat <= int_master_o.dat;
+	  when others =>
+	    wb_dat <= (others => '0');
+	end case;
+	
+	-- Unless requested to by the PC, don't deque the FPGA->PC FIFO
+        int_master_i.stall <= '1';
+        int_master_i.ack <= '0';
+        int_master_i.err <= '0';
         
         -- Is this a write to the register space?
-        if wb_stb = '1' and slave_i.we = '1' then
-          -- Cycle line is high bit of register 0
-          if wb_adr(6 downto 2) = "00000" and slave_i.sel(3) = '1' then
-            r_cyc <= slave_i.dat(31);
-          end if;
-          -- Address 20 is low word of address window (register 2)
-          if wb_adr(6 downto 2) = "00101" then
-            if slave_i.sel(3) = '1' then
-              r_addr(31 downto 24) <= slave_i.dat(31 downto 24);
-            end if;
-            if slave_i.sel(2) = '1' then
-              r_addr(24 downto 16) <= slave_i.dat(24 downto 16);
-            end if;
-          end if;
+        if wb_stb = '1' and int_slave_i.we = '1' then
+          case wb_adr(6 downto 2) is
+            when "00000" => -- Control register high
+              if int_slave_i.sel(3) = '1' then
+	        if int_slave_i.dat(30) = '1' then
+                  r_cyc <= int_slave_i.dat(31);
+		end if;
+		if int_slave_i.dat(28) = '1' then
+		  r_int <= int_slave_i.dat(29);
+		end if;
+              end if;
+            when "00101" => -- Window offset low
+              if int_slave_i.sel(3) = '1' then
+                r_addr(31 downto 24) <= int_slave_i.dat(31 downto 24);
+              end if;
+              if int_slave_i.sel(2) = '1' then
+                r_addr(24 downto 16) <= int_slave_i.dat(24 downto 16);
+              end if;
+            when "10000" => -- Master FIFO status & flags
+              if int_slave_i.sel(0) = '1' then
+                case int_slave_i.dat(1 downto 0) is
+                  when "00" => null;
+                  when "01" => int_master_i.stall <= '0';
+                  when "10" => int_master_i.ack <= '1';
+                  when "11" => int_master_i.err <= '1';
+                end case;
+              end if;
+            when "10101" => -- Master FIFO data low
+              int_master_i.dat <= int_slave_i.dat;
+            when others => null;
+          end case;
         end if;
       end if;
     end if;
   end process;
+  
 end rtl;
