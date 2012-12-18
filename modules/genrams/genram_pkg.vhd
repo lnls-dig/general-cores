@@ -7,26 +7,26 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-01-24
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 --
 -- Copyright (c) 2011 CERN
 --
--- This source file is free software; you can redistribute it   
--- and/or modify it under the terms of the GNU Lesser General   
--- Public License as published by the Free Software Foundation; 
--- either version 2.1 of the License, or (at your option) any   
--- later version.                                               
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
 --
--- This source is distributed in the hope that it will be       
--- useful, but WITHOUT ANY WARRANTY; without even the implied   
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
--- PURPOSE.  See the GNU Lesser General Public License for more 
--- details.                                                     
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
 --
--- You should have received a copy of the GNU Lesser General    
--- Public License along with this source; if not, download it   
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
 -------------------------------------------------------------------------------
@@ -45,9 +45,9 @@ package genram_pkg is
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
-  
+
   -- Generic RAM initialized with nothing.
-  constant c_generic_ram_nothing : t_generic_ram_init(-1 downto 0, -1 downto 0) := 
+  constant c_generic_ram_nothing : t_generic_ram_init(-1 downto 0, -1 downto 0) :=
     (others => (others => '0'));
 
   -- Single-port synchronous RAM
@@ -173,7 +173,93 @@ package genram_pkg is
       q_valid_o     : out std_logic
       );
   end component;
-  
+
+  component inferred_async_fifo
+  generic (
+    g_data_width : natural;
+    g_size       : natural;
+    g_show_ahead : boolean := false;
+
+    -- Read-side flag selection
+    g_with_rd_empty        : boolean := true;   -- with empty flag
+    g_with_rd_full         : boolean := false;  -- with full flag
+    g_with_rd_almost_empty : boolean := false;
+    g_with_rd_almost_full  : boolean := false;
+    g_with_rd_count        : boolean := false;  -- with words counter
+
+    g_with_wr_empty        : boolean := false;
+    g_with_wr_full         : boolean := true;
+    g_with_wr_almost_empty : boolean := false;
+    g_with_wr_almost_full  : boolean := false;
+    g_with_wr_count        : boolean := false;
+
+    g_almost_empty_threshold : integer;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer   -- threshold for almost full flag
+    );
+  port (
+    rst_n_i : in std_logic := '1';
+
+    -- write port
+    clk_wr_i : in std_logic;
+    d_i      : in std_logic_vector(g_data_width-1 downto 0);
+    we_i     : in std_logic;
+
+    wr_empty_o        : out std_logic;
+    wr_full_o         : out std_logic;
+    wr_almost_empty_o : out std_logic;
+    wr_almost_full_o  : out std_logic;
+    wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+
+    -- read port
+    clk_rd_i : in  std_logic;
+    q_o      : out std_logic_vector(g_data_width-1 downto 0);
+    rd_i     : in  std_logic;
+
+    rd_empty_o        : out std_logic;
+    rd_full_o         : out std_logic;
+    rd_almost_empty_o : out std_logic;
+    rd_almost_full_o  : out std_logic;
+    rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
+  );
+  end component;
+
+  component inferred_sync_fifo
+  generic (
+    g_data_width : natural;
+    g_size       : natural;
+    g_show_ahead : boolean := false;
+
+    -- Read-side flag selection
+    g_with_empty        : boolean := true;   -- with empty flag
+    g_with_full         : boolean := true;   -- with full flag
+    g_with_almost_empty : boolean := false;
+    g_with_almost_full  : boolean := false;
+    g_with_count        : boolean := false;  -- with words counter
+
+    g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
+
+    g_register_flag_outputs : boolean := true
+    );
+
+  port (
+    rst_n_i : in std_logic := '1';
+
+    clk_i : in std_logic;
+    d_i   : in std_logic_vector(g_data_width-1 downto 0);
+    we_i  : in std_logic;
+
+    q_o  : out std_logic_vector(g_data_width-1 downto 0);
+    rd_i : in  std_logic;
+
+    empty_o        : out std_logic;
+    full_o         : out std_logic;
+    almost_empty_o : out std_logic;
+    almost_full_o  : out std_logic;
+    count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
+    );
+  end component;
+
 end genram_pkg;
 
 package body genram_pkg is

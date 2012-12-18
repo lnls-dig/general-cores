@@ -5,6 +5,7 @@ use work.wishbone_pkg.all;
 
 entity wb_spi is
   generic (
+    g_three_wire_mode     : integer                        := 0;
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity : t_wishbone_address_granularity := WORD
     );
@@ -24,10 +25,11 @@ entity wb_spi is
     wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
 
-    pad_cs_o   : out std_logic_vector(7 downto 0);
-    pad_sclk_o : out std_logic;
-    pad_mosi_o : out std_logic;
-    pad_miso_i : in  std_logic
+    pad_cs_o      : out std_logic_vector(7 downto 0);
+    pad_sclk_o    : out std_logic;
+    pad_mosi_o    : out std_logic;
+    pad_miso_i    : in  std_logic;
+    pad_miosio_b  : inout std_logic
     );
 
 end wb_spi;
@@ -35,6 +37,9 @@ end wb_spi;
 architecture rtl of wb_spi is
 
   component spi_top
+    generic (
+      g_three_wire_mode : integer := 0
+    );
     port (
       wb_clk_i : in  std_logic;
       wb_rst_i : in  std_logic;
@@ -49,10 +54,11 @@ architecture rtl of wb_spi is
       wb_err_o : out std_logic;
       wb_int_o : out std_logic;
 
-      ss_pad_o   : out std_logic_vector(7 downto 0);
-      sclk_pad_o : out std_logic;
-      mosi_pad_o : out std_logic;
-      miso_pad_i : in  std_logic);
+      ss_pad_o      : out std_logic_vector(7 downto 0);
+      sclk_pad_o    : out std_logic;
+      mosi_pad_o    : out std_logic;
+      miso_pad_i    : in  std_logic;
+      miosio_pad_b  : inout std_logic);
   end component;
 
   signal rst : std_logic;
@@ -63,7 +69,7 @@ architecture rtl of wb_spi is
   signal resized_addr : std_logic_vector(c_wishbone_address_width-1 downto 0);
 
 begin
-  
+
   resized_addr(4 downto 0)                          <= wb_adr_i;
   resized_addr(c_wishbone_address_width-1 downto 5) <= (others => '0');
 
@@ -95,22 +101,26 @@ begin
   rst <= not rst_n_i;
 
   Wrapped_SPI : spi_top                 -- byte-aligned
+    generic map (
+      g_three_wire_mode => g_three_wire_mode
+    )
     port map (
-      wb_clk_i   => clk_sys_i,
-      wb_rst_i   => rst,
-      wb_adr_i   => wb_in.adr(4 downto 0),
-      wb_dat_i   => wb_in.dat,
-      wb_dat_o   => wb_out.dat,
-      wb_sel_i   => wb_in.sel,
-      wb_stb_i   => wb_in.stb,
-      wb_cyc_i   => wb_in.cyc,
-      wb_we_i    => wb_in.we,
-      wb_ack_o   => wb_out.ack,
-      wb_err_o   => wb_out.err,
-      wb_int_o   => wb_out.int,
-      ss_pad_o   => pad_cs_o,
-      sclk_pad_o => pad_sclk_o,
-      mosi_pad_o => pad_mosi_o,
-      miso_pad_i => pad_miso_i);
+      wb_clk_i      => clk_sys_i,
+      wb_rst_i      => rst,
+      wb_adr_i      => wb_in.adr(4 downto 0),
+      wb_dat_i      => wb_in.dat,
+      wb_dat_o      => wb_out.dat,
+      wb_sel_i      => wb_in.sel,
+      wb_stb_i      => wb_in.stb,
+      wb_cyc_i      => wb_in.cyc,
+      wb_we_i       => wb_in.we,
+      wb_ack_o      => wb_out.ack,
+      wb_err_o      => wb_out.err,
+      wb_int_o      => wb_out.int,
+      ss_pad_o      => pad_cs_o,
+      sclk_pad_o    => pad_sclk_o,
+      mosi_pad_o    => pad_mosi_o,
+      miso_pad_i    => pad_miso_i,
+      miosio_pad_b  => pad_miosio_b);
 
 end rtl;

@@ -4,7 +4,8 @@
 import os as __os
 import shutil as __shutil
 
-files = ["genram_pkg.vhd", "memory_loader_pkg.vhd", "generic_shiftreg_fifo.vhd"]
+files = ["genram_pkg.vhd", "memory_loader_pkg.vhd", "generic_shiftreg_fifo.vhd",
+          "inferred_sync_fifo.vhd", "inferred_async_fifo.vhd"]
 
 def __copy_vhdls(cg_dir, dest_dir):
 	f = open(cg_dir+"/analyze_order.txt","r")
@@ -16,14 +17,14 @@ def __copy_vhdls(cg_dir, dest_dir):
 		__shutil.copy(cg_dir+"/"+f, dest_dir)
 		flist.append(f.split('/').pop())
 	return flist
-	
+
 def __import_coregen_module(path, name, work_dir):
 	__os.mkdir(work_dir+"/"+name);
 	flist = __copy_vhdls(path+"/"+name, work_dir+"/"+name)
 
 	f=open(work_dir+"/"+name+"/Manifest.py","w")
 
-	f.write("files = [\n")						
+	f.write("files = [\n")
 	first=True
 	for fname in flist:
 		if not first:
@@ -58,10 +59,10 @@ def __import_coregen_files():
 	print("[genrams] creating workdir " + work_dir)
 	__os.mkdir(work_dir);
 
-	print("[genrams] copying ISE files...")			
+	print("[genrams] copying ISE files...")
 	__import_coregen_module(coregen_path, "blk_mem_gen_v4_1", work_dir);
 	__import_coregen_module(coregen_path, "fifo_generator_v6_1", work_dir);
-	
+
 
 ##############################
 ## "Normal" manifest        ##
