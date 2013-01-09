@@ -57,7 +57,7 @@ package wishbone_pkg is
   type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
 
 
-  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0):=
+  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_data : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
@@ -66,66 +66,66 @@ package wishbone_pkg is
   constant cc_dummy_slave_in : t_wishbone_slave_in :=
     ('0', 'X', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
   constant cc_dummy_master_out : t_wishbone_master_out := cc_dummy_slave_in;
-  
+
   -- Dangerous! Will stall a bus.
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
   constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
 
   -- A generally useful function.
-  function f_ceil_log2(x : natural) return natural;
+  function f_ceil_log2(x   : natural) return natural;
   function f_bits2string(s : std_logic_vector) return string;
-  
+
 ------------------------------------------------------------------------------
 -- SDB declaration
 ------------------------------------------------------------------------------
-  
-  constant c_sdb_device_length : natural := 512; -- bits
-  subtype t_sdb_record is std_logic_vector(c_sdb_device_length-1 downto 0);
-  type t_sdb_record_array is array(natural range <>) of t_sdb_record;
-  
+
+  constant c_sdb_device_length : natural := 512;  -- bits
+  subtype  t_sdb_record is std_logic_vector(c_sdb_device_length-1 downto 0);
+  type     t_sdb_record_array is array(natural range <>) of t_sdb_record;
+
   type t_sdb_product is record
-    vendor_id     : std_logic_vector(63 downto 0);
-    device_id     : std_logic_vector(31 downto 0);
-    version       : std_logic_vector(31 downto 0);
-    date          : std_logic_vector(31 downto 0);
-    name          : string(1 to 19);
+    vendor_id : std_logic_vector(63 downto 0);
+    device_id : std_logic_vector(31 downto 0);
+    version   : std_logic_vector(31 downto 0);
+    date      : std_logic_vector(31 downto 0);
+    name      : string(1 to 19);
   end record t_sdb_product;
-  
+
   type t_sdb_component is record
-    addr_first    : std_logic_vector(63 downto 0);
-    addr_last     : std_logic_vector(63 downto 0);
-    product       : t_sdb_product;
+    addr_first : std_logic_vector(63 downto 0);
+    addr_last  : std_logic_vector(63 downto 0);
+    product    : t_sdb_product;
   end record t_sdb_component;
-  
+
   constant c_sdb_endian_big    : std_logic := '0';
   constant c_sdb_endian_little : std_logic := '1';
-  type t_sdb_device is record
+  type     t_sdb_device is record
     abi_class     : std_logic_vector(15 downto 0);
     abi_ver_major : std_logic_vector(7 downto 0);
     abi_ver_minor : std_logic_vector(7 downto 0);
-    wbd_endian    : std_logic;                    -- 0 = big, 1 = little
-    wbd_width     : std_logic_vector(3 downto 0); -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
+    wbd_endian    : std_logic;          -- 0 = big, 1 = little
+    wbd_width     : std_logic_vector(3 downto 0);  -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
     sdb_component : t_sdb_component;
   end record t_sdb_device;
-  
+
   type t_sdb_bridge is record
     sdb_child     : std_logic_vector(63 downto 0);
     sdb_component : t_sdb_component;
   end record t_sdb_bridge;
-     
+
   -- Used to configure a device at a certain address
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address) return t_sdb_record;
-  
+
   function f_sdb_extract_device(sdb_record : t_sdb_record) return t_sdb_device;
   function f_sdb_extract_bridge(sdb_record : t_sdb_record) return t_sdb_bridge;
 
   -- For internal use by the crossbar
-  function f_sdb_embed_product(product : t_sdb_product) return std_logic_vector; -- (319 downto 8)
-  function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector; -- (447 downto 8)
-  function f_sdb_extract_product(sdb_record : std_logic_vector(319 downto 8))  return t_sdb_product;
-  function f_sdb_extract_component(sdb_record : std_logic_vector(447 downto 8)) return t_sdb_component;
+  function f_sdb_embed_product(product         : t_sdb_product) return std_logic_vector;  -- (319 downto 8)
+  function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector;  -- (447 downto 8)
+  function f_sdb_extract_product(sdb_record    : std_logic_vector(319 downto 8)) return t_sdb_product;
+  function f_sdb_extract_component(sdb_record  : std_logic_vector(447 downto 8)) return t_sdb_component;
 
 ------------------------------------------------------------------------------
 -- Components declaration
@@ -242,24 +242,24 @@ package wishbone_pkg is
       g_address     : t_wishbone_address_array;
       g_mask        : t_wishbone_address_array);
     port (
-      clk_sys_i     : in  std_logic;
-      rst_n_i       : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-      slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
-      master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
+      slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+      master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
+      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
   -- Use the f_xwb_bridge_*_sdb to bridge a crossbar to another
-  function f_xwb_bridge_manual_sdb( -- take a manual bus size
-      g_size        : t_wishbone_address;
-      g_sdb_addr    : t_wishbone_address) return t_sdb_bridge;
+  function f_xwb_bridge_manual_sdb(     -- take a manual bus size
+    g_size     : t_wishbone_address;
+    g_sdb_addr : t_wishbone_address) return t_sdb_bridge;
 
-  function f_xwb_bridge_layout_sdb( -- determine bus size from layout
-      g_wraparound  : boolean := true;
-      g_layout      : t_sdb_record_array;
-      g_sdb_addr    : t_wishbone_address) return t_sdb_bridge;
-  
+  function f_xwb_bridge_layout_sdb(     -- determine bus size from layout
+    g_wraparound : boolean := true;
+    g_layout     : t_sdb_record_array;
+    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge;
+
   component xwb_sdb_crossbar
     generic (
       g_num_masters : integer;
@@ -269,39 +269,39 @@ package wishbone_pkg is
       g_layout      : t_sdb_record_array;
       g_sdb_addr    : t_wishbone_address);
     port (
-      clk_sys_i     : in  std_logic;
-      rst_n_i       : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-      slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
-      master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
+      slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+      master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
+      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
   component sdb_rom is
     generic(
-      g_layout      : t_sdb_record_array;
-      g_bus_end     : unsigned(63 downto 0));
+      g_layout  : t_sdb_record_array;
+      g_bus_end : unsigned(63 downto 0));
     port(
-      clk_sys_i     : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in;
-      slave_o       : out t_wishbone_slave_out);
+      clk_sys_i : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out);
   end component;
   
   constant c_xwb_dma_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"00",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"000000000000001f",
-    product => (
-    vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"cababa56",
-    version       => x"00000001",
-    date          => x"20120518",
-    name          => "WB4-Streaming-DMA_0")));
+      addr_first  => x"0000000000000000",
+      addr_last   => x"000000000000001f",
+      product     => (
+        vendor_id => x"0000000000000651",  -- GSI
+        device_id => x"cababa56",
+        version   => x"00000001",
+        date      => x"20120518",
+        name      => "WB4-Streaming-DMA_0")));
   component xwb_dma is
     generic(
       -- Value 0 cannot stream
@@ -311,7 +311,7 @@ package wishbone_pkg is
       -- Value 4 only slaves with combined latency <= 14 can stream
       -- ....
       logRingLen : integer := 4
-    );
+      );
     port(
       -- Common wishbone signals
       clk_i       : in  std_logic;
@@ -327,9 +327,9 @@ package wishbone_pkg is
       w_master_o  : out t_wishbone_master_out;
       -- Pulsed high completion signal
       interrupt_o : out std_logic
-    );
+      );
   end component;
-  
+
   -- If you reset one clock domain, you must reset BOTH!
   -- Release of the reset lines may be arbitrarily out-of-phase
   component xwb_clock_crossing is
@@ -348,7 +348,7 @@ package wishbone_pkg is
       master_i       : in  t_wishbone_master_in;
       master_o       : out t_wishbone_master_out);
   end component;
-  
+
   -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdb_device;
   component xwb_dpram
@@ -370,23 +370,23 @@ package wishbone_pkg is
   end component;
 
 
- constant c_xwb_gpio_port_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+  constant c_xwb_gpio_port_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
-    product => (
-    vendor_id     => x"000000000000CE42", -- CERN
-    device_id     => x"64000003",
-    version       => x"00000001",
-    date          => x"20121129",
-    name          => "WB-GPIO-Port       ")));
-  
-  
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"441c5143",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-GPIO-Port       ")));
+
+
   component wb_gpio_port
     generic (
       g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
@@ -429,23 +429,23 @@ package wishbone_pkg is
       gpio_oen_o : out   std_logic_vector(g_num_pins-1 downto 0));
   end component;
 
- constant c_xwb_i2c_master_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+  constant c_xwb_i2c_master_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
-    product => (
-    vendor_id     => x"000000000000CE42", -- CERN
-    device_id     => x"64000002",
-    version       => x"00000001",
-    date          => x"20121129",
-    name          => "WB-I2C-Master      ")));
-  
-  
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"123c5443",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-I2C-Master      ")));
+
+
   component wb_i2c_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
@@ -502,22 +502,22 @@ package wishbone_pkg is
       iwb_i     : in  t_wishbone_master_in);
   end component;
 
- constant c_xwb_onewire_master_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+  constant c_xwb_onewire_master_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
-    product => (
-    vendor_id     => x"000000000000CE42", -- CERN
-    device_id     => x"64000001",
-    version       => x"00000001",
-    date          => x"20121129",
-    name          => "WB-OneWire-Master  ")));
-  
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"779c5443",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-OneWire-Master  ")));
+
   component wb_onewire_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
@@ -639,6 +639,39 @@ package wishbone_pkg is
       uart_txd_o : out std_logic);
   end component;
 
+  component wb_simple_pwm
+    generic (
+      g_num_channels        : integer range 1 to 8;
+      g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
+      g_address_granularity : t_wishbone_address_granularity := BYTE);
+    port (
+      clk_sys_i  : in  std_logic;
+      rst_n_i    : in  std_logic;
+      wb_adr_i   : in  std_logic_vector(5 downto 0);
+      wb_dat_i   : in  std_logic_vector(31 downto 0);
+      wb_dat_o   : out std_logic_vector(31 downto 0);
+      wb_cyc_i   : in  std_logic;
+      wb_sel_i   : in  std_logic_vector(3 downto 0);
+      wb_stb_i   : in  std_logic;
+      wb_we_i    : in  std_logic;
+      wb_ack_o   : out std_logic;
+      wb_stall_o : out std_logic;
+      pwm_o      : out std_logic_vector(g_num_channels-1 downto 0));
+  end component;
+
+  component xwb_simple_pwm
+    generic (
+      g_num_channels        : integer range 1 to 8;
+      g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
+      g_address_granularity : t_wishbone_address_granularity := BYTE);
+    port (
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
+      pwm_o     : out std_logic_vector(g_num_channels-1 downto 0));
+  end component;
+
   component wb_tics
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
@@ -693,21 +726,21 @@ package wishbone_pkg is
   end component;
 
   constant c_xwb_vic_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
-    product => (
-    vendor_id     => x"000000000000CE42", -- CERN
-    device_id     => x"00000013",
-    version       => x"00000001",
-    date          => x"20120113",
-    name          => "WB-VIC-Int.Control ")));	 
-  
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"00000013",
+        version   => x"00000001",
+        date      => x"20120113",
+        name      => "WB-VIC-Int.Control ")));   
+
   component xwb_vic
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
@@ -765,9 +798,9 @@ package body wishbone_pkg is
     else return f_ceil_log2((x+1)/2) +1;
     end if;
   end f_ceil_log2;
-  
+
   function f_sdb_embed_product(product : t_sdb_product)
-    return std_logic_vector -- (319 downto 8)
+    return std_logic_vector             -- (319 downto 8)
   is
     variable result : std_logic_vector(319 downto 8);
   begin
@@ -775,13 +808,13 @@ package body wishbone_pkg is
     result(255 downto 224) := product.device_id;
     result(223 downto 192) := product.version;
     result(191 downto 160) := product.date;
-    for i in 0 to 18 loop -- string to ascii
-      result(159-i*8 downto 152-i*8) := 
+    for i in 0 to 18 loop               -- string to ascii
+      result(159-i*8 downto 152-i*8) :=
         std_logic_vector(to_unsigned(character'pos(product.name(i+1)), 8));
     end loop;
     return result;
   end;
-  
+
   function f_sdb_extract_product(sdb_record : std_logic_vector(319 downto 8))
     return t_sdb_product
   is
@@ -791,29 +824,29 @@ package body wishbone_pkg is
     result.device_id := sdb_record(255 downto 224);
     result.version   := sdb_record(223 downto 192);
     result.date      := sdb_record(191 downto 160);
-    for i in 0 to 18 loop -- ascii to string
+    for i in 0 to 18 loop               -- ascii to string
       result.name(i+1) := character'val(to_integer(unsigned(sdb_record(159-i*8 downto 152-i*8))));
     end loop;
     return result;
   end;
-  
+
   function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address)
-    return std_logic_vector -- (447 downto 8)
+    return std_logic_vector             -- (447 downto 8)
   is
     variable result : std_logic_vector(447 downto 8);
-    
+
     constant first : unsigned(63 downto 0) := unsigned(sdb_component.addr_first);
     constant last  : unsigned(63 downto 0) := unsigned(sdb_component.addr_last);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
-    
+
     result(447 downto 384) := std_logic_vector(base);
     result(383 downto 320) := std_logic_vector(base + last - first);
-    result(319 downto   8) := f_sdb_embed_product(sdb_component.product);
+    result(319 downto 8)   := f_sdb_embed_product(sdb_component.product);
     return result;
   end;
-  
+
   function f_sdb_extract_component(sdb_record : std_logic_vector(447 downto 8))
     return t_sdb_component
   is
@@ -824,7 +857,7 @@ package body wishbone_pkg is
     result.product    := f_sdb_extract_product(sdb_record(319 downto 8));
     return result;
   end;
-  
+
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address)
     return t_sdb_record
   is
@@ -836,11 +869,11 @@ package body wishbone_pkg is
     result(479 downto 453) := (others => '0');
     result(452)            := device.wbd_endian;
     result(451 downto 448) := device.wbd_width;
-    result(447 downto   8) := f_sdb_embed_component(device.sdb_component, address);
-    result(  7 downto   0) := x"01"; -- device
+    result(447 downto 8)   := f_sdb_embed_component(device.sdb_component, address);
+    result(7 downto 0)     := x"01";    -- device
     return result;
   end;
-  
+
   function f_sdb_extract_device(sdb_record : t_sdb_record)
     return t_sdb_device
   is
@@ -852,32 +885,32 @@ package body wishbone_pkg is
     result.wbd_endian    := sdb_record(452);
     result.wbd_width     := sdb_record(451 downto 448);
     result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
-    
+
     assert sdb_record(7 downto 0) = x"01"
-    report "Cannot extract t_sdb_device from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
-    severity Failure;
+      report "Cannot extract t_sdb_device from record of type " & integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      severity failure;
     
     return result;
   end;
-  
+
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address)
     return t_sdb_record
   is
     variable result : t_sdb_record;
-    
+
     constant first : unsigned(63 downto 0) := unsigned(bridge.sdb_component.addr_first);
     constant child : unsigned(63 downto 0) := unsigned(bridge.sdb_child);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
-    
+
     result(511 downto 448) := std_logic_vector(base + child - first);
-    result(447 downto   8) := f_sdb_embed_component(bridge.sdb_component, address);
-    result(  7 downto   0) := x"02"; -- bridge
+    result(447 downto 8)   := f_sdb_embed_component(bridge.sdb_component, address);
+    result(7 downto 0)     := x"02";    -- bridge
     return result;
   end;
-  
-  function f_sdb_extract_bridge(sdb_record : t_sdb_record) 
+
+  function f_sdb_extract_bridge(sdb_record : t_sdb_record)
     return t_sdb_bridge
   is
     variable result : t_sdb_bridge;
@@ -886,45 +919,45 @@ package body wishbone_pkg is
     result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
 
     assert sdb_record(7 downto 0) = x"02"
-    report "Cannot extract t_sdb_bridge from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
-    severity Failure;
+      report "Cannot extract t_sdb_bridge from record of type " & integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      severity failure;
     
     return result;
   end;
   
   function f_xwb_bridge_manual_sdb(
-    g_size       : t_wishbone_address;
-    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
+    g_size     : t_wishbone_address;
+    g_sdb_addr : t_wishbone_address) return t_sdb_bridge
   is
     variable result : t_sdb_bridge;
   begin
-    result.sdb_child := (others => '0');
+    result.sdb_child                                      := (others => '0');
     result.sdb_child(c_wishbone_address_width-1 downto 0) := g_sdb_addr;
-    
-    result.sdb_component.addr_first := (others => '0');
-    result.sdb_component.addr_last  := (others => '0');
+
+    result.sdb_component.addr_first                                     := (others => '0');
+    result.sdb_component.addr_last                                      := (others => '0');
     result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
-    
-    result.sdb_component.product.vendor_id := x"0000000000000651"; -- GSI
+
+    result.sdb_component.product.vendor_id := x"0000000000000651";  -- GSI
     result.sdb_component.product.device_id := x"eef0b198";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120511";
     result.sdb_component.product.name      := "WB4-Bridge-GSI     ";
-    
+
     return result;
   end f_xwb_bridge_manual_sdb;
   
   function f_xwb_bridge_layout_sdb(
-    g_wraparound  : boolean := true;
-    g_layout      : t_sdb_record_array;
-    g_sdb_addr    : t_wishbone_address) return t_sdb_bridge
+    g_wraparound : boolean := true;
+    g_layout     : t_sdb_record_array;
+    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
   is
     alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
 
     -- How much space does the ROM need?
     constant c_used_entries : natural := c_layout'length + 1;
-    constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-    constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
+    constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries);  -- next power of 2
+    constant c_sdb_bytes    : natural := c_sdb_device_length / 8;
     constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
     
     variable result : unsigned(63 downto 0);
@@ -955,29 +988,29 @@ package body wishbone_pkg is
     
     return f_xwb_bridge_manual_sdb(std_logic_vector(result(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
-  
+
   function f_xwb_dpram(g_size : natural) return t_sdb_device
   is
     variable result : t_sdb_device;
   begin
-    result.abi_class     := x"0001"; -- RAM device
+    result.abi_class     := x"0001";    -- RAM device
     result.abi_ver_major := x"01";
     result.abi_ver_minor := x"00";
-    result.wbd_width     := x"7"; -- 32/16/8-bit supported
+    result.wbd_width     := x"7";       -- 32/16/8-bit supported
     result.wbd_endian    := c_sdb_endian_big;
-    
+
     result.sdb_component.addr_first := (others => '0');
     result.sdb_component.addr_last  := std_logic_vector(to_unsigned(g_size*4-1, 64));
-    
-    result.sdb_component.product.vendor_id := x"000000000000CE42"; -- CERN
+
+    result.sdb_component.product.vendor_id := x"000000000000CE42";  -- CERN
     result.sdb_component.product.device_id := x"66cfeb52";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120305";
     result.sdb_component.product.name      := "WB4-BlockRAM       ";
-    
+
     return result;
   end f_xwb_dpram;
-  
+
   function f_bits2string(s : std_logic_vector) return string is
     --- extend length to full hex nibble
     variable result : string((s'length+7)/4 downto 1);
@@ -1008,13 +1041,13 @@ package body wishbone_pkg is
         when others => result(i+1) := 'X';
       end case;
     end loop;
-    
+
     -- trim leading 0s
     strip : for i in result'length downto 1 loop
       cut := i;
       exit strip when result(i) /= '0';
     end loop;
-    
+
     return "0x" & result(cut downto 1);
   end f_bits2string;
   
