@@ -17,6 +17,7 @@ def __helper():
     "wb_clock_crossing",
     "wb_dma",
     "wb_serial_lcd",
+		"wb_simple_pwm",
     "wbgen2"
     ]
   if (target == "altera"): dirs.extend(["wb_pcie"]);
