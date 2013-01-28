@@ -124,8 +124,8 @@ architecture syn of generic_dpram is
     end if;
   end f_file_contents;
   
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
-  shared variable ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(f_file_contents);
+  signal ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
+  signal ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(f_file_contents);
   
   signal q_local_a       : t_ram_word_bs;
   signal q_local_b       : t_ram_word_bs;
@@ -175,28 +175,28 @@ begin
 -- I know the code below is stupid, but it's the only way to make Quartus
 -- recongnize it as a memory block
           if(bwe_int_a(0) = '1' and g_data_width >= 8) then
-            ram_bs(to_integer(unsigned(aa_i)))(0) := da_i(7 downto 0);
+            ram_bs(to_integer(unsigned(aa_i)))(0) <= da_i(7 downto 0);
           end if;
           if(bwe_int_a(1) = '1' and g_data_width >= 16) then
-            ram_bs(to_integer(unsigned(aa_i)))(1) := da_i(15 downto 8);
+            ram_bs(to_integer(unsigned(aa_i)))(1) <= da_i(15 downto 8);
           end if;
           if(bwe_int_a(2) = '1' and g_data_width >= 24) then
-            ram_bs(to_integer(unsigned(aa_i)))(2) := da_i(23 downto 16);
+            ram_bs(to_integer(unsigned(aa_i)))(2) <= da_i(23 downto 16);
           end if;
           if(bwe_int_a(3) = '1' and g_data_width >= 32) then
-            ram_bs(to_integer(unsigned(aa_i)))(3) := da_i(31 downto 24);
+            ram_bs(to_integer(unsigned(aa_i)))(3) <= da_i(31 downto 24);
           end if;
           if(bwe_int_a(4) = '1' and g_data_width >= 40) then
-            ram_bs(to_integer(unsigned(aa_i)))(4) := da_i(39 downto 32);
+            ram_bs(to_integer(unsigned(aa_i)))(4) <= da_i(39 downto 32);
           end if;
           if(bwe_int_a(5) = '1' and g_data_width >= 48) then
-            ram_bs(to_integer(unsigned(aa_i)))(5) := da_i(47 downto 40);
+            ram_bs(to_integer(unsigned(aa_i)))(5) <= da_i(47 downto 40);
           end if;
           if(bwe_int_a(6) = '1' and g_data_width >= 56) then
-            ram_bs(to_integer(unsigned(aa_i)))(6) := da_i(55 downto 48);
+            ram_bs(to_integer(unsigned(aa_i)))(6) <= da_i(55 downto 48);
           end if;
           if(bwe_int_a(7) = '1' and g_data_width = 64) then
-            ram_bs(to_integer(unsigned(aa_i)))(7) := da_i(64 downto 57);
+            ram_bs(to_integer(unsigned(aa_i)))(7) <= da_i(64 downto 57);
           end if;
         end if;
         q_local_a <= ram_bs(to_integer(unsigned(aa_i)));
@@ -211,28 +211,28 @@ begin
 -- I know the code below is stupid, but it's the only way to make Quartus
 -- recongnize it as a memory block
           if(bwe_int_b(0) = '1' and g_data_width >= 8) then
-            ram_bs(to_integer(unsigned(ab_i)))(0) := db_i(7 downto 0);
+            ram_bs(to_integer(unsigned(ab_i)))(0) <= db_i(7 downto 0);
           end if;
           if(bwe_int_b(1) = '1' and g_data_width >= 16) then
-            ram_bs(to_integer(unsigned(ab_i)))(1) := db_i(15 downto 8);
+            ram_bs(to_integer(unsigned(ab_i)))(1) <= db_i(15 downto 8);
           end if;
           if(bwe_int_b(2) = '1' and g_data_width >= 24) then
-            ram_bs(to_integer(unsigned(ab_i)))(2) := db_i(23 downto 16);
+            ram_bs(to_integer(unsigned(ab_i)))(2) <= db_i(23 downto 16);
           end if;
           if(bwe_int_b(3) = '1' and g_data_width >= 32) then
-            ram_bs(to_integer(unsigned(ab_i)))(3) := db_i(31 downto 24);
+            ram_bs(to_integer(unsigned(ab_i)))(3) <= db_i(31 downto 24);
           end if;
           if(bwe_int_b(4) = '1' and g_data_width >= 40) then
-            ram_bs(to_integer(unsigned(ab_i)))(4) := db_i(39 downto 32);
+            ram_bs(to_integer(unsigned(ab_i)))(4) <= db_i(39 downto 32);
           end if;
           if(bwe_int_b(5) = '1' and g_data_width >= 48) then
-            ram_bs(to_integer(unsigned(ab_i)))(5) := db_i(47 downto 40);
+            ram_bs(to_integer(unsigned(ab_i)))(5) <= db_i(47 downto 40);
           end if;
           if(bwe_int_b(6) = '1' and g_data_width >= 56) then
-            ram_bs(to_integer(unsigned(ab_i)))(6) := db_i(55 downto 48);
+            ram_bs(to_integer(unsigned(ab_i)))(6) <= db_i(55 downto 48);
           end if;
           if(bwe_int_b(7) = '1' and g_data_width = 64) then
-            ram_bs(to_integer(unsigned(ab_i)))(7) := db_i(64 downto 57);
+            ram_bs(to_integer(unsigned(ab_i)))(7) <= db_i(64 downto 57);
           end if;
         end if;
         q_local_b <= ram_bs(to_integer(unsigned(ab_i)));
@@ -248,7 +248,7 @@ begin
     begin
       if rising_edge(clka_i) then
         if(wea_i = '1') then
-          ram(to_integer(unsigned(aa_i))) := da_i;
+          ram(to_integer(unsigned(aa_i))) <= da_i;
         end if;
         qa_o <= ram(to_integer(unsigned(aa_i)));
       end if;
@@ -258,7 +258,7 @@ begin
     begin
       if rising_edge(clkb_i) then
         if(web_i = '1') then
-          ram(to_integer(unsigned(ab_i))) := db_i;
+          ram(to_integer(unsigned(ab_i))) <= db_i;
         end if;
         qb_o <= ram(to_integer(unsigned(ab_i)));
       end if;
