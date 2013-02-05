@@ -86,7 +86,7 @@ architecture rtl of wb_slave_adapter is
 
   type t_fsm_state is (IDLE, WAIT4ACK);
 
-  signal fsm_state : t_fsm_state;
+  signal fsm_state : t_fsm_state := IDLE;
 
   signal master_in  : t_wishbone_master_in;
   signal master_out : t_wishbone_master_out;
@@ -146,67 +146,46 @@ begin  -- rtl
                         & slave_in.adr(c_wishbone_address_width-1 downto f_num_byte_address_bits);
     end if;
   end process;
-
-  p_fsm : process(clk_sys_i)
-  begin
-    if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' then
-        fsm_state <= IDLE;
-      else
-        case fsm_state is
-          when IDLE =>
-
-            if(slave_in.stb = '1' and (master_in.stall = '0' or g_master_mode = CLASSIC) and master_in.ack = '0') then
-              stored_we <= slave_in.we;
-
-              fsm_state <= WAIT4ACK;
-            end if;
-          when WAIT4ACK =>
-            if(slave_out.ack = '1') then
-              fsm_state <= IDLE;
-            end if;
-        end case;
+  
+  P2C : if (g_slave_mode = PIPELINED and g_master_mode = CLASSIC)   generate
+    master_out.stb  <= slave_in.stb;
+    slave_out.stall <= not master_in.ack;
+  end generate;
+  
+  C2P : if (g_slave_mode = CLASSIC   and g_master_mode = PIPELINED) generate
+    master_out.stb  <= slave_in.stb when fsm_state=IDLE else '0';
+    slave_out.stall <= '0'; -- classic will ignore this anyway
+    
+    state_machine : process(clk_sys_i) is
+    begin
+      if rising_edge(clk_sys_i) then
+        if rst_n_i = '0' then
+          fsm_state <= IDLE;
+        else
+          case fsm_state is
+            when IDLE => 
+              if slave_in.stb ='1' and master_in.stall='0' and master_in.ack='0' then
+                fsm_state <= WAIT4ACK;
+              end if;
+            when WAIT4ACK => 
+              if master_in.ack='1' then 
+                fsm_state <= IDLE;
+              end if;
+          end case;
+        end if;
       end if;
-    end if;
-  end process;
-
-
-  p_gen_control : process(slave_in, slave_out, master_in, master_out)
-  begin
-    if(g_master_mode = PIPELINED and g_slave_mode = CLASSIC) then
-      if(fsm_state = IDLE) then
-        master_out.stb <= slave_in.stb;
-      else
-        master_out.stb <= '0';
-      end if;
-      master_out.we <= slave_in.we;
-      slave_out.stall <= '0';
-    elsif(g_master_mode = CLASSIC and g_slave_mode = PIPELINED) then
-
-      if(fsm_state = WAIT4ACK) then
-        master_out.stb <= '1';
-        master_out.we  <= stored_we;
-      else
-        master_out.stb <= slave_in.stb;
-        master_out.we  <= slave_in.we;
-      end if;
-
-      if(fsm_state = WAIT4ACK) then
-        slave_out.stall <= not slave_out.ack;
-      else
-        slave_out.stall <= slave_in.stb;
-      end if;
-    else
-      master_out.we <= slave_in.we;
-      master_out.stb  <= slave_in.stb;
-      slave_out.stall <= master_in.stall;
-    end if;
-  end process;
-
+    end process;
+  end generate;
+  
+  X2X : if (g_slave_mode = g_master_mode) generate
+    master_out.stb  <= slave_in.stb;
+    slave_out.stall <= master_in.stall;
+  end generate;
+  
   master_out.dat <= slave_in.dat;
   master_out.cyc <= slave_in.cyc;
   master_out.sel <= slave_in.sel;
---  master_out.we  <= slave_in.we;
+  master_out.we  <= slave_in.we;
 
   slave_out.ack <= master_in.ack;
   slave_out.err <= master_in.err;
