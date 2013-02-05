@@ -249,8 +249,10 @@ begin
       if rising_edge(clka_i) then
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) <= da_i;
+          qa_o <= da_i; -- Arria5 must have "new data" for a port RW conflict
+        else
+          qa_o <= ram(to_integer(unsigned(aa_i)));
         end if;
-        qa_o <= ram(to_integer(unsigned(aa_i)));
       end if;
     end process;
 
@@ -259,8 +261,10 @@ begin
       if rising_edge(clkb_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) <= db_i;
+          qb_o <= db_i; -- Arria5 must have "new data" for a port RW conflict
+        else
+          qb_o <= ram(to_integer(unsigned(ab_i)));
         end if;
-        qb_o <= ram(to_integer(unsigned(ab_i)));
       end if;
     end process;
   end generate gen_without_byte_enable_readfirst;
