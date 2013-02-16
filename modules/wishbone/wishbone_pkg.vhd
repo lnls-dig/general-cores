@@ -262,7 +262,7 @@ package wishbone_pkg is
       g_wraparound  : boolean := true;
       g_layout      : t_sdb_record_array;
       g_sdb_addr    : t_wishbone_address) return t_sdb_bridge;
-
+  
   component xwb_sdb_crossbar
     generic (
       g_num_masters : integer;

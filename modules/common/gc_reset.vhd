@@ -22,14 +22,15 @@ architecture rtl of gc_reset is
   signal locked_count : unsigned(g_logdelay-1 downto 0) := (others => '0');
   signal master_rstn : std_logic;
 begin
-  lock : process(free_clk_i)
+  lock : process(free_clk_i, locked_i)
     constant locked_done : unsigned(g_logdelay-1 downto 0) := (others => '1');
   begin
-    if rising_edge(free_clk_i) then
-      if locked_i = '0' then
-        master_rstn <= '0';
-        locked_count <= (others => '0');
-      else
+    -- Asynchronous reset
+    if locked_i = '0' then
+      master_rstn <= '0';
+      locked_count <= (others => '0');
+    else
+      if rising_edge(free_clk_i) then
         if locked_count = locked_done then
           master_rstn <= '1';
         else

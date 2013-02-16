@@ -114,6 +114,24 @@ architecture rtl of xwb_crossbar is
   -- Either matrix_old or matrix_new, depending on g_registered
   signal granted : matrix;
   
+  -- 1 => 0    2 => 1    3..4 => 2     5..8 => 3
+  function log2(i : natural) return natural is
+  begin
+    if i <= 1
+    then return 0;
+    else return log2((i+1)/2) + 1;
+    end if;
+  end log2;
+  
+  -- 0 => 1    1 => 2      2 => 4      3 => 8
+  function pow2(i : natural) return natural is
+  begin
+    if i = 0
+    then return 1;
+    else return pow2(i-1)*2;
+    end if;
+  end pow2;
+  
   -- If any of the bits are '1', the whole thing is '1'
   -- This function makes the check explicitly have logarithmic depth.
   function vector_OR(x : std_logic_vector)
@@ -136,24 +154,6 @@ architecture rtl of xwb_crossbar is
   function ks_OR(input : std_logic_vector)
     return std_logic_vector
   is
-    -- 1 => 0    2 => 1    3..4 => 2     5..8 => 3
-    function log2(i : natural) return natural is
-    begin
-      if i <= 1
-      then return 0;
-      else return log2((i+1)/2) + 1;
-      end if;
-    end log2;
-    
-    -- 0 => 1    1 => 2      2 => 4      3 => 8
-    function pow2(i : natural) return natural is
-    begin
-      if i = 0
-      then return 1;
-      else return pow2(i-1)*2;
-      end if;
-    end pow2;
-    
     constant width  : natural := input'length;
     constant stages : natural := log2(width);
     variable prev   : std_logic_vector(width-1 downto 0);
@@ -257,31 +257,31 @@ architecture rtl of xwb_crossbar is
     return matrix_new;
   end matrix_logic;
 
+  subtype slave_row is std_logic_vector(g_num_masters-1 downto 0);
+  type slave_matrix is array (natural range <>) of slave_row;
+  
+  function slave_matrix_OR(x : slave_matrix)
+    return std_logic_vector is
+    variable result : std_logic_vector(x'LENGTH-1 downto 0);
+  begin
+    for i in x'LENGTH-1 downto 0 loop
+      result(i) := vector_OR(x(i));
+    end loop;
+    return result;
+  end slave_matrix_OR;
+  
   -- Select the master pins the slave will receive
   function slave_logic(slave   : integer;
                        granted : matrix;
                        slave_i : t_wishbone_slave_in_array(g_num_masters-1 downto 0))
     return t_wishbone_master_out
   is
-    subtype row is std_logic_vector(g_num_masters-1 downto 0);
-    type matrix is array (natural range <>) of row;
-    
-    function matrix_OR(x : matrix)
-      return std_logic_vector is
-      variable result : std_logic_vector(x'LENGTH-1 downto 0);
-    begin
-      for i in x'LENGTH-1 downto 0 loop
-        result(i) := vector_OR(x(i));
-      end loop;
-      return result;
-    end matrix_OR;
-    
-    variable CYC_row    : row;
-    variable STB_row    : row;
-    variable ADR_matrix : matrix(c_wishbone_address_width-1 downto 0);
-    variable SEL_matrix : matrix((c_wishbone_address_width/8)-1 downto 0);
-    variable WE_row     : row;
-    variable DAT_matrix : matrix(c_wishbone_data_width-1 downto 0);
+    variable CYC_row    : slave_row;
+    variable STB_row    : slave_row;
+    variable ADR_matrix : slave_matrix(c_wishbone_address_width-1 downto 0);
+    variable SEL_matrix : slave_matrix((c_wishbone_address_width/8)-1 downto 0);
+    variable WE_row     : slave_row;
+    variable DAT_matrix : slave_matrix(c_wishbone_data_width-1 downto 0);
   begin
     -- Rename all the signals ready for big_or
     for master in g_num_masters-1 downto 0 loop
@@ -302,36 +302,36 @@ architecture rtl of xwb_crossbar is
     return (
        CYC => vector_OR(CYC_row),
        STB => vector_OR(STB_row),
-       ADR => matrix_OR(ADR_matrix),
-       SEL => matrix_OR(SEL_matrix),
+       ADR => slave_matrix_OR(ADR_matrix),
+       SEL => slave_matrix_OR(SEL_matrix),
        WE  => vector_OR(WE_row),
-       DAT => matrix_OR(DAT_matrix));
+       DAT => slave_matrix_OR(DAT_matrix));
   end slave_logic;
 
+  subtype master_row is std_logic_vector(g_num_slaves downto 0);
+  type master_matrix is array (natural range <>) of master_row;
+  
+  function master_matrix_OR(x : master_matrix)
+    return std_logic_vector is
+    variable result : std_logic_vector(x'LENGTH-1 downto 0);
+  begin
+    for i in x'LENGTH-1 downto 0 loop
+      result(i) := vector_OR(x(i));
+    end loop;
+    return result;
+  end master_matrix_OR;
+  
   -- Select the slave pins the master will receive
   function master_logic(master    : integer;
                         granted   : matrix;
                         master_ie : t_wishbone_master_in_array(g_num_slaves downto 0))
     return t_wishbone_slave_out
   is
-    subtype row is std_logic_vector(g_num_slaves downto 0);
-    type matrix is array (natural range <>) of row;
-    
-    function matrix_OR(x : matrix)
-      return std_logic_vector is
-      variable result : std_logic_vector(x'LENGTH-1 downto 0);
-    begin
-      for i in x'LENGTH-1 downto 0 loop
-        result(i) := vector_OR(x(i));
-      end loop;
-      return result;
-    end matrix_OR;
-    
-    variable ACK_row    : row;
-    variable ERR_row    : row;
-    variable RTY_row    : row;
-    variable STALL_row  : row;
-    variable DAT_matrix : matrix(c_wishbone_data_width-1 downto 0);
+    variable ACK_row    : master_row;
+    variable ERR_row    : master_row;
+    variable RTY_row    : master_row;
+    variable STALL_row  : master_row;
+    variable DAT_matrix : master_matrix(c_wishbone_data_width-1 downto 0);
   begin
     -- We use inverted logic on STALL so that if no slave granted => stall
     for slave in g_num_slaves downto 0 loop
@@ -349,7 +349,7 @@ architecture rtl of xwb_crossbar is
       ERR => vector_OR(ERR_row),
       RTY => vector_OR(RTY_row),
       STALL => not vector_OR(STALL_row),
-      DAT => matrix_OR(DAT_matrix),
+      DAT => master_matrix_OR(DAT_matrix),
       INT => '0');
   end master_logic;
 begin
@@ -388,12 +388,12 @@ begin
   granted <= matrix_old when g_registered else matrix_new;
 
   -- Make the slave connections
-  slave_matrix : for slave in g_num_slaves downto 0 generate
+  slave_matrixs : for slave in g_num_slaves downto 0 generate
     master_oe(slave) <= slave_logic(slave, granted, slave_i);
   end generate;
 
   -- Make the master connections
-  master_matrix : for master in g_num_masters-1 downto 0 generate
+  master_matrixs : for master in g_num_masters-1 downto 0 generate
     slave_o(master) <= master_logic(master, granted, master_ie);
   end generate;
 end rtl;

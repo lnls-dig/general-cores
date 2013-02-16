@@ -11,18 +11,24 @@ package pcie_wb_pkg is
       clk125_i      : in  std_logic; -- 125 MHz, free running
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
       
+      -- Physical PCIe pins
       pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
       pcie_rstn_i   : in  std_logic; -- Asynchronous "clear sticky" PCIe pin
       pcie_rx_i     : in  std_logic_vector(3 downto 0);
       pcie_tx_o     : out std_logic_vector(3 downto 0);
       
-      wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
-      wb_rstn_i     : in  std_logic; -- Reset wishbone bus
-      master_o      : out t_wishbone_master_out; -- Commands from PC to FPGA
+      -- Commands from PC to FPGA
+      master_clk_i  : in  std_logic;
+      master_rstn_i : in  std_logic;
+      master_o      : out t_wishbone_master_out;
       master_i      : in  t_wishbone_master_in;
-      slave_i       : in  t_wishbone_slave_in := cc_dummy_slave_in;    -- Command to PC from FPGA
+      
+      -- Command to PC from FPGA
+      slave_clk_i   : in  std_logic := '0';
+      slave_rstn_i  : in  std_logic := '0';
+      slave_i       : in  t_wishbone_slave_in := cc_dummy_slave_in;
       slave_o       : out t_wishbone_slave_out);
-end component;
+  end component;
   
   component pcie_altera is
     port(

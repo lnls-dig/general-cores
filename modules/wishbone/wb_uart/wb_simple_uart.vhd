@@ -99,19 +99,21 @@ architecture syn of wb_simple_uart is
   component simple_uart_wb
     port (
       rst_n_i     : in  std_logic;
-      wb_clk_i    : in  std_logic;
-      wb_addr_i   : in  std_logic_vector(2 downto 0);
-      wb_data_i   : in  std_logic_vector(31 downto 0);
-      wb_data_o   : out std_logic_vector(31 downto 0);
+      clk_sys_i   : in  std_logic;
+      wb_adr_i    : in  std_logic_vector(2 downto 0);
+      wb_dat_i    : in  std_logic_vector(31 downto 0);
+      wb_dat_o    : out std_logic_vector(31 downto 0);
       wb_cyc_i    : in  std_logic;
       wb_sel_i    : in  std_logic_vector(3 downto 0);
       wb_stb_i    : in  std_logic;
       wb_we_i     : in  std_logic;
       wb_ack_o    : out std_logic;
+      wb_stall_o  : out std_logic;
       rdr_rack_o  : out std_logic;
       host_rack_o : out std_logic;
       regs_i      : in  t_uart_in_registers;
-      regs_o      : out t_uart_out_registers);
+      regs_o      : out t_uart_out_registers
+    );
   end component;
 
   signal rx_ready_reg    : std_logic;
@@ -174,16 +176,17 @@ begin  -- syn
 
   U_WB_SLAVE : simple_uart_wb
     port map (
-      rst_n_i   => rst_n_i,
-      wb_clk_i  => clk_sys_i,
-      wb_addr_i => wb_in.adr(2 downto 0),
-      wb_data_i => wb_in.dat,
-      wb_data_o => wb_out.dat,
-      wb_cyc_i  => wb_in.cyc,
-      wb_sel_i  => wb_in.sel,
-      wb_stb_i  => wb_in.stb,
-      wb_we_i   => wb_in.we,
-      wb_ack_o  => wb_out.ack,
+      rst_n_i    => rst_n_i,
+      clk_sys_i  => clk_sys_i,
+      wb_adr_i   => wb_in.adr(2 downto 0),
+      wb_dat_i   => wb_in.dat,
+      wb_dat_o   => wb_out.dat,
+      wb_cyc_i   => wb_in.cyc,
+      wb_sel_i   => wb_in.sel,
+      wb_stb_i   => wb_in.stb,
+      wb_we_i    => wb_in.we,
+      wb_ack_o   => wb_out.ack,
+      wb_stall_o => wb_out.stall,
 
       rdr_rack_o  => rdr_rack,
       host_rack_o => host_rack,

@@ -13,16 +13,22 @@ entity pcie_wb is
     clk125_i      : in  std_logic; -- 125 MHz, free running
     cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
     
+    -- Physical PCIe pins
     pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
-    pcie_rstn_i   : in  std_logic; -- Reset PCIe sticky registers
+    pcie_rstn_i   : in  std_logic; -- Asynchronous "clear sticky" PCIe pin
     pcie_rx_i     : in  std_logic_vector(3 downto 0);
     pcie_tx_o     : out std_logic_vector(3 downto 0);
     
-    wb_clk        : in  std_logic; -- Whatever clock you want these signals on:
-    wb_rstn_i     : in  std_logic; -- (whatever clock domain you like)
-    master_o      : out t_wishbone_master_out;  -- Commands from PC to FPGA
+    -- Commands from PC to FPGA
+    master_clk_i  : in  std_logic;
+    master_rstn_i : in  std_logic;
+    master_o      : out t_wishbone_master_out;
     master_i      : in  t_wishbone_master_in;
-    slave_i       : in  t_wishbone_slave_in;    -- Command to PC from FPGA
+    
+    -- Command to PC from FPGA
+    slave_clk_i   : in  std_logic := '0';
+    slave_rstn_i  : in  std_logic := '0';
+    slave_i       : in  t_wishbone_slave_in := cc_dummy_slave_in;
     slave_o       : out t_wishbone_slave_out);
 end pcie_wb;
 
@@ -71,7 +77,7 @@ begin
   pcie_phy : pcie_altera port map(
     clk125_i      => clk125_i,
     cal_clk50_i   => cal_clk50_i,
-    async_rstn    => wb_rstn_i,
+    async_rstn    => master_rstn_i and slave_rstn_i,
     
     pcie_refclk_i => pcie_refclk_i,
     pcie_rstn_i   => pcie_rstn_i,
@@ -151,7 +157,7 @@ begin
   alloc : process(internal_wb_clk)
   begin
     if rising_edge(internal_wb_clk) then
-      internal_wb_rstn_sync <= wb_rstn_i & internal_wb_rstn_sync(internal_wb_rstn_sync'length-1 downto 1);
+      internal_wb_rstn_sync <= (master_rstn_i and slave_rstn_i) & internal_wb_rstn_sync(internal_wb_rstn_sync'length-1 downto 1);
       
       if internal_wb_rstn = '0' then
         tx_alloc_mask <= '1';
@@ -166,8 +172,8 @@ begin
     slave_rst_n_i  => internal_wb_rstn,
     slave_i        => int_slave_i,
     slave_o        => int_slave_o,
-    master_clk_i   => wb_clk, 
-    master_rst_n_i => wb_rstn_i,
+    master_clk_i   => master_clk_i, 
+    master_rst_n_i => master_rstn_i,
     master_i       => master_i,
     master_o       => master_o);
   
@@ -179,8 +185,8 @@ begin
   int_slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
   
   FPGA_to_PC_clock_crossing : xwb_clock_crossing port map(
-    slave_clk_i    => wb_clk,
-    slave_rst_n_i  => wb_rstn_i,
+    slave_clk_i    => slave_clk_i,
+    slave_rst_n_i  => slave_rstn_i,
     slave_i        => slave_i,
     slave_o        => slave_o,
     master_clk_i   => internal_wb_clk, 
