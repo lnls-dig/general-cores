@@ -42,7 +42,7 @@ assign update = update_delay;
 // Don't really know why tck was assined to DRCK.
 BSCAN_VIRTEX6 #(
       //.DISABLE_JTAG("FALSE"),             // This attribute is unsupported. Please leave it at default.
-      .JTAG_CHAIN(1)                        // Value for USER command. Possible values: (1,2,3 or 4).
+      .JTAG_CHAIN(2)                        // Value for USER command. Possible values: (1,2,3 or 4).
   ) bscan (
       .CAPTURE(g_capture),                  // 1-bit output: CAPTURE output from TAP controller
       //.DRCK(tck),                           // 1-bit output: Data register output for USER functions
