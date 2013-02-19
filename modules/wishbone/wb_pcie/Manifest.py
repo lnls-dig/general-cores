@@ -9,4 +9,4 @@ files = [
   "pcie_tlp.vhd",
   "pcie_wb.vhd",
   "pcie_wb_pkg.vhd",
-  "altera_pcie.qip"]
+  "altera_pcie.sdc"]

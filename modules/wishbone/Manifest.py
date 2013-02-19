@@ -6,6 +6,7 @@ modules =  { "local" :
 						"wb_bus_fanout",
 						"wb_dpram",
 						"wb_gpio_port",
+						"wb_pcie",
 						"wb_simple_timer",
 						"wb_uart",
 						"wb_vic",
