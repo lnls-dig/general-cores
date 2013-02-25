@@ -17,6 +17,7 @@ modules =  { "local" :
 						"wb_xilinx_fpga_loader",
 						"wb_clock_crossing",
 						"wb_dma",
+						"wb_serial_lcd",
 						"wbgen2"
 						 ]};
 

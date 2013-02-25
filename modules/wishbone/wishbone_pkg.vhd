@@ -658,6 +658,39 @@ package wishbone_pkg is
       irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);
       irq_master_o : out std_logic);
   end component;
+
+  constant c_wb_serial_lcd_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"b77a5045",
+    version       => x"00000001",
+    date          => x"20130222",
+    name          => "SERIAL-LCD-DISPLAY ")));
+  component wb_serial_lcd
+    generic(
+      g_cols : natural := 40;
+      g_rows : natural := 24;
+      g_wait : natural := 1);
+    port(
+      slave_clk_i  : in  std_logic;
+      slave_rstn_i : in  std_logic;
+      slave_i      : in  t_wishbone_slave_in;
+      slave_o      : out t_wishbone_slave_out;
+      di_clk_i     : in  std_logic;
+      di_scp_o     : out std_logic;
+      di_lp_o      : out std_logic;
+      di_flm_o     : out std_logic;
+      di_dat_o     : out std_logic);
+  end component;
+
 end wishbone_pkg;
 
 package body wishbone_pkg is
