@@ -678,7 +678,8 @@ package wishbone_pkg is
     generic(
       g_cols : natural := 40;
       g_rows : natural := 24;
-      g_wait : natural := 1);
+      g_hold : natural := 15; -- How many times to repeat a line  (for sharpness)
+      g_wait : natural := 1); -- How many cycles per state change (for 20MHz timing)
     port(
       slave_clk_i  : in  std_logic;
       slave_rstn_i : in  std_logic;

@@ -10,7 +10,8 @@ entity wb_serial_lcd is
   generic(
     g_cols : natural := 40;
     g_rows : natural := 24;
-    g_wait : natural := 1); -- How many cycles per state change
+    g_hold : natural := 15; -- How many times to repeat a line  (for sharpness)
+    g_wait : natural := 1); -- How many cycles per state change (for 20MHz timing)
   port(
     slave_clk_i  : in  std_logic;
     slave_rstn_i : in  std_logic;
@@ -32,9 +33,11 @@ architecture rtl of wb_serial_lcd is
   constant c_hi : natural := f_ceil_log2(g_rows);
   constant c_bits : natural := c_lo+c_hi;
   
+  constant c_len : natural := g_cols*g_hold;
+  
   signal r_state : t_state                     := SET_DATA;
   signal r_row   : integer range 0 to g_rows-1 := 0;
-  signal r_col   : integer range 0 to g_cols-1 := 0;
+  signal r_col   : integer range 0 to c_len -1 := 0;
   signal r_wait  : integer range 0 to g_wait-1 := 0;
   signal r_lp    : std_logic                   := '0';
   signal r_flm   : std_logic                   := '0';
@@ -130,23 +133,28 @@ begin
             r_state <= SET_DATA;
           
           when SET_DATA =>
-            di_dat_o <= s_qb(to_integer(31 - to_unsigned(r_col, c_lo+5)(4 downto 0)));
+            di_dat_o <= s_qb(to_integer(31 - to_unsigned(r_col, 5)));
             r_state  <= CLK_HIGH;
             
-            if r_col /= g_cols-1 then
+            if r_col /= 0 then
               r_lp  <= '0';
               r_flm <= '0';
-              r_col <= r_col + 1;
+              r_col <= r_col-1;
               r_row <= r_row;
+            elsif r_row = 0 then
+              r_lp  <= '1';
+              r_flm <= '1';
+              r_col <= c_len-1;
+              r_row <= r_row+1;
             elsif r_row /= g_rows-1 then
               r_lp  <= '1';
               r_flm <= '0';
-              r_col <= 0;
-              r_row <= r_row + 1;
+              r_col <= c_len-1;
+              r_row <= r_row+1;
             else
               r_lp  <= '1';
-              r_flm <= '1';
-              r_col <= 0;
+              r_flm <= '0';
+              r_col <= c_len-1;
               r_row <= 0;
             end if;
           
