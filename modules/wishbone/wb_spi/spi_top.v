@@ -97,6 +97,7 @@ module spi_top
   wire                             ie;               // interrupt enable
   wire                             ass;              // automatic slave select
   wire                             dir;              // data pin direction (only for three_wire mode)
+  wire                             three_mode;       // spi three-wire mode indication (only for three_wire mode)
   wire                             spi_divider_sel;  // divider register select
   wire                             spi_ctrl_sel;     // ctrl register select
   wire                       [3:0] spi_tx_sel;       // tx_l register select
@@ -219,12 +220,18 @@ module spi_top
   begin
     if (wb_rst_i)
       ctrl <= #Tp {`SPI_CTRL_BIT_NB{1'b0}};
-    else if(spi_ctrl_sel && wb_we_i && !tip)
+    else if(spi_ctrl_sel && !tip)
       begin
-        if (wb_sel_i[0])
-          ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
-        if (wb_sel_i[1])
-          ctrl[`SPI_CTRL_BIT_NB-1:8] <= #Tp wb_dat_i[`SPI_CTRL_BIT_NB-1:8];
+    if(wb_we_i)
+      begin
+            if (wb_sel_i[0])
+              ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
+            if (wb_sel_i[1])
+              ctrl[16-1:8] <= #Tp (ctrl[16-1:8] & ~{`SPI_CTRL_MASK1}) |
+                                     wb_dat_i[16-1:8] & {`SPI_CTRL_MASK1};
+          end
+        // Read-Only registers. Why we assign only on !tip?
+        ctrl[`SPI_CTRL_THREE_MODE] <= #Tp g_three_wire_mode;
       end
     else if(tip && last_bit && pos_edge)
       ctrl[`SPI_CTRL_GO] <= #Tp 1'b0;
@@ -238,6 +245,7 @@ module spi_top
   assign ie         = ctrl[`SPI_CTRL_IE];
   assign ass        = ctrl[`SPI_CTRL_ASS];
   assign dir        = ctrl[`SPI_CTRL_DIR];
+  assign three_mode = ctrl[`SPI_CTRL_THREE_MODE];
 
   // Slave select register
   always @(posedge wb_clk_i or posedge wb_rst_i)
@@ -293,4 +301,3 @@ module spi_top
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
                    .s_inout(miosio_pad_b));
 endmodule
-
