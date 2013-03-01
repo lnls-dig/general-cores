@@ -108,6 +108,9 @@ reg    [`LM32_WORD_RNG] csr_read_data;
 wire [interrupts-1:0] asserted;                 // Which interrupts are currently being asserted
 //p_ragma attribute asserted preserve_signal true
 wire [interrupts-1:0] interrupt_n_exception;
+wire [interrupts-1:0] ie_csr_read_data;
+wire [interrupts-1:0] ip_csr_read_data;
+wire [interrupts-1:0] im_csr_read_data;
 
 // Interrupt CSRs
 

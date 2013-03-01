@@ -341,6 +341,9 @@ reg load_x;
 reg load_m;
 wire load_q_x;
 wire store_q_x;
+wire q_m;
+wire load_q_m;
+wire store_q_m;
 wire store_d;                                   // Indicates a store instruction
 reg store_x;
 reg store_m;
@@ -371,6 +374,7 @@ wire [`LM32_D_RESULT_SEL_1_RNG] d_result_sel_1_d; // Which result should be sele
 wire x_result_sel_csr_d;                        // Select X stage result from CSRs
 reg x_result_sel_csr_x;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
+wire q_d;
 wire x_result_sel_mc_arith_d;                   // Select X stage result from multi-cycle arithmetic unit
 reg x_result_sel_mc_arith_x;
 `endif
@@ -689,6 +693,8 @@ reg [`LM32_EID_RNG] eid_w;                      // Exception ID in W stage
 wire dc_ss;                                     // Is single-step enabled
 `endif
 wire dc_re;                                     // Remap all exceptions
+wire bp_match;
+wire wp_match;
 wire exception_x;                               // An exception occured in the X stage
 reg exception_m;                                // An instruction that caused an exception is in the M stage
 wire debug_exception_x;                         // Indicates if a debug exception has occured
