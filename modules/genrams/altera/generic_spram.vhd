@@ -75,8 +75,8 @@ architecture syn of generic_spram is
   type t_ram_word_bs is array (0 to 7) of std_logic_vector(7 downto 0);
   type t_ram_type_bs is array (0 to g_size - 1) of t_ram_word_bs;
 
-  signal ram     : t_ram_type;
-  signal ram_bs  : t_ram_type_bs;
+  signal ram     : t_ram_type    := (others => (others => '0'));
+  signal ram_bs  : t_ram_type_bs := (others => (others => (others => '0')));
   signal q_local : t_ram_word_bs;
 
   signal bwe_int : std_logic_vector(7 downto 0);

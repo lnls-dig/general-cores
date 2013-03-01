@@ -78,7 +78,7 @@ architecture syn of generic_dpram is
   type t_ram_type_bs is array (0 to g_size - 1) of t_ram_word_bs;
 
   function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
-    variable tmp    : t_ram_type;
+    variable tmp    : t_ram_type := (others => (others => '0'));
     variable n, pos : integer;
   begin
     pos := 0;
@@ -97,7 +97,7 @@ architecture syn of generic_dpram is
   end f_memarray_to_ramtype;
 
   function f_memarray_to_ramtype_bs(arr : t_meminit_array) return t_ram_type_bs is
-    variable tmp    : t_ram_type_bs;
+    variable tmp    : t_ram_type_bs := (others => (others => (others => '0')));
     variable n, pos : integer;
   begin
     pos := 0;
@@ -124,8 +124,8 @@ architecture syn of generic_dpram is
     end if;
   end f_file_contents;
   
-  signal ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
-  signal ram_bs : t_ram_type_bs:=f_memarray_to_ramtype_bs(f_file_contents);
+  signal ram    : t_ram_type    := f_memarray_to_ramtype   (f_file_contents);
+  signal ram_bs : t_ram_type_bs := f_memarray_to_ramtype_bs(f_file_contents);
   
   signal q_local_a       : t_ram_word_bs;
   signal q_local_b       : t_ram_word_bs;
