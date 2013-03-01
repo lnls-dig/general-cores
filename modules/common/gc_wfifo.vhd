@@ -112,7 +112,9 @@ begin
          end if;
          r_idx_bnry <= idx;
          r_idx_gray <= bin2gray(idx);
-         w_idx_shift_r(sync_depth downto 1) <= w_idx_shift_r(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           w_idx_shift_r(sync_depth downto 1) <= w_idx_shift_r(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    w_idx_shift_r(0) <= w_idx_gray;
@@ -131,7 +133,9 @@ begin
          end if;
          w_idx_bnry <= idx;
          w_idx_gray <= bin2gray(idx);
-         r_idx_shift_w(sync_depth downto 1) <= r_idx_shift_w(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           r_idx_shift_w(sync_depth downto 1) <= r_idx_shift_w(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    r_idx_shift_w(0) <= r_idx_gray;
@@ -150,7 +154,9 @@ begin
          end if;
          a_idx_bnry <= idx;
          a_idx_gray <= bin2gray(idx);
-         r_idx_shift_a(sync_depth downto 1) <= r_idx_shift_a(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           r_idx_shift_a(sync_depth downto 1) <= r_idx_shift_a(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    r_idx_shift_a(0) <= r_idx_gray;
