@@ -116,7 +116,7 @@ begin  -- rtl
   sl_stall_o <= slave_out.stall;
   sl_dat_o   <= slave_out.dat;
   sl_int_o   <= slave_out.int;
-
+  
 
   gen_master_use_struct : if (g_master_use_struct) generate
     master_in <= master_i;
@@ -133,6 +133,12 @@ begin  -- rtl
   end generate gen_master_use_slv;
 
   master_o <= master_out;
+  ma_adr_o <= master_out.adr;
+  ma_dat_o <= master_out.dat;
+  ma_sel_o <= master_out.sel;
+  ma_cyc_o <= master_out.cyc;
+  ma_stb_o <= master_out.stb;
+  ma_we_o  <= master_out.we;
 
   p_gen_address : process(slave_in, master_out)
   begin
