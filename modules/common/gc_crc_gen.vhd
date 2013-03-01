@@ -109,22 +109,17 @@ architecture rtl of gc_crc_gen is
   type dmsb_array is array (dw downto 1) of std_logic_vector(msb downto 1);
   signal crca       : fb_array;
   signal da, ma     : dmsb_array;
-  signal crc, zero  : std_logic_vector(msb downto 0);
+  signal crc        : std_logic_vector(msb downto 0);
   signal arst, srst : std_logic;
 
-  signal a, b    : std_logic_vector(g_polynomial'length - 1 downto 0);
   signal data_i2 : std_logic_vector(15 downto 0);
   signal en_d0   : std_logic;
-  signal half_d0 : std_logic;
   signal crc_tmp : std_logic_vector(31 downto 0);
   signal crc_int : std_logic_vector(31 downto 0);
   
 
   
 begin
-
-  a <= g_init_value;
-  b <= g_polynomial;
 
 -- Parameter checking: Invalid generics will abort simulation/synthesis
   PCHK1 : if msb /= init_msb generate
@@ -196,7 +191,6 @@ begin
 -- CRC process
   crc_tmp <= f_reverse_vector(not crc);
   crc_int <= crc_tmp(7 downto 0) & crc_tmp(15 downto 8) & crc_tmp(23 downto 16) & crc_tmp(31 downto 24);
-  zero    <= (others => '0');
 
   crc_o <= crc_int;
 
@@ -204,7 +198,6 @@ begin
   begin
     if arst = '1' then                  -- async. reset
       crc     <= g_init_value;
-      half_d0 <= '0';
     elsif rising_edge(clk_i) then
       if srst = '1' then                -- sync. reset
         crc <= g_init_value;
