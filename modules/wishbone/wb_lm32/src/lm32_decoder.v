@@ -651,8 +651,8 @@ assign immediate = select_high_immediate == `TRUE
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate == `TRUE   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[`LM32_PC_WIDTH-1:0])
+                        : (branch_immediate[`LM32_PC_WIDTH-1:0]);
     
 endmodule 
 
