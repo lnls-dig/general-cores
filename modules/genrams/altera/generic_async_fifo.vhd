@@ -170,44 +170,15 @@ begin  -- syn
       wrusedw => wrusedw,
       rdusedw => rdusedw);
 
-  gen_with_wr_count : if(g_with_wr_count) generate
-    wr_count_o <= wrusedw;
-  end generate gen_with_wr_count;
-
-  gen_with_rd_count : if(g_with_rd_count) generate
-    rd_count_o <= rdusedw;
-  end generate gen_with_rd_count;
-
-  gen_with_wr_empty : if(g_with_wr_empty) generate
-    wr_empty_o <= wrempty;
-  end generate gen_with_wr_empty;
-
-  gen_with_rd_empty : if(g_with_rd_empty) generate
-    rd_empty_o <= rdempty;
-  end generate gen_with_rd_empty;
-
-  gen_with_wr_full : if(g_with_wr_full) generate
-    wr_full_o <= wrfull;
-  end generate gen_with_wr_full;
-
-  gen_with_rd_full : if(g_with_rd_full) generate
-    rd_full_o <= rdfull;
-  end generate gen_with_rd_full;
-
-  gen_with_wr_almost_empty : if(g_with_wr_almost_empty) generate
-    wr_almost_empty_o <= '1' when unsigned(wrusedw) < to_unsigned(g_almost_empty_threshold, wrusedw'length) else '0';
-  end generate gen_with_wr_almost_empty;
-
-  gen_with_rd_almost_empty : if(g_with_rd_almost_empty) generate
-    rd_almost_empty_o <= '1' when unsigned(rdusedw) < to_unsigned(g_almost_empty_threshold, rdusedw'length) else '0';
-  end generate gen_with_rd_almost_empty;
-
-  gen_with_wr_almost_full : if(g_with_wr_almost_full) generate
-    wr_almost_full_o <= '1' when unsigned(wrusedw) > to_unsigned(g_almost_full_threshold, wrusedw'length) else '0';
-  end generate gen_with_wr_almost_full;
-
-  gen_with_rd_almost_full : if(g_with_rd_almost_full) generate
-    rd_almost_full_o <= '1' when unsigned(rdusedw) > to_unsigned(g_almost_full_threshold,rdusedw'length) else '0';
-  end generate gen_with_rd_almost_full;
+  wr_count_o <= wrusedw;
+  rd_count_o <= rdusedw;
+  wr_empty_o <= wrempty;
+  rd_empty_o <= rdempty;
+  wr_full_o <= wrfull;
+  rd_full_o <= rdfull;
+  wr_almost_empty_o <= '1' when unsigned(wrusedw) < to_unsigned(g_almost_empty_threshold, wrusedw'length) else '0';
+  rd_almost_empty_o <= '1' when unsigned(rdusedw) < to_unsigned(g_almost_empty_threshold, rdusedw'length) else '0';
+  wr_almost_full_o <= '1' when unsigned(wrusedw) > to_unsigned(g_almost_full_threshold, wrusedw'length) else '0';
+  rd_almost_full_o <= '1' when unsigned(rdusedw) > to_unsigned(g_almost_full_threshold,rdusedw'length) else '0';
 
 end syn;
