@@ -2773,6 +2773,7 @@ endfunction
 
 
 lm32_instruction_unit_full #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -7458,8 +7459,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0])
+                        : (branch_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0]);
     
 endmodule 
 
@@ -10364,6 +10365,7 @@ module lm32_instruction_unit_full (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -10371,6 +10373,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -10880,7 +10883,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2];
         pc_d <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
@@ -15510,6 +15513,7 @@ endfunction
 
 
 lm32_instruction_unit_full_debug #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -20261,8 +20265,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0])
+                        : (branch_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0]);
     
 endmodule 
 
@@ -22504,7 +22508,7 @@ wire [0:breakpoints-1]bp_match_n;
 
 reg [ 1:0] wpc_c[0:watchpoints-1];   
 reg [ (32-1):0] wp[0:watchpoints-1];       
-wire [0:watchpoints]wp_match_n;               
+wire [0:watchpoints-1]wp_match_n;               
 
 wire debug_csr_write_enable;                    
 wire [ (32-1):0] debug_csr_write_data;     
@@ -23256,6 +23260,7 @@ module lm32_instruction_unit_full_debug (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -23263,6 +23268,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -23775,7 +23781,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2];
         pc_d <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
@@ -28419,6 +28425,7 @@ endfunction
 
 
 lm32_instruction_unit_medium #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -33016,8 +33023,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (32-2)-1:0])
+                        : (branch_immediate[ (32-2)-1:0]);
     
 endmodule 
 
@@ -35775,6 +35782,7 @@ module lm32_instruction_unit_medium (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -35782,6 +35790,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -36277,7 +36286,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((32-2)+2-1):2];
         pc_d <= { (32-2){1'b0}};
         pc_x <= { (32-2){1'b0}};
         pc_m <= { (32-2){1'b0}};
@@ -40864,6 +40873,7 @@ endfunction
 
 
 lm32_instruction_unit_medium_debug #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -45528,8 +45538,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0])
+                        : (branch_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0]);
     
 endmodule 
 
@@ -47700,7 +47710,7 @@ wire [0:breakpoints-1]bp_match_n;
 
 reg [ 1:0] wpc_c[0:watchpoints-1];   
 reg [ (32-1):0] wp[0:watchpoints-1];       
-wire [0:watchpoints]wp_match_n;               
+wire [0:watchpoints-1]wp_match_n;               
 
 wire debug_csr_write_enable;                    
 wire [ (32-1):0] debug_csr_write_data;     
@@ -48447,6 +48457,7 @@ module lm32_instruction_unit_medium_debug (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -48454,6 +48465,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -48959,7 +48971,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2];
         pc_d <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
@@ -53597,6 +53609,7 @@ endfunction
 
 
 lm32_instruction_unit_medium_icache #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -58199,8 +58212,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0])
+                        : (branch_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0]);
     
 endmodule 
 
@@ -61033,6 +61046,7 @@ module lm32_instruction_unit_medium_icache (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -61040,6 +61054,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -61542,7 +61557,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2];
         pc_d <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
@@ -66135,6 +66150,7 @@ endfunction
 
 
 lm32_instruction_unit_medium_icache_debug #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -70799,8 +70815,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0])
+                        : (branch_immediate[ (clogb2(32'h7fffffff-32'h0)-2)-1:0]);
     
 endmodule 
 
@@ -72971,7 +72987,7 @@ wire [0:breakpoints-1]bp_match_n;
 
 reg [ 1:0] wpc_c[0:watchpoints-1];   
 reg [ (32-1):0] wp[0:watchpoints-1];       
-wire [0:watchpoints]wp_match_n;               
+wire [0:watchpoints-1]wp_match_n;               
 
 wire debug_csr_write_enable;                    
 wire [ (32-1):0] debug_csr_write_data;     
@@ -73718,6 +73734,7 @@ module lm32_instruction_unit_medium_icache_debug (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -73725,6 +73742,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -74230,7 +74248,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2];
         pc_d <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_x <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
         pc_m <= { (clogb2(32'h7fffffff-32'h0)-2){1'b0}};
@@ -78857,6 +78875,7 @@ endfunction
 
 
 lm32_instruction_unit_minimal #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -83416,8 +83435,8 @@ assign immediate = select_high_immediate ==  1'b1
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate ==  1'b1   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[ (32-2)-1:0])
+                        : (branch_immediate[ (32-2)-1:0]);
     
 endmodule 
 
@@ -86175,6 +86194,7 @@ module lm32_instruction_unit_minimal (
 
 
 
+parameter eba_reset =  32'h00000000;                   
 parameter associativity = 1;                            
 parameter sets = 512;                                   
 parameter bytes_per_line = 16;                          
@@ -86182,6 +86202,7 @@ parameter base_address = 0;
 parameter limit = 0;                                    
 
 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -86677,7 +86698,7 @@ always @(posedge clk_i  )
 begin
     if (rst_i ==  1'b1)
     begin
-        pc_f <= ( 32'h00000000-4)/4;
+        pc_f <= eba_reset_minus_4[ ((32-2)+2-1):2];
         pc_d <= { (32-2){1'b0}};
         pc_x <= { (32-2){1'b0}};
         pc_m <= { (32-2){1'b0}};

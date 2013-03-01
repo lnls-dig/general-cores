@@ -144,6 +144,7 @@ module lm32_instruction_unit (
 // Parameters
 /////////////////////////////////////////////////////
 
+parameter eba_reset = `CFG_EBA_RESET;                   // Reset value for EBA CSR
 parameter associativity = 1;                            // Associativity of the cache (Number of ways)
 parameter sets = 512;                                   // Number of sets
 parameter bytes_per_line = 16;                          // Number of bytes per cache line
@@ -151,6 +152,7 @@ parameter base_address = 0;                             // Base address of cacha
 parameter limit = 0;                                    // Limit (highest address) of cachable memory
 
 // For bytes_per_line == 4, we set 1 so part-select range isn't reversed, even though not really used 
+localparam eba_reset_minus_4 = eba_reset - 4;
 localparam addr_offset_width = bytes_per_line == 4 ? 1 : clogb2(bytes_per_line)-1-2;
 localparam addr_offset_lsb = 2;
 localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
@@ -547,7 +549,7 @@ always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)
     begin
-        pc_f <= (`CFG_EBA_RESET-4)/4;
+        pc_f <= eba_reset_minus_4[`LM32_PC_RNG];
         pc_d <= {`LM32_PC_WIDTH{1'b0}};
         pc_x <= {`LM32_PC_WIDTH{1'b0}};
         pc_m <= {`LM32_PC_WIDTH{1'b0}};

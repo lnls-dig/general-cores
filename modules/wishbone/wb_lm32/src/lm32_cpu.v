@@ -747,6 +747,7 @@ reg data_bus_error_seen;                        // Indicates if a data bus error
 
 // Instruction unit
 lm32_instruction_unit #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -2652,7 +2653,7 @@ begin
 `ifdef CFG_DEBUG_ENABLED
         trace_bret <= `FALSE;
 `endif
-        pc_c <= `CFG_EBA_RESET/4;
+        pc_c <= eba_reset/4;
     end
     else
     begin
