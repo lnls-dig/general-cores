@@ -108,9 +108,6 @@ reg    [`LM32_WORD_RNG] csr_read_data;
 wire [interrupts-1:0] asserted;                 // Which interrupts are currently being asserted
 //p_ragma attribute asserted preserve_signal true
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 // Interrupt CSRs
 
@@ -135,17 +132,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 // Determine which interrupts are currently being asserted (active-low) or are already pending
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, 
-`ifdef CFG_DEBUG_ENABLED
-                           bie,
-`else
-                           1'b0,
-`endif                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin

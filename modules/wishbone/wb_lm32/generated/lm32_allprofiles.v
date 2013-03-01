@@ -2304,7 +2304,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -2370,8 +2369,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -2476,7 +2475,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -4505,7 +4503,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -4587,11 +4584,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -4657,7 +4649,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -4748,11 +4739,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
   
@@ -4802,6 +4788,7 @@ begin
 
   
               
+              
 
 
   
@@ -4809,9 +4796,10 @@ begin
             dflush_m <= dflush_x;
  
 
-            eret_m <= eret_q_x;
   
+ 
                
+
 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
@@ -7065,7 +7053,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -7214,7 +7205,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -12432,9 +12426,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -12460,19 +12451,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-                           
-
-
-                           1'b0,
- 
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -15046,7 +15024,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -15113,8 +15090,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -15123,8 +15100,8 @@ reg eret_m;
 wire bret_d;                                    
 reg bret_x;
 wire bret_q_x;
-reg bret_m;
   
+ 
  
 
 
@@ -15221,7 +15198,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -17317,7 +17293,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -17401,11 +17376,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -17472,7 +17442,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -17565,11 +17534,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
   
@@ -17619,6 +17583,7 @@ begin
 
   
               
+              
 
 
   
@@ -17626,11 +17591,11 @@ begin
             dflush_m <= dflush_x;
  
 
-            eret_m <= eret_q_x;
   
-
-            bret_m <= bret_q_x; 
  
+               
+
+
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
@@ -19889,7 +19854,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -20038,7 +20006,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -25437,9 +25408,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -25466,19 +25434,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-
-                           bie,
- 
-                           
-
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -28004,7 +27959,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -28070,8 +28024,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -28175,7 +28129,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -30151,7 +30104,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -30232,11 +30184,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -30299,7 +30246,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -30389,11 +30335,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
       
@@ -30443,15 +30384,17 @@ begin
 
   
               
+              
 
 
   
               
 
 
-            eret_m <= eret_q_x;
   
+ 
                
+
 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
@@ -32678,7 +32621,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -32825,7 +32771,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -37860,9 +37809,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -37888,19 +37834,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-                           
-
-
-                           1'b0,
- 
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -40453,7 +40386,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -40520,8 +40452,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -40530,8 +40462,8 @@ reg eret_m;
 wire bret_d;                                    
 reg bret_x;
 wire bret_q_x;
-reg bret_m;
   
+ 
  
 
 
@@ -40627,7 +40559,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -42673,7 +42604,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -42756,11 +42686,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -42824,7 +42749,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -42916,11 +42840,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
       
@@ -42970,17 +42889,18 @@ begin
 
   
               
+              
 
 
   
               
 
 
-            eret_m <= eret_q_x;
   
-
-            bret_m <= bret_q_x; 
  
+               
+
+
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
@@ -45211,7 +45131,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -45358,7 +45281,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -50658,9 +50584,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -50687,19 +50610,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-
-                           bie,
- 
-                           
-
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -53226,7 +53136,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -53292,8 +53201,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -53397,7 +53306,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -55379,7 +55287,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -55460,11 +55367,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -55527,7 +55429,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -55617,11 +55518,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
       
@@ -55671,15 +55567,17 @@ begin
 
   
               
+              
 
 
   
               
 
 
-            eret_m <= eret_q_x;
   
+ 
                
+
 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
@@ -57906,7 +57804,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -58053,7 +57954,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -63176,9 +63080,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -63204,19 +63105,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-                           
-
-
-                           1'b0,
- 
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -65769,7 +65657,6 @@ reg x_result_sel_sext_x;
  
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -65836,8 +65723,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -65846,8 +65733,8 @@ reg eret_m;
 wire bret_d;                                    
 reg bret_x;
 wire bret_q_x;
-reg bret_m;
   
+ 
  
 
 
@@ -65943,7 +65830,6 @@ wire [ (32-1):0] sext_result_x;
 
 wire direction_d;                               
 reg direction_x;                                        
-reg direction_m;
 wire [ (32-1):0] shifter_result_m;         
  
 
@@ -67989,7 +67875,6 @@ begin
         x_result_sel_sext_x <=  1'b0;
  
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -68072,11 +67957,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-
-        direction_m <=  1'b0;
- 
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -68140,7 +68020,6 @@ begin
             x_result_sel_sext_x <= x_result_sel_sext_d;
  
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -68232,11 +68111,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-
-            direction_m <= direction_x;
- 
-
             load_m <= load_x;
             store_m <= store_x;
       
@@ -68286,17 +68160,18 @@ begin
 
   
               
+              
 
 
   
               
 
 
-            eret_m <= eret_q_x;
   
-
-            bret_m <= bret_q_x; 
  
+               
+
+
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
@@ -70527,7 +70402,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -70674,7 +70552,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -75974,9 +75855,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -76003,19 +75881,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-
-                           bie,
- 
-                           
-
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin
@@ -78537,7 +78402,6 @@ reg x_result_sel_shift_x;
 
 
 wire x_result_sel_logic_d;                      
-reg x_result_sel_logic_x;
   
                         
  
@@ -78601,8 +78465,8 @@ reg scall_x;
 wire eret_d;                                    
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
   
+ 
  
 
 
@@ -78703,7 +78567,6 @@ wire [ (32-1):0] logic_result_x;
 
                                 
                                          
- 
            
 
 
@@ -80672,7 +80535,6 @@ begin
           
 
     
-        x_result_sel_logic_x <=  1'b0;
   
           
 
@@ -80748,10 +80610,6 @@ begin
         exception_m <=  1'b0;
         load_m <=  1'b0;
         store_m <=  1'b0;
-  
-          
-
-
         write_enable_m <=  1'b0;            
         write_idx_m <= { 5{1'b0}};
         condition_met_m <=  1'b0;
@@ -80813,7 +80671,6 @@ begin
               
 
     
-            x_result_sel_logic_x <= x_result_sel_logic_d;
   
               
 
@@ -80897,10 +80754,6 @@ begin
 
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-  
-              
-
-
             load_m <= load_x;
             store_m <= store_x;
       
@@ -80950,15 +80803,17 @@ begin
 
   
               
+              
 
 
   
               
 
 
-            eret_m <= eret_q_x;
   
+ 
                
+
 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
@@ -83175,7 +83030,10 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
-wire op_user;
+  
+ 
+
+
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -83318,7 +83176,10 @@ assign op_sr     = instruction[ 30:26] ==  5'b00101;
 assign op_sru    = instruction[ 30:26] ==  5'b00000;
 assign op_sub    = instruction[ 31:26] ==  6'b110010;
 assign op_sw     = instruction[ 31:26] ==  6'b010110;
-assign op_user   = instruction[ 31:26] ==  6'b110011;
+  
+       
+
+
 assign op_wcsr   = instruction[ 31:26] ==  6'b110100;
 assign op_xnor   = instruction[ 30:26] ==  5'b01001;
 assign op_xor    = instruction[ 30:26] ==  5'b00110;
@@ -88348,9 +88209,6 @@ reg    [ (32-1):0] csr_read_data;
 wire [interrupts-1:0] asserted;                 
 
 wire [interrupts-1:0] interrupt_n_exception;
-wire [interrupts-1:0] ie_csr_read_data;
-wire [interrupts-1:0] ip_csr_read_data;
-wire [interrupts-1:0] im_csr_read_data;
 
 
 
@@ -88376,19 +88234,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{ 32-3{1'b0}}, 
-  
-                           
-
-
-                           1'b0,
- 
-                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin

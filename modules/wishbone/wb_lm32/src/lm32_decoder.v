@@ -359,7 +359,9 @@ wire op_sr;
 wire op_sru;
 wire op_sub;
 wire op_sw;
+`ifdef CFG_USER_ENABLED
 wire op_user;
+`endif
 wire op_wcsr;
 wire op_xnor;
 wire op_xor;
@@ -441,7 +443,9 @@ assign op_sr     = instruction[`LM32_OP_RNG] == `LM32_OPCODE_SR;
 assign op_sru    = instruction[`LM32_OP_RNG] == `LM32_OPCODE_SRU;
 assign op_sub    = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_SUB;
 assign op_sw     = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_SW;
+`ifdef CFG_USER_ENABLED
 assign op_user   = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_USER;
+`endif
 assign op_wcsr   = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_WCSR;
 assign op_xnor   = instruction[`LM32_OP_RNG] == `LM32_OPCODE_XNOR;
 assign op_xor    = instruction[`LM32_OP_RNG] == `LM32_OPCODE_XOR;
