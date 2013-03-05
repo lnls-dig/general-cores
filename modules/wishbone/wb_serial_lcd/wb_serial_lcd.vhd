@@ -63,7 +63,7 @@ begin
       g_data_width       => 32,
       g_size             => 2**c_bits,
       g_with_byte_enable => true,
-      g_dual_clock       => false)
+      g_dual_clock       => true)
     port map(
       clka_i => slave_clk_i,
       bwea_i => slave_i.sel,
