@@ -45,7 +45,6 @@ entity generic_dpram_dualclock is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
-    g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
     g_fail_if_file_not_found   : boolean := true
     );
 
@@ -101,11 +100,7 @@ architecture syn of generic_dpram_dualclock is
 
   function f_file_contents return t_meminit_array is
   begin
-    if g_init_value'length > 0 then
-      return g_init_value;
-    else
-      return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
-    end if;
+    return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
   end f_file_contents;
   
   shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);

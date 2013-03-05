@@ -46,10 +46,6 @@ package genram_pkg is
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
   
-  -- Generic RAM initialized with nothing.
-  constant c_generic_ram_nothing : t_generic_ram_init(-1 downto 0, -1 downto 0) := 
-    (others => (others => '0'));
-
   -- Single-port synchronous RAM
   component generic_spram
     generic (
@@ -75,7 +71,6 @@ package genram_pkg is
       g_with_byte_enable         : boolean := false;
       g_addr_conflict_resolution : string  := "read_first";
       g_init_file                : string  := "";
-      g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
       g_dual_clock               : boolean := true);
     port (
       rst_n_i : in  std_logic := '1';

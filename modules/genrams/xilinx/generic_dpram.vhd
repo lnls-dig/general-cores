@@ -46,7 +46,6 @@ entity generic_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
-    g_init_value               : t_generic_ram_init := c_generic_ram_nothing;
     g_dual_clock               : boolean := true;
     g_fail_if_file_not_found   : boolean := true
     );
@@ -84,7 +83,6 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
-      g_init_value               : t_generic_ram_init;
       g_fail_if_file_not_found   : boolean);
     port (
       rst_n_i : in  std_logic := '1';
@@ -108,7 +106,6 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
-      g_init_value               : t_generic_ram_init;
       g_fail_if_file_not_found   : boolean);
     port (
       rst_n_i : in  std_logic := '1';
@@ -136,7 +133,6 @@ begin
       g_with_byte_enable         => g_with_byte_enable,
       g_addr_conflict_resolution => g_addr_conflict_resolution,
       g_init_file                => g_init_file,
-	  g_init_value               => g_init_value,
       g_fail_if_file_not_found   => g_fail_if_file_not_found)
     port map (
       rst_n_i => rst_n_i,
@@ -163,7 +159,6 @@ begin
         g_with_byte_enable         => g_with_byte_enable,
         g_addr_conflict_resolution => g_addr_conflict_resolution,
         g_init_file                => g_init_file,
-   	    g_init_value               => g_init_value,
         g_fail_if_file_not_found   => g_fail_if_file_not_found)
       port map (
         rst_n_i => rst_n_i,

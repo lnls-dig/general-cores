@@ -349,16 +349,12 @@ package wishbone_pkg is
       master_o       : out t_wishbone_master_out);
   end component;
   
-  subtype t_xwb_dpram_init is t_generic_ram_init;
-  constant c_xwb_dpram_init_nothing : t_xwb_dpram_init := c_generic_ram_nothing;
-  
   -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdb_device;
   component xwb_dpram
     generic (
       g_size                  : natural;
       g_init_file             : string                         := "";
-      g_init_value            : t_xwb_dpram_init               := c_xwb_dpram_init_nothing;
       g_must_have_init_file   : boolean                        := true;
       g_slave1_interface_mode : t_wishbone_interface_mode      := CLASSIC;
       g_slave2_interface_mode : t_wishbone_interface_mode      := CLASSIC;
