@@ -147,7 +147,7 @@ package body memory_loader_pkg is
     variable data_tmp : unsigned(mem_width-1 downto 0);
     variable data_int : integer;
   begin
-    if(file_name = "") then
+    if(file_name = "" or file_name = "none") then
       mem := (others => (others => '0'));
       return mem;
     end if;

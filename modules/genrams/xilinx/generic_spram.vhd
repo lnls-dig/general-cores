@@ -86,7 +86,9 @@ architecture syn of generic_spram is
   
   
 begin
-  assert (g_init_file = "") report "generic_spram: Memory initialization files not supported yet. Sorry :(" severity failure;
+  assert (g_init_file = "" or g_init_file = "none") 
+  report "generic_spram: Memory initialization files not supported yet. Sorry :(" 
+  severity failure;
 
 
   gen_with_byte_enable_writefirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "write_first") generate
