@@ -64,6 +64,26 @@ package genram_pkg is
       q_o     : out std_logic_vector(g_data_width-1 downto 0));
   end component;
 
+  component generic_simple_dpram
+    generic (
+      g_data_width               : natural;
+      g_size                     : natural;
+      g_with_byte_enable         : boolean := false;
+      g_addr_conflict_resolution : string  := "read_first";
+      g_init_file                : string  := "none";
+      g_dual_clock               : boolean := true);
+    port (
+      rst_n_i : in  std_logic := '1';
+      clka_i  : in  std_logic;
+      bwea_i  : in  std_logic_vector((g_data_width+7)/8 -1 downto 0) := f_gen_dummy_vec('1', (g_data_width+7)/8);
+      wea_i   : in  std_logic;
+      aa_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      da_i    : in  std_logic_vector(g_data_width       -1 downto 0);
+      clkb_i  : in  std_logic;
+      ab_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      qb_o    : out std_logic_vector(g_data_width       -1 downto 0));
+  end component;
+
   component generic_dpram
     generic (
       g_data_width               : natural;
