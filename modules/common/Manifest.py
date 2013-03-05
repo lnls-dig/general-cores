@@ -10,5 +10,4 @@ files = [	"gencores_pkg.vhd",
                 "gc_arbitrated_mux.vhd",
                 "gc_pulse_synchronizer.vhd",
                 "gc_frequency_meter.vhd",
-                "gc_dual_clock_ram.vhd",
                 "gc_wfifo.vhd"];
