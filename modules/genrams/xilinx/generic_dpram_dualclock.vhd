@@ -123,7 +123,8 @@ begin
   s_we_a <= bwea_i and wea_rep;
   s_we_b <= bweb_i and web_rep;
 
-  gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "read_first") generate
+  gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "read_first" or
+                                                                     g_addr_conflict_resolution = "dont_care")) generate
 
 
     process (clka_i)
@@ -159,7 +160,8 @@ begin
 
 
 
-  gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "read_first") generate
+  gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and (g_addr_conflict_resolution = "read_first" or
+                                                                         g_addr_conflict_resolution = "dont_care")) generate
 
     process(clka_i)
     begin

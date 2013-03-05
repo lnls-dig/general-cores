@@ -115,7 +115,8 @@ begin
 
   end generate gen_with_byte_enable_writefirst;
 
-  gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and g_addr_conflict_resolution = "read_first") generate
+  gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "read_first" or
+                                                                     g_addr_conflict_resolution = "dont_care")) generate
     s_we <= bwe_i when we_i = '1' else (others => '0');
 
     process(s_we, d_i)
@@ -155,7 +156,8 @@ begin
 
   end generate gen_without_byte_enable_writefirst;
 
-  gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "read_first") generate
+  gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and (g_addr_conflict_resolution = "read_first" or
+                                                                         g_addr_conflict_resolution = "dont_care")) generate
 
     process(clk_i)
     begin

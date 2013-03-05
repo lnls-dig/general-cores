@@ -53,7 +53,7 @@ package genram_pkg is
       g_size                     : natural;
       g_with_byte_enable         : boolean := false;
       g_init_file                : string  := "";
-      g_addr_conflict_resolution : string  := "read_first") ;
+      g_addr_conflict_resolution : string  := "dont_care") ;
     port (
       rst_n_i : in  std_logic;
       clk_i   : in  std_logic;
@@ -69,7 +69,7 @@ package genram_pkg is
       g_data_width               : natural;
       g_size                     : natural;
       g_with_byte_enable         : boolean := false;
-      g_addr_conflict_resolution : string  := "read_first";
+      g_addr_conflict_resolution : string  := "dont_care";
       g_init_file                : string  := "none";
       g_dual_clock               : boolean := true);
     port (
@@ -89,7 +89,7 @@ package genram_pkg is
       g_data_width               : natural;
       g_size                     : natural;
       g_with_byte_enable         : boolean := false;
-      g_addr_conflict_resolution : string  := "read_first";
+      g_addr_conflict_resolution : string  := "dont_care";
       g_init_file                : string  := "";
       g_dual_clock               : boolean := true);
     port (

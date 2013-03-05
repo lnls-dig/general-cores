@@ -114,7 +114,7 @@ begin
       g_data_width               => 32,
       g_size                     => g_size,
       g_with_byte_enable         => true,
-      g_addr_conflict_resolution => "read_first",
+      g_addr_conflict_resolution => "dont_care",
       g_init_file                => g_init_file,
       g_dual_clock               => false
       )
