@@ -5,7 +5,9 @@ use work.wishbone_pkg.all;
 
 entity sdb_rom is
   generic(
+    g_use_info    : boolean := false;
     g_layout      : t_sdb_record_array;
+    g_info        : t_sdb_record_array;
     g_bus_end     : unsigned(63 downto 0));
   port(
     clk_sys_i     : in  std_logic;
@@ -15,16 +17,31 @@ end sdb_rom;
 
 architecture rtl of sdb_rom is
   alias c_layout : t_sdb_record_array(g_layout'length downto 1) is g_layout;
-  
-  -- The ROM must describe all slaves and the crossbar itself
-  constant c_used_entries : natural := c_layout'length + 1;
-  constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-  constant c_sdb_words    : natural := c_sdb_device_length / c_wishbone_data_width;
-  constant c_rom_words    : natural := c_rom_entries * c_sdb_words;
-  constant c_rom_depth    : natural := f_ceil_log2(c_rom_words);
-  constant c_rom_lowbits  : natural := f_ceil_log2(c_wishbone_data_width / 8);
+  alias c_info   : t_sdb_record_array(g_info'length downto 1) is g_info;
+
+  function f_info_entries(b : boolean; length : natural) return natural is
+    variable ret : natural;
+  begin
+    if b = true then
+      ret := length;
+    else
+      ret := 0;
+    end if;
+    return ret;
+  end f_info_entries;
+
+  -- The ROM must describe all slaves, the crossbar itself and the optional information records
+  constant c_device_entries : natural := c_layout'length;
+  constant c_info_entries   : natural := f_info_entries(g_use_info, g_info'length);
+  constant c_used_entries   : natural := c_device_entries + c_info_entries + 1;
+  constant c_rom_entries    : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+  constant c_sdb_words      : natural := c_sdb_device_length / c_wishbone_data_width;
+  constant c_rom_words      : natural := c_rom_entries * c_sdb_words;
+  constant c_rom_depth      : natural := f_ceil_log2(c_rom_words);
+  constant c_rom_lowbits    : natural := f_ceil_log2(c_wishbone_data_width / 8);
   
   type t_rom is array(c_rom_words-1 downto 0) of t_wishbone_data;
+
   function f_build_rom
     return t_rom 
   is
@@ -52,7 +69,7 @@ architecture rtl of sdb_rom is
         sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
     end loop;
     
-    for slave in 1 to c_used_entries-1 loop
+    for slave in 1 to c_device_entries loop
       sdb_device(511 downto 0) := c_layout(slave);
       
       for i in 0 to c_sdb_words-1 loop
@@ -60,6 +77,25 @@ architecture rtl of sdb_rom is
           sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
       end loop;
     end loop;
+
+    assert False report "SDB device records: " & Integer'image(c_device_entries)
+    severity Note;
+
+    assert False report "SDB meta-information records: " & Integer'image(c_info_entries)
+    severity Note;
+
+    -- Add optional meta-information entries, if any
+    if c_info_entries /= 0 then
+      for info in 1 to c_info_entries loop
+        sdb_device(511 downto 0) := c_info(info);
+
+        for i in 0 to c_sdb_words-1 loop
+          res((info+c_device_entries+1)*c_sdb_words-1-i) :=
+            sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
+        end loop;
+      end loop;
+    end if;
+
     return res;
   end f_build_rom;
    

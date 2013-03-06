@@ -9,7 +9,9 @@ entity xwb_sdb_crossbar is
     g_num_slaves  : natural := 1;
     g_registered  : boolean := false;
     g_wraparound  : boolean := true;
+    g_use_info    : boolean := false;
     g_layout      : t_sdb_record_array;
+    g_info        : t_sdb_record_array := (0 => (others => '0'));
     g_sdb_addr    : t_wishbone_address);
   port(
     clk_sys_i     : in  std_logic;
@@ -36,12 +38,25 @@ architecture rtl of xwb_sdb_crossbar is
     return s(1 to cut);
   end f_trim;
 
+  function f_info_entries(b : boolean; length : natural) return natural is
+    variable ret : natural;
+  begin
+    if b = true then
+      ret := length;
+    else
+      ret := 0;
+    end if;
+    return ret;
+  end f_info_entries;
+
   -- Step 1. Place the SDB ROM on the bus
   -- How much space does the ROM need?
-  constant c_used_entries : natural := c_layout'length + 1;
-  constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-  constant c_sdb_bytes    : natural := c_sdb_device_length / 8;
-  constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
+  constant c_device_entries : natural := c_layout'length;
+  constant c_info_entries   : natural := f_info_entries(g_use_info, g_info'length);
+  constant c_used_entries   : natural := c_device_entries + c_info_entries + 1;
+  constant c_rom_entries    : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+  constant c_sdb_bytes      : natural := c_sdb_device_length / 8;
+  constant c_rom_bytes      : natural := c_rom_entries * c_sdb_bytes;
   
   -- Step 2. Find the size of the bus
   function f_bus_end return unsigned is
@@ -155,8 +170,10 @@ begin
   
   rom : sdb_rom
     generic map(
-      g_layout  => c_layout,
-      g_bus_end => c_bus_end)
+      g_use_info => g_use_info,
+      g_layout   => c_layout,
+      g_info     => g_info,
+      g_bus_end  => c_bus_end)
     port map(
       clk_sys_i => clk_sys_i,
       slave_i   => master_o_1(g_num_slaves),

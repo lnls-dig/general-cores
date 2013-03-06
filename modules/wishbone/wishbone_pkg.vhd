@@ -76,6 +76,10 @@ package wishbone_pkg is
   function f_ceil_log2(x   : natural) return natural;
   function f_bits2string(s : std_logic_vector) return string;
 
+  function f_string2bits(s : string) return std_logic_vector;
+  function f_string2svl (s : string) return std_logic_vector;
+  function f_slv2string (slv : std_logic_vector) return string;
+
 ------------------------------------------------------------------------------
 -- SDB declaration
 ------------------------------------------------------------------------------
@@ -114,12 +118,35 @@ package wishbone_pkg is
     sdb_component : t_sdb_component;
   end record t_sdb_bridge;
 
+  type t_sdb_integration is record
+    product : t_sdb_product;
+  end record t_sdb_integration;
+
+  type t_sdb_repo_url is record
+    repo_url : string(1 to 63);
+  end record t_sdb_repo_url;
+
+  type t_sdb_synthesis is record
+    syn_module_name  : string(1 to 16);
+    syn_commit_id    : string(1 to 32);
+    syn_tool_name    : string(1 to 8);
+    syn_tool_version : std_logic_vector(31 downto 0);
+    syn_date         : std_logic_vector(31 downto 0);
+    syn_username     : string(1 to 15);
+  end record t_sdb_synthesis;
+
   -- Used to configure a device at a certain address
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address) return t_sdb_record;
+  function f_sdb_embed_integration(integr : t_sdb_integration) return t_sdb_record;
+  function f_sdb_embed_repo_url(url : t_sdb_repo_url) return t_sdb_record;
+  function f_sdb_embed_synthesis(syn : t_sdb_synthesis) return t_sdb_record;
 
   function f_sdb_extract_device(sdb_record : t_sdb_record) return t_sdb_device;
   function f_sdb_extract_bridge(sdb_record : t_sdb_record) return t_sdb_bridge;
+  function f_sdb_extract_integration(sdb_record : t_sdb_record) return t_sdb_integration;
+  function f_sdb_extract_repo_url(sdb_record : t_sdb_record) return t_sdb_repo_url;
+  function f_sdb_extract_synthesis(sdb_record : t_sdb_record) return t_sdb_synthesis;
 
   -- For internal use by the crossbar
   function f_sdb_embed_product(product         : t_sdb_product) return std_logic_vector;  -- (319 downto 8)
@@ -266,7 +293,9 @@ package wishbone_pkg is
       g_num_slaves  : integer;
       g_registered  : boolean := false;
       g_wraparound  : boolean := true;
+      g_use_info    : boolean := false;
       g_layout      : t_sdb_record_array;
+      g_info        : t_sdb_record_array := (0 => (others => '0'));
       g_sdb_addr    : t_wishbone_address);
     port (
       clk_sys_i : in  std_logic;
@@ -281,6 +310,10 @@ package wishbone_pkg is
     generic(
       g_layout  : t_sdb_record_array;
       g_bus_end : unsigned(63 downto 0));
+      g_use_info    : boolean := false;
+      g_layout      : t_sdb_record_array;
+      g_info        : t_sdb_record_array;
+      g_bus_end     : unsigned(63 downto 0));
     port(
       clk_sys_i : in  std_logic;
       slave_i   : in  t_wishbone_slave_in;
@@ -899,6 +932,89 @@ package body wishbone_pkg is
     return result;
   end;
 
+  function f_sdb_embed_integration(integr : t_sdb_integration)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 320) := (others => '0');
+    result(319 downto 8)   := f_sdb_embed_product(integr.product);
+    result(7 downto 0)     := x"80"; -- integration record
+    return result;
+  end f_sdb_embed_integration;
+
+  function f_sdb_extract_integration(sdb_record : t_sdb_record)
+    return t_sdb_integration
+  is
+    variable result : t_sdb_integration;
+  begin
+    result.product := f_sdb_extract_product(sdb_record(319 downto 8));
+
+    assert sdb_record(7 downto 0) = x"80"
+    report "Cannot extract t_sdb_integration from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+    severity Failure;
+
+    return result;
+  end f_sdb_extract_integration;
+
+  function f_sdb_embed_repo_url(url : t_sdb_repo_url)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 8) := f_string2svl(url.repo_url);
+    result(  7 downto 0) := x"81"; -- repo_url record
+    return result;
+  end;
+
+  function f_sdb_extract_repo_url(sdb_record : t_sdb_record)
+    return t_sdb_repo_url
+  is
+    variable result : t_sdb_repo_url;
+  begin
+    result.repo_url     := f_slv2string(sdb_record(511 downto 8));
+
+    assert sdb_record(7 downto 0) = x"81"
+    report "Cannot extract t_sdb_repo_url from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+    severity Failure;
+
+    return result;
+  end;
+
+  function f_sdb_embed_synthesis(syn : t_sdb_synthesis)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 384) := f_string2svl(syn.syn_module_name);
+    result(383 downto 256) := f_string2bits(syn.syn_commit_id);
+    result(255 downto 192) := f_string2svl(syn.syn_tool_name);
+    result(191 downto 160) := syn.syn_tool_version;
+    result(159 downto 128) := syn.syn_date;
+    result(127 downto   8) := f_string2svl(syn.syn_username);
+    result(  7 downto   0) := x"82"; -- synthesis record
+    return result;
+  end;
+
+  function f_sdb_extract_synthesis(sdb_record : t_sdb_record)
+    return t_sdb_synthesis
+  is
+    variable result : t_sdb_synthesis;
+  begin
+    result.syn_module_name  := f_slv2string(sdb_record(511 downto 384));
+    result.syn_commit_id    := f_bits2string(sdb_record(383 downto 256));
+    result.syn_tool_name    := f_slv2string(sdb_record(255 downto 192));
+    result.syn_tool_version := sdb_record(191 downto 160);
+    result.syn_date         := sdb_record(159 downto 128);
+    result.syn_username     := f_slv2string(sdb_record(127 downto   8));
+
+    assert sdb_record(7 downto 0) = x"82"
+    report "Cannot extract t_sdb_repo_url from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+    severity Failure;
+
+    return result;
+  end;
+
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address)
     return t_sdb_record
   is
@@ -1056,5 +1172,62 @@ package body wishbone_pkg is
 
     return "0x" & result(cut downto 1);
   end f_bits2string;
-  
+
+  -- Converts string (hex number, without leading 0x) to std_logic_vector
+  function f_string2bits(s : string) return std_logic_vector is
+    variable slv : std_logic_vector(s'length*4-1 downto 0);
+    variable nibble : std_logic_vector(3 downto 0);
+  begin
+    for i in 0 to s'length-1 loop
+      case s(i+1) is
+        when '0' => nibble := X"0";
+        when '1' => nibble := X"1";
+        when '2' => nibble := X"2";
+        when '3' => nibble := X"3";
+        when '4' => nibble := X"4";
+        when '5' => nibble := X"5";
+        when '6' => nibble := X"6";
+        when '7' => nibble := X"7";
+        when '8' => nibble := X"8";
+        when '9' => nibble := X"9";
+        when 'a' => nibble := X"A";
+        when 'A' => nibble := X"A";
+        when 'b' => nibble := X"B";
+        when 'B' => nibble := X"B";
+        when 'c' => nibble := X"C";
+        when 'C' => nibble := X"C";
+        when 'd' => nibble := X"D";
+        when 'D' => nibble := X"D";
+        when 'e' => nibble := X"E";
+        when 'E' => nibble := X"E";
+        when 'f' => nibble := X"F";
+        when 'F' => nibble := X"F";
+        when others => nibble := "XXXX";
+      end case;
+      slv(((i+1)*4)-1 downto i*4) := nibble;
+    end loop;
+    return slv;
+  end f_string2bits;
+
+  -- Converts string to ascii (std_logic_vector)
+  function f_string2svl (s : string) return std_logic_vector is
+    variable slv : std_logic_vector((s'length * 8) - 1 downto 0);
+  begin
+    for i in 0 to s'length-1 loop
+      slv(slv'high-i*8 downto (slv'high-7)-i*8) :=
+        std_logic_vector(to_unsigned(character'pos(s(i+1)), 8));
+    end loop;
+    return slv;
+  end f_string2svl;
+
+  -- Converts ascii (std_logic_vector) to string
+  function f_slv2string (slv : std_logic_vector) return string is
+    variable s : string(1 to slv'length/8);
+  begin
+    for i in 0 to (slv'length/8)-1 loop
+      s(i+1) := character'val(to_integer(unsigned(slv(slv'high-i*8 downto (slv'high-7)-i*8))));
+    end loop;
+    return s;
+  end f_slv2string;
+
 end wishbone_pkg;
