@@ -82,10 +82,10 @@ architecture rtl of generic_shiftreg_fifo is
       q_o   : out std_logic;
       a_i   : in  std_logic_vector(f_log2_size(g_size)-1 downto 0));
   end component;
-  
-  signal pointer    : integer range 0 to g_size-1;
 
-  signal srl_addr : std_logic_vector(f_log2_size(g_size)-1 downto 0);
+  signal pointer : integer range 0 to g_size-1 := 0;
+
+  signal srl_addr            : std_logic_vector(f_log2_size(g_size)-1 downto 0) := (others => '0');
   signal pointer_zero        : std_logic;
   signal pointer_full        : std_logic;
   signal pointer_almost_full : std_logic;
@@ -100,8 +100,8 @@ begin
               or (we_i = '1' and pointer_full = '0') else '0';
 
 
-  gen_sregs: for i in 0 to g_data_width-1 generate
-    U_SRLx: gc_shiftreg
+  gen_sregs : for i in 0 to g_data_width-1 generate
+    U_SRLx : gc_shiftreg
       generic map (
         g_size => g_size)
       port map (
@@ -113,7 +113,7 @@ begin
   end generate gen_sregs;
 
   srl_addr <= std_logic_vector(to_unsigned(pointer, srl_addr'length));
-  
+
   p_empty_logic : process(clk_i)
   begin
     if rising_edge(clk_i) then
@@ -143,7 +143,9 @@ begin
   p_gen_address : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if valid_count = '1' then
+      if rst_n_i = '0' then
+        pointer <= 0;
+      elsif valid_count = '1' then
         if we_i = '1' then
           pointer <= pointer + 1;
         else
@@ -154,7 +156,7 @@ begin
   end process;
 
   -- Detect when pointer is zero and maximum
-  pointer_zero        <= '1' when pointer = 0                                      else '0';
+  pointer_zero        <= '1' when pointer = 0                                else '0';
   pointer_full        <= '1' when pointer = g_size - 1                       else '0';
   pointer_almost_full <= '1' when pointer_full = '1' or pointer = g_size - 2 else '0';
 
