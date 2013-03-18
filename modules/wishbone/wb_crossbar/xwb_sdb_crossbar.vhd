@@ -23,7 +23,7 @@ entity xwb_sdb_crossbar is
 end xwb_sdb_crossbar;
 
 architecture rtl of xwb_sdb_crossbar is
-  alias c_layout : t_sdb_record_array(g_num_slaves-1 downto 0) is g_layout;
+  alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
   
   -- Pretty print device name
   function f_trim(s : string) return string is
@@ -85,7 +85,7 @@ architecture rtl of xwb_sdb_crossbar is
 
   -- Step 3. Map device address begin values
   function f_addresses return t_wishbone_address_array is
-    variable result : t_wishbone_address_array(c_layout'range);
+    variable result : t_wishbone_address_array(g_num_slaves-1 downto 0);
     variable sdb_component : t_sdb_component;
     variable extend : unsigned(63 downto 0) := (others => '0');
   begin
@@ -111,7 +111,7 @@ architecture rtl of xwb_sdb_crossbar is
 
   -- Step 3. Map device address end values
   function f_masks return t_wishbone_address_array is
-    variable result : t_wishbone_address_array(c_layout'range);
+    variable result : t_wishbone_address_array(g_num_slaves-1 downto 0);
     variable sdb_component : t_sdb_component;
     variable size : unsigned(63 downto 0);
     constant zero : unsigned(63 downto 0) := (others => '0');
