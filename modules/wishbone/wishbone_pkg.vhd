@@ -293,9 +293,7 @@ package wishbone_pkg is
       g_num_slaves  : integer;
       g_registered  : boolean := false;
       g_wraparound  : boolean := true;
-      g_use_info    : boolean := false;
       g_layout      : t_sdb_record_array;
-      g_info        : t_sdb_record_array := (0 => (others => '0'));
       g_sdb_addr    : t_wishbone_address);
     port (
       clk_sys_i : in  std_logic;
@@ -308,11 +306,7 @@ package wishbone_pkg is
 
   component sdb_rom is
     generic(
-      g_layout  : t_sdb_record_array;
-      g_bus_end : unsigned(63 downto 0));
-      g_use_info    : boolean := false;
       g_layout      : t_sdb_record_array;
-      g_info        : t_sdb_record_array;
       g_bus_end     : unsigned(63 downto 0));
     port(
       clk_sys_i : in  std_logic;
