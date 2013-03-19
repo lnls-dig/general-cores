@@ -69,8 +69,9 @@ wire   [`LM32_WORD_RNG] shifter_result_m;
 /////////////////////////////////////////////////////
 
 reg direction_m;
+wire [`LM32_WORD_WIDTH*2-1:0] right_shift_result_x;
 reg [`LM32_WORD_RNG] left_shift_result;
-reg [`LM32_WORD_RNG] right_shift_result;
+reg [`LM32_WORD_RNG] right_shift_result_m;
 reg [`LM32_WORD_RNG] left_shift_operand;
 wire [`LM32_WORD_RNG] right_shift_operand;
 wire fill_value;
@@ -99,15 +100,18 @@ assign fill_value = (sign_extend_x == `TRUE) && (direction_x == `LM32_SHIFT_OP_R
 // Determine bits to shift in for right shift or rotate
 assign right_shift_in = {`LM32_WORD_WIDTH{fill_value}};
 
+// Determine the result of the shifter
+assign right_shift_result_x = {right_shift_in, right_shift_operand} >> operand_1_x[`LM32_SHIFT_RNG];
+
 // Reverse bits to get left shift result
 always @(*)
 begin
     for (shift_idx_1 = 0; shift_idx_1 < `LM32_WORD_WIDTH; shift_idx_1 = shift_idx_1 + 1)
-        left_shift_result[`LM32_WORD_WIDTH-1-shift_idx_1] = right_shift_result[shift_idx_1];
+        left_shift_result[`LM32_WORD_WIDTH-1-shift_idx_1] = right_shift_result_m[shift_idx_1];
 end
 
 // Select result 
-assign shifter_result_m = direction_m == `LM32_SHIFT_OP_LEFT ? left_shift_result : right_shift_result;
+assign shifter_result_m = direction_m == `LM32_SHIFT_OP_LEFT ? left_shift_result : right_shift_result_m;
     
 /////////////////////////////////////////////////////
 // Sequential Logic
@@ -118,14 +122,14 @@ always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)
     begin
-        right_shift_result <= {`LM32_WORD_WIDTH{1'b0}};
+        right_shift_result_m <= {`LM32_WORD_WIDTH{1'b0}};
         direction_m <= `FALSE;
     end
     else
     begin
         if (stall_x == `FALSE)
         begin
-            right_shift_result <= {right_shift_in, right_shift_operand} >> operand_1_x[`LM32_SHIFT_RNG];
+            right_shift_result_m <= right_shift_result_x[`LM32_WORD_RNG];
             direction_m <= direction_x;
         end
     end

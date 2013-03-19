@@ -132,17 +132,6 @@ assign interrupt_exception = (|interrupt_n_exception) & ie;
 // Determine which interrupts are currently being asserted (active-low) or are already pending
 assign asserted = ip | interrupt;
        
-assign ie_csr_read_data = {{`LM32_WORD_WIDTH-3{1'b0}}, 
-`ifdef CFG_DEBUG_ENABLED
-                           bie,
-`else
-                           1'b0,
-`endif                             
-                           eie, 
-                           ie
-                          };
-assign ip_csr_read_data = ip;
-assign im_csr_read_data = im;
 generate
     if (interrupts > 1) 
     begin

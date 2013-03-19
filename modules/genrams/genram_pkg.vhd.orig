@@ -7,26 +7,26 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-01-24
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 --
 -- Copyright (c) 2011 CERN
 --
--- This source file is free software; you can redistribute it   
--- and/or modify it under the terms of the GNU Lesser General   
--- Public License as published by the Free Software Foundation; 
--- either version 2.1 of the License, or (at your option) any   
--- later version.                                               
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
 --
--- This source is distributed in the hope that it will be       
--- useful, but WITHOUT ANY WARRANTY; without even the implied   
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
--- PURPOSE.  See the GNU Lesser General Public License for more 
--- details.                                                     
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
 --
--- You should have received a copy of the GNU Lesser General    
--- Public License along with this source; if not, download it   
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
 -------------------------------------------------------------------------------
@@ -45,7 +45,15 @@ package genram_pkg is
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
+<<<<<<< HEAD
+
+  -- Generic RAM initialized with nothing.
+  constant c_generic_ram_nothing : t_generic_ram_init(-1 downto 0, -1 downto 0) :=
+    (others => (others => '0'));
+
+=======
   
+>>>>>>> upstream/master
   -- Single-port synchronous RAM
   component generic_spram
     generic (

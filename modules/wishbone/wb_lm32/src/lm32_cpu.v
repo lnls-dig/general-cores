@@ -341,6 +341,9 @@ reg load_x;
 reg load_m;
 wire load_q_x;
 wire store_q_x;
+wire q_m;
+wire load_q_m;
+wire store_q_m;
 wire store_d;                                   // Indicates a store instruction
 reg store_x;
 reg store_m;
@@ -371,6 +374,7 @@ wire [`LM32_D_RESULT_SEL_1_RNG] d_result_sel_1_d; // Which result should be sele
 wire x_result_sel_csr_d;                        // Select X stage result from CSRs
 reg x_result_sel_csr_x;
 `ifdef LM32_MC_ARITHMETIC_ENABLED
+wire q_d;
 wire x_result_sel_mc_arith_d;                   // Select X stage result from multi-cycle arithmetic unit
 reg x_result_sel_mc_arith_x;
 `endif
@@ -383,7 +387,6 @@ wire x_result_sel_sext_d;                       // Select X stage result from si
 reg x_result_sel_sext_x;
 `endif
 wire x_result_sel_logic_d;                      // Select X stage result from logic op unit
-reg x_result_sel_logic_x;
 `ifdef CFG_USER_ENABLED
 wire x_result_sel_user_d;                       // Select X stage result from user-defined logic
 reg x_result_sel_user_x;
@@ -443,16 +446,16 @@ reg scall_x;
 wire eret_d;                                    // Indicates an eret instruction
 reg eret_x;
 wire eret_q_x;
-reg eret_m;
 `ifdef CFG_TRACE_ENABLED
+reg eret_m;
 reg eret_w;
 `endif
 `ifdef CFG_DEBUG_ENABLED
 wire bret_d;                                    // Indicates a bret instruction
 reg bret_x;
 wire bret_q_x;
-reg bret_m;
 `ifdef CFG_TRACE_ENABLED
+reg bret_m;
 reg bret_w;
 `endif
 `endif
@@ -536,7 +539,6 @@ reg rotate_x;
 `endif
 wire direction_d;                               // Which direction to shift in
 reg direction_x;                                        
-reg direction_m;
 wire [`LM32_WORD_RNG] shifter_result_m;         // Result of shifter
 `endif
 `ifdef CFG_MC_BARREL_SHIFT_ENABLED
@@ -689,6 +691,8 @@ reg [`LM32_EID_RNG] eid_w;                      // Exception ID in W stage
 wire dc_ss;                                     // Is single-step enabled
 `endif
 wire dc_re;                                     // Remap all exceptions
+wire bp_match;
+wire wp_match;
 wire exception_x;                               // An exception occured in the X stage
 reg exception_m;                                // An instruction that caused an exception is in the M stage
 wire debug_exception_x;                         // Indicates if a debug exception has occured
@@ -743,6 +747,7 @@ reg data_bus_error_seen;                        // Indicates if a data bus error
 
 // Instruction unit
 lm32_instruction_unit #(
+    .eba_reset              (eba_reset),
     .associativity          (icache_associativity),
     .sets                   (icache_sets),
     .bytes_per_line         (icache_bytes_per_line),
@@ -2257,7 +2262,6 @@ begin
 `ifdef CFG_SIGN_EXTEND_ENABLED
         x_result_sel_sext_x <= `FALSE;
 `endif    
-        x_result_sel_logic_x <= `FALSE;
 `ifdef CFG_USER_ENABLED
         x_result_sel_user_x <= `FALSE;
 `endif
@@ -2323,9 +2327,6 @@ begin
         exception_m <= `FALSE;
         load_m <= `FALSE;
         store_m <= `FALSE;
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-        direction_m <= `FALSE;
-`endif
         write_enable_m <= `FALSE;            
         write_idx_m <= {`LM32_REG_IDX_WIDTH{1'b0}};
         condition_met_m <= `FALSE;
@@ -2376,7 +2377,6 @@ begin
 `ifdef CFG_SIGN_EXTEND_ENABLED
             x_result_sel_sext_x <= x_result_sel_sext_d;
 `endif    
-            x_result_sel_logic_x <= x_result_sel_logic_d;
 `ifdef CFG_USER_ENABLED
             x_result_sel_user_x <= x_result_sel_user_d;
 `endif
@@ -2449,9 +2449,6 @@ begin
 `endif
             end
             m_bypass_enable_m <= m_bypass_enable_x;
-`ifdef CFG_PL_BARREL_SHIFT_ENABLED
-            direction_m <= direction_x;
-`endif
             load_m <= load_x;
             store_m <= store_x;
 `ifdef CFG_FAST_UNCONDITIONAL_BRANCH    
@@ -2495,13 +2492,15 @@ begin
 `endif
 `ifdef CFG_TRACE_ENABLED
             eid_m <= eid_x;
+            eret_m <= eret_q_x;
 `endif
 `ifdef CFG_DCACHE_ENABLED
             dflush_m <= dflush_x;
 `endif
-            eret_m <= eret_q_x;
+`ifdef CFG_TRACE_ENABLED
 `ifdef CFG_DEBUG_ENABLED
             bret_m <= bret_q_x; 
+`endif
 `endif
             write_enable_m <= exception_x == `TRUE ? `TRUE : write_enable_x;            
 `ifdef CFG_DEBUG_ENABLED
@@ -2654,7 +2653,7 @@ begin
 `ifdef CFG_DEBUG_ENABLED
         trace_bret <= `FALSE;
 `endif
-        pc_c <= `CFG_EBA_RESET/4;
+        pc_c <= eba_reset/4;
     end
     else
     begin

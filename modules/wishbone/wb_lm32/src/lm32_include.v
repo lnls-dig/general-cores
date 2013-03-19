@@ -183,7 +183,7 @@
 `define LM32_CSR_WIDTH                  4
 `define LM32_CSR_RNG                    (`LM32_CSR_WIDTH-1):0
 `else
-`define LM32_CSR_WIDTH                  3
+`define LM32_CSR_WIDTH                  4 // CFG2 is "a"
 `define LM32_CSR_RNG                    (`LM32_CSR_WIDTH-1):0
 `endif
 `endif

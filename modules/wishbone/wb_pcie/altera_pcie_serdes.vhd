@@ -259,7 +259,7 @@
 	 SIGNAL  wire_receive_pcs0_phfiforesetout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs0_phfifowrdisableout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs0_pipestatetransdoneout	:	STD_LOGIC;
-	 SIGNAL  wire_receive_pcs0_rateswitchout	:	STD_LOGIC;
+--	 SIGNAL  wire_receive_pcs0_rateswitchout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs0_revparallelfdbkdata	:	STD_LOGIC_VECTOR (19 DOWNTO 0);
 	 SIGNAL  wire_receive_pcs0_signaldetect	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs0_xgmdatain	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -280,7 +280,7 @@
 	 SIGNAL  wire_receive_pcs1_phfiforesetout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs1_phfifowrdisableout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs1_pipestatetransdoneout	:	STD_LOGIC;
-	 SIGNAL  wire_receive_pcs1_rateswitchout	:	STD_LOGIC;
+--	 SIGNAL  wire_receive_pcs1_rateswitchout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs1_revparallelfdbkdata	:	STD_LOGIC_VECTOR (19 DOWNTO 0);
 	 SIGNAL  wire_receive_pcs1_signaldetect	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs1_xgmdatain	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -301,7 +301,7 @@
 	 SIGNAL  wire_receive_pcs2_phfiforesetout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs2_phfifowrdisableout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs2_pipestatetransdoneout	:	STD_LOGIC;
-	 SIGNAL  wire_receive_pcs2_rateswitchout	:	STD_LOGIC;
+--	 SIGNAL  wire_receive_pcs2_rateswitchout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs2_revparallelfdbkdata	:	STD_LOGIC_VECTOR (19 DOWNTO 0);
 	 SIGNAL  wire_receive_pcs2_signaldetect	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs2_xgmdatain	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -322,7 +322,7 @@
 	 SIGNAL  wire_receive_pcs3_phfiforesetout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs3_phfifowrdisableout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs3_pipestatetransdoneout	:	STD_LOGIC;
-	 SIGNAL  wire_receive_pcs3_rateswitchout	:	STD_LOGIC;
+--	 SIGNAL  wire_receive_pcs3_rateswitchout	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs3_revparallelfdbkdata	:	STD_LOGIC_VECTOR (19 DOWNTO 0);
 	 SIGNAL  wire_receive_pcs3_signaldetect	:	STD_LOGIC;
 	 SIGNAL  wire_receive_pcs3_xgmdatain	:	STD_LOGIC_VECTOR (7 DOWNTO 0);
@@ -366,7 +366,7 @@
 	 SIGNAL  wire_transmit_pcs0_dprioout	:	STD_LOGIC_VECTOR (149 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs0_forcedisp	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs0_forceelecidleout	:	STD_LOGIC;
-	 SIGNAL  wire_transmit_pcs0_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
+	 --SIGNAL  wire_transmit_pcs0_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs0_hipdatain	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs0_phfiforddisableout	:	STD_LOGIC;
 	 SIGNAL  wire_transmit_pcs0_phfiforesetout	:	STD_LOGIC;
@@ -383,7 +383,7 @@
 	 SIGNAL  wire_transmit_pcs1_dprioout	:	STD_LOGIC_VECTOR (149 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs1_forcedisp	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs1_forceelecidleout	:	STD_LOGIC;
-	 SIGNAL  wire_transmit_pcs1_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
+	 --SIGNAL  wire_transmit_pcs1_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs1_hipdatain	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs1_phfiforddisableout	:	STD_LOGIC;
 	 SIGNAL  wire_transmit_pcs1_phfiforesetout	:	STD_LOGIC;
@@ -400,7 +400,7 @@
 	 SIGNAL  wire_transmit_pcs2_dprioout	:	STD_LOGIC_VECTOR (149 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs2_forcedisp	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs2_forceelecidleout	:	STD_LOGIC;
-	 SIGNAL  wire_transmit_pcs2_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
+	 --SIGNAL  wire_transmit_pcs2_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs2_hipdatain	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs2_phfiforddisableout	:	STD_LOGIC;
 	 SIGNAL  wire_transmit_pcs2_phfiforesetout	:	STD_LOGIC;
@@ -417,7 +417,7 @@
 	 SIGNAL  wire_transmit_pcs3_dprioout	:	STD_LOGIC_VECTOR (149 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs3_forcedisp	:	STD_LOGIC_VECTOR (3 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs3_forceelecidleout	:	STD_LOGIC;
-	 SIGNAL  wire_transmit_pcs3_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
+	 --SIGNAL  wire_transmit_pcs3_grayelecidleinferselout	:	STD_LOGIC_VECTOR (2 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs3_hipdatain	:	STD_LOGIC_VECTOR (9 DOWNTO 0);
 	 SIGNAL  wire_transmit_pcs3_phfiforddisableout	:	STD_LOGIC;
 	 SIGNAL  wire_transmit_pcs3_phfiforesetout	:	STD_LOGIC;
@@ -669,7 +669,7 @@
 	 SIGNAL  tx_txdprioout :	STD_LOGIC_VECTOR (599 DOWNTO 0);
 	 SIGNAL  txdetectrxout :	STD_LOGIC_VECTOR (3 DOWNTO 0);
 	 SIGNAL  w_cent_unit_dpriodisableout1w :	STD_LOGIC_VECTOR (0 DOWNTO 0);
-	 SIGNAL  wire_w_coreclkout_wire_range206w	:	STD_LOGIC_VECTOR (0 DOWNTO 0);
+	 --SIGNAL  wire_w_coreclkout_wire_range206w	:	STD_LOGIC_VECTOR (0 DOWNTO 0);
 	 SIGNAL  wire_w_fixedclk_div_in_range15w	:	STD_LOGIC_VECTOR (0 DOWNTO 0);
 	 SIGNAL  wire_w_fixedclk_div_in_range30w	:	STD_LOGIC_VECTOR (0 DOWNTO 0);
 	 SIGNAL  wire_w_fixedclk_div_in_range39w	:	STD_LOGIC_VECTOR (0 DOWNTO 0);
@@ -1773,6 +1773,8 @@
 	 END COMPONENT;
  BEGIN
 
+	rx_patterndetect <= (others => '0');
+	rx_syncstatus <= (others => '0');
 	wire_gnd <= '0';
 	wire_vcc <= '1';
 	wire_w_lg_w_lg_w_lg_fixedclk_sel23w24w25w(0) <= wire_w_lg_w_lg_fixedclk_sel23w24w(0) AND wire_w_fixedclk_div_in_range15w(0);
@@ -1984,7 +1986,7 @@
 	tx_txdprioout <= ( wire_transmit_pcs3_dprioout & wire_transmit_pcs2_dprioout & wire_transmit_pcs1_dprioout & wire_transmit_pcs0_dprioout);
 	txdetectrxout <= ( wire_transmit_pcs3_txdetectrx & wire_transmit_pcs2_txdetectrx & wire_transmit_pcs1_txdetectrx & wire_transmit_pcs0_txdetectrx);
 	w_cent_unit_dpriodisableout1w(0) <= ( wire_cent_unit0_dpriodisableout);
-	wire_w_coreclkout_wire_range206w(0) <= coreclkout_wire(0);
+	--wire_w_coreclkout_wire_range206w(0) <= coreclkout_wire(0);
 	wire_w_fixedclk_div_in_range15w(0) <= fixedclk_div_in(0);
 	wire_w_fixedclk_div_in_range30w(0) <= fixedclk_div_in(1);
 	wire_w_fixedclk_div_in_range39w(0) <= fixedclk_div_in(2);
@@ -2568,7 +2570,7 @@
 		pipestatetransdoneout => wire_receive_pcs0_pipestatetransdoneout,
 		prbscidenable => rx_prbscidenable(0),
 		quadreset => cent_unit_quadresetout(0),
-		rateswitchout => wire_receive_pcs0_rateswitchout,
+		rateswitchout => open, -- wire_receive_pcs0_rateswitchout,
 		rateswitchxndone => int_hiprateswtichdone(0),
 		recoveredclk => rx_pma_clockout(0),
 		refclk => refclk_pma(0),
@@ -2733,7 +2735,7 @@
 		pipestatetransdoneout => wire_receive_pcs1_pipestatetransdoneout,
 		prbscidenable => rx_prbscidenable(1),
 		quadreset => cent_unit_quadresetout(0),
-		rateswitchout => wire_receive_pcs1_rateswitchout,
+		rateswitchout => open, -- wire_receive_pcs1_rateswitchout,
 		rateswitchxndone => int_hiprateswtichdone(0),
 		recoveredclk => rx_pma_clockout(1),
 		refclk => refclk_pma(0),
@@ -2898,7 +2900,7 @@
 		pipestatetransdoneout => wire_receive_pcs2_pipestatetransdoneout,
 		prbscidenable => rx_prbscidenable(2),
 		quadreset => cent_unit_quadresetout(0),
-		rateswitchout => wire_receive_pcs2_rateswitchout,
+		rateswitchout => open, -- wire_receive_pcs2_rateswitchout,
 		rateswitchxndone => int_hiprateswtichdone(0),
 		recoveredclk => rx_pma_clockout(2),
 		refclk => refclk_pma(0),
@@ -3063,7 +3065,7 @@
 		pipestatetransdoneout => wire_receive_pcs3_pipestatetransdoneout,
 		prbscidenable => rx_prbscidenable(3),
 		quadreset => cent_unit_quadresetout(0),
-		rateswitchout => wire_receive_pcs3_rateswitchout,
+		rateswitchout => open, -- wire_receive_pcs3_rateswitchout,
 		rateswitchxndone => int_hiprateswtichdone(0),
 		recoveredclk => rx_pma_clockout(3),
 		refclk => refclk_pma(0),
@@ -3380,7 +3382,7 @@
 		forcedisp => wire_transmit_pcs0_forcedisp,
 		forcedispcompliance => wire_gnd,
 		forceelecidleout => wire_transmit_pcs0_forceelecidleout,
-		grayelecidleinferselout => wire_transmit_pcs0_grayelecidleinferselout,
+		grayelecidleinferselout => open, -- wire_transmit_pcs0_grayelecidleinferselout,
 		hipdatain => wire_transmit_pcs0_hipdatain,
 		hipdetectrxloop => tx_detectrxloop(0),
 		hipelecidleinfersel => rx_elecidleinfersel(2 DOWNTO 0),
@@ -3474,7 +3476,7 @@
 		forcedisp => wire_transmit_pcs1_forcedisp,
 		forcedispcompliance => wire_gnd,
 		forceelecidleout => wire_transmit_pcs1_forceelecidleout,
-		grayelecidleinferselout => wire_transmit_pcs1_grayelecidleinferselout,
+		grayelecidleinferselout => open, -- wire_transmit_pcs1_grayelecidleinferselout,
 		hipdatain => wire_transmit_pcs1_hipdatain,
 		hipdetectrxloop => tx_detectrxloop(1),
 		hipelecidleinfersel => rx_elecidleinfersel(5 DOWNTO 3),
@@ -3568,7 +3570,7 @@
 		forcedisp => wire_transmit_pcs2_forcedisp,
 		forcedispcompliance => wire_gnd,
 		forceelecidleout => wire_transmit_pcs2_forceelecidleout,
-		grayelecidleinferselout => wire_transmit_pcs2_grayelecidleinferselout,
+		grayelecidleinferselout => open, -- wire_transmit_pcs2_grayelecidleinferselout,
 		hipdatain => wire_transmit_pcs2_hipdatain,
 		hipdetectrxloop => tx_detectrxloop(2),
 		hipelecidleinfersel => rx_elecidleinfersel(8 DOWNTO 6),
@@ -3662,7 +3664,7 @@
 		forcedisp => wire_transmit_pcs3_forcedisp,
 		forcedispcompliance => wire_gnd,
 		forceelecidleout => wire_transmit_pcs3_forceelecidleout,
-		grayelecidleinferselout => wire_transmit_pcs3_grayelecidleinferselout,
+		grayelecidleinferselout => open, -- wire_transmit_pcs3_grayelecidleinferselout,
 		hipdatain => wire_transmit_pcs3_hipdatain,
 		hipdetectrxloop => tx_detectrxloop(3),
 		hipelecidleinfersel => rx_elecidleinfersel(11 DOWNTO 9),

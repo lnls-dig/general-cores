@@ -1118,6 +1118,8 @@ begin
 --synthesis translate_on
 --synthesis read_comments_as_HDL on
 --    pipe_mode_int <= std_logic'('0');
+--    internal_clk250_out <= '0';
+--    internal_clk500_out <= '0';
 --synthesis read_comments_as_HDL off
 
 end europa;

@@ -207,24 +207,6 @@ package gencores_pkg is
       q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
   end component;
   
-  -- Read during write has an undefined result
-  component gc_dual_clock_ram is
-    generic(
-      addr_width : natural := 4;
-      data_width : natural := 32);
-    port(
-      -- write port
-      w_clk_i  : in  std_logic;
-      w_en_i   : in  std_logic;
-      w_addr_i : in  std_logic_vector(addr_width-1 downto 0);
-      w_data_i : in  std_logic_vector(data_width-1 downto 0);
-      -- read port
-      r_clk_i  : in  std_logic;
-      r_en_i   : in  std_logic;
-      r_addr_i : in  std_logic_vector(addr_width-1 downto 0);
-      r_data_o : out std_logic_vector(data_width-1 downto 0));
-  end component;
-  
   -- A 'Wes' FIFO. Generic FIFO using inferred memory.
   -- Supports clock domain crossing 
   -- Should be safe from fast->slow or reversed

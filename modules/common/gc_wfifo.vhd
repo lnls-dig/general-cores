@@ -1,7 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+library work;
 use work.gencores_pkg.all;
+use work.genram_pkg.all;
 
 entity gc_wfifo is
    generic(
@@ -31,6 +34,10 @@ entity gc_wfifo is
 end gc_wfifo;
 
 architecture rtl of gc_wfifo is
+   -- Quartus 11 sometimes goes crazy and infers an altshift_taps! Stop it.
+   attribute altera_attribute : string; 
+   attribute altera_attribute of rtl : architecture is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
+   
    subtype counter is unsigned(addr_width downto 0);
    type counter_shift is array(sync_depth downto 0) of counter;
    
@@ -45,11 +52,7 @@ architecture rtl of gc_wfifo is
    signal r_idx_shift_a : counter_shift; -- r_idx_gray in a_clk
    signal w_idx_shift_r : counter_shift; -- w_idx_gray in r_clk
    
-   attribute altera_attribute : string; 
-   -- Quartus 11 sometimes goes crazy and infers an altshift_taps! Stop it.
-   attribute altera_attribute of r_idx_shift_w : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
-   attribute altera_attribute of r_idx_shift_a : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
-   attribute altera_attribute of w_idx_shift_r : signal is "-name AUTO_SHIFT_REGISTER_RECOGNITION OFF";
+   signal qb : std_logic_vector(data_width-1 downto 0);
    
    function bin2gray(a : unsigned) return unsigned is
       variable o : unsigned(a'length downto 0);
@@ -94,25 +97,41 @@ architecture rtl of gc_wfifo is
       end if;
    end full;
 begin
-   ram : gc_dual_clock_ram
-      generic map(addr_width => addr_width, data_width => data_width)
-      port map(w_clk_i => w_clk_i, w_en_i => w_en_i, w_addr_i => index(w_idx_bnry), w_data_i => w_data_i,
-               r_clk_i => r_clk_i, r_en_i => r_en_i, r_addr_i => index(r_idx_bnry), r_data_o => r_data_o);
-   
+
+   ram : generic_simple_dpram
+     generic map(
+       g_data_width               => data_width,
+       g_size                     => 2**addr_width,
+       g_addr_conflict_resolution => "dont_care",
+       g_dual_clock               => gray_code)
+     port map(
+       clka_i => w_clk_i,
+       wea_i  => w_en_i,
+       aa_i   => index(w_idx_bnry),
+       da_i   => w_data_i,
+       clkb_i => r_clk_i,
+       ab_i   => index(r_idx_bnry),
+       qb_o   => qb);
+       
    read : process(r_clk_i)
       variable idx : counter;
    begin
       if rising_edge(r_clk_i) then
          if r_rst_n_i = '0' then
             idx := (others => '0');
+            r_data_o <= qb;
          elsif r_en_i = '1' then
             idx := r_idx_bnry + 1;
+            r_data_o <= qb;
          else
             idx := r_idx_bnry;
+            --r_data_o <= r_data_o; --implied
          end if;
          r_idx_bnry <= idx;
          r_idx_gray <= bin2gray(idx);
-         w_idx_shift_r(sync_depth downto 1) <= w_idx_shift_r(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           w_idx_shift_r(sync_depth downto 1) <= w_idx_shift_r(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    w_idx_shift_r(0) <= w_idx_gray;
@@ -131,7 +150,9 @@ begin
          end if;
          w_idx_bnry <= idx;
          w_idx_gray <= bin2gray(idx);
-         r_idx_shift_w(sync_depth downto 1) <= r_idx_shift_w(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           r_idx_shift_w(sync_depth downto 1) <= r_idx_shift_w(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    r_idx_shift_w(0) <= r_idx_gray;
@@ -150,9 +171,12 @@ begin
          end if;
          a_idx_bnry <= idx;
          a_idx_gray <= bin2gray(idx);
-         r_idx_shift_a(sync_depth downto 1) <= r_idx_shift_a(sync_depth-1 downto 0);
+         if sync_depth > 0 then
+           r_idx_shift_a(sync_depth downto 1) <= r_idx_shift_a(sync_depth-1 downto 0);
+         end if;
       end if;
    end process;
    r_idx_shift_a(0) <= r_idx_gray;
    a_rdy_o <= not full(a_idx_gray, r_idx_shift_a(sync_depth));
+
 end rtl;

@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use ieee.genram_pkg.all;
+
 entity pcie_altera is
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
@@ -238,8 +241,6 @@ architecture rtl of pcie_altera is
   constant log_bytes  : integer := 8; -- 256 byte maximum TLP
   constant buf_length : integer := (2**log_bytes)/8;
   constant buf_bits   : integer := log_bytes-3;
-  type queue_t is array(buf_length-1 downto 0) of std_logic_vector(64 downto 0);
-  signal queue : queue_t;
   
   signal tx_st_sop0, tx_st_eop0, tx_st_ready0, tx_st_valid0 : std_logic;
   signal tx_st_data0 : std_logic_vector(63 downto 0);
@@ -247,7 +248,7 @@ architecture rtl of pcie_altera is
   signal tx_ready_delay : std_logic_vector(1 downto 0); -- length must equal the latency of the Avalon TX bus
   signal tx_eop, tx_sop : std_logic := '1';
   -- Invariant idxr <= idxe <= idxw <= idxa, extra bit is for wrap-around
-  signal tx_idxr, tx_idxe, tx_idxw, tx_idxa, tx_idxw_p1 : unsigned(buf_bits downto 0);
+  signal tx_idxr, tx_idxe, tx_idxw, tx_idxa, tx_idxw_p1, tx_idxr_next : unsigned(buf_bits downto 0);
   
 begin
 
@@ -503,13 +504,30 @@ begin
   end process;
   rx_ready_delay(0) <= rx_st_ready0;
   
+  queue : generic_simple_dpram
+    generic map(
+      g_data_width               => 65,
+      g_size                     => buf_length,
+      g_addr_conflict_resolution => "dont_care",
+      g_dual_clock               => false)
+    port map(
+      clka_i            => core_clk_out,
+      wea_i             => '1',
+      aa_i              => std_logic_vector(tx_idxw(buf_bits-1 downto 0)),
+      da_i(64)          => tx_eop_i,
+      da_i(63 downto 0) => tx_wb_dat_i,
+      clkb_i            => core_clk_out,
+      ab_i              => std_logic_vector(tx_idxr_next(buf_bits-1 downto 0)),
+      qb_o(64)          => tx_eop,
+      qb_o(63 downto 0) => tx_st_data0);
+  
   -- Dump TX out from a FIFO
-  tx_st_data0 <= queue(to_integer(tx_idxr(buf_bits-1 downto 0)))(63 downto 0);
-  tx_eop      <= queue(to_integer(tx_idxr(buf_bits-1 downto 0)))(64);
   tx_st_eop0  <= tx_eop;
   tx_st_sop0  <= tx_sop;
   
   tx_st_valid0 <= active_high(tx_idxr /= tx_idxe) and tx_ready_delay(tx_ready_delay'length-1);
+  
+  tx_idxr_next <= (tx_idxr+1) when tx_st_valid0='1' else tx_idxr;
   
   tx_dequeue : process(core_clk_out)
   begin
@@ -520,8 +538,8 @@ begin
         tx_sop <= '1';
       else
         tx_ready_delay <= tx_ready_delay(tx_ready_delay'length-2 downto 0) & tx_st_ready0;
+        tx_idxr <= tx_idxr_next;
         if tx_st_valid0 = '1' then
-          tx_idxr <= tx_idxr + 1;
           tx_sop <= tx_eop;
         end if;
       end if;
@@ -542,8 +560,6 @@ begin
         tx_idxa <= (others => '0');
         tx_idxe <= (others => '0');
       else
-        queue(to_integer(tx_idxw(buf_bits-1 downto 0))) <= tx_eop_i & tx_wb_dat_i;
-        
         if tx_wb_stb_i = '1' then
           tx_idxw <= tx_idxw_p1;
         end if;

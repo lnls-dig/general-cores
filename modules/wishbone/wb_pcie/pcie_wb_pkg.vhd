@@ -25,7 +25,7 @@ package pcie_wb_pkg is
       
       -- Command to PC from FPGA
       slave_clk_i   : in  std_logic := '0';
-      slave_rstn_i  : in  std_logic := '0';
+      slave_rstn_i  : in  std_logic := '1';
       slave_i       : in  t_wishbone_slave_in := cc_dummy_slave_in;
       slave_o       : out t_wishbone_slave_out);
   end component;

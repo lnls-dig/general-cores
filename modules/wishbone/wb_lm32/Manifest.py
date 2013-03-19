@@ -4,9 +4,9 @@ files = [	"generated/xwb_lm32.vhd",
 				 	"src/jtag_cores.v",
 					"src/lm32_adder.v",
 					"src/lm32_addsub.v",
-					"src/lm32_dp_ram.v",
+					"src/lm32_dp_ram.vhd",
 					"src/lm32_logic_op.v",
-					"src/lm32_ram.v",
+					"src/lm32_ram.vhd",
 					"src/lm32_shifter.v"];
 
 if(target == "altera"):

@@ -66,7 +66,7 @@ package wishbone_pkg is
   constant cc_dummy_slave_in : t_wishbone_slave_in :=
     ('0', 'X', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
   constant cc_dummy_master_out : t_wishbone_master_out := cc_dummy_slave_in;
-  
+
   -- Dangerous! Will stall a bus.
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
@@ -75,15 +75,15 @@ package wishbone_pkg is
   -- A generally useful function.
   function f_ceil_log2(x : natural) return natural;
   function f_bits2string(s : std_logic_vector) return string;
-  
+
 ------------------------------------------------------------------------------
 -- SDB declaration
 ------------------------------------------------------------------------------
-  
+
   constant c_sdb_device_length : natural := 512; -- bits
   subtype t_sdb_record is std_logic_vector(c_sdb_device_length-1 downto 0);
   type t_sdb_record_array is array(natural range <>) of t_sdb_record;
-  
+
   type t_sdb_product is record
     vendor_id     : std_logic_vector(63 downto 0);
     device_id     : std_logic_vector(31 downto 0);
@@ -91,13 +91,13 @@ package wishbone_pkg is
     date          : std_logic_vector(31 downto 0);
     name          : string(1 to 19);
   end record t_sdb_product;
-  
+
   type t_sdb_component is record
     addr_first    : std_logic_vector(63 downto 0);
     addr_last     : std_logic_vector(63 downto 0);
     product       : t_sdb_product;
   end record t_sdb_component;
-  
+
   constant c_sdb_endian_big    : std_logic := '0';
   constant c_sdb_endian_little : std_logic := '1';
   type t_sdb_device is record
@@ -108,16 +108,16 @@ package wishbone_pkg is
     wbd_width     : std_logic_vector(3 downto 0); -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
     sdb_component : t_sdb_component;
   end record t_sdb_device;
-  
+
   type t_sdb_bridge is record
     sdb_child     : std_logic_vector(63 downto 0);
     sdb_component : t_sdb_component;
   end record t_sdb_bridge;
-     
+
   -- Used to configure a device at a certain address
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address) return t_sdb_record;
-  
+
   function f_sdb_extract_device(sdb_record : t_sdb_record) return t_sdb_device;
   function f_sdb_extract_bridge(sdb_record : t_sdb_record) return t_sdb_bridge;
 
@@ -289,7 +289,7 @@ package wishbone_pkg is
       slave_i       : in  t_wishbone_slave_in;
       slave_o       : out t_wishbone_slave_out);
   end component;
-  
+
   constant c_xwb_dma_sdb : t_sdb_device := (
     abi_class     => x"0000", -- undocumented device
     abi_ver_major => x"01",
@@ -332,7 +332,7 @@ package wishbone_pkg is
       interrupt_o : out std_logic
     );
   end component;
-  
+
   -- If you reset one clock domain, you must reset BOTH!
   -- Release of the reset lines may be arbitrarily out-of-phase
   component xwb_clock_crossing is
@@ -351,7 +351,14 @@ package wishbone_pkg is
       master_i       : in  t_wishbone_master_in;
       master_o       : out t_wishbone_master_out);
   end component;
+<<<<<<< HEAD
+
+  subtype t_xwb_dpram_init is t_generic_ram_init;
+  constant c_xwb_dpram_init_nothing : t_xwb_dpram_init := c_generic_ram_nothing;
+
+=======
   
+>>>>>>> upstream/master
   -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdb_device;
   component xwb_dpram
@@ -705,7 +712,7 @@ package body wishbone_pkg is
     else return f_ceil_log2((x+1)/2) +1;
     end if;
   end f_ceil_log2;
-  
+
   function f_sdb_embed_product(product : t_sdb_product)
     return std_logic_vector -- (319 downto 8)
   is
@@ -716,12 +723,12 @@ package body wishbone_pkg is
     result(223 downto 192) := product.version;
     result(191 downto 160) := product.date;
     for i in 0 to 18 loop -- string to ascii
-      result(159-i*8 downto 152-i*8) := 
+      result(159-i*8 downto 152-i*8) :=
         std_logic_vector(to_unsigned(character'pos(product.name(i+1)), 8));
     end loop;
     return result;
   end;
-  
+
   function f_sdb_extract_product(sdb_record : std_logic_vector(319 downto 8))
     return t_sdb_product
   is
@@ -736,24 +743,24 @@ package body wishbone_pkg is
     end loop;
     return result;
   end;
-  
+
   function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address)
     return std_logic_vector -- (447 downto 8)
   is
     variable result : std_logic_vector(447 downto 8);
-    
+
     constant first : unsigned(63 downto 0) := unsigned(sdb_component.addr_first);
     constant last  : unsigned(63 downto 0) := unsigned(sdb_component.addr_last);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
-    
+
     result(447 downto 384) := std_logic_vector(base);
     result(383 downto 320) := std_logic_vector(base + last - first);
     result(319 downto   8) := f_sdb_embed_product(sdb_component.product);
     return result;
   end;
-  
+
   function f_sdb_extract_component(sdb_record : std_logic_vector(447 downto 8))
     return t_sdb_component
   is
@@ -764,7 +771,7 @@ package body wishbone_pkg is
     result.product    := f_sdb_extract_product(sdb_record(319 downto 8));
     return result;
   end;
-  
+
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address)
     return t_sdb_record
   is
@@ -780,7 +787,7 @@ package body wishbone_pkg is
     result(  7 downto   0) := x"01"; -- device
     return result;
   end;
-  
+
   function f_sdb_extract_device(sdb_record : t_sdb_record)
     return t_sdb_device
   is
@@ -792,32 +799,32 @@ package body wishbone_pkg is
     result.wbd_endian    := sdb_record(452);
     result.wbd_width     := sdb_record(451 downto 448);
     result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
-    
+
     assert sdb_record(7 downto 0) = x"01"
     report "Cannot extract t_sdb_device from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
     severity Failure;
-    
+
     return result;
   end;
-  
+
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address)
     return t_sdb_record
   is
     variable result : t_sdb_record;
-    
+
     constant first : unsigned(63 downto 0) := unsigned(bridge.sdb_component.addr_first);
     constant child : unsigned(63 downto 0) := unsigned(bridge.sdb_child);
     variable base  : unsigned(63 downto 0) := (others => '0');
   begin
     base(address'length-1 downto 0) := unsigned(address);
-    
+
     result(511 downto 448) := std_logic_vector(base + child - first);
     result(447 downto   8) := f_sdb_embed_component(bridge.sdb_component, address);
     result(  7 downto   0) := x"02"; -- bridge
     return result;
   end;
-  
-  function f_sdb_extract_bridge(sdb_record : t_sdb_record) 
+
+  function f_sdb_extract_bridge(sdb_record : t_sdb_record)
     return t_sdb_bridge
   is
     variable result : t_sdb_bridge;
@@ -828,10 +835,10 @@ package body wishbone_pkg is
     assert sdb_record(7 downto 0) = x"02"
     report "Cannot extract t_sdb_bridge from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
     severity Failure;
-    
+
     return result;
   end;
-  
+
   function f_xwb_bridge_manual_sdb(
     g_size       : t_wishbone_address;
     g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
@@ -840,17 +847,17 @@ package body wishbone_pkg is
   begin
     result.sdb_child := (others => '0');
     result.sdb_child(c_wishbone_address_width-1 downto 0) := g_sdb_addr;
-    
+
     result.sdb_component.addr_first := (others => '0');
     result.sdb_component.addr_last  := (others => '0');
     result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
-    
+
     result.sdb_component.product.vendor_id := x"0000000000000651"; -- GSI
     result.sdb_component.product.device_id := x"eef0b198";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120511";
     result.sdb_component.product.name      := "WB4-Bridge-GSI     ";
-    
+
     return result;
   end f_xwb_bridge_manual_sdb;
 
@@ -860,7 +867,6 @@ package body wishbone_pkg is
     c_rom_bytes   : natural;
     g_sdb_addr    : t_wishbone_address) return unsigned
   is
-	alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
     variable result : unsigned(63 downto 0);
     variable sdb_component : t_sdb_component;
   begin
@@ -875,7 +881,7 @@ package body wishbone_pkg is
       result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
       result := result + to_unsigned(c_rom_bytes, 64) - 1;
 
-      for i in c_layout'range loop
+      for i in g_layout'range loop
       sdb_component := f_sdb_extract_component(g_layout(i)(447 downto 8));
         if unsigned(sdb_component.addr_last) > result then
           result := unsigned(sdb_component.addr_last);
@@ -908,10 +914,81 @@ package body wishbone_pkg is
     variable sdb_component : t_sdb_component;
     variable bus_end : unsigned(63 downto 0);
   begin
+    ----  Find the size of the bus
+    --if not g_wraparound then
+    --  bus_end := (others => '0');
+    --  for i in 0 to c_wishbone_address_width-1 loop
+    --    bus_end(i) := '1';
+    --  end loop;
+    --else
+    --  -- The ROM will be an addressed slave as well
+    --  bus_end := (others => '0');
+    --  bus_end(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+    --  bus_end := bus_end + to_unsigned(c_rom_bytes, 64) - 1;
+    --
+    --  for i in c_layout'range loop
+    --    sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+    --    if unsigned(sdb_component.addr_last) > bus_end then
+    --      bus_end := unsigned(sdb_component.addr_last);
+    --    end if;
+    --  end loop;
+    --  -- round result up to a power of two -1
+    --  for i in 62 downto 0 loop
+    --    bus_end(i) := bus_end(i) or bus_end(i+1);
+    --  end loop;
+    --end if;
     bus_end := f_bus_end(g_wraparound, c_layout, c_rom_bytes, g_sdb_addr);
 
     return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
+
+  --function f_xwb_bridge_layout_sdb(
+  --  g_wraparound  : boolean := true;
+  --  g_layout      : t_sdb_record_array;
+  --  g_sdb_addr    : t_wishbone_address) return t_sdb_bridge
+  --is
+  --  alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
+  --
+  --  -- How much space does the ROM need?
+  --  constant c_used_entries : natural := c_layout'length + 1;
+  --  constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+  --  constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
+  --  constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
+  --
+  --  -- Step 2. Find the size of the bus
+  --  function f_bus_end return unsigned is
+  --    variable result : unsigned(63 downto 0);
+  --    variable sdb_component : t_sdb_component;
+  --  begin
+  --    if not g_wraparound then
+  --      result := (others => '0');
+  --      for i in 0 to c_wishbone_address_width-1 loop
+  --        result(i) := '1';
+  --      end loop;
+  --    else
+  --      -- The ROM will be an addressed slave as well
+  --      result := (others => '0');
+  --      result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
+  --      result := result + to_unsigned(c_rom_bytes, 64) - 1;
+  --
+  --      for i in c_layout'range loop
+  --      sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
+  --        if unsigned(sdb_component.addr_last) > result then
+  --          result := unsigned(sdb_component.addr_last);
+  --        end if;
+  --      end loop;
+  --      -- round result up to a power of two -1
+  --      for i in 62 downto 0 loop
+  --        result(i) := result(i) or result(i+1);
+  --      end loop;
+  --    end if;
+  --    return result;
+  --  end f_bus_end;
+  --
+  --  constant bus_end : unsigned(63 downto 0) := f_bus_end;
+  --begin
+  --  return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
+  --end f_xwb_bridge_layout_sdb;
 
   function f_xwb_dpram(g_size : natural) return t_sdb_device
   is
@@ -922,19 +999,19 @@ package body wishbone_pkg is
     result.abi_ver_minor := x"00";
     result.wbd_width     := x"7"; -- 32/16/8-bit supported
     result.wbd_endian    := c_sdb_endian_big;
-    
+
     result.sdb_component.addr_first := (others => '0');
     result.sdb_component.addr_last  := std_logic_vector(to_unsigned(g_size*4-1, 64));
-    
+
     result.sdb_component.product.vendor_id := x"000000000000CE42"; -- CERN
     result.sdb_component.product.device_id := x"66cfeb52";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120305";
     result.sdb_component.product.name      := "WB4-BlockRAM       ";
-    
+
     return result;
   end f_xwb_dpram;
-  
+
   function f_bits2string(s : std_logic_vector) return string is
     --- extend length to full hex nibble
     variable result : string((s'length+7)/4 downto 1);
@@ -965,14 +1042,14 @@ package body wishbone_pkg is
         when others => result(i+1) := 'X';
       end case;
     end loop;
-    
+
     -- trim leading 0s
     strip : for i in result'length downto 1 loop
       cut := i;
       exit strip when result(i) /= '0';
     end loop;
-    
+
     return "0x" & result(cut downto 1);
   end f_bits2string;
-  
+
 end wishbone_pkg;

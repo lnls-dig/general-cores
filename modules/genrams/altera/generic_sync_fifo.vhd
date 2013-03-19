@@ -144,27 +144,10 @@ begin  -- syn
       data         => d_i,
       rdreq        => rd_i);
 
-  
-
-  gen_with_count : if(g_with_count) generate
-    count_o <= usedw;
-  end generate gen_with_count;
-
-
-  gen_with_empty : if(g_with_empty) generate
-    empty_o <= empty;
-  end generate gen_with_empty;
-
-  gen_with_full : if(g_with_full) generate
-    full_o <= full;
-  end generate gen_with_full;
-
-  gen_with_almost_empty : if(g_with_almost_empty) generate
-    almost_empty_o <= almost_empty;
-  end generate gen_with_almost_empty;
-
-  gen_with_almost_full : if(g_with_almost_full) generate
-    almost_full_o <= almost_full;
-  end generate gen_with_almost_full;
+  count_o <= usedw;
+  empty_o <= empty;
+  full_o <= full;
+  almost_empty_o <= almost_empty;
+  almost_full_o <= almost_full;
 
 end syn;

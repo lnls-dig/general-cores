@@ -308,6 +308,79 @@ wire sign_extend_immediate;                     // Whether the immediate should 
 wire select_high_immediate;                     // Whether to select the high immediate  
 wire select_call_immediate;                     // Whether to select the call immediate 
 
+wire op_add;
+wire op_and;
+wire op_andhi;
+wire op_b;
+wire op_bi;
+wire op_be;
+wire op_bg;
+wire op_bge;
+wire op_bgeu;
+wire op_bgu;
+wire op_bne;
+wire op_call;
+wire op_calli;
+wire op_cmpe;
+wire op_cmpg;
+wire op_cmpge;
+wire op_cmpgeu;
+wire op_cmpgu;
+wire op_cmpne;
+`ifdef CFG_MC_DIVIDE_ENABLED
+wire op_divu;
+`endif
+wire op_lb;
+wire op_lbu;
+wire op_lh;
+wire op_lhu;
+wire op_lw;
+`ifdef CFG_MC_DIVIDE_ENABLED
+wire op_modu;
+`endif
+`ifdef LM32_MULTIPLY_ENABLED
+wire op_mul;
+`endif
+wire op_nor;
+wire op_or;
+wire op_orhi;
+wire op_raise;
+wire op_rcsr;
+wire op_sb;
+`ifdef CFG_SIGN_EXTEND_ENABLED
+wire op_sextb;
+wire op_sexth;
+`endif
+wire op_sh;
+`ifdef LM32_BARREL_SHIFT_ENABLED
+wire op_sl;
+`endif
+wire op_sr;
+wire op_sru;
+wire op_sub;
+wire op_sw;
+`ifdef CFG_USER_ENABLED
+wire op_user;
+`endif
+wire op_wcsr;
+wire op_xnor;
+wire op_xor;
+
+wire arith;
+wire logical;
+wire cmp;
+wire bra;
+wire call;
+`ifdef LM32_BARREL_SHIFT_ENABLED
+wire shift;
+`endif
+`ifdef LM32_NO_BARREL_SHIFT
+wire shift;
+`endif
+`ifdef CFG_SIGN_EXTEND_ENABLED
+wire sext;
+`endif
+
 /////////////////////////////////////////////////////
 // Functions
 /////////////////////////////////////////////////////
@@ -370,7 +443,9 @@ assign op_sr     = instruction[`LM32_OP_RNG] == `LM32_OPCODE_SR;
 assign op_sru    = instruction[`LM32_OP_RNG] == `LM32_OPCODE_SRU;
 assign op_sub    = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_SUB;
 assign op_sw     = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_SW;
+`ifdef CFG_USER_ENABLED
 assign op_user   = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_USER;
+`endif
 assign op_wcsr   = instruction[`LM32_OPCODE_RNG] == `LM32_OPCODE_WCSR;
 assign op_xnor   = instruction[`LM32_OP_RNG] == `LM32_OPCODE_XNOR;
 assign op_xor    = instruction[`LM32_OP_RNG] == `LM32_OPCODE_XOR;
@@ -396,7 +471,7 @@ assign shift_right = op_sr | op_sru;
 `ifdef CFG_SIGN_EXTEND_ENABLED
 assign sext = op_sextb | op_sexth;
 `endif
-`ifdef LM32_MULTIPLY_ENABLED
+`ifdef CFG_MC_MULTIPLY_ENABLED
 assign multiply = op_mul;
 `endif
 `ifdef CFG_MC_DIVIDE_ENABLED
@@ -576,8 +651,8 @@ assign immediate = select_high_immediate == `TRUE
                         : extended_immediate;
    
 assign branch_offset = select_call_immediate == `TRUE   
-                        ? call_immediate
-                        : branch_immediate;
+                        ? (call_immediate[`LM32_PC_WIDTH-1:0])
+                        : (branch_immediate[`LM32_PC_WIDTH-1:0]);
     
 endmodule 
 

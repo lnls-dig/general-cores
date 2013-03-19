@@ -98,7 +98,7 @@ assign read_data = mem[ra];
 
 integer i;
 initial begin
-	for(i=0;i<(1<<address_width)-1;i=i+1)
+	for(i=0;i<=(1<<address_width)-1;i=i+1)
 		mem[i] = 0;
 end
 
