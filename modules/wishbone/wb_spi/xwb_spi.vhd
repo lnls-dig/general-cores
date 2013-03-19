@@ -23,7 +23,7 @@ entity xwb_spi is
     pad_sclk_o    : out std_logic;
     pad_mosi_o    : out std_logic;
     pad_miso_i    : in  std_logic;
-    pad_miosio_b  : inout std_logic
+    pad_oen_o     : out std_logic
     );
 
 end xwb_spi;
@@ -53,7 +53,7 @@ architecture rtl of xwb_spi is
       pad_sclk_o    : out std_logic;
       pad_mosi_o    : out std_logic;
       pad_miso_i    : in  std_logic;
-      pad_miosio_b  : inout std_logic);
+      pad_oen_o     : out std_logic);
   end component;
 
 begin
@@ -81,6 +81,6 @@ begin
       pad_sclk_o    => pad_sclk_o,
       pad_mosi_o    => pad_mosi_o,
       pad_miso_i    => pad_miso_i,
-      pad_miosio_b  => pad_miosio_b);
+      pad_oen_o     => pad_oen_o);
 
 end rtl;

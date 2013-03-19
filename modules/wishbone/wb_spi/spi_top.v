@@ -51,7 +51,7 @@ module spi_top
   wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_err_o, wb_int_o,
 
   // SPI signals
-  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_pad_b
+  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_oen_o
 );
   // Set to 1 to generate the SPI core in 3-wire mode
   // Set to 0 to generate the SPI core in 4-wire mode
@@ -77,7 +77,7 @@ module spi_top
   output                           sclk_pad_o;       // serial clock
   output                           mosi_pad_o;       // master out slave in
   input                            miso_pad_i;       // master in slave out
-  inout                            miosio_pad_b;     // master in/out slave in/out (3-wire mode)
+  output                           miosio_oen_o;     // master in slave out output enable
 
   reg                     [32-1:0] wb_dat_o;
   reg                              wb_ack_o;
@@ -106,6 +106,7 @@ module spi_top
   wire                             pos_edge;         // recognize posedge of sclk
   wire                             neg_edge;         // recognize negedge of sclk
   wire                             last_bit;         // marks last character bit
+  wire                             miosio_oen_o;
 
   // Address decoder
   assign spi_divider_sel = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_DEVIDE);
@@ -227,8 +228,9 @@ module spi_top
             if (wb_sel_i[0])
               ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
             if (wb_sel_i[1])
-              ctrl[16-1:8] <= #Tp (ctrl[16-1:8] & ~{`SPI_CTRL_MASK1}) |
-                                     wb_dat_i[16-1:8] & {`SPI_CTRL_MASK1};
+               ctrl[16-1:8] <= #Tp wb_dat_i[16-1:8];
+              //ctrl[16-1:8] <= #Tp (ctrl[16-1:8] & ~{`SPI_CTRL_MASK1}) |
+              //                       wb_dat_i[16-1:8] & {`SPI_CTRL_MASK1};
           end
         // Read-Only registers. Why we assign only on !tip?
         ctrl[`SPI_CTRL_THREE_MODE] <= #Tp g_three_wire_mode;
@@ -299,5 +301,5 @@ module spi_top
                    .tip(tip), .last(last_bit), .dir(dir),
                    .p_in(wb_dat_i), .p_out(rx),
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
-                   .s_inout(miosio_pad_b));
+                   .s_oe_n(miosio_oen_o));
 endmodule
