@@ -51,7 +51,7 @@ module spi_top
   wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_err_o, wb_int_o,
 
   // SPI signals
-  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_pad_b
+  ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, miosio_oen_o
 );
   // Set to 1 to generate the SPI core in 3-wire mode
   // Set to 0 to generate the SPI core in 4-wire mode
@@ -77,7 +77,7 @@ module spi_top
   output                           sclk_pad_o;       // serial clock
   output                           mosi_pad_o;       // master out slave in
   input                            miso_pad_i;       // master in slave out
-  inout                            miosio_pad_b;     // master in/out slave in/out (3-wire mode)
+  output                           miosio_oen_o;     // master in slave out output enable
 
   reg                     [32-1:0] wb_dat_o;
   reg                              wb_ack_o;
@@ -97,6 +97,7 @@ module spi_top
   wire                             ie;               // interrupt enable
   wire                             ass;              // automatic slave select
   wire                             dir;              // data pin direction (only for three_wire mode)
+  wire                             three_mode;       // spi three-wire mode indication (only for three_wire mode)
   wire                             spi_divider_sel;  // divider register select
   wire                             spi_ctrl_sel;     // ctrl register select
   wire                       [3:0] spi_tx_sel;       // tx_l register select
@@ -105,6 +106,7 @@ module spi_top
   wire                             pos_edge;         // recognize posedge of sclk
   wire                             neg_edge;         // recognize negedge of sclk
   wire                             last_bit;         // marks last character bit
+  wire                             miosio_oen_o;
 
   // Address decoder
   assign spi_divider_sel = wb_cyc_i & wb_stb_i & (wb_adr_i[`SPI_OFS_BITS] == `SPI_DEVIDE);
@@ -219,12 +221,19 @@ module spi_top
   begin
     if (wb_rst_i)
       ctrl <= #Tp {`SPI_CTRL_BIT_NB{1'b0}};
-    else if(spi_ctrl_sel && wb_we_i && !tip)
+    else if(spi_ctrl_sel && !tip)
       begin
-        if (wb_sel_i[0])
-          ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
-        if (wb_sel_i[1])
-          ctrl[`SPI_CTRL_BIT_NB-1:8] <= #Tp wb_dat_i[`SPI_CTRL_BIT_NB-1:8];
+    if(wb_we_i)
+      begin
+            if (wb_sel_i[0])
+              ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
+            if (wb_sel_i[1])
+               ctrl[16-1:8] <= #Tp wb_dat_i[16-1:8];
+              //ctrl[16-1:8] <= #Tp (ctrl[16-1:8] & ~{`SPI_CTRL_MASK1}) |
+              //                       wb_dat_i[16-1:8] & {`SPI_CTRL_MASK1};
+          end
+        // Read-Only registers. Why we assign only on !tip?
+        ctrl[`SPI_CTRL_THREE_MODE] <= #Tp g_three_wire_mode;
       end
     else if(tip && last_bit && pos_edge)
       ctrl[`SPI_CTRL_GO] <= #Tp 1'b0;
@@ -238,6 +247,7 @@ module spi_top
   assign ie         = ctrl[`SPI_CTRL_IE];
   assign ass        = ctrl[`SPI_CTRL_ASS];
   assign dir        = ctrl[`SPI_CTRL_DIR];
+  assign three_mode = ctrl[`SPI_CTRL_THREE_MODE];
 
   // Slave select register
   always @(posedge wb_clk_i or posedge wb_rst_i)
@@ -291,6 +301,5 @@ module spi_top
                    .tip(tip), .last(last_bit), .dir(dir),
                    .p_in(wb_dat_i), .p_out(rx),
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
-                   .s_inout(miosio_pad_b));
+                   .s_oe_n(miosio_oen_o));
 endmodule
-

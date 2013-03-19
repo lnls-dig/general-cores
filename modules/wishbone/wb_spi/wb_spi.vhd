@@ -29,7 +29,7 @@ entity wb_spi is
     pad_sclk_o    : out std_logic;
     pad_mosi_o    : out std_logic;
     pad_miso_i    : in  std_logic;
-    pad_miosio_b  : inout std_logic
+    pad_oen_o     : out std_logic
     );
 
 end wb_spi;
@@ -58,7 +58,7 @@ architecture rtl of wb_spi is
       sclk_pad_o    : out std_logic;
       mosi_pad_o    : out std_logic;
       miso_pad_i    : in  std_logic;
-      miosio_pad_b  : inout std_logic);
+      miosio_oen_o  : out std_logic);
   end component;
 
   signal rst : std_logic;
@@ -121,6 +121,6 @@ begin
       sclk_pad_o    => pad_sclk_o,
       mosi_pad_o    => pad_mosi_o,
       miso_pad_i    => pad_miso_i,
-      miosio_pad_b  => pad_miosio_b);
+      miosio_oen_o  => pad_oen_o);
 
 end rtl;

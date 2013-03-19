@@ -540,7 +540,7 @@ package wishbone_pkg is
       pad_sclk_o    : out std_logic;
       pad_mosi_o    : out std_logic;
       pad_miso_i    : in  std_logic;
-      pad_miosio_b  : inout std_logic);
+      pad_oen_o     : out std_logic);
   end component;
 
   component xwb_spi
@@ -558,7 +558,7 @@ package wishbone_pkg is
       pad_sclk_o    : out std_logic;
       pad_mosi_o    : out std_logic;
       pad_miso_i    : in  std_logic;
-      pad_miosio_b  : inout std_logic);
+      pad_oen_o     : out std_logic);
   end component;
 
   component wb_simple_uart

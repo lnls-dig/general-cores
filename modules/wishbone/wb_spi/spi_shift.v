@@ -47,7 +47,7 @@
 module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
                   pos_edge, neg_edge, rx_negedge, tx_negedge,
                   tip, last, dir,
-                  p_in, p_out, s_clk, s_in, s_out, s_inout);
+                  p_in, p_out, s_clk, s_in, s_out, s_oe_n);
 
   // Set to 1 to generate the SPI core in 3-wire mode
   // Set to 0 to generate the SPI core in 4-wire mode
@@ -73,15 +73,14 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   input                          s_clk;        // serial clock
   input                          s_in;         // serial in
   output                         s_out;        // serial out
-  inout                          s_inout;      // serial in/out
+  output                         s_oe_n;
 
   // for tristate logic
-  wire                           s_data_oe_n;
-  reg                            s_data_oe_n_int;
+  wire                           s_oe_n;
+  //reg                            s_data_oe_n_int;
   wire                           s_din;
   reg                            s_dout;
 
-  //reg                           s_out;
   wire                           s_out;
   reg                            tip;
 
@@ -264,31 +263,31 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   // Generate output enable logic for tristate buffers
   // dir = 0 -> input data (read from external logic)
   // dir = 1 -> output data (write to external logic)
-  generate
-    if (g_three_wire_mode == 1) begin
-      always @(posedge clk or posedge rst) begin
-        if (rst)
-          s_data_oe_n_int <= #Tp 1'b1;
-        else if (start_t) // transaction will start next cycle
-          //s_data_oe_n_int <= #Tp tx_clk ? ~dir : s_data_oe_n_int;
-          s_data_oe_n_int <= #Tp ~dir;
-        else if (!go)     // end of transaction
-          //s_data_oe_n_int <= #Tp tx_clk ? 1'b1 : s_data_oe_n_int;
-          s_data_oe_n_int <= #Tp 1'b1;
-      end
-    end
-
-    assign s_data_oe_n = s_data_oe_n_int;
-  endgenerate
+  //generate
+  //  if (g_three_wire_mode == 1) begin
+  //    always @(posedge clk or posedge rst) begin
+  //      if (rst)
+  //        s_data_oe_n_int <= #Tp 1'b0;
+  //      else if (start_t) // transaction will start next cycle
+  //        //s_data_oe_n_int <= #Tp tx_clk ? ~dir : s_data_oe_n_int;
+  //        s_data_oe_n_int <= #Tp ~dir;
+  //      else if (!go)     // end of transaction
+  //        //s_data_oe_n_int <= #Tp tx_clk ? 1'b1 : s_data_oe_n_int;
+  //        s_data_oe_n_int <= #Tp 1'b0;
+  //    end
+  //  end
+  //
+  //  //assign s_data_oe_n = s_data_oe_n_int;
+  //endgenerate
 
   // Generate tristate logic
   generate
     if (g_three_wire_mode == 1) begin
-      //Tri-state buffer for SPI data pin
-      assign s_inout = (!s_data_oe_n) ? s_dout : 1'bz;
-      assign s_din = s_inout;
+      assign s_din = s_in;
+      assign s_out = s_dout;
+      assign s_oe_n = ~dir;
     end
-    else begin  // no tristate
+    else begin  // no out enable
       assign s_din = s_in;
       assign s_out = s_dout;
     end

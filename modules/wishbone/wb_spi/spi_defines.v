@@ -126,7 +126,7 @@
 //
 // Bits of WISHBONE address used for partial decoding of SPI registers.
 //
-`define SPI_OFS_BITS	          4:2
+`define SPI_OFS_BITS              4:2
 
 //
 // Register offset
@@ -147,11 +147,13 @@
 // Number of bits in ctrl register
 //
 //`define SPI_CTRL_BIT_NB         14
-`define SPI_CTRL_BIT_NB         15
+`define SPI_CTRL_BIT_NB         17
 
 //
 // Control register bit position
 //
+`define SPI_CTRL_THREE_MODE     16
+`define SPI_CTRL_RES_2          15
 `define SPI_CTRL_DIR            14
 `define SPI_CTRL_ASS            13
 `define SPI_CTRL_IE             12
@@ -162,3 +164,13 @@
 `define SPI_CTRL_RES_1          7
 `define SPI_CTRL_CHAR_LEN       6:0
 
+//
+// Mask for Read-Only control registers
+//
+// SPI_CTRL_THREE_MODE (bit 16) and the remaining are Read Only regs.
+// SPI_CTRL_RES_1 is also read-only, but is not treated that way. So,
+// no modification in this way was done.
+`define SPI_CTRL_MASK0 16'hFF
+`define SPI_CTRL_MASK1 16'h7F
+`define SPI_CTRL_MASK2 16'h00
+`define SPI_CTRL_MASK3 16'h00
