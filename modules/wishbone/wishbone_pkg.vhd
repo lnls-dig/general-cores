@@ -368,6 +368,29 @@ package wishbone_pkg is
       slave2_i  : in  t_wishbone_slave_in;
       slave2_o  : out t_wishbone_slave_out);
   end component;
+  
+  -- Just like the DMA controller, but constantly at address 0
+  component xwb_streamer is
+    generic(
+      -- Value 0 cannot stream
+      -- Value 1 only slaves with async ACK can stream
+      -- Value 2 only slaves with combined latency = 2 can stream
+      -- Value 3 only slaves with combined latency = 6 can stream
+      -- Value 4 only slaves with combined latency = 14 can stream
+      -- ....
+      logRingLen : integer := 4
+    );
+    port(
+      -- Common wishbone signals
+      clk_i       : in  std_logic;
+      rst_n_i     : in  std_logic;
+      -- Master reader port
+      r_master_i  : in  t_wishbone_master_in;
+      r_master_o  : out t_wishbone_master_out;
+      -- Master writer port
+      w_master_i  : in  t_wishbone_master_in;
+      w_master_o  : out t_wishbone_master_out);
+  end component;
 
   component wb_gpio_port
     generic (
