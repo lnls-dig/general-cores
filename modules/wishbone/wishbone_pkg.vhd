@@ -711,6 +711,40 @@ package wishbone_pkg is
       di_dat_o     : out std_logic);
   end component;
 
+  constant c_wb_spi_flash_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"0000000000ffffff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"5cf12a1c",
+    version       => x"00000001",
+    date          => x"20130415",
+    name          => "SPI-FLASH-16M-MMAP ")));
+  component wb_spi_flash is
+    generic(
+      g_port_width : natural := 1;   --  1 for EPCS,  4 for EPCQ
+      g_addr_width : natural := 24); -- 24 for EPCS, 32 for EPCQ
+    port(
+      clk_i   : in  std_logic;
+      rstn_i  : in  std_logic;
+      slave_i : in  t_wishbone_slave_in;
+      slave_o : out t_wishbone_slave_out;
+      
+      dclk_i  : in  std_logic; -- <=20 MHz for EPCS, <=100 MHz for EPCQ
+      ncs_o   : out std_logic;
+      asdi_o  : out std_logic_vector(g_port_width-1 downto 0);
+      data_i  : in  std_logic_vector(g_port_width-1 downto 0);
+      
+      jreq_i  : in  std_logic; -- JTAG wants to use SPI?
+      jrdy_o  : out std_logic);
+  end component;
+
 end wishbone_pkg;
 
 package body wishbone_pkg is

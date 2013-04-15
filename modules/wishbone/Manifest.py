@@ -15,6 +15,7 @@ modules =  { "local" : [
   "wb_clock_crossing",
   "wb_dma",
   "wb_serial_lcd",
+  "wb_spi_flash",
   "wbgen2"
   ]}
 
