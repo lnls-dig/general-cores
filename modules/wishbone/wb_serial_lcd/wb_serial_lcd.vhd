@@ -1,3 +1,24 @@
+------------------------------------------------------------------------------
+-- Title      : Wishbone Serial LCD controller
+-- Project    : General Cores
+------------------------------------------------------------------------------
+-- File       : wb_serial_lcd.vhd
+-- Author     : Wesley W. Terpstra
+-- Company    : GSI
+-- Created    : 2013-02-22
+-- Last update: 2013-02-22
+-- Platform   : FPGA-generic
+-- Standard   : VHDL'93
+-------------------------------------------------------------------------------
+-- Description: Frame-buffer for driving an ISO01RGB display
+-------------------------------------------------------------------------------
+-- Copyright (c) 2013 GSI
+-------------------------------------------------------------------------------
+-- Revisions  :
+-- Date        Version  Author          Description
+-- 2013-02-22  1.0      terpstra        Created
+-------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

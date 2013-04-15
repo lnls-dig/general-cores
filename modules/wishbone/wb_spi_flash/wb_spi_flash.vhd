@@ -1,3 +1,24 @@
+------------------------------------------------------------------------------
+-- Title      : Wishbone memory-mapper SPI flash
+-- Project    : General Cores
+------------------------------------------------------------------------------
+-- File       : wb_spi_flash.vhd
+-- Author     : Wesley W. Terpstra
+-- Company    : GSI
+-- Created    : 2013-04-15
+-- Last update: 2013-04-15
+-- Platform   : FPGA-generic
+-- Standard   : VHDL'93
+-------------------------------------------------------------------------------
+-- Description: Maps an entire flash device to wishbone memory
+-------------------------------------------------------------------------------
+-- Copyright (c) 2013 GSI
+-------------------------------------------------------------------------------
+-- Revisions  :
+-- Date        Version  Author          Description
+-- 2013-04-15  1.0      terpstra        Created
+-------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
