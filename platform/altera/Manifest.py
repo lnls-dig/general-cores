@@ -1,3 +1,4 @@
 modules = { "local" : [
-  "wb_pcie"
+  "wb_pcie",
+  "flash",
   ]}
