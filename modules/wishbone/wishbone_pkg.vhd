@@ -728,21 +728,29 @@ package wishbone_pkg is
     name          => "SPI-FLASH-16M-MMAP ")));
   component wb_spi_flash is
     generic(
-      g_port_width : natural := 1;   --  1 for EPCS,  4 for EPCQ
-      g_addr_width : natural := 24); -- 24 for EPCS, 32 for EPCQ
+      g_port_width             : natural   := 1;  --  1 for EPCS,  4 for EPCQ
+      g_addr_width             : natural   := 24; -- 24 for EPCS, 32 for EPCQ
+      g_idle_time              : natural   := 3;
+      -- leave these at defaults if you have:
+      --   a) slow clock, b) valid constraints, or c) registered in/outputs
+      g_input_latch_edge       : std_logic := '1'; -- rising
+      g_output_latch_edge      : std_logic := '0'; -- falling
+      g_input_to_output_cycles : natural   := 1);  -- between 1 and 32
     port(
-      clk_i   : in  std_logic;
-      rstn_i  : in  std_logic;
-      slave_i : in  t_wishbone_slave_in;
-      slave_o : out t_wishbone_slave_out;
+      clk_i     : in  std_logic;
+      rstn_i    : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
       
-      dclk_i  : in  std_logic; -- <=20 MHz for EPCS, <=100 MHz for EPCQ
-      ncs_o   : out std_logic;
-      asdi_o  : out std_logic_vector(g_port_width-1 downto 0);
-      data_i  : in  std_logic_vector(g_port_width-1 downto 0);
+      -- For properly constrained designs, set clk_out_i = clk_in_i.
+      clk_out_i : in  std_logic;
+      clk_in_i  : in  std_logic;
+      ncs_o     : out std_logic;
+      asdi_o    : out std_logic_vector(g_port_width-1 downto 0);
+      data_i    : in  std_logic_vector(g_port_width-1 downto 0);
       
-      jreq_i  : in  std_logic; -- JTAG wants to use SPI?
-      jrdy_o  : out std_logic);
+      external_request_i : in  std_logic; -- JTAG wants to use SPI?
+      external_granted_o : out std_logic);
   end component;
 
 end wishbone_pkg;
