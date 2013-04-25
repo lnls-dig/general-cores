@@ -334,8 +334,7 @@ package wishbone_pkg is
   -- Release of the reset lines may be arbitrarily out-of-phase
   component xwb_clock_crossing is
     generic(
-      sync_depth : natural := 3;
-      log2fifo   : natural := 4);
+      g_size : natural := 16);
     port(
       -- Slave control port
       slave_clk_i    : in  std_logic;
