@@ -86,6 +86,23 @@ architecture rtl of xwb_dma is
   signal slave_o_ACK    : std_logic;
   signal slave_o_DAT    : t_wishbone_data;
   
+  signal read_issue_progress   : boolean;
+  signal read_result_progress  : boolean;
+  signal write_issue_progress  : boolean;
+  signal write_result_progress : boolean;
+  
+  signal new_read_issue_offset   : unsigned(logRingLen downto 0);
+  signal new_read_result_offset  : unsigned(logRingLen downto 0);
+  signal new_write_issue_offset  : unsigned(logRingLen downto 0);
+  signal new_write_result_offset : unsigned(logRingLen downto 0);
+  signal new_transfer_count      : t_wishbone_address;
+
+  signal ring_boundary : boolean;
+  signal ring_high     : boolean;
+  signal ring_full     : boolean;
+  signal ring_empty    : boolean;
+  signal done_transfer : boolean;
+  
   function active_high(x : boolean)
     return std_logic is
   begin
@@ -137,29 +154,39 @@ begin
   r_master_o.DAT <= (others => '0');
   w_master_o.DAT <= ring(index(write_issue_offset));
   
+  -- Detect bus progress
+  read_issue_progress   <= r_master_o_STB = '1' and r_master_i.STALL = '0';
+  write_issue_progress  <= w_master_o_STB = '1' and w_master_i.STALL = '0';
+  read_result_progress  <= r_master_o_CYC = '1' and (r_master_i.ACK = '1' or r_master_i.ERR = '1' or r_master_i.RTY = '1');
+  write_result_progress <= w_master_o_CYC = '1' and (w_master_i.ACK = '1' or w_master_i.ERR = '1' or w_master_i.RTY = '1');
+  
+  -- Advance read pointers
+  new_read_issue_offset   <= (read_issue_offset   + 1) when read_issue_progress   else read_issue_offset;
+  new_read_result_offset  <= (read_result_offset  + 1) when read_result_progress  else read_result_offset;
+  
+  -- Advance write pointers
+  new_write_issue_offset  <= (write_issue_offset  + 1) when write_issue_progress  else write_issue_offset;
+  new_write_result_offset <= (write_result_offset + 1) when write_result_progress else write_result_offset;
+  
+  new_transfer_count <= std_logic_vector(unsigned(transfer_count) - 1) when read_issue_progress else transfer_count;
+  
+  ring_boundary <= index(new_read_issue_offset) = index(new_write_result_offset);
+  ring_high     <= new_read_issue_offset(logRingLen) /= new_write_result_offset(logRingLen);
+  ring_full     <= ring_boundary and ring_high;
+  ring_empty    <= ring_boundary and not ring_high;
+  
+  -- Shorten the critical path by comparing to the undecremented value
+  --done_transfer := unsigned(new_transfer_count) = 0;
+  done_transfer <= unsigned(transfer_count(c_wishbone_address_width-1 downto 1)) = 0 
+                   and (read_issue_progress or transfer_count(0) = '0');
+  
   main : process(clk_i)
-    variable read_issue_progress   : boolean;
-    variable read_result_progress  : boolean;
-    variable write_issue_progress  : boolean;
-    variable write_result_progress : boolean;
-    
-    variable new_read_issue_offset   : unsigned(logRingLen downto 0);
-    variable new_read_result_offset  : unsigned(logRingLen downto 0);
-    variable new_write_issue_offset  : unsigned(logRingLen downto 0);
-    variable new_write_result_offset : unsigned(logRingLen downto 0);
-    variable new_transfer_count      : t_wishbone_address;
-
-    variable ring_boundary : boolean;
-    variable ring_high     : boolean;
-    variable ring_full     : boolean;
-    variable ring_empty    : boolean;
-    variable done_transfer : boolean;
   begin
     if (rising_edge(clk_i)) then
       if (rst_n_i = '0') then
         read_issue_offset   <= (others => '0');
         read_result_offset  <= (others => '0');
-          write_issue_offset  <= (others => '0');
+        write_issue_offset  <= (others => '0');
         write_result_offset <= (others => '0');
         
         read_issue_address  <= (others => '0');
@@ -186,50 +213,17 @@ begin
           when others => slave_o_DAT <= (others => '0');
         end case;
         
-        -- Detect bus progress
-        read_issue_progress   := r_master_o_STB = '1' and r_master_i.STALL = '0';
-        write_issue_progress  := w_master_o_STB = '1' and w_master_i.STALL = '0';
-        read_result_progress  := r_master_o_CYC = '1' and (r_master_i.ACK = '1' or r_master_i.ERR = '1' or r_master_i.RTY = '1');
-        write_result_progress := w_master_o_CYC = '1' and (w_master_i.ACK = '1' or w_master_i.ERR = '1' or w_master_i.RTY = '1');
-        
-        -- Advance read pointers
         if read_issue_progress then
           read_issue_address <= std_logic_vector(unsigned(read_issue_address) + unsigned(read_stride));
-          new_read_issue_offset := read_issue_offset + 1;
-          new_transfer_count    := std_logic_vector(unsigned(transfer_count) - 1);
-        else
-          new_read_issue_offset := read_issue_offset;
-          new_transfer_count    := transfer_count;
         end if;
+        
         if read_result_progress then
           ring(index(read_result_offset)) <= r_master_i.DAT;
-          new_read_result_offset := read_result_offset + 1;
-        else
-          new_read_result_offset := read_result_offset;
         end if;
         
-        -- Advance write pointers
         if write_issue_progress then
           write_issue_address <= std_logic_vector(unsigned(write_issue_address) + unsigned(write_stride));
-          new_write_issue_offset := write_issue_offset + 1;
-        else
-          new_write_issue_offset := write_issue_offset;
         end if;
-        if write_result_progress then
-          new_write_result_offset := write_result_offset + 1;
-        else
-          new_write_result_offset := write_result_offset;
-        end if; 
-        
-        ring_boundary := index(new_read_issue_offset) = index(new_write_result_offset);
-        ring_high     := new_read_issue_offset(logRingLen) /= new_write_result_offset(logRingLen);
-        ring_full     := ring_boundary and ring_high;
-        ring_empty    := ring_boundary and not ring_high;
-        
-        -- Shorten the critical path by comparing to the undecremented value
-        --done_transfer := unsigned(new_transfer_count) = 0;
-        done_transfer := unsigned(transfer_count(c_wishbone_address_width-1 downto 1)) = 0 
-                         and (read_issue_progress or transfer_count(0) = '0');
         
         r_master_o_STB <= active_high (not ring_full and not done_transfer);
         r_master_o_CYC <= active_high((not ring_full and not done_transfer) or 
