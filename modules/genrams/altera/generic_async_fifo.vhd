@@ -115,7 +115,7 @@ architecture syn of generic_async_fifo is
       q       : out std_logic_vector (g_data_width-1 downto 0);
       wrreq   : in  std_logic;
       data    : in  std_logic_vector (g_data_width-1 downto 0);
-      wrusedw : out std_logic_vector (f_log2_size(g_size)-1downto 0);
+      wrusedw : out std_logic_vector (f_log2_size(g_size)-1 downto 0);
       rdusedw : out std_logic_vector (f_log2_size(g_size)-1 downto 0)
       );
   end component;
