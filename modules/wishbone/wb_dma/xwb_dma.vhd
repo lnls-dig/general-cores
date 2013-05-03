@@ -24,7 +24,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+library work;
 use work.wishbone_pkg.all;
+use work.genram_pkg.all;
 
 -- Assumption: wishbone_data_width >= wishbone_address_Width
 entity xwb_dma is
@@ -56,12 +59,6 @@ entity xwb_dma is
 end xwb_dma;
 
 architecture rtl of xwb_dma is
-  constant ringLen : integer := 2**logRingLen;
-  type ring_t is array (ringLen-1 downto 0) of t_wishbone_data;
-  
-  -- Ring buffer for shipping data from read master to write master
-  signal ring : ring_t;
-  
   -- State registers (pointer into the ring)
   -- Invariant: read_issue_offset >= read_result_offset >= write_issue_offset >= write_result_offset
   --            read_issue_offset - write_result_offset  <= ringLen (*NOT* strict '<')
@@ -114,13 +111,9 @@ architecture rtl of xwb_dma is
   end active_high;
   
   function index(x : unsigned(logRingLen downto 0))
-    return integer is
+    return std_logic_vector is
   begin
-    if logRingLen > 0 then
-      return to_integer(x(logRingLen-1 downto 0));
-    else
-      return 0;
-    end if;
+    return std_logic_vector(x(logRingLen-1 downto 0));
   end index;
   
   procedure update(signal o : out t_wishbone_address) is
@@ -152,7 +145,6 @@ begin
   r_master_o.WE  <= '0';
   w_master_o.WE  <= '1';
   r_master_o.DAT <= (others => '0');
-  w_master_o.DAT <= ring(index(write_issue_offset));
   
   -- Detect bus progress
   read_issue_progress   <= r_master_o_STB = '1' and r_master_i.STALL = '0';
@@ -179,6 +171,21 @@ begin
   --done_transfer := unsigned(new_transfer_count) = 0;
   done_transfer <= unsigned(transfer_count(c_wishbone_address_width-1 downto 1)) = 0 
                    and (read_issue_progress or transfer_count(0) = '0');
+  
+  ring : generic_simple_dpram
+    generic map(
+      g_data_width => 32,
+      g_size       => 2**logRingLen,
+      g_dual_clock => false)
+    port map(
+      rst_n_i => rst_n_i,
+      clka_i  => clk_i,
+      wea_i   => active_high(read_result_progress),
+      aa_i    => index(read_result_offset),
+      da_i    => r_master_i.DAT,
+      clkb_i  => clk_i,
+      ab_i    => index(new_write_issue_offset),
+      qb_o    => w_master_o.DAT);
   
   main : process(clk_i)
   begin
@@ -217,10 +224,6 @@ begin
           read_issue_address <= std_logic_vector(unsigned(read_issue_address) + unsigned(read_stride));
         end if;
         
-        if read_result_progress then
-          ring(index(read_result_offset)) <= r_master_i.DAT;
-        end if;
-        
         if write_issue_progress then
           write_issue_address <= std_logic_vector(unsigned(write_issue_address) + unsigned(write_stride));
         end if;
@@ -228,8 +231,8 @@ begin
         r_master_o_STB <= active_high (not ring_full and not done_transfer);
         r_master_o_CYC <= active_high((not ring_full and not done_transfer) or 
                                       (new_read_result_offset  /= new_read_issue_offset));
-        w_master_o_STB <= active_high (new_write_issue_offset  /= new_read_result_offset);
-        w_master_o_CYC <= active_high (new_write_result_offset /= new_read_result_offset);
+        w_master_o_STB <= active_high (new_write_issue_offset  /= read_result_offset); -- avoid read during write
+        w_master_o_CYC <= active_high (new_write_result_offset /= read_result_offset);
         interrupt_o    <= active_high (write_result_progress and done_transfer and ring_empty);
         
         transfer_count      <= new_transfer_count;
