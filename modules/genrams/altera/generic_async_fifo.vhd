@@ -100,6 +100,7 @@ architecture syn of generic_async_fifo is
       rdsync_delaypipe   : natural;
       underflow_checking : string;
       use_eab            : string;
+      read_aclr_synch    : string;
       write_aclr_synch   : string;
       wrsync_delaypipe   : natural
       );
@@ -152,6 +153,7 @@ begin  -- syn
       rdsync_delaypipe   => 5,          -- 2 sync stages
       underflow_checking => "ON",
       use_eab            => "ON",
+      read_aclr_synch    => "ON",
       write_aclr_synch   => "ON",
       wrsync_delaypipe   => 5           -- 2 sync stages
       )
