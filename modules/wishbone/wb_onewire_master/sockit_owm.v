@@ -189,23 +189,23 @@ wire [TDW-1:0] t_zero;   // end of               cycle    time
 //////////////////////////////////////////////////////////////////////////////
 
 // idle time
-assign t_idl  = req_ovd ? T_IDLE_O                       : T_IDLE_N                      ;
+assign t_idl  = req_ovd ? T_IDLE_O[TDW-1:0]                         : T_IDLE_N[TDW-1:0];
 // reset cycle time (reset low + reset hight)
-assign t_rst  = req_ovd ? T_RSTL_O + T_RSTH_O            : T_RSTL_N + T_RSTH_N           ;
+assign t_rst  = req_ovd ? T_RSTL_O[TDW-1:0] + T_RSTH_O[TDW-1:0]     : T_RSTL_N[TDW-1:0] + T_RSTH_N[TDW-1:0];
 // data bit cycle time (write 0 + recovery)
-assign t_bit  = req_ovd ? T_DAT0_O +          + T_RCVR_O : T_DAT0_N +            T_RCVR_N;
+assign t_bit  = req_ovd ? T_DAT0_O[TDW-1:0] + T_RCVR_O[TDW-1:0]     : T_DAT0_N[TDW-1:0] + T_RCVR_N[TDW-1:0];
 
 // reset presence pulse sampling time (reset high - reset presence)
-assign t_rstp = owr_ovd ? T_RSTH_O - T_RSTP_O            : T_RSTH_N - T_RSTP_N           ;
+assign t_rstp = owr_ovd ? T_RSTH_O[TDW-1:0] - T_RSTP_O[TDW-1:0]     : T_RSTH_N[TDW-1:0] - T_RSTP_N[TDW-1:0];
 // reset      release time (reset high)
-assign t_rsth = owr_ovd ? T_RSTH_O                       : T_RSTH_N                      ;
+assign t_rsth = owr_ovd ? T_RSTH_O[TDW-1:0]                         : T_RSTH_N[TDW-1:0];
 
 // data bit 0 release time (write bit 0 - write bit 0 + recovery)
-assign t_dat0 = owr_ovd ? T_DAT0_O - T_DAT0_O + T_RCVR_O : T_DAT0_N - T_DAT0_N + T_RCVR_N;
+assign t_dat0 = owr_ovd ? T_DAT0_O[TDW-1:0] - T_DAT0_O[TDW-1:0] + T_RCVR_O[TDW-1:0] : T_DAT0_N[TDW-1:0] - T_DAT0_N[TDW-1:0] + T_RCVR_N[TDW-1:0];
 // data bit 1 release time (write bit 0 - write bit 1 + recovery)
-assign t_dat1 = owr_ovd ? T_DAT0_O - T_DAT1_O + T_RCVR_O : T_DAT0_N - T_DAT1_N + T_RCVR_N;
+assign t_dat1 = owr_ovd ? T_DAT0_O[TDW-1:0] - T_DAT1_O[TDW-1:0] + T_RCVR_O[TDW-1:0] : T_DAT0_N[TDW-1:0] - T_DAT1_N[TDW-1:0] + T_RCVR_N[TDW-1:0];
 // data bit sampling time (write bit 0 - write bit 1 + recovery)
-assign t_bits = owr_ovd ? T_DAT0_O - T_BITS_O + T_RCVR_O : T_DAT0_N - T_BITS_N + T_RCVR_N;
+assign t_bits = owr_ovd ? T_DAT0_O[TDW-1:0] - T_BITS_O[TDW-1:0] + T_RCVR_O[TDW-1:0] : T_DAT0_N[TDW-1:0] - T_BITS_N[TDW-1:0] + T_RCVR_N[TDW-1:0];
 
 // end of cycle time
 assign t_zero = 'd0;
@@ -273,8 +273,8 @@ generate
     if (BDW==32) begin
       always @ (posedge clk, posedge rst)
       if (rst) begin
-        cdr_n <= CDR_N;
-        cdr_o <= CDR_O;
+        cdr_n <= CDR_N[CDW-1:0];
+        cdr_o <= CDR_O[CDW-1:0];
       end else begin
         if (bus_wen_cdr_n)  cdr_n <= bus_wdt[15: 0];
         if (bus_wen_cdr_o)  cdr_o <= bus_wdt[31:16];
@@ -282,8 +282,8 @@ generate
     end else if (BDW==8) begin
       always @ (posedge clk, posedge rst)
       if (rst) begin
-        cdr_n <= CDR_N;
-        cdr_o <= CDR_O;
+        cdr_n <= CDR_N[CDW-1:0];
+        cdr_o <= CDR_O[CDW-1:0];
       end else begin
         if (bus_wen_cdr_n)  cdr_n <= bus_wdt;
         if (bus_wen_cdr_o)  cdr_o <= bus_wdt;
@@ -291,18 +291,18 @@ generate
     end
   end else begin
     initial begin
-      cdr_n = CDR_N;
-      cdr_o = CDR_O;
+      cdr_n = CDR_N[CDW-1:0];
+      cdr_o = CDR_O[CDW-1:0];
     end
   end
 endgenerate
 
 // clock divider
 always @ (posedge clk, posedge rst)
-if (rst)        div <= 'd0;
+if (rst)        div <= {CDW{1'd0}};
 else begin
-  if (bus_wen)  div <= 'd0;
-  else          div <= pls ? 'd0 : div + owr_cyc;
+  if (bus_wen)  div <= {CDW{1'd0}};
+  else          div <= pls ? {CDW{1'd0}} : div + owr_cyc;
 end
 
 // divided clock pulse
@@ -389,8 +389,8 @@ end
 always @ (posedge clk, posedge rst)
 if (rst)                 cnt <= 0;
 else begin
-  if (bus_wen_ctl_sts)   cnt <= (&bus_wdt[1:0] ? t_idl : bus_wdt[1] ? t_rst : t_bit) - 'd1;
-  else if (pls)          cnt <= cnt - 'd1;
+  if (bus_wen_ctl_sts)   cnt <= (&bus_wdt[1:0] ? t_idl : bus_wdt[1] ? t_rst : t_bit) - 1'd1;
+  else if (pls)          cnt <= cnt - 1'd1;
 end
 
 // receive data (sampling point depends whether the cycle is reset or data)
