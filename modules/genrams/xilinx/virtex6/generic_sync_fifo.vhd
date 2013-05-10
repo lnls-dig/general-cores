@@ -167,8 +167,8 @@ begin  -- syn
         g_data_width             => g_data_width,
         g_size                   => g_size,
         g_dual_clock             => false,
-        g_almost_empty_threshold => g_almost_empty_threshold,
-        g_almost_full_threshold  => g_almost_full_threshold)
+        g_almost_empty_threshold => f_empty_thr(g_with_almost_empty, g_almost_empty_threshold, g_size),
+        g_almost_full_threshold  => f_empty_thr(g_with_almost_full, g_almost_full_threshold, g_size))
       port map (
         rst_n_i           => rst_n_i,
         clk_wr_i          => clk_i,

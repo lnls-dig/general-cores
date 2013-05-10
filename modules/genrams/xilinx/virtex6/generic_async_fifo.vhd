@@ -145,11 +145,8 @@ architecture syn of generic_async_fifo is
       wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
   end component;
 
-    constant m : t_v6_fifo_mapping := f_v6_fifo_find_mapping(g_data_width, g_size);
+  constant m : t_v6_fifo_mapping := f_v6_fifo_find_mapping(g_data_width, g_size);
 
- 
-
-  
 begin  -- syn
 
    gen_inferred : if(m.d_width = 0 or g_with_wr_count or g_with_rd_count) generate
@@ -194,7 +191,6 @@ begin  -- syn
     
    end generate gen_inferred;
 
-
   gen_native : if(m.d_width > 0 and not g_with_wr_count and not g_with_rd_count) generate
 
     U_Native_FIFO: v6_hwfifo_wraper
@@ -202,8 +198,8 @@ begin  -- syn
         g_data_width             => g_data_width,
         g_size                   => g_size,
         g_dual_clock             => true,
-        g_almost_empty_threshold => g_almost_empty_threshold,
-        g_almost_full_threshold  => g_almost_full_threshold)
+        g_almost_empty_threshold => f_empty_thr(g_with_rd_almost_empty, g_almost_empty_threshold, g_size),
+        g_almost_full_threshold  => f_empty_thr(g_with_wr_almost_full, g_almost_full_threshold, g_size))
       port map (
         rst_n_i           => rst_n_i,
         clk_wr_i          => clk_wr_i,

@@ -26,6 +26,8 @@ package v6_fifo_pkg is
 
   function f_v6_fifo_mode (m : t_v6_fifo_mapping) return string;
 
+  function f_empty_thr(a: boolean; thr: integer; size:integer) return integer;
+
 end v6_fifo_pkg;
 
 package body v6_fifo_pkg is
@@ -58,5 +60,14 @@ package body v6_fifo_pkg is
     return "";
   end f_v6_fifo_mode;
 
+  function f_empty_thr
+    (a: boolean; thr: integer; size:integer) return integer is
+  begin
+    if(a = true) then
+      return thr;
+    else
+      return size/2;
+    end if;
+  end f_empty_thr;
 
 end v6_fifo_pkg;
