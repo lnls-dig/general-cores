@@ -72,6 +72,8 @@ package wishbone_pkg is
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
   constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
 
+  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := (0 => cc_dummy_address);
+
   -- A generally useful function.
   function f_ceil_log2(x   : natural) return natural;
   function f_bits2string(s : std_logic_vector) return string;
@@ -741,7 +743,9 @@ package wishbone_pkg is
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
       g_address_granularity : t_wishbone_address_granularity;
-      g_num_interrupts      : natural);
+      g_num_interrupts      : natural;
+      g_init_vectors        : t_wishbone_address_array := cc_dummy_address_array
+      );
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
@@ -770,7 +774,7 @@ package wishbone_pkg is
       product     => (
         vendor_id => x"000000000000CE42",  -- CERN
         device_id => x"00000013",
-        version   => x"00000001",
+        version   => x"00000002",
         date      => x"20120113",
         name      => "WB-VIC-Int.Control ")));   
 
@@ -778,7 +782,8 @@ package wishbone_pkg is
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
       g_address_granularity : t_wishbone_address_granularity;
-      g_num_interrupts      : natural);
+      g_num_interrupts      : natural;
+      g_init_vectors        : t_wishbone_address_array := cc_dummy_address_array);
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
