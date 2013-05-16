@@ -139,7 +139,7 @@ peripheral {
 
 	 ram {
 			name = "Interrupt Vector Table";
-			description = "Vector Address Table. Word at offset N stores the vector address of IRQ N. When interrupt is requested, VIC reads it's vector address from this memory and stores it in VAR register.";
+			description = "Vector Address Table. Word at offset N stores the vector address of IRQ N. When interrupt is requested, VIC reads it's vector address from this memory and stores it in VAR register. The contents of this table can be pre-initialized during synthesis through <code>g_init_vectors</code> generic parameter. This is used to auto-enumerate interrupts in SDB-based designs.";
 			prefix = "IVT_RAM";
 			
 			size = 32;

@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2012-09-27
+-- Last update: 2013-04-16
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -34,6 +34,7 @@ use ieee.numeric_std.all;
 
 library work;
 use work.wishbone_pkg.all;
+use work.genram_pkg.all;
 
 entity wb_vic is
   
@@ -41,7 +42,10 @@ entity wb_vic is
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity : t_wishbone_address_granularity := WORD;
 
-    g_num_interrupts : natural := 32    -- number of IRQ inputs.
+    -- number of IRQ inputs.
+    g_num_interrupts : natural                  := 32;
+    -- initial values for the vector addresses. 
+    g_init_vectors   : t_wishbone_address_array := cc_dummy_address_array
     );
 
   port (
@@ -73,6 +77,7 @@ architecture syn of wb_vic is
       in_i  : in  std_logic_vector(31 downto 0);
       out_o : out std_logic_vector(4 downto 0));
   end component;
+
   component wb_slave_vic
     port (
       rst_n_i            : in  std_logic;
@@ -101,10 +106,31 @@ architecture syn of wb_vic is
       vic_swir_wr_o      : out std_logic;
       vic_eoir_o         : out std_logic_vector(31 downto 0);
       vic_eoir_wr_o      : out std_logic;
-      vic_ivt_ram_addr_i : in  std_logic_vector(4 downto 0);
+      vic_ivt_ram_addr_o : out std_logic_vector(4 downto 0);
+      vic_ivt_ram_data_i : in  std_logic_vector(31 downto 0);
       vic_ivt_ram_data_o : out std_logic_vector(31 downto 0);
-      vic_ivt_ram_rd_i   : in  std_logic);
+      vic_ivt_ram_wr_o   : out std_logic
+      );
+
   end component;
+
+  function f_resize_addr_array(a : t_wishbone_address_array; size : integer) return t_wishbone_address_array is
+    variable rv : t_wishbone_address_array(0 to size-1);
+  begin
+
+    for i in 0 to a'length-1 loop
+      rv(i) := a(i);
+    end loop;  -- i
+
+    for i in a'length to size-1 loop
+      rv(i) := (others => '0');
+    end loop;  -- i
+
+    return rv;
+  end f_resize_addr_array;
+
+
+
   type t_state is (WAIT_IRQ, PROCESS_IRQ, WAIT_ACK, WAIT_MEM, WAIT_IDLE);
 
   signal irqs_i_reg : std_logic_vector(32 downto 0);
@@ -114,18 +140,22 @@ architecture syn of wb_vic is
   signal vic_ctl_emu_edge : std_logic;
   signal vic_ctl_emu_len  : std_logic_vector(15 downto 0);
 
-  signal vic_risr         : std_logic_vector(31 downto 0);
-  signal vic_ier          : std_logic_vector(31 downto 0);
-  signal vic_ier_wr       : std_logic;
-  signal vic_idr          : std_logic_vector(31 downto 0);
-  signal vic_idr_wr       : std_logic;
-  signal vic_imr          : std_logic_vector(31 downto 0);
-  signal vic_var          : std_logic_vector(31 downto 0);
-  signal vic_eoir         : std_logic_vector(31 downto 0);
-  signal vic_eoir_wr      : std_logic;
-  signal vic_ivt_ram_addr : std_logic_vector(4 downto 0);
-  signal vic_ivt_ram_data : std_logic_vector(31 downto 0);
-  signal vic_ivt_ram_rd   : std_logic;
+  signal vic_risr    : std_logic_vector(31 downto 0);
+  signal vic_ier     : std_logic_vector(31 downto 0);
+  signal vic_ier_wr  : std_logic;
+  signal vic_idr     : std_logic_vector(31 downto 0);
+  signal vic_idr_wr  : std_logic;
+  signal vic_imr     : std_logic_vector(31 downto 0);
+  signal vic_var     : std_logic_vector(31 downto 0);
+  signal vic_eoir    : std_logic_vector(31 downto 0);
+  signal vic_eoir_wr : std_logic;
+
+  signal vic_ivt_ram_addr_wb     : std_logic_vector(4 downto 0);
+  signal vic_ivt_ram_addr_int    : std_logic_vector(4 downto 0);
+  signal vic_ivt_ram_data_towb   : std_logic_vector(31 downto 0);
+  signal vic_ivt_ram_data_fromwb : std_logic_vector(31 downto 0);
+  signal vic_ivt_ram_data_int    : std_logic_vector(31 downto 0);
+  signal vic_ivt_ram_wr          : std_logic;
 
   signal vic_swir    : std_logic_vector(31 downto 0);
   signal vic_swir_wr : std_logic;
@@ -141,6 +171,8 @@ architecture syn of wb_vic is
   signal wb_out : t_wishbone_slave_out;
 
   signal timeout_count : unsigned(15 downto 0);
+
+  signal vector_table : t_wishbone_address_array(0 to 31) := f_resize_addr_array(g_init_vectors, 32);
   
 begin  -- syn
 
@@ -149,7 +181,31 @@ begin  -- syn
   end generate check1;
 
 
-  register_irq_lines : process(clk_sys_i, rst_n_i)
+  p_vector_table_host : process(clk_sys_i)
+    variable sanitized_addr : integer;
+  begin
+    if rising_edge(clk_sys_i) then
+
+      sanitized_addr := to_integer(unsigned(vic_ivt_ram_addr_wb));
+
+      vic_ivt_ram_data_towb <= vector_table(sanitized_addr);
+      if(vic_ivt_ram_wr = '1') then
+        vector_table(sanitized_addr) <= vic_ivt_ram_data_fromwb;
+      end if;
+    end if;
+  end process;
+
+  p_vector_table_int : process(clk_sys_i)
+    variable sanitized_addr : integer;
+  begin
+    if rising_edge(clk_sys_i) then
+      sanitized_addr   := to_integer(unsigned(vic_ivt_ram_addr_int));
+      vic_ivt_ram_data_int <= vector_table(sanitized_addr);
+    end if;
+  end process;
+
+
+  p_register_irq_lines : process(clk_sys_i, rst_n_i)
   begin
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
@@ -171,7 +227,7 @@ begin  -- syn
       in_i  => irqs_i_reg(31 downto 0),
       out_o => irq_id_encoded);
 
-  vic_ivt_ram_addr <= current_irq;
+  vic_ivt_ram_addr_int <= current_irq;
 
   U_Slave_adapter : wb_slave_adapter
     generic map (
@@ -196,23 +252,23 @@ begin  -- syn
       master_i   => wb_out,
       master_o   => wb_in);
 
-  wb_out.rty   <= '0';
-  wb_out.err   <= '0';
-  wb_out.int   <= '0';
+  wb_out.rty <= '0';
+  wb_out.err <= '0';
+  wb_out.int <= '0';
 
 
   U_wb_controller : wb_slave_vic
     port map (
-      rst_n_i  => rst_n_i,
-      clk_sys_i => clk_sys_i,
-      wb_adr_i => wb_in.adr(5 downto 0),
-      wb_dat_i => wb_in.dat,
-      wb_dat_o => wb_out.dat,
-      wb_cyc_i => wb_in.cyc,
-      wb_sel_i => wb_in.sel,
-      wb_stb_i => wb_in.stb,
-      wb_we_i  => wb_in.we,
-      wb_ack_o => wb_out.ack,
+      rst_n_i    => rst_n_i,
+      clk_sys_i  => clk_sys_i,
+      wb_adr_i   => wb_in.adr(5 downto 0),
+      wb_dat_i   => wb_in.dat,
+      wb_dat_o   => wb_out.dat,
+      wb_cyc_i   => wb_in.cyc,
+      wb_sel_i   => wb_in.sel,
+      wb_stb_i   => wb_in.stb,
+      wb_we_i    => wb_in.we,
+      wb_ack_o   => wb_out.ack,
       wb_stall_o => wb_out.stall,
 
       vic_ctl_enable_o   => vic_ctl_enable,
@@ -230,9 +286,10 @@ begin  -- syn
       vic_eoir_wr_o      => vic_eoir_wr,
       vic_swir_o         => vic_swir,
       vic_swir_wr_o      => vic_swir_wr,
-      vic_ivt_ram_addr_i => vic_ivt_ram_addr,
-      vic_ivt_ram_data_o => vic_ivt_ram_data,
-      vic_ivt_ram_rd_i   => vic_ivt_ram_rd);
+      vic_ivt_ram_addr_o => vic_ivt_ram_addr_wb,
+      vic_ivt_ram_data_i => vic_ivt_ram_data_towb,
+      vic_ivt_ram_data_o => vic_ivt_ram_data_fromwb,
+      vic_ivt_ram_wr_o   => vic_ivt_ram_wr);
 
   process (clk_sys_i, rst_n_i)
   begin  -- process enable_disable_irqs
@@ -267,21 +324,19 @@ begin  -- syn
     if rising_edge(clk_sys_i) then
       
       if rst_n_i = '0' then             -- asynchronous reset (active low)
-        state          <= WAIT_IRQ;
-        vic_ivt_ram_rd <= '0';
-        current_irq    <= (others => '0');
-        irq_master_o   <= '0';
-        vic_var        <= x"12345678";
-        swi_mask       <= (others => '0');
+        state        <= WAIT_IRQ;
+        current_irq  <= (others => '0');
+        irq_master_o <= '0';
+        vic_var      <= x"12345678";
+        swi_mask     <= (others => '0');
         
       else
         if(vic_ctl_enable = '0') then
-          irq_master_o   <= not vic_ctl_pol;
-          vic_ivt_ram_rd <= '0';
-          current_irq    <= (others => '0');
-          state          <= WAIT_IRQ;
-          vic_var        <= x"12345678";
-          swi_mask       <= (others => '0');
+          irq_master_o <= not vic_ctl_pol;
+          current_irq  <= (others => '0');
+          state        <= WAIT_IRQ;
+          vic_var      <= x"12345678";
+          swi_mask     <= (others => '0');
         else
 
           if(vic_swir_wr = '1') then    -- handle the software IRQs
@@ -291,9 +346,8 @@ begin  -- syn
           case state is
             when WAIT_IRQ =>
               if(irqs_i_reg /= std_logic_vector(to_unsigned(0, irqs_i_reg'length))) then
-                current_irq    <= irq_id_encoded;
-                state          <= WAIT_MEM;
-                vic_ivt_ram_rd <= '1';
+                current_irq <= irq_id_encoded;
+                state       <= WAIT_MEM;
 
 -- assert the master IRQ line
               else
@@ -307,10 +361,9 @@ begin  -- syn
               
             when PROCESS_IRQ =>
 -- fetch the vector address from vector table and load it into VIC_VAR register
-              vic_var        <= vic_ivt_ram_data;
-              vic_ivt_ram_rd <= '0';
-              state          <= WAIT_ACK;
-              irq_master_o   <= vic_ctl_pol;
+              vic_var      <= vic_ivt_ram_data_int;
+              state        <= WAIT_ACK;
+              irq_master_o <= vic_ctl_pol;
 
             when WAIT_ACK =>
 -- got write operation to VIC_EOIR register? if yes, advance to next interrupt.
