@@ -9,5 +9,4 @@ files = [
   "pcie_tlp.vhd",
   "pcie_wb.vhd",
   "pcie_wb_pkg.vhd",
-  "altera_pcie.sdc",
   "ip_compiler_for_pci_express-library/altpcie_rs_serdes.v"]

@@ -156,7 +156,6 @@ architecture rtl of pcie_altera is
       signal rxpolarity2_ext      : out std_logic;
       signal rxpolarity3_ext      : out std_logic;
       signal suc_spd_neg          : out std_logic;
-      signal test_out             : out std_logic_vector (8 downto 0);
       signal tl_cfg_add           : out std_logic_vector (3 downto 0);
       signal tl_cfg_ctl           : out std_logic_vector (31 downto 0);
       signal tl_cfg_ctl_wr        : out std_logic;
@@ -426,7 +425,6 @@ begin
       -- Debugging signals
       lane_act             => open, --  3 downto 0
       test_in              => (others => '0'), -- 39 downto 0
-      test_out             => open, --  8 downto 0
       
       -- WTF? Not documented
       rc_rx_digitalreset   => open);

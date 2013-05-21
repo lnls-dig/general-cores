@@ -207,37 +207,6 @@ package gencores_pkg is
       q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
   end component;
   
-  -- A 'Wes' FIFO. Generic FIFO using inferred memory.
-  -- Supports clock domain crossing 
-  -- Should be safe from fast->slow or reversed
-  -- Set sync_depth := 0 and gray_code := false if only one clock
-  component gc_wfifo is
-    generic(
-      sync_depth : natural := 3;
-      gray_code  : boolean := true;
-      addr_width : natural := 4;
-      data_width : natural := 32);
-    port(
-      -- write port, only set w_en when w_rdy
-      w_clk_i  : in  std_logic;
-      w_rst_n_i: in  std_logic;
-      w_rdy_o  : out std_logic;
-      w_en_i   : in  std_logic;
-      w_data_i : in  std_logic_vector(data_width-1 downto 0);
-      -- (pre)alloc port, can be unused
-      a_clk_i  : in  std_logic;
-      a_rst_n_i: in  std_logic;
-      a_rdy_o  : out std_logic;
-      a_en_i   : in  std_logic;
-      -- read port, only set r_en when r_rdy
-      -- data is valid the cycle after r_en raised
-      r_clk_i  : in  std_logic;
-      r_rst_n_i: in  std_logic;
-      r_rdy_o  : out std_logic;
-      r_en_i   : in  std_logic;
-      r_data_o : out std_logic_vector(data_width-1 downto 0));
-  end component;
- 
   -- Power-On reset generation
   component gc_reset is
     generic(

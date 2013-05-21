@@ -1,10 +1,10 @@
--- megafunction wizard: %IP Compiler for PCI Express v11.1%
+-- megafunction wizard: %IP Compiler for PCI Express v12.1%
 -- GENERATION: XML
 -- ============================================================
 -- Megafunction Name(s):
 -- ============================================================
 
---Legal Notice: (C)2012 Altera Corporation. All rights reserved.  Your
+--Legal Notice: (C)2013 Altera Corporation. All rights reserved.  Your
 --use of Altera Corporation's design tools, logic functions and other
 --software and tools, and its AMPP partner logic functions, and any
 --output files any of the foregoing (including device programming or
@@ -147,7 +147,6 @@ entity altera_pcie is
                  signal rxpolarity2_ext : OUT STD_LOGIC;
                  signal rxpolarity3_ext : OUT STD_LOGIC;
                  signal suc_spd_neg : OUT STD_LOGIC;
-                 signal test_out : OUT STD_LOGIC_VECTOR (8 DOWNTO 0);
                  signal tl_cfg_add : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
                  signal tl_cfg_ctl : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
                  signal tl_cfg_ctl_wr : OUT STD_LOGIC;
@@ -626,7 +625,6 @@ PORT (
 
 begin
 
-  test_out <= internal_lane_act & internal_ltssm;
   txdetectrx_ext <= txdetectrx0_ext;
   powerdown_ext <= powerdown0_ext;
   rxdata(7 DOWNTO 0) <= A_WE_StdLogicVector((std_logic'(pipe_mode_int) = '1'), rxdata0_ext, rxdata_pcs(7 DOWNTO 0));
@@ -1118,8 +1116,6 @@ begin
 --synthesis translate_on
 --synthesis read_comments_as_HDL on
 --    pipe_mode_int <= std_logic'('0');
---    internal_clk250_out <= '0';
---    internal_clk500_out <= '0';
 --synthesis read_comments_as_HDL off
 
 end europa;
@@ -1133,7 +1129,7 @@ end europa;
 -- Warning: If you modify this section, IP Compiler for PCI Express Wizard may not be able to reproduce your chosen configuration.
 -- 
 -- Retrieval info: <?xml version="1.0"?>
--- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="11.1"  build="173"  iptb_version="1.3.0 Build 173"  format_version="120" >
+-- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="12.1"  build="243"  iptb_version="1.3.0 Build 243"  format_version="120" >
 -- Retrieval info:  <NETLIST_SECTION class="altera.ipbu.flowbase.netlist.model.MVCModel"  active_core="altpcie_hip_pipen1b" >
 -- Retrieval info:   <STATIC_SECTION>
 -- Retrieval info:    <PRIVATES>
@@ -1141,7 +1137,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_phy" value="Arria II GX"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_port_type" value="Native Endpoint"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_tag_supported" value="32"  type="INTEGER"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_msi_message_requested" value="4"  type="INTEGER"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_msi_message_requested" value="1"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_low_priority_virtual_channels" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_retry_fifo_depth" value="64"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_nfts_common_clock" value="255"  type="INTEGER"  enable="1" />
@@ -1174,7 +1170,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "actualBAR4Size" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5AvalonAddress" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5Size" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "allowedDeviceFamilies" value="[Stratix III, Stratix II, HardCopy II, Stratix II GX, Stratix, Stratix GX, Cyclone III LS, Cyclone V, Cyclone IV E, Cyclone IV GX, Cyclone III, Cyclone II, Cyclone, MAX II, MAX V, Arria GX, Stratix IV, Stratix V, Arria II GX, HardCopy III, HardCopy IV, Arria II GZ, Arria V, Unknown, None]"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "allowedDeviceFamilies" value="[Stratix II, Arria II GZ, Arria V, Arria V GZ, Stratix GX, Cyclone III, Cyclone II, Cyclone IV E, Cyclone V, HardCopy II, HardCopy III, HardCopy IV, MAX V, Arria II GX, Cyclone IV GX, Stratix II GX, Arria GX, Stratix V, Cyclone III LS, Stratix IV, Stratix III, Cyclone, MAX II, Stratix]"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "altgx_generated" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "clockSource" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "contextState" value="NativeContext"  type="STRING"  enable="1" />
@@ -1305,7 +1301,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_5" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_channel_number" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_chk_io" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_class_code" value="0xFF0000"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_class_code" value="0x068000"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_completion_data_credit_vc0" value="112"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_completion_data_credit_vc1" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_completion_data_credit_vc2" value="0"  type="INTEGER"  enable="1" />
@@ -1325,7 +1321,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_completion_timeout" value="NONE"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_custom_phy_x8" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_custom_rx_buffer_xml" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_device_id" value="0x0004"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_device_id" value="0x019A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_disable_L0s" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_dll_active_report_support" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_eie_b4_nfts_count" value="4"  type="INTEGER"  enable="1" />
@@ -1407,11 +1403,11 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_slot_capabilities" value="0x00000000"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_special_phy_gl" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_special_phy_px" value="1"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_subsystem_device_id" value="0x0004"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_subsystem_vendor_id" value="0x1172"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_subsystem_device_id" value="0x019A"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_subsystem_vendor_id" value="0x10DC"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_surprise_down_error_support" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_target_performance_preset" value="High"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_test_out_width" value="9 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_test_out_width" value="None"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_threshold_for_L0s_entry" value="8192 ns"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_total_header_credit_vc0" value="64"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_total_header_credit_vc1" value="0"  type="INTEGER"  enable="1" />
@@ -1422,7 +1418,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "p_pcie_use_crc_forwarding" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_use_parity" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_variation_name" value="altera_pcie_core"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_vendor_id" value="0x1172"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_vendor_id" value="0x10DC"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_version" value="1.1"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_virutal_channels" value="1"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "pref_nonp_independent" value="false"  type="STRING"  enable="1" />
@@ -1493,6 +1489,7 @@ end europa;
 -- Retrieval info:      <PRIVATE name = "uiPaneSize" value="20"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "ui_pcie_msix_pba_bir" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "ui_pcie_msix_table_bir" value="0"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_tx_cdc_full_value" value="12"  type="INTEGER"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "simgen_enable">
 -- Retrieval info:      <PRIVATE name = "language" value="VHDL"  type="STRING"  enable="1" />

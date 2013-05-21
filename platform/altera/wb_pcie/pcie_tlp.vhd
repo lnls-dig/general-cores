@@ -48,6 +48,7 @@ architecture rtl of pcie_tlp is
   signal r_length      : unsigned(9 downto 0);
   signal r_address     : std_logic_vector(15 downto 0);
   signal r_bar         : std_logic_vector(2 downto 0);
+  signal r_bar_next    : std_logic_vector(2 downto 0);
   
   -- Common subexpressions:
   signal s_tlp_length   : std_logic_vector(9 downto 0);
@@ -155,6 +156,7 @@ begin
             r_length <= unsigned(s_tlp_length);
           when get_h2 => 
             r_h2 <= rx_wb_dat_i; 
+            r_bar_next <= rx_bar_i;
             r_address(15 downto 2) <= rx_wb_dat_i(15 downto 2);
           when get_h3 => 
             r_h3 <= rx_wb_dat_i; 
@@ -171,11 +173,7 @@ begin
           when memory_read => 
             action := read_stall;
           when memory_write => 
-            if rx_bar_i = r_bar or s_no_flight then
-              action := write_first;
-            else
-              action := write_stall;
-            end if;
+            action := write_stall;
           when others => -- completion or ignored
             if s_has_payload then
               action := drop_payload;
@@ -234,10 +232,11 @@ begin
               r_length <= s_length_m1;
             end if;
           when write_stall =>
-            if s_no_flight then
+            if (s_no_flight or r_bar_next = r_bar) then
+              r_bar <= r_bar_next;
               next_state := write_first;
             end if;
-          when write_first =>
+          when write_first | write_middle | write_last =>
             if (rx_wb_stb_i and not wb_stall_i) = '1' then
               if s_length_eq1 then
                 if s_has_tail then
@@ -253,25 +252,11 @@ begin
               r_length <= s_length_m1;
               r_address <= s_address_p4;
             end if;
-          when write_middle =>
-            if (rx_wb_stb_i and not wb_stall_i) = '1' then
-              if s_length_eq2 then
-                next_state := write_last;
-              end if;
-              r_length <= s_length_m1;
-              r_address <= s_address_p4;
-            end if;
-          when write_last =>
-            if (rx_wb_stb_i and not wb_stall_i) = '1' then
-              if s_has_tail then
-                next_state := skip_tail;
-              else
-                next_state := get_h0;
-              end if;
-            end if;
           when read_stall =>
-            if tx_state = ack_wait and tx_rdy_i = '1' then
+            if (s_no_flight or r_bar_next = r_bar) and
+               tx_state = ack_wait and tx_rdy_i = '1' then
               r_rx_alloc <= '1';
+              r_bar <= r_bar_next;
               next_state := read_first;
             end if;
           when read_first | read_middle | read_last =>
@@ -339,7 +324,6 @@ begin
           when write_stall => 
             r_always_stall <= '1';
           when write_first =>
-            r_bar <= rx_bar_i;
             r_never_stall <= '0';
             r_never_stb <= '0';
             wb_sel_o <= s_first_be;
@@ -357,7 +341,6 @@ begin
           when read_stall => 
             r_always_stall <= '1';
           when read_first =>
-            r_bar <= rx_bar_i;
             r_always_stall <= '1';
             r_always_stb <= '1';
             wb_sel_o <= s_first_be;

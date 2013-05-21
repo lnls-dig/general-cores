@@ -84,6 +84,7 @@ module altpcie_rs_serdes (
    reg [2:0] pll_locked_r;
    reg [6:0] pll_locked_cnt;
    reg       pll_locked_stable;
+   reg  [4:0]    ltssm_r;
 
    wire rx_pll_freq_locked_sync;
    reg [2:0] rx_pll_freq_locked_r;
@@ -133,10 +134,12 @@ module altpcie_rs_serdes (
       if (arst == 1'b1) begin
          pll_locked_r[2:0]          <= 3'b000;
          rx_pll_freq_locked_r[2:0]  <= 3'b000;
+         ltssm_r                    <= 5'h0;
       end
       else begin
          pll_locked_r[2:0]          <= {pll_locked_r[1],pll_locked_r[0],pll_locked};
          rx_pll_freq_locked_r[2:0]  <= {rx_pll_freq_locked_r[1],rx_pll_freq_locked_r[0],rx_pll_freq_locked};
+         ltssm_r                    <= ltssm;
       end
    end
    assign pll_locked_sync           = pll_locked_r[2];
@@ -191,7 +194,7 @@ module altpcie_rs_serdes (
          ltssm_detect                  <= 1'b1;
       end
       else begin
-         if ((ltssm==5'h0)||(ltssm==5'h1)) begin
+         if ((ltssm_r==5'h0)||(ltssm_r==5'h1)) begin
             ltssm_detect    <= 1'b1;
          end
          else begin
@@ -356,7 +359,7 @@ module altpcie_rs_serdes (
 
             IDLE_ST_SD: begin
                //reset RXPCS on polling.active
-               if (ltssm == LTSSM_POL) begin
+               if (ltssm_r == LTSSM_POL) begin
                    rx_sd_idl_cnt <= (rx_sd_idl_cnt > 20'd10) ? rx_sd_idl_cnt - 20'd10 : 20'h0;
                    sd_state   <= RSET_ST_SD;
                end
@@ -374,7 +377,7 @@ module altpcie_rs_serdes (
                //Incoming data unstable, back to IDLE_ST_SD iff in detect
                if (stable_sd == 1'b0) begin
                    rx_sd_idl_cnt <= 20'h0;
-                   sd_state   <= (ltssm == LTSSM_DET) ? IDLE_ST_SD : RSET_ST_SD;
+                   sd_state   <= (ltssm_r == LTSSM_DET) ? IDLE_ST_SD : RSET_ST_SD;
                end
                else begin
                   if ((test_sim == 1'b1) & (rx_sd_idl_cnt >= 20'd32)) begin
@@ -397,7 +400,7 @@ module altpcie_rs_serdes (
                //Incoming data unstable, back to IDLE_ST_SD iff in detect
                if (stable_sd == 1'b0) begin
                    rx_sd_idl_cnt <= 20'h0;
-                   sd_state   <= (ltssm == LTSSM_DET) ? IDLE_ST_SD : DONE_ST_SD;
+                   sd_state   <= (ltssm_r == LTSSM_DET) ? IDLE_ST_SD : DONE_ST_SD;
                end
             end
 
