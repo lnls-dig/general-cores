@@ -43,6 +43,9 @@ use work.spwm_wbgen2_pkg.all;
 entity wb_simple_pwm is
   generic(
     g_num_channels        : integer range 1 to 8;
+    g_default_period      : integer range 0 to 255 := 0;
+    g_default_presc       : integer range 0 to 255 := 0;
+    g_default_val         : integer range 0 to 255 := 0;
     g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
     g_address_granularity : t_wishbone_address_granularity := BYTE
     );
@@ -101,6 +104,8 @@ architecture behavioral of wb_simple_pwm is
 
   signal tick                : std_logic;
   signal cntr_pre, cntr_main : unsigned(15 downto 0);
+  signal presc_val   : std_logic_vector(15 downto 0);
+  signal period_val  : std_logic_vector(15 downto 0);
   
 begin  -- behavioral
 
@@ -155,7 +160,7 @@ begin  -- behavioral
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
         for i in 0 to g_num_channels-1 loop
-          drive(i) <= (others => '0');
+          drive(i) <= std_logic_vector(to_unsigned(g_default_val, 16));
         end loop;  -- i
       else
         f_handle_dr_writes(1, regs_out.dr0_o, regs_out.dr0_load_o, drive);
@@ -170,10 +175,29 @@ begin  -- behavioral
     end if;
   end process;
 
+  regs_in.cr_presc_i  <= presc_val;
+  regs_in.cr_period_i <= period_val;
+  load_cr: process(clk_sys_i)
+  begin
+    if rising_edge(clk_sys_i) then
+      if(rst_n_i = '0') then
+        presc_val  <= std_logic_vector(to_unsigned(g_default_presc, 16));
+      elsif(regs_out.cr_presc_load_o = '1') then
+        presc_val <= regs_out.cr_presc_o;
+      end if;
+
+      if(rst_n_i = '0') then
+        period_val <= std_logic_vector(to_unsigned(g_default_period, 16));
+      elsif(regs_out.cr_period_load_o = '1') then
+        period_val <= regs_out.cr_period_o;
+      end if;
+    end if;
+  end process;
+
   p_prescaler : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' or std_logic_vector(cntr_pre) = regs_out.cr_presc_o then
+      if rst_n_i = '0' or std_logic_vector(cntr_pre) = presc_val then
         cntr_pre <= (others => '0');
         tick     <= '1';
       else
@@ -186,7 +210,7 @@ begin  -- behavioral
   p_main_counter : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
-      if (tick = '1' and std_logic_vector(cntr_main) = regs_out.cr_period_o) or rst_n_i = '0' then
+      if (tick = '1' and std_logic_vector(cntr_main) = period_val) or rst_n_i = '0' then
         cntr_main <= (others => '0');
       elsif(tick = '1') then
         cntr_main <= cntr_main + 1;

@@ -49,7 +49,8 @@ peripheral {
          size = 16;
          prefix = "PRESC";
 				 access_bus = READ_WRITE;
-				 access_dev = READ_ONLY;
+				 access_dev = READ_WRITE;
+         load = LOAD_EXT;
 			};
 
 			field {
@@ -59,7 +60,8 @@ peripheral {
          size = 16;
          prefix = "PERIOD";
 				 access_bus = READ_WRITE;
-				 access_dev = READ_ONLY;
+				 access_dev = READ_WRITE;
+         load = LOAD_EXT;
 			};
 	 };
 

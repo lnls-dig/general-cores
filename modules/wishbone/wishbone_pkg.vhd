@@ -642,6 +642,9 @@ package wishbone_pkg is
   component wb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_default_period      : integer range 0 to 255 := 0;
+      g_default_presc       : integer range 0 to 255 := 0;
+      g_default_val         : integer range 0 to 255 := 0;
       g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
       g_address_granularity : t_wishbone_address_granularity := BYTE);
     port (
@@ -662,6 +665,9 @@ package wishbone_pkg is
   component xwb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_default_period      : integer range 0 to 255 := 0;
+      g_default_presc       : integer range 0 to 255 := 0;
+      g_default_val         : integer range 0 to 255 := 0;
       g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
       g_address_granularity : t_wishbone_address_granularity := BYTE);
     port (

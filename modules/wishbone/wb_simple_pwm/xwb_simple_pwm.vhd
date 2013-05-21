@@ -43,6 +43,9 @@ use work.wishbone_pkg.all;
 entity xwb_simple_pwm is
   generic (
     g_num_channels        : integer range 1 to 8;
+    g_default_period      : integer range 0 to 255 := 0;
+    g_default_presc       : integer range 0 to 255 := 0;
+    g_default_val         : integer range 0 to 255 := 0;
     g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
     g_address_granularity : t_wishbone_address_granularity := BYTE);
   port(
@@ -63,6 +66,9 @@ architecture wrapper of xwb_simple_pwm is
   component wb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_default_period      : integer range 0 to 255;
+      g_default_presc       : integer range 0 to 255;
+      g_default_val         : integer range 0 to 255;
       g_interface_mode      : t_wishbone_interface_mode;
       g_address_granularity : t_wishbone_address_granularity);
     port (
@@ -85,6 +91,9 @@ begin  -- rtl
   U_Wrapped_PWM : wb_simple_pwm
     generic map (
       g_num_channels        => g_num_channels,
+      g_default_period      => g_default_period,
+      g_default_presc       => g_default_presc,
+      g_default_val         => g_default_val,
       g_interface_mode      => g_interface_mode,
       g_address_granularity => g_address_granularity)
     port map (
