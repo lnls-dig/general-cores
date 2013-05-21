@@ -1,0 +1,44 @@
+# quartus droppings
+db/
+greybox_tmp/
+# arria5 pcie reconfig core
+arria5_pcie_reconf_sim/
+arria5_pcie_reconf/
+arria5_pcie_reconf.bsf
+arria5_pcie_reconf.cmp
+arria5_pcie_reconf.ppf
+arria5_pcie_reconf.qip
+arria5_pcie_reconf_sim
+arria5_pcie_reconf.sip
+arria5_pcie_reconf.spd
+arria5_pcie_reconf.vhd
+# arria5 pcie hard ip core
+arria5_pcie_hip_example_design/
+arria5_pcie_hip_sim/
+arria5_pcie_hip/
+arria5_pcie_hip.bsf
+arria5_pcie_hip.cmp
+arria5_pcie_hip.ppf
+arria5_pcie_hip.qip
+arria5_pcie_hip_sim
+arria5_pcie_hip.sip
+arria5_pcie_hip.spd
+arria5_pcie_hip.vhd
+# arria2 pcie reconfig core
+arria2_pcie_reconf.cmp
+arria2_pcie_reconf.qip
+arria2_pcie_reconf.vhd
+# arria2 pcie hard ip core
+ip_compiler_for_pci_express-library/
+arria2_pcie_hip_examples/
+arria2_pcie_hip.bsf
+arria2_pcie_hip.ppf
+arria2_pcie_hip.ppx
+arria2_pcie_hip.qip
+arria2_pcie_hip.sdc
+arria2_pcie_hip.tcl
+arria2_pcie_hip.vhd
+arria2_pcie_hip_core.cmp
+arria2_pcie_hip_core.vhd
+arria2_pcie_hip_serdes.vhd
+arria2_pcie_hip_serdes.cmp

@@ -8,6 +8,7 @@ use work.wishbone_pkg.all;
 
 entity pcie_wb is
   generic(
+    g_family : string := "Arria II";
     sdb_addr : t_wishbone_address);
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
@@ -74,34 +75,37 @@ architecture rtl of pcie_wb is
   signal fifo_full, r_fifo_full, app_int_sts, app_msi_req : std_logic;
 begin
 
-  pcie_phy : pcie_altera port map(
-    clk125_i      => clk125_i,
-    cal_clk50_i   => cal_clk50_i,
-    async_rstn    => master_rstn_i and slave_rstn_i,
-    
-    pcie_refclk_i => pcie_refclk_i,
-    pcie_rstn_i   => pcie_rstn_i,
-    pcie_rx_i     => pcie_rx_i,
-    pcie_tx_o     => pcie_tx_o,
+  pcie_phy : pcie_altera 
+    generic map(
+      g_family => g_family)
+    port map(
+      clk125_i      => clk125_i,
+      cal_clk50_i   => cal_clk50_i,
+      async_rstn    => master_rstn_i and slave_rstn_i,
+      
+      pcie_refclk_i => pcie_refclk_i,
+      pcie_rstn_i   => pcie_rstn_i,
+      pcie_rx_i     => pcie_rx_i,
+      pcie_tx_o     => pcie_tx_o,
 
-    cfg_busdev_o  => cfg_busdev,
-    app_msi_req   => app_msi_req,
-    app_int_sts   => app_int_sts,
+      cfg_busdev_o  => cfg_busdev,
+      app_msi_req   => app_msi_req,
+      app_int_sts   => app_int_sts,
 
-    wb_clk_o      => internal_wb_clk,
-    wb_rstn_i     => internal_wb_rstn,
-    
-    rx_wb_stb_o   => rx_wb64_stb,
-    rx_wb_dat_o   => rx_wb64_dat,
-    rx_wb_stall_i => rx_wb64_stall,
-    rx_bar_o      => rx_bar,
-    
-    tx_rdy_o      => tx_rdy,
-    tx_alloc_i    => tx64_alloc,
-    
-    tx_wb_stb_i   => tx_wb64_stb,
-    tx_wb_dat_i   => tx_wb64_dat,
-    tx_eop_i      => tx_eop);
+      wb_clk_o      => internal_wb_clk,
+      wb_rstn_i     => internal_wb_rstn,
+      
+      rx_wb_stb_o   => rx_wb64_stb,
+      rx_wb_dat_o   => rx_wb64_dat,
+      rx_wb_stall_i => rx_wb64_stall,
+      rx_bar_o      => rx_bar,
+      
+      tx_rdy_o      => tx_rdy,
+      tx_alloc_i    => tx64_alloc,
+      
+      tx_wb_stb_i   => tx_wb64_stb,
+      tx_wb_dat_i   => tx_wb64_dat,
+      tx_eop_i      => tx_eop);
   
   pcie_rx : pcie_64to32 port map(
     clk_i            => internal_wb_clk,

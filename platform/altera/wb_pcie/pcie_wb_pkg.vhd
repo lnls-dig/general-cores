@@ -6,10 +6,11 @@ use work.wishbone_pkg.all;
 package pcie_wb_pkg is
   component pcie_wb is
     generic(
+      g_family : string := "Arria II";
       sdb_addr : t_wishbone_address);
     port(
-      clk125_i      : in  std_logic; -- 125 MHz, free running
-      cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
+      clk125_i      : in  std_logic; -- 125 MHz, free running (unused by Arria V)
+      cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs (100MHz for Arria V)
       
       -- Physical PCIe pins
       pcie_refclk_i : in  std_logic; -- 100 MHz, must not derive clk125_i or cal_clk50_i
@@ -31,6 +32,8 @@ package pcie_wb_pkg is
   end component;
   
   component pcie_altera is
+    generic(
+      g_family      : string := "Arria II");
     port(
       clk125_i      : in  std_logic; -- 125 MHz, free running
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
