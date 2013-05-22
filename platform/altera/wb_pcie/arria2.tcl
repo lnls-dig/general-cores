@@ -15,3 +15,6 @@ foreach i $files {
     file mtime "$dir/$i.qip" [file mtime "$dir/$i.vhd"]
   }
 }
+
+# erase the broke SDC file that gets generated
+open "$dir/arria2_pcie_hip.sdc" "w"
