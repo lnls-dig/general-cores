@@ -78,6 +78,9 @@ elif (target == "xilinx" and action == "synthesis" and syn_device[0:4].upper()==
 elif (target == "xilinx" and action == "synthesis" and syn_device[0:4].upper()=="XC6V"):
 	__import_coregen_files()
 	modules = {"local" : ["xilinx", "xilinx/virtex6", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
+elif (target == "xilinx" and action == "synthesis"):	# Did not match any supported FPGAs. Fallback to inferred FIFOs
+	__import_coregen_files()
+	modules = {"local" : ["xilinx", "inferred", "coregen_ip/blk_mem_gen_v4_1", "coregen_ip/fifo_generator_v6_1"]}
 elif (target == "xilinx" and action == "simulation"):
 	modules = {"local" : ["xilinx", "xilinx/spartan6", "xilinx/sim_stub"]}
 else:
