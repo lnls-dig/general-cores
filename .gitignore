@@ -12,3 +12,4 @@ modelsim.ini
 *.o
 *.bin
 *.elf
+*.orig
