@@ -122,7 +122,9 @@ def parse_profiles():
 	return list(p)
 
 def gen_vhdl_component(f, profile_name):
-	f.write("component lm32_top_"+profile_name+" is port (\n");
+	f.write("component lm32_top_"+profile_name+" is \n")
+	f.write("generic ( eba_reset: std_logic_vector(31 downto 0) );\n");
+	f.write("port (\n");
 	f.write(""" 
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -174,7 +176,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 entity xwb_lm32 is
-generic(g_profile: string);
+generic(g_profile: string;
+g_reset_vector: std_logic_vector(31 downto 0) := x"00000000");
 port(
 clk_sys_i : in  std_logic;
 rst_n_i : in  std_logic;
@@ -259,6 +262,8 @@ begin
 		f.write("gen_profile_"+p[0]+": if (g_profile = \"" + p[0]+"\") generate\n");
 		f.write("U_Wrapped_LM32: lm32_top_"+p[0]+"\n");
 		f.write("""
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,

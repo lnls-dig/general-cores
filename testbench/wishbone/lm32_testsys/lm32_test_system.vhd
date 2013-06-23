@@ -35,8 +35,8 @@ architecture rtl of lm32_test_system is
 
 
   constant c_cfg_base_addr : t_wishbone_address_array(c_cnx_master_ports-1 downto 0) :=
-    (0 => x"00000000",                  -- 64KB of fpga memory
-     1 => x"10000000",                  -- The second port to the same memory
+    (0 => x"00880000",                  -- 64KB of fpga memory
+     1 => x"10880000",                  -- The second port to the same memory
      2 => x"20000000");                 -- Peripherals
 
   constant c_cfg_base_mask : t_wishbone_address_array(c_cnx_master_ports-1 downto 0) :=
@@ -50,7 +50,8 @@ begin  -- rtl
 
   U_CPU : xwb_lm32
     generic map (
-      g_profile => "medium")
+      g_profile => "medium",
+      g_reset_vector => x"00880000")
     port map (
       clk_sys_i => clk_sys_i,
       rst_n_i   => rst_n_i,

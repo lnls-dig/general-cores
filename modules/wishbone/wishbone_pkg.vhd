@@ -520,7 +520,8 @@ package wishbone_pkg is
 
   component xwb_lm32
     generic (
-      g_profile : string);
+      g_profile : string;
+      g_reset_vector : std_logic_vector(31 downto 0) := x"00000000");
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
