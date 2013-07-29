@@ -363,8 +363,7 @@ package wishbone_pkg is
   -- Release of the reset lines may be arbitrarily out-of-phase
   component xwb_clock_crossing is
     generic(
-      sync_depth : natural := 3;
-      log2fifo   : natural := 4);
+      g_size : natural := 16);
     port(
       -- Slave control port
       slave_clk_i    : in  std_logic;
@@ -396,6 +395,29 @@ package wishbone_pkg is
       slave1_o  : out t_wishbone_slave_out;
       slave2_i  : in  t_wishbone_slave_in;
       slave2_o  : out t_wishbone_slave_out);
+  end component;
+  
+  -- Just like the DMA controller, but constantly at address 0
+  component xwb_streamer is
+    generic(
+      -- Value 0 cannot stream
+      -- Value 1 only slaves with async ACK can stream
+      -- Value 2 only slaves with combined latency = 2 can stream
+      -- Value 3 only slaves with combined latency = 6 can stream
+      -- Value 4 only slaves with combined latency = 14 can stream
+      -- ....
+      logRingLen : integer := 4
+    );
+    port(
+      -- Common wishbone signals
+      clk_i       : in  std_logic;
+      rst_n_i     : in  std_logic;
+      -- Master reader port
+      r_master_i  : in  t_wishbone_master_in;
+      r_master_o  : out t_wishbone_master_out;
+      -- Master writer port
+      w_master_i  : in  t_wishbone_master_in;
+      w_master_o  : out t_wishbone_master_out);
   end component;
 
 
@@ -825,6 +847,48 @@ package wishbone_pkg is
       di_lp_o      : out std_logic;
       di_flm_o     : out std_logic;
       di_dat_o     : out std_logic);
+  end component;
+
+  constant c_wb_spi_flash_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"0000000000ffffff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"5cf12a1c",
+    version       => x"00000001",
+    date          => x"20130415",
+    name          => "SPI-FLASH-16M-MMAP ")));
+  component wb_spi_flash is
+    generic(
+      g_port_width             : natural   := 1;  --  1 for EPCS,  4 for EPCQ
+      g_addr_width             : natural   := 24; -- 24 for EPCS, 32 for EPCQ
+      g_idle_time              : natural   := 3;
+      -- leave these at defaults if you have:
+      --   a) slow clock, b) valid constraints, or c) registered in/outputs
+      g_input_latch_edge       : std_logic := '1'; -- rising
+      g_output_latch_edge      : std_logic := '0'; -- falling
+      g_input_to_output_cycles : natural   := 1);  -- between 1 and 32
+    port(
+      clk_i     : in  std_logic;
+      rstn_i    : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
+      
+      -- For properly constrained designs, set clk_out_i = clk_in_i.
+      clk_out_i : in  std_logic;
+      clk_in_i  : in  std_logic;
+      ncs_o     : out std_logic;
+      asdi_o    : out std_logic_vector(g_port_width-1 downto 0);
+      data_i    : in  std_logic_vector(g_port_width-1 downto 0);
+      
+      external_request_i : in  std_logic; -- JTAG wants to use SPI?
+      external_granted_o : out std_logic);
   end component;
 
 end wishbone_pkg;

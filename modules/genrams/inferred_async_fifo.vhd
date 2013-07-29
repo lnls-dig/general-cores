@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-07-13
+-- Last update: 2013-07-29
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -83,8 +83,6 @@ end inferred_async_fifo;
 
 
 architecture syn of inferred_async_fifo is
-
-
   
   function f_bin2gray(bin : unsigned) return unsigned is
   begin
@@ -125,15 +123,18 @@ architecture syn of inferred_async_fifo is
   signal going_full                        : std_logic;
 
   signal wr_count, rd_count : t_counter;
-  signal we                 : std_logic;
+  signal rd_int, we_int : std_logic;
+ 
+  
 begin  -- syn
 
-  we <= we_i and not full_int;
+  rd_int <= rd_i and not empty_int;
+  we_int <= we_i and not full_int;
 
   p_mem_write : process(clk_wr_i)
   begin
     if rising_edge(clk_wr_i) then
-      if(we = '1') then
+      if(we_int = '1') then
         mem(to_integer(wcb.bin(wcb.bin'left-1 downto 0))) <= d_i;
       end if;
     end if;
@@ -142,7 +143,7 @@ begin  -- syn
   p_mem_read : process(clk_rd_i)
   begin
     if rising_edge(clk_rd_i) then
-      if(rd_i = '1' and empty_int = '0') then
+      if(rd_int = '1') then
         q_o <= mem(to_integer(rcb.bin(rcb.bin'left-1 downto 0)));
       end if;
     end if;
@@ -157,7 +158,7 @@ begin  -- syn
       wcb.bin  <= (others => '0');
       wcb.gray <= (others => '0');
     elsif rising_edge(clk_wr_i) then
-      if(we_i = '1' and full_int = '0') then
+      if(we_int = '1') then
         wcb.bin  <= wcb.bin_next;
         wcb.gray <= wcb.gray_next;
       end if;
@@ -173,7 +174,7 @@ begin  -- syn
       rcb.bin  <= (others => '0');
       rcb.gray <= (others => '0');
     elsif rising_edge(clk_rd_i) then
-      if(rd_i = '1' and empty_int = '0') then
+      if(rd_int = '1') then
         rcb.bin  <= rcb.bin_next;
         rcb.gray <= rcb.gray_next;
       end if;
@@ -205,7 +206,7 @@ begin  -- syn
     if rst_n_i = '0' then
       empty_int <= '1';
     elsif rising_edge (clk_rd_i) then
-      if(rcb.gray = wcb.gray_x or (rd_i = '1' and (wcb.gray_x = rcb.gray_next))) then
+      if(rcb.gray = wcb.gray_x or (rd_int = '1' and (wcb.gray_x = rcb.gray_next))) then
         empty_int <= '1';
       else
         empty_int <= '0';
@@ -213,12 +214,12 @@ begin  -- syn
     end if;
   end process;
 
-  p_gen_going_full : process(we_i, wcb, rcb)
+  p_gen_going_full : process(we_int, wcb, rcb)
   begin
     if ((wcb.bin (wcb.bin'left-1 downto 0) = rcb.bin_x(rcb.bin_x'left-1 downto 0))
         and (wcb.bin(wcb.bin'left) /= rcb.bin_x(wcb.bin_x'left))) then
       going_full <= '1';
-    elsif (we_i = '1'
+    elsif (we_int = '1'
            and (wcb.bin_next(wcb.bin'left-1 downto 0) = rcb.bin_x(rcb.bin_x'left-1 downto 0))
            and (wcb.bin_next(wcb.bin'left) /= rcb.bin_x(rcb.bin_x'left))) then
       going_full <= '1';

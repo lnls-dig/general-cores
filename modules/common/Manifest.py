@@ -10,7 +10,7 @@ files = [	"gencores_pkg.vhd",
                 "gc_arbitrated_mux.vhd",
                 "gc_pulse_synchronizer.vhd",
                 "gc_frequency_meter.vhd",
-                "gc_wfifo.vhd",
-                "gc_rr_arbiter.vhd",
+				"gc_rr_arbiter.vhd",
                 "gc_prio_encoder.vhd",
-                "gc_word_packer.vhd"];
+                "gc_word_packer.vhd"
+				];

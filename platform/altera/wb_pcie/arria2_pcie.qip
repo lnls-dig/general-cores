@@ -1,0 +1,2 @@
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) "arria2_pcie_hip.qip"]
+set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) "arria2_pcie_reconf.qip"]

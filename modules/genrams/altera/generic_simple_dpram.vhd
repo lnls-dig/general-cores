@@ -69,6 +69,7 @@ architecture syn of generic_simple_dpram is
       return "DONT_CARE";
     else
       assert (false) report "generic_simple_dpram: g_addr_conflict_resolution must be: read_first, write_first, dont_care" severity failure;
+      return "DONT_CARE";
     end if;
   end f_diffport_order;
   
