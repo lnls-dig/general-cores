@@ -17,7 +17,6 @@ modules =  { "local" : [
   "wb_dma",
   "wb_serial_lcd",
   "wb_spi_flash",
-  "wb_xilinx_fpga_loader",
   "wbgen2"
   ]}
 
