@@ -107,7 +107,8 @@ architecture syn of generic_sync_fifo is
       g_size                   : natural;
       g_dual_clock             : boolean;
       g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer);
+      g_almost_full_threshold  : integer;
+      g_with_count             : boolean := true);
     port (
       rst_n_i           : in  std_logic := '1';
       clk_wr_i          : in  std_logic;
@@ -168,7 +169,8 @@ begin  -- syn
         g_size                   => g_size,
         g_dual_clock             => false,
         g_almost_empty_threshold => f_empty_thr(g_with_almost_empty, g_almost_empty_threshold, g_size),
-        g_almost_full_threshold  => f_empty_thr(g_with_almost_full, g_almost_full_threshold, g_size))
+        g_almost_full_threshold  => f_empty_thr(g_with_almost_full, g_almost_full_threshold, g_size),
+        g_with_count             => g_with_count)
       port map (
         rst_n_i           => rst_n_i,
         clk_wr_i          => clk_i,
