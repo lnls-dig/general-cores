@@ -42,7 +42,8 @@ entity v6_hwfifo_wraper is
     -- Read-side flag selection
 
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer   -- threshold for almost full flag
+    g_almost_full_threshold  : integer;   -- threshold for almost full flag
+    g_with_count  : boolean := true
     );
 
   port (
@@ -209,7 +210,7 @@ begin  -- syn
   end generate gen_fifo18;
 
 
-  gen_pointers : if(g_dual_clock = false) generate
+  gen_pointers : if(g_dual_clock = false and g_with_count = true) generate
     rd_count_o <= std_logic_vector(resize(unsigned(wr_ptr) - unsigned(rd_ptr), rd_count_o'length));
     wr_count_o <= std_logic_vector(resize(unsigned(wr_ptr) - unsigned(rd_ptr), wr_count_o'length));
   end generate gen_pointers;
