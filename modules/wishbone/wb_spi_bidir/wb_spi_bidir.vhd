@@ -28,7 +28,7 @@ entity wb_spi_bidir is
     pad_sclk_o : out std_logic;
     pad_mosi_o : out std_logic;
     pad_mosi_i : in std_logic;
-    pad_mosi_en: out std_logic;
+    pad_mosi_en_o: out std_logic;
     pad_miso_i : in  std_logic
     );
 
@@ -55,7 +55,7 @@ architecture rtl of wb_spi_bidir is
       sclk_pad_o : out std_logic;
       mosi_pad_o : out std_logic;
       mosi_pad_i : in  std_logic;
-      mosi_out_en: out std_logic;
+      mosi_out_en_o: out std_logic;
       miso_pad_i : in  std_logic);
   end component;
 
@@ -116,7 +116,7 @@ begin
       sclk_pad_o => pad_sclk_o,
       mosi_pad_o => pad_mosi_o, -- mosi is bidir line
       mosi_pad_i => pad_mosi_i,
-      mosi_out_en => pad_mosi_en,
+      mosi_out_en_o => pad_mosi_en_o,
       miso_pad_i => pad_miso_i);
 
 end rtl;

@@ -51,7 +51,7 @@ module spi_bidir_top
 
   // SPI signals
   ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, mosi_pad_i,
-  mosi_out_en
+  mosi_out_en_o
 );
 
   parameter Tp = 1;
@@ -77,8 +77,8 @@ module spi_bidir_top
   input                            miso_pad_i;       // master in slave out
   input                   mosi_pad_i;       // wejscie linii dwukierunkowej MOSI
 
-  output mosi_out_en;
-  wire mosi_out_en;
+  output mosi_out_en_o;
+  wire mosi_out_en_o;
 
   reg                     [32-1:0] wb_dat_o;
   reg                              wb_ack_o;
@@ -333,5 +333,5 @@ module spi_bidir_top
                    .tip(tip), .last(last_bit),
                    .p_in(wb_dat_i), .p_out(rx), .p_out_miso(rx_miso),
                    .s_clk(sclk_pad_o), .s_in_miso(miso_pad_i), .s_in_mosi(mosi_pad_i), .s_out(mosi_pad_o),
-             .bidir(bidir_on), .mosi_out_en(mosi_out_en), .bidir_send_bit_num(bidir_config[6:0]) );
+             .bidir(bidir_on), .mosi_out_en(mosi_out_en_o), .bidir_send_bit_num(bidir_config[6:0]) );
 endmodule
