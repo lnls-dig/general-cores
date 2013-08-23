@@ -58,7 +58,7 @@ architecture syn of wbgen2_dpssram is
       g_data_width               : natural;
       g_size                     : natural;
       g_with_byte_enable         : boolean;
-      g_addr_conflict_resolution : string := "read_first";
+      g_addr_conflict_resolution : string := "dont_care";
       g_init_file                : string := "";
       g_dual_clock               : boolean);
     port (

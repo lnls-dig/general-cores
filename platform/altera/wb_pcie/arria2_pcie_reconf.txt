@@ -1,0 +1,48 @@
+-- megafunction wizard: %ALTGX_RECONFIG%
+-- GENERATION: STANDARD
+-- VERSION: WM1.0
+-- MODULE: alt2gxb_reconfig 
+
+--alt2gxb_reconfig BASE_PORT_WIDTH=1 CBX_AUTO_BLACKBOX="ALL" DEVICE_FAMILY="Arria II GX" ENABLE_BUF_CAL="TRUE" ENABLE_CHL_ADDR_FOR_ANALOG_CTRL="TRUE" NUMBER_OF_CHANNELS=1 NUMBER_OF_RECONFIG_PORTS=1 READ_BASE_PORT_WIDTH=1 RECONFIG_FROMGXB_WIDTH=17 RECONFIG_TOGXB_WIDTH=4 busy reconfig_clk reconfig_fromgxb reconfig_mode_sel reconfig_togxb
+--VERSION_BEGIN 12.1SP1 cbx_alt2gxb_reconfig 2013:01:31:18:04:54:SJ cbx_alt_cal 2013:01:31:18:04:54:SJ cbx_alt_dprio 2013:01:31:18:04:54:SJ cbx_altsyncram 2013:01:31:18:04:54:SJ cbx_cycloneii 2013:01:31:18:04:54:SJ cbx_lpm_add_sub 2013:01:31:18:04:54:SJ cbx_lpm_compare 2013:01:31:18:04:54:SJ cbx_lpm_counter 2013:01:31:18:04:54:SJ cbx_lpm_decode 2013:01:31:18:04:54:SJ cbx_lpm_mux 2013:01:31:18:04:54:SJ cbx_lpm_shiftreg 2013:01:31:18:04:54:SJ cbx_mgl 2013:01:31:19:27:12:SJ cbx_stratix 2013:01:31:18:04:54:SJ cbx_stratixii 2013:01:31:18:04:54:SJ cbx_stratixiii 2013:01:31:18:04:54:SJ cbx_stratixv 2013:01:31:18:04:54:SJ cbx_util_mgl 2013:01:31:18:04:54:SJ  VERSION_END
+
+
+--alt_dprio address_width=16 CBX_AUTO_BLACKBOX="ALL" device_family="Arria II GX" quad_address_width=9 address busy datain dataout dpclk dpriodisable dprioin dprioload dprioout quad_address rden reset wren wren_data
+--VERSION_BEGIN 12.1SP1 cbx_alt_dprio 2013:01:31:18:04:54:SJ cbx_cycloneii 2013:01:31:18:04:54:SJ cbx_lpm_add_sub 2013:01:31:18:04:54:SJ cbx_lpm_compare 2013:01:31:18:04:54:SJ cbx_lpm_counter 2013:01:31:18:04:54:SJ cbx_lpm_decode 2013:01:31:18:04:54:SJ cbx_lpm_shiftreg 2013:01:31:18:04:54:SJ cbx_mgl 2013:01:31:19:27:12:SJ cbx_stratix 2013:01:31:18:04:54:SJ cbx_stratixii 2013:01:31:18:04:54:SJ  VERSION_END
+
+-- ============================================================
+-- CNX file retrieval info
+-- ============================================================
+-- Retrieval info: PRIVATE: ADCE NUMERIC "0"
+-- Retrieval info: PRIVATE: CMU_PLL NUMERIC "0"
+-- Retrieval info: PRIVATE: DATA_RATE NUMERIC "0"
+-- Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Arria II GX"
+-- Retrieval info: PRIVATE: PMA NUMERIC "1"
+-- Retrieval info: PRIVATE: PROTO_SWITCH NUMERIC "0"
+-- Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
+-- Retrieval info: CONSTANT: BASE_PORT_WIDTH NUMERIC "1"
+-- Retrieval info: CONSTANT: CBX_BLACKBOX_LIST STRING "-lpm_mux"
+-- Retrieval info: CONSTANT: ENABLE_CHL_ADDR_FOR_ANALOG_CTRL STRING "TRUE"
+-- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Arria II GX"
+-- Retrieval info: CONSTANT: NUMBER_OF_CHANNELS NUMERIC "1"
+-- Retrieval info: CONSTANT: NUMBER_OF_RECONFIG_PORTS NUMERIC "1"
+-- Retrieval info: CONSTANT: READ_BASE_PORT_WIDTH NUMERIC "1"
+-- Retrieval info: CONSTANT: enable_buf_cal STRING "true"
+-- Retrieval info: CONSTANT: reconfig_fromgxb_width NUMERIC "17"
+-- Retrieval info: CONSTANT: reconfig_togxb_width NUMERIC "4"
+-- Retrieval info: USED_PORT: busy 0 0 0 0 OUTPUT NODEFVAL "busy"
+-- Retrieval info: USED_PORT: reconfig_clk 0 0 0 0 INPUT NODEFVAL "reconfig_clk"
+-- Retrieval info: USED_PORT: reconfig_fromgxb 0 0 17 0 INPUT NODEFVAL "reconfig_fromgxb[16..0]"
+-- Retrieval info: USED_PORT: reconfig_togxb 0 0 4 0 OUTPUT NODEFVAL "reconfig_togxb[3..0]"
+-- Retrieval info: CONNECT: @reconfig_clk 0 0 0 0 reconfig_clk 0 0 0 0
+-- Retrieval info: CONNECT: @reconfig_fromgxb 0 0 17 0 reconfig_fromgxb 0 0 17 0
+-- Retrieval info: CONNECT: @reconfig_mode_sel 0 0 3 0 GND 0 0 3 0
+-- Retrieval info: CONNECT: busy 0 0 0 0 @busy 0 0 0 0
+-- Retrieval info: CONNECT: reconfig_togxb 0 0 4 0 @reconfig_togxb 0 0 4 0
+-- Retrieval info: GEN_FILE: TYPE_NORMAL arria2_pcie_reconf.vhd TRUE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL arria2_pcie_reconf.inc FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL arria2_pcie_reconf.cmp TRUE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL arria2_pcie_reconf.bsf FALSE
+-- Retrieval info: GEN_FILE: TYPE_NORMAL arria2_pcie_reconf_inst.vhd FALSE
+-- Retrieval info: LIB_FILE: altera_mf
+-- Retrieval info: LIB_FILE: lpm
