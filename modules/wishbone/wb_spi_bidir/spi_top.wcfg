@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/andrzej/Pulpit/FPGA_firmware/TestProject/tb_spi_top_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_spi_top" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="46" />
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_clk_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_clk_i</obj_property>
+      <obj_property name="ObjectShortName">wb_clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_rst_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_rst_i</obj_property>
+      <obj_property name="ObjectShortName">wb_rst_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_adr_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_adr_i[5:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_adr_i[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_dat_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_dat_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_dat_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_sel_i" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_sel_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_sel_i[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_we_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_we_i</obj_property>
+      <obj_property name="ObjectShortName">wb_we_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_stb_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_stb_i</obj_property>
+      <obj_property name="ObjectShortName">wb_stb_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_cyc_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_cyc_i</obj_property>
+      <obj_property name="ObjectShortName">wb_cyc_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_err_o" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_err_o</obj_property>
+      <obj_property name="ObjectShortName">wb_err_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/ss_pad_o" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ss_pad_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">ss_pad_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/shift/cnt" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">cnt[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cnt[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/shift/send_bit_cnt" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">send_bit_cnt[11:0]</obj_property>
+      <obj_property name="ObjectShortName">send_bit_cnt[11:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/shift/mosi_out_en" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mosi_out_en</obj_property>
+      <obj_property name="ObjectShortName">mosi_out_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/sclk_pad_o" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">sclk_pad_o</obj_property>
+      <obj_property name="ObjectShortName">sclk_pad_o</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/mosi_pad_o" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mosi_pad_o</obj_property>
+      <obj_property name="ObjectShortName">mosi_pad_o</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/miso_pad_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">miso_pad_i</obj_property>
+      <obj_property name="ObjectShortName">miso_pad_i</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/mosi_pad_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mosi_pad_i</obj_property>
+      <obj_property name="ObjectShortName">mosi_pad_i</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/mosi_out_en" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">mosi_out_en</obj_property>
+      <obj_property name="ObjectShortName">mosi_out_en</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/rx" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">rx[127:0]</obj_property>
+      <obj_property name="ObjectShortName">rx[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/rx_miso" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">rx_miso[127:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_miso[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/rx_negedge" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rx_negedge</obj_property>
+      <obj_property name="ObjectShortName">rx_negedge</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/tx_negedge" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">tx_negedge</obj_property>
+      <obj_property name="ObjectShortName">tx_negedge</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/char_len" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">char_len[6:0]</obj_property>
+      <obj_property name="ObjectShortName">char_len[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/go" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">go</obj_property>
+      <obj_property name="ObjectShortName">go</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/lsb" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">lsb</obj_property>
+      <obj_property name="ObjectShortName">lsb</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/ie" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ie</obj_property>
+      <obj_property name="ObjectShortName">ie</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/ass" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ass</obj_property>
+      <obj_property name="ObjectShortName">ass</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/spi_divider_sel" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_divider_sel</obj_property>
+      <obj_property name="ObjectShortName">spi_divider_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/spi_ctrl_sel" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_ctrl_sel</obj_property>
+      <obj_property name="ObjectShortName">spi_ctrl_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/spi_tx_sel" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_tx_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">spi_tx_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/spi_ss_sel" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_ss_sel</obj_property>
+      <obj_property name="ObjectShortName">spi_ss_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/tip" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">tip</obj_property>
+      <obj_property name="ObjectShortName">tip</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/pos_edge" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pos_edge</obj_property>
+      <obj_property name="ObjectShortName">pos_edge</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/neg_edge" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">neg_edge</obj_property>
+      <obj_property name="ObjectShortName">neg_edge</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/last_bit" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">last_bit</obj_property>
+      <obj_property name="ObjectShortName">last_bit</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/spi_bidir_sel" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">spi_bidir_sel</obj_property>
+      <obj_property name="ObjectShortName">spi_bidir_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/bidir_on" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bidir_on</obj_property>
+      <obj_property name="ObjectShortName">bidir_on</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_dat_o" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_dat_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_dat_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_ack_o" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_ack_o</obj_property>
+      <obj_property name="ObjectShortName">wb_ack_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_int_o" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_int_o</obj_property>
+      <obj_property name="ObjectShortName">wb_int_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/divider" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">divider[15:0]</obj_property>
+      <obj_property name="ObjectShortName">divider[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/ctrl" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ctrl[13:0]</obj_property>
+      <obj_property name="ObjectShortName">ctrl[13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/ss" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ss[7:0]</obj_property>
+      <obj_property name="ObjectShortName">ss[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_dat" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_dat[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_dat[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/bidir_config" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bidir_config[7:0]</obj_property>
+      <obj_property name="ObjectShortName">bidir_config[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_spi_top/i_spi_top/wb_clk_i" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">wb_clk_i</obj_property>
+      <obj_property name="ObjectShortName">wb_clk_i</obj_property>
+   </wvobject>
+</wave_config>

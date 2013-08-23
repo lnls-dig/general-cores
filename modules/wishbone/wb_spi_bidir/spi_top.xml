@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wb_driver nazwa="spi_top" wersja="1.0" opis="Nowa wersja, poprawiony automat, uwaga z kodzie, tryb rx stable na negedge a tx na posedge odczyt pomija jeden bit" >
+	<interface>
+		<line nazwa="ss_pad_o" typ="output" wektor="8" />
+		<line nazwa="sclk_pad_o" typ="output" />
+		<line nazwa="miso_pad_i" typ="input" />
+		<line nazwa="spi_mosi" typ="inout" in="mosi_pad_i" out="mosi_pad_o" en="mosi_out_en" en_level="0" />
+	</interface>
+	<wb_interface opis="opis dostepnych linii WB w komponencie">
+		<line nazwa="wb_clk_i" wb_name="wb_clk" />
+		<line nazwa="wb_rst_i" wb_name="wb_rst" />
+		<line nazwa="wb_cyc_i" wb_name="wb_cyc" />
+		<line nazwa="wb_adr_i" wb_name="wb_adr" />
+		<line nazwa="wb_dat_i" wb_name="wb_data_in" />
+		<line nazwa="wb_sel_i" wb_name="wb_sel" />
+		<line nazwa="wb_we_i" wb_name="wb_we" />
+		<line nazwa="wb_stb_i" wb_name="wb_stb" />
+		<line nazwa="wb_dat_o" wb_name="wb_data_out" />
+		<line nazwa="wb_ack_o" wb_name="wb_ack" />
+		<line nazwa="wb_err_o" wb_name="wb_err" />
+		<line nazwa="wb_int_o" wb_name="wb_int" />
+	</wb_interface>	
+</wb_driver>
