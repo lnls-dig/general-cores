@@ -1,0 +1,73 @@
+
+@regsection Memory map summary
+@multitable  @columnfractions .10 .15 .15 .55
+@headitem Address @tab Type @tab Prefix @tab Name
+@item @code{0x0} @tab
+REG @tab
+@code{CODR} @tab
+Clear Output Pin Register
+@item @code{0x4} @tab
+REG @tab
+@code{SODR} @tab
+Set Output Pin Register
+@item @code{0x8} @tab
+REG @tab
+@code{DDR} @tab
+Pin Direction Register
+@item @code{0xc} @tab
+REG @tab
+@code{PSR} @tab
+Pin State Register
+@end multitable 
+@regsection @code{CODR} - Clear Output Pin Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{CODR}
+@tab @code{0} @tab 
+Clear output pin(s)
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{CODR} @tab @bullet{}  write 1: The output pin(s) corresponding to the bits written with one(s) are cleared. No effect for pins configured as inputs.@*@bullet{}  write 0: no effect
+@end multitable
+@regsection @code{SODR} - Set Output Pin Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{SODR}
+@tab @code{0} @tab 
+Set output pin(s)
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{SODR} @tab @bullet{}  write 1: The output pin(s) corresponding to the bits written with one(s) are set. No effect for pins configured as inputs.@*@bullet{}  write 0: no effect
+@end multitable
+@regsection @code{DDR} - Pin Direction Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab R/W @tab
+@code{DDR}
+@tab @code{0} @tab 
+Pin directions
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{DDR} @tab @bullet{}  1: The pin corresponding to the bit is configured as an output. @*@bullet{}  0: The pin corresponding to the bit is configured as an input. 
+@end multitable
+@regsection @code{PSR} - Pin State Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab R/O @tab
+@code{PSR}
+@tab @code{X} @tab 
+Pin directions
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{PSR} @tab @bullet{}  read 1: The input pin corresponding to the read bit is HIGH. @*@bullet{}  read 0: The input pin(s) corresponding to the read bit is LOW. 
+@end multitable

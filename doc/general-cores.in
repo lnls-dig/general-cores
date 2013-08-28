@@ -51,6 +51,10 @@
 @contents
 @end iftex
 
+@macro regsection{name}
+@subsubsection \name\
+@end macro
+
 @c ##########################################################################
 @node Top
 @chapter Introduction
