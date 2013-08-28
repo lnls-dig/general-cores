@@ -1,4 +1,4 @@
-set files { dual_region single_region global_region }
+set files { arria5/dual_region arria5/single_region arria5/global_region }
 
 set dir [file dirname [info script]]
 post_message "Testing for megawizard regeneration in $dir:$files"
