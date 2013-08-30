@@ -12,6 +12,7 @@ package altera_flash_pkg is
       g_family                 : string;
       g_port_width             : natural;
       g_addr_width             : natural;
+      g_dummy_time             : natural;
       g_input_latch_edge       : std_logic;
       g_output_latch_edge      : std_logic;
       g_input_to_output_cycles : natural);

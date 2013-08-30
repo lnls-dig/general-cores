@@ -849,26 +849,13 @@ package wishbone_pkg is
       di_dat_o     : out std_logic);
   end component;
 
-  constant c_wb_spi_flash_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
-    abi_ver_major => x"01",
-    abi_ver_minor => x"00",
-    wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
-    sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"0000000000ffffff",
-    product => (
-    vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"5cf12a1c",
-    version       => x"00000001",
-    date          => x"20130415",
-    name          => "SPI-FLASH-16M-MMAP ")));
+  function f_wb_spi_flash_sdb(g_bits : natural) return t_sdb_device;
   component wb_spi_flash is
     generic(
-      g_port_width             : natural   := 1;  --  1 for EPCS,  4 for EPCQ
-      g_addr_width             : natural   := 24; -- 24 for EPCS, 32 for EPCQ
+      g_port_width             : natural   := 1;  -- 1 for EPCS, 4 for EPCQ
+      g_addr_width             : natural   := 24; -- log of memory (24=16MB)
       g_idle_time              : natural   := 3;
+      g_dummy_time             : natural   := 8;
       -- leave these at defaults if you have:
       --   a) slow clock, b) valid constraints, or c) registered in/outputs
       g_input_latch_edge       : std_logic := '1'; -- rising
@@ -884,6 +871,7 @@ package wishbone_pkg is
       clk_out_i : in  std_logic;
       clk_in_i  : in  std_logic;
       ncs_o     : out std_logic;
+      oe_o      : out std_logic_vector(g_port_width-1 downto 0);
       asdi_o    : out std_logic_vector(g_port_width-1 downto 0);
       data_i    : in  std_logic_vector(g_port_width-1 downto 0);
       
@@ -1294,4 +1282,25 @@ package body wishbone_pkg is
     return s;
   end f_slv2string;
 
+  function f_wb_spi_flash_sdb(g_bits : natural) return t_sdb_device is
+    variable result : t_sdb_device := (
+      abi_class     => x"0000", -- undocumented device
+      abi_ver_major => x"01",
+      abi_ver_minor => x"00",
+      wbd_endian    => c_sdb_endian_big,
+      wbd_width     => x"7", -- 8/16/32-bit port granularity
+      sdb_component => (
+      addr_first    => x"0000000000000000",
+      addr_last     => x"0000000000ffffff",
+      product => (
+      vendor_id     => x"0000000000000651", -- GSI
+      device_id     => x"5cf12a1c",
+      version       => x"00000001",
+      date          => x"20130415",
+      name          => "SPI-FLASH-16M-MMAP ")));
+  begin
+    result.sdb_component.addr_last := std_logic_vector(to_unsigned(2**g_bits-1, 64));
+    return result;
+  end f_wb_spi_flash_sdb;
+  
 end wishbone_pkg;

@@ -9,6 +9,7 @@ entity flash_top is
     g_family                 : string;
     g_port_width             : natural;
     g_addr_width             : natural;
+    g_dummy_time             : natural;
     g_input_latch_edge       : std_logic;
     g_output_latch_edge      : std_logic;
     g_input_to_output_cycles : natural);
@@ -32,11 +33,13 @@ architecture rtl of flash_top is
     port(
       dclk_i : in  std_logic;
       ncs_i  : in  std_logic;
+      oe_i   : in  std_logic_vector(g_port_width-1 downto 0);
       asdo_i : in  std_logic_vector(g_port_width-1 downto 0);
       data_o : out std_logic_vector(g_port_width-1 downto 0));
   end component;
   
   signal flash_ncs  : std_logic;
+  signal flash_oe   : std_logic_vector(g_port_width-1 downto 0);
   signal flash_asdo : std_logic_vector(g_port_width-1 downto 0);
   signal flash_data : std_logic_vector(g_port_width-1 downto 0);
   
@@ -47,6 +50,7 @@ begin
       g_port_width             => g_port_width,
       g_addr_width             => g_addr_width,
       g_idle_time              => 3,
+      g_dummy_time             => g_dummy_time,
       g_input_latch_edge       => g_input_latch_edge,
       g_output_latch_edge      => g_output_latch_edge,
       g_input_to_output_cycles => g_input_to_output_cycles)
@@ -58,6 +62,7 @@ begin
       clk_out_i          => clk_out_i,
       clk_in_i           => clk_in_i,
       ncs_o              => flash_ncs,
+      oe_o               => flash_oe,
       asdi_o             => flash_asdo,
       data_i             => flash_data,
       external_request_i => '0',
@@ -70,6 +75,7 @@ begin
     port map(
       dclk_i => clk_out_i,
       ncs_i  => flash_ncs,
+      oe_i   => flash_oe,
       asdo_i => flash_asdo,
       data_o => flash_data);
   
