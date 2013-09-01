@@ -716,7 +716,6 @@ package wishbone_pkg is
 
   component xwb_spi_bidir
   generic(
-    g_three_wire_mode     : integer                        := 0;
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity : t_wishbone_address_granularity := WORD
     );

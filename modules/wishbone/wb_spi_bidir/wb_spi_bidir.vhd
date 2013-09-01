@@ -24,12 +24,12 @@ entity wb_spi_bidir is
     wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
 
-    pad_cs_o   : out std_logic_vector(7 downto 0);
-    pad_sclk_o : out std_logic;
-    pad_mosi_o : out std_logic;
-    pad_mosi_i : in std_logic;
-    pad_mosi_en_o: out std_logic;
-    pad_miso_i : in  std_logic
+    pad_cs_o       : out std_logic_vector(7 downto 0);
+    pad_sclk_o     : out std_logic;
+    pad_mosi_o     : out std_logic;
+    pad_mosi_i     : in  std_logic;
+    pad_mosi_en_o  : out std_logic;
+    pad_miso_i     : in  std_logic
     );
 
 end wb_spi_bidir;
