@@ -52,10 +52,11 @@ package wishbone_pkg is
 
   type t_wishbone_address_array is array(natural range <>) of t_wishbone_address;
   type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
+  --type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
+  subtype t_wishbone_slave_in_array is t_wishbone_master_out_array;
   type t_wishbone_slave_out_array is array (natural range <>) of t_wishbone_slave_out;
-  type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
-  type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
-
+  --type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
+  subtype t_wishbone_master_in_array is t_wishbone_slave_out_array;
 
   constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0):=
     (others => 'X');
