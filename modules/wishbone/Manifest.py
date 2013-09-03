@@ -11,6 +11,7 @@ modules =  { "local" : [
   "wb_vic",
   "wb_spi",
   "wb_crossbar",
+  "wb_irq",
   "wb_lm32",
   "wb_slave_adapter",
   "wb_clock_crossing",
