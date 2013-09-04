@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-10-05
+-- Last update: 2013-09-04
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -19,6 +19,7 @@
 -- Date        Version  Author          Description
 -- 2010-05-18  1.0      twlostow        Created
 -- 2010-10-04  1.1      twlostow        Added WB slave adapter
+-- 2013-09-04  1.2      greg.d          Optimized for g_num_pins up to 32
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -176,55 +177,100 @@ begin
     end if;
   end process;
 
-  gen_banks_wr : for i in 0 to c_NUM_BANKS-1 generate
-    process (clk_sys_i)
+  GEN_LARGE: if g_num_pins > 32 generate
+    gen_banks_wr : for i in 0 to c_NUM_BANKS-1 generate
+      process (clk_sys_i)
+      begin
+        if rising_edge(clk_sys_i) then
+          if rst_n_i = '0' then
+            dir_reg(32 * i + 31 downto 32 * i) <= (others => '0');
+            out_reg(32 * i + 31 downto 32 * i) <= (others => '0');
+          else
+            if(sor_wr(i) = '1') then
+              out_reg(i * 32 + 31 downto i * 32) <= out_reg(i * 32 + 31 downto i * 32) or wb_in.dat;
+            end if;
+            if(cor_wr(i) = '1') then
+              out_reg(i * 32 + 31 downto i * 32) <= out_reg(i * 32 + 31 downto i * 32) and (not wb_in.dat);
+            end if;
+            if(ddr_wr(i) = '1') then
+              dir_reg(i * 32 + 31 downto i * 32) <= wb_in.dat;
+            end if;
+          end if;
+        end if;
+      end process;
+    end generate gen_banks_wr;
+
+    p_wb_reads : process(clk_sys_i)
     begin
       if rising_edge(clk_sys_i) then
         if rst_n_i = '0' then
-          dir_reg(32 * i + 31 downto 32 * i) <= (others => '0');
-          out_reg(32 * i + 31 downto 32 * i) <= (others => '0');
+          wb_out.dat <= (others => '0');
         else
-          if(sor_wr(i) = '1') then
-            out_reg(i * 32 + 31 downto i * 32) <= out_reg(i * 32 + 31 downto i * 32) or wb_in.dat;
+          wb_out.dat <= (others => 'X');
+          case wb_in.adr(2 downto 0) is
+            when c_GPIO_REG_DDR =>
+              for i in 0 to c_NUM_BANKS-1 loop
+                if(to_integer(unsigned(wb_in.adr(5 downto 3))) = i) then
+                  wb_out.dat <= dir_reg(32 * i + 31 downto 32 * i);
+                end if;
+              end loop;  -- i 
+
+            when c_GPIO_REG_PSR =>
+              for i in 0 to c_NUM_BANKS-1 loop
+                if(to_integer(unsigned(wb_in.adr(5 downto 3))) = i) then
+                  wb_out.dat <= gpio_in_synced(32 * i + 31 downto 32 * i);
+                end if;
+              end loop;  -- i 
+            when others => null;
+          end case;
+        end if;
+      end if;
+    end process;
+  end generate;
+
+  GEN_SMALL: if g_num_pins < 33 generate
+    p_wb_write: process (clk_sys_i)
+    begin
+      if rising_edge(clk_sys_i) then
+        if rst_n_i = '0' then
+          dir_reg(g_num_pins-1 downto 0) <= (others => '0');
+          out_reg(g_num_pins-1 downto 0) <= (others => '0');
+        else
+          if(sor_wr(0) = '1') then
+            out_reg(g_num_pins-1 downto 0) <= out_reg(g_num_pins-1 downto 0) or wb_in.dat(g_num_pins-1 downto 0);
           end if;
-          if(cor_wr(i) = '1') then
-            out_reg(i * 32 + 31 downto i * 32) <= out_reg(i * 32 + 31 downto i * 32) and (not wb_in.dat);
+          if(cor_wr(0) = '1') then
+            out_reg(g_num_pins-1 downto 0) <= out_reg(g_num_pins-1 downto 0) and (not wb_in.dat(g_num_pins-1 downto 0));
           end if;
-          if(ddr_wr(i) = '1') then
-            dir_reg(i * 32 + 31 downto i * 32) <= wb_in.dat;
+          if(ddr_wr(0) = '1') then
+            dir_reg(g_num_pins-1 downto 0) <= wb_in.dat(g_num_pins-1 downto 0);
           end if;
         end if;
       end if;
     end process;
-  end generate gen_banks_wr;
 
+    p_wb_reads : process(clk_sys_i)
+    begin
+      if rising_edge(clk_sys_i) then
+        if rst_n_i = '0' then
+          wb_out.dat <= (others => '0');
+        else
+          wb_out.dat <= (others => 'X');
+          case wb_in.adr(2 downto 0) is
+            when c_GPIO_REG_DDR =>
+              wb_out.dat(g_num_pins-1 downto 0) <= dir_reg(g_num_pins-1 downto 0);
 
-  p_wb_reads : process(clk_sys_i)
-  begin
-    if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' then
-        wb_out.dat <= (others => '0');
-      else
-        wb_out.dat <= (others => 'X');
-        case wb_in.adr(2 downto 0) is
-          when c_GPIO_REG_DDR =>
-            for i in 0 to c_NUM_BANKS-1 loop
-              if(to_integer(unsigned(wb_in.adr(5 downto 3))) = i) then
-                wb_out.dat <= dir_reg(32 * i + 31 downto 32 * i);
-              end if;
-            end loop;  -- i 
+            when c_GPIO_REG_PSR =>
+              wb_out.dat(g_num_pins-1 downto 0) <= gpio_in_synced(g_num_pins-1 downto 0);
 
-          when c_GPIO_REG_PSR =>
-            for i in 0 to c_NUM_BANKS-1 loop
-              if(to_integer(unsigned(wb_in.adr(5 downto 3))) = i) then
-                wb_out.dat <= gpio_in_synced(32 * i + 31 downto 32 * i);
-              end if;
-            end loop;  -- i 
-          when others => null;
-        end case;
+            when others => null;
+          end case;
+        end if;
       end if;
-    end if;
-  end process;
+    end process;
+
+  end generate;
+
 
   p_gen_ack : process (clk_sys_i)
   begin
