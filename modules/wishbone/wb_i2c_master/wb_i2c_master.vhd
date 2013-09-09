@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2011-10-05
+-- Last update: 2013-09-09
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -23,6 +23,7 @@
 -- Date        Version  Author          Description
 -- 2010-05-18  1.0      twlostow        Created
 -- 2010-10-04  1.1      twlostow        Added WB slave adapter
+-- 2013-09-09	 1.2			greg.d					Multiplexing multiple i2c interfaces
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -33,8 +34,8 @@ use work.wishbone_pkg.all;
 entity wb_i2c_master is
   generic (
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD
-    );
+    g_address_granularity : t_wishbone_address_granularity := WORD;
+    g_num_interfaces      : integer := 1);
   port (
     clk_sys_i : in std_logic;
     rst_n_i   : in std_logic;
@@ -50,19 +51,20 @@ entity wb_i2c_master is
     wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
 
-    scl_pad_i    : in  std_logic;       -- i2c clock line input
-    scl_pad_o    : out std_logic;       -- i2c clock line output
-    scl_padoen_o : out std_logic;  -- i2c clock line output enable, active low
-    sda_pad_i    : in  std_logic;       -- i2c data line input
-    sda_pad_o    : out std_logic;       -- i2c data line output
-    sda_padoen_o : out std_logic   -- i2c data line output enable, active low
+    scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line input
+    scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line output
+    scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line output enable, active low
+    sda_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c data line input
+    sda_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c data line output
+    sda_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0)   -- i2c data line output enable, active low
     );
 end wb_i2c_master;
 
 architecture rtl of wb_i2c_master is
   component i2c_master_top
     generic (
-      ARST_LVL : std_logic);
+      ARST_LVL : std_logic;
+      g_num_interfaces  : integer := 1);
     port (
       wb_clk_i     : in  std_logic;
       wb_rst_i     : in  std_logic := '0';
@@ -75,12 +77,12 @@ architecture rtl of wb_i2c_master is
       wb_cyc_i     : in  std_logic;
       wb_ack_o     : out std_logic;
       wb_inta_o    : out std_logic;
-      scl_pad_i    : in  std_logic;
-      scl_pad_o    : out std_logic;
-      scl_padoen_o : out std_logic;
-      sda_pad_i    : in  std_logic;
-      sda_pad_o    : out std_logic;
-      sda_padoen_o : out std_logic);
+      scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0));
   end component;
 
   signal dat_out : std_logic_vector(7 downto 0);
@@ -123,7 +125,8 @@ begin
 
   Wrapped_I2C : i2c_master_top
     generic map (
-      ARST_LVL => '0')
+      ARST_LVL          => '0',
+      g_num_interfaces  => g_num_interfaces)
     port map (
       wb_clk_i     => clk_sys_i,
       wb_rst_i     => rst,

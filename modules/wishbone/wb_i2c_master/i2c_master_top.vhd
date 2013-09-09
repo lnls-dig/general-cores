@@ -65,7 +65,11 @@
 --               Revision 1.2  2001/11/10 10:52:44  rherveille
 --               Changed PRER reset value from 0x0000 to 0xffff, conform specs.
 --
-
+---------------------------------------------------------------------
+--
+-- Modified to support multiple i2c interfaces, G.Daniluk, CERN 2013
+--
+---------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -74,7 +78,8 @@ use ieee.numeric_std.all;
 
 entity i2c_master_top is
     generic(
-            ARST_LVL : std_logic := '0'                   -- asynchronous reset level
+            ARST_LVL : std_logic := '0';                   -- asynchronous reset level
+            g_num_interfaces  : integer := 1
     );
     port   (
             -- wishbone signals
@@ -91,12 +96,12 @@ entity i2c_master_top is
             wb_inta_o     : out std_logic;                    -- interrupt request output signal
 
             -- i2c lines
-            scl_pad_i     : in  std_logic;                    -- i2c clock line input
-            scl_pad_o     : out std_logic;                    -- i2c clock line output
-            scl_padoen_o  : out std_logic;                    -- i2c clock line output enable, active low
-            sda_pad_i     : in  std_logic;                    -- i2c data line input
-            sda_pad_o     : out std_logic;                    -- i2c data line output
-            sda_padoen_o  : out std_logic                     -- i2c data line output enable, active low
+            scl_pad_i     : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line input
+            scl_pad_o     : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line output
+            scl_padoen_o  : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line output enable, active low
+            sda_pad_i     : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c data line input
+            sda_pad_o     : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c data line output
+            sda_padoen_o  : out std_logic_vector(g_num_interfaces-1 downto 0)   -- i2c data line output enable, active low
     );
 end entity i2c_master_top;
 
@@ -168,6 +173,11 @@ architecture structural of i2c_master_top is
     signal i2c_busy      : std_logic;                -- i2c bus busy (start signal detected)
     signal i2c_al, al    : std_logic;                -- arbitration lost
 
+    signal scl_in, scl_out, scl_oen : std_logic;
+    signal sda_in, sda_out, sda_oen : std_logic;
+    signal if_num   : std_logic_vector(3 downto 0);
+    signal if_busy  : std_logic;
+
 begin
     -- generate internal reset signal
     rst_i <= not wb_rst_i; --arst_i xor ARST_LVL;
@@ -194,13 +204,13 @@ begin
                 when "010"  => wb_dat_o <= ctr;
                 when "011"  => wb_dat_o <= rxr; -- write is transmit register TxR
                 when "100"  => wb_dat_o <= sr;  -- write is command register CR
+                when "101"  => wb_dat_o <= if_busy & "000" & if_num;
 
                 -- Debugging registers:
                 -- These registers are not documented.
                 -- Functionality could change in future releases
-                when "101"  => wb_dat_o <= txr;
-                when "110"  => wb_dat_o <= cr;
-                when "111"  => wb_dat_o <= (others => '0');
+                when "110"  => wb_dat_o <= txr;
+                when "111"  => wb_dat_o <= cr;
                 when others => wb_dat_o <= (others => 'X'); -- for simulation only
             end case;
         end if;
@@ -214,11 +224,15 @@ begin
             prer <= (others => '1');
             ctr  <= (others => '0');
             txr  <= (others => '0');
+            if_busy <= '0';
+            if_num  <= (others => '0');
         elsif (wb_clk_i'event and wb_clk_i = '1') then
                if (wb_rst_i = '1') then
                    prer <= (others => '1');
                    ctr  <= (others => '0');
                    txr  <= (others => '0');
+                   if_busy <= '0';
+                   if_num  <= (others => '0');
                elsif (wb_wacc = '1') then
                    case wb_adr_i is
                        when "000" => prer( 7 downto 0) <= unsigned(wb_dat_i);
@@ -226,6 +240,10 @@ begin
                        when "010" => ctr               <= wb_dat_i;
                        when "011" => txr               <= wb_dat_i;
                        when "100" => null; --write to CR, avoid executing the others clause
+                       when "101" => if_busy <= wb_dat_i(7);
+                                     if(if_busy='0') then --change i/f number only if previous was released
+                                       if_num  <= wb_dat_i(3 downto 0);
+                                     end if;
 
                       -- illegal cases, for simulation only
                       when others =>
@@ -295,13 +313,23 @@ begin
               cmd_ack  => done,
               ack_out  => irxack,
               dout     => rxr,
-              scl_i    => scl_pad_i,
-              scl_o    => scl_pad_o,
-              scl_oen  => scl_padoen_o,
-              sda_i    => sda_pad_i,
-              sda_o    => sda_pad_o,
-              sda_oen  => sda_padoen_o
+              scl_i    => scl_in,
+              scl_o    => scl_out,
+              scl_oen  => scl_oen,
+              sda_i    => sda_in,
+              sda_o    => sda_out,
+              sda_oen  => sda_oen
     );
+
+    --Multiplexing i2c lines depending on if_num
+    scl_in  <=  scl_pad_i(to_integer(unsigned(if_num)));
+    sda_in  <=  sda_pad_i(to_integer(unsigned(if_num)));
+    GEN_I2C_OUT: for i in 0 to g_num_interfaces-1 generate
+      scl_pad_o(i)    <= scl_out when i = to_integer(unsigned(if_num)) else '1';
+      scl_padoen_o(i) <= scl_oen when i = to_integer(unsigned(if_num)) else '1';
+      sda_pad_o(i)    <= sda_out when i = to_integer(unsigned(if_num)) else '1';
+      sda_padoen_o(i) <= sda_oen when i = to_integer(unsigned(if_num)) else '1';
+    end generate;
 
 
     -- status register block + interrupt request signal
