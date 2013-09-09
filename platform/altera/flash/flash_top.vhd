@@ -20,6 +20,7 @@ entity flash_top is
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
     -- Clock lines for flash chip
+    clk_ext_i : in  std_logic;
     clk_out_i : in  std_logic;
     clk_in_i  : in  std_logic);
 end flash_top;
@@ -73,7 +74,7 @@ begin
       g_family     => g_family,
       g_port_width => g_port_width)
     port map(
-      dclk_i => clk_out_i,
+      dclk_i => clk_ext_i,
       ncs_i  => flash_ncs,
       oe_i   => flash_oe,
       asdo_i => flash_asdo,
