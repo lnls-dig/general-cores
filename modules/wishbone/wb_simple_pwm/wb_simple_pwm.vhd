@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2012-12-18
--- Last update: 2012-12-20
+-- Last update: 2013-09-10
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -43,6 +43,7 @@ use work.spwm_wbgen2_pkg.all;
 entity wb_simple_pwm is
   generic(
     g_num_channels        : integer range 1 to 8;
+    g_regs_size           : integer range 1 to 16 := 16;
     g_default_period      : integer range 0 to 255 := 0;
     g_default_presc       : integer range 0 to 255 := 0;
     g_default_val         : integer range 0 to 255 := 0;
@@ -70,15 +71,28 @@ end wb_simple_pwm;
 
 architecture behavioral of wb_simple_pwm is
 
-  type t_drive_array is array(0 to g_num_channels-1) of std_logic_vector(15 downto 0);
+  type t_drive_array is array(0 to g_num_channels-1) of std_logic_vector(g_regs_size-1 downto 0);
 
   procedure f_handle_dr_writes(index :     integer; data : std_logic_vector; load : std_logic;
   signal d                           : out t_drive_array) is
   begin
     if(index <= g_num_channels and load = '1') then
-      d(index-1) <= data;
+      d(index-1) <= data(g_regs_size-1 downto 0);
     end if;
   end f_handle_dr_writes;
+
+  function f_expand_data(dat : std_logic_vector(g_regs_size-1 downto 0))
+    return std_logic_vector is
+    variable ret  : std_logic_vector(15 downto 0);
+  begin
+    if g_regs_size = 16 then
+      ret := dat;
+    else
+      ret(g_regs_size-1 downto 0) := dat;
+      ret(15 downto g_regs_size)  := (others=>'0');
+    end if;
+    return ret;
+  end function;
 
   component simple_pwm_wb
     port (
@@ -103,9 +117,9 @@ architecture behavioral of wb_simple_pwm is
   signal regs_out : t_spwm_out_registers;
 
   signal tick                : std_logic;
-  signal cntr_pre, cntr_main : unsigned(15 downto 0);
-  signal presc_val   : std_logic_vector(15 downto 0);
-  signal period_val  : std_logic_vector(15 downto 0);
+  signal cntr_pre, cntr_main : unsigned(g_regs_size-1 downto 0);
+  signal presc_val   : std_logic_vector(g_regs_size-1 downto 0);
+  signal period_val  : std_logic_vector(g_regs_size-1 downto 0);
   
 begin  -- behavioral
 
@@ -130,28 +144,28 @@ begin  -- behavioral
 -------------------------------------------------------------------------------
   p_drive_readback : process(drive)
   begin
-    regs_in.dr0_i <= drive(0);
+    regs_in.dr0_i <= f_expand_data(drive(0));
 
     if(g_num_channels >= 2) then
-      regs_in.dr1_i <= drive(1);
+      regs_in.dr1_i <= f_expand_data(drive(1));
     end if;
     if(g_num_channels >= 3) then
-      regs_in.dr2_i <= drive(2);
+      regs_in.dr2_i <= f_expand_data(drive(2));
     end if;
     if(g_num_channels >= 4) then
-      regs_in.dr3_i <= drive(3);
+      regs_in.dr3_i <= f_expand_data(drive(3));
     end if;
     if(g_num_channels >= 5) then
-      regs_in.dr4_i <= drive(4);
+      regs_in.dr4_i <= f_expand_data(drive(4));
     end if;
     if(g_num_channels >= 6) then
-      regs_in.dr5_i <= drive(5);
+      regs_in.dr5_i <= f_expand_data(drive(5));
     end if;
     if(g_num_channels >= 7) then
-      regs_in.dr6_i <= drive(6);
+      regs_in.dr6_i <= f_expand_data(drive(6));
     end if;
     if(g_num_channels >= 8) then
-      regs_in.dr7_i <= drive(7);
+      regs_in.dr7_i <= f_expand_data(drive(7));
     end if;
   end process;
 
@@ -160,7 +174,7 @@ begin  -- behavioral
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
         for i in 0 to g_num_channels-1 loop
-          drive(i) <= std_logic_vector(to_unsigned(g_default_val, 16));
+          drive(i) <= std_logic_vector(to_unsigned(g_default_val, g_regs_size));
         end loop;  -- i
       else
         f_handle_dr_writes(1, regs_out.dr0_o, regs_out.dr0_load_o, drive);
@@ -175,21 +189,21 @@ begin  -- behavioral
     end if;
   end process;
 
-  regs_in.cr_presc_i  <= presc_val;
-  regs_in.cr_period_i <= period_val;
+  regs_in.cr_presc_i  <= f_expand_data(presc_val);
+  regs_in.cr_period_i <= f_expand_data(period_val);
   load_cr: process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
       if(rst_n_i = '0') then
-        presc_val  <= std_logic_vector(to_unsigned(g_default_presc, 16));
+        presc_val  <= std_logic_vector(to_unsigned(g_default_presc, g_regs_size));
       elsif(regs_out.cr_presc_load_o = '1') then
-        presc_val <= regs_out.cr_presc_o;
+        presc_val <= regs_out.cr_presc_o(g_regs_size-1 downto 0);
       end if;
 
       if(rst_n_i = '0') then
-        period_val <= std_logic_vector(to_unsigned(g_default_period, 16));
+        period_val <= std_logic_vector(to_unsigned(g_default_period, g_regs_size));
       elsif(regs_out.cr_period_load_o = '1') then
-        period_val <= regs_out.cr_period_o;
+        period_val <= regs_out.cr_period_o(g_regs_size-1 downto 0);
       end if;
     end if;
   end process;

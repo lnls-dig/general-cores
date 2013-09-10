@@ -754,6 +754,7 @@ package wishbone_pkg is
   component wb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_regs_size           : integer range 1 to 16 := 16;
       g_default_period      : integer range 0 to 255 := 0;
       g_default_presc       : integer range 0 to 255 := 0;
       g_default_val         : integer range 0 to 255 := 0;
@@ -777,6 +778,7 @@ package wishbone_pkg is
   component xwb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_regs_size           : integer range 1 to 16 := 16;
       g_default_period      : integer range 0 to 255 := 0;
       g_default_presc       : integer range 0 to 255 := 0;
       g_default_val         : integer range 0 to 255 := 0;

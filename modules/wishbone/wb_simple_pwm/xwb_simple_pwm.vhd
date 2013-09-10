@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2012-12-18
--- Last update: 2012-12-20
+-- Last update: 2013-09-10
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -43,6 +43,7 @@ use work.wishbone_pkg.all;
 entity xwb_simple_pwm is
   generic (
     g_num_channels        : integer range 1 to 8;
+    g_regs_size           : integer range 1 to 16 := 16;
     g_default_period      : integer range 0 to 255 := 0;
     g_default_presc       : integer range 0 to 255 := 0;
     g_default_val         : integer range 0 to 255 := 0;
@@ -66,6 +67,7 @@ architecture wrapper of xwb_simple_pwm is
   component wb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_regs_size           : integer range 1 to 16 := 16;
       g_default_period      : integer range 0 to 255;
       g_default_presc       : integer range 0 to 255;
       g_default_val         : integer range 0 to 255;
@@ -91,6 +93,7 @@ begin  -- rtl
   U_Wrapped_PWM : wb_simple_pwm
     generic map (
       g_num_channels        => g_num_channels,
+      g_regs_size           => g_regs_size,
       g_default_period      => g_default_period,
       g_default_presc       => g_default_presc,
       g_default_val         => g_default_val,
