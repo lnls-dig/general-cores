@@ -4,9 +4,9 @@
 -------------------------------------------------------------------------------
 -- File       : wrc_dpram.vhd
 -- Author     : Grzegorz Daniluk
--- Company    : Elproma
+-- Company    : Elproma, CERN
 -- Created    : 2011-02-15
--- Last update: 2011-09-26
+-- Last update: 2013-09-11
 -- Platform   : FPGA-generics
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -108,33 +108,70 @@ begin
       master_i  => slave2_out,
       master_o  => slave2_in);
 
-  U_DPRAM : generic_dpram
-    generic map(
-      -- standard parameters
-      g_data_width               => 32,
-      g_size                     => g_size,
-      g_with_byte_enable         => true,
-      g_addr_conflict_resolution => "dont_care",
-      g_init_file                => g_init_file,
-      g_dual_clock               => false
-      )
-    port map(
-      rst_n_i => rst_n_i,
-      -- Port A
-      clka_i  => clk_sys_i,
-      bwea_i  => s_bwea,
-      wea_i   => s_wea,
-      aa_i    => slave1_in.adr(f_log2_size(g_size)-1 downto 0),
-      da_i    => slave1_in.dat,
-      qa_o    => slave1_out.dat,
-      -- Port B
-      clkb_i  => clk_sys_i,
-      bweb_i  => s_bweb,
-      web_i   => s_web,
-      ab_i    => slave2_in.adr(f_log2_size(g_size)-1 downto 0),
-      db_i    => slave2_in.dat,
-      qb_o    => slave2_out.dat
-      );
+  GEN_INITF: if g_init_file /= "" and g_init_file /= "none" generate
+    -- Unfortunately stupid ISE has problem with understanding bytesel
+    -- description in generic_dpram so it instantiates this using numerous LUTs
+    -- for connecting BRAMs and supporting bytesel. When initialization with
+    -- file is not needed it's better to use GEN_NO_INITF.
+    U_DPRAM : generic_dpram
+      generic map(
+        -- standard parameters
+        g_data_width               => 32,
+        g_size                     => g_size,
+        g_with_byte_enable         => true,
+        g_addr_conflict_resolution => "dont_care",
+        g_init_file                => g_init_file,
+        g_dual_clock               => false
+        )
+      port map(
+        rst_n_i => rst_n_i,
+        -- Port A
+        clka_i  => clk_sys_i,
+        bwea_i  => s_bwea,
+        wea_i   => s_wea,
+        aa_i    => slave1_in.adr(f_log2_size(g_size)-1 downto 0),
+        da_i    => slave1_in.dat,
+        qa_o    => slave1_out.dat,
+        -- Port B
+        clkb_i  => clk_sys_i,
+        bweb_i  => s_bweb,
+        web_i   => s_web,
+        ab_i    => slave2_in.adr(f_log2_size(g_size)-1 downto 0),
+        db_i    => slave2_in.dat,
+        qb_o    => slave2_out.dat
+        );
+  end generate;
+
+  GEN_NO_INITF: if g_init_file = "" or g_init_file = "none" generate
+    -- This trick splits ram into four 8-bit blocks of RAM. Now the problem ISE
+    -- has with understanding correctly bytesel is bypassed and the
+    -- implementation takes almost none LUTs, just BRAMs.
+    GEN_BYTESEL: for i in 0 to 3 generate
+      U_DPRAM: generic_dpram
+        generic map(
+          g_data_width               => 8,
+          g_size                     => g_size,
+          g_with_byte_enable         => false,
+          g_addr_conflict_resolution => "dont_care",
+          g_init_file                => "",
+          g_dual_clock               => false)
+      port map(
+        rst_n_i => rst_n_i,
+        -- Port A
+        clka_i  => clk_sys_i,
+        wea_i   => s_bwea(i),
+        aa_i    => slave1_in.adr(f_log2_size(g_size)-1 downto 0),
+        da_i    => slave1_in.dat((i+1)*8-1 downto i*8),
+        qa_o    => slave1_out.dat((i+1)*8-1 downto i*8),
+        -- Port B
+        clkb_i  => clk_sys_i,
+        web_i   => s_bweb(i),
+        ab_i    => slave2_in.adr(f_log2_size(g_size)-1 downto 0),
+        db_i    => slave2_in.dat((i+1)*8-1 downto i*8),
+        qb_o    => slave2_out.dat((i+1)*8-1 downto i*8)
+        );
+    end generate;
+  end generate;
 
   -- I know this looks weird, but otherwise ISE generates distributed RAM instead of block
   -- RAM
