@@ -674,7 +674,10 @@ package wishbone_pkg is
   component wb_spi
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_divider_len         : integer := 16;
+      g_max_char_len        : integer := 128;
+      g_num_slaves          : integer := 8);
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
@@ -689,7 +692,7 @@ package wishbone_pkg is
       wb_err_o   : out std_logic;
       wb_int_o   : out std_logic;
       wb_stall_o : out std_logic;
-      pad_cs_o   : out std_logic_vector(7 downto 0);
+      pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o : out std_logic;
       pad_mosi_o : out std_logic;
       pad_miso_i : in  std_logic);
@@ -698,14 +701,17 @@ package wishbone_pkg is
   component xwb_spi
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_divider_len         : integer := 16;
+      g_max_char_len        : integer := 128;
+      g_num_slaves          : integer := 8);
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
       slave_i    : in  t_wishbone_slave_in;
       slave_o    : out t_wishbone_slave_out;
       desc_o     : out t_wishbone_device_descriptor;
-      pad_cs_o   : out std_logic_vector(7 downto 0);
+      pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o : out std_logic;
       pad_mosi_o : out std_logic;
       pad_miso_i : in  std_logic);
