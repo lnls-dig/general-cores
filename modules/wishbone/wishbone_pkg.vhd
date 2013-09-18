@@ -857,6 +857,7 @@ package wishbone_pkg is
       g_addr_width             : natural   := 24; -- log of memory (24=16MB)
       g_idle_time              : natural   := 3;
       g_dummy_time             : natural   := 8;
+      g_config                 : boolean   := false;
       -- leave these at defaults if you have:
       --   a) slow clock, b) valid constraints, or c) registered in/outputs
       g_input_latch_edge       : std_logic := '1'; -- rising

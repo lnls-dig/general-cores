@@ -7,9 +7,10 @@ use work.wishbone_pkg.all;
 entity flash_top is
   generic(
     g_family                 : string;
-    g_port_width             : natural;
-    g_addr_width             : natural;
-    g_dummy_time             : natural;
+    g_port_width             : natural := 1;
+    g_addr_width             : natural := 24;
+    g_dummy_time             : natural := 8;
+    g_config                 : boolean := false;
     g_input_latch_edge       : std_logic;
     g_output_latch_edge      : std_logic;
     g_input_to_output_cycles : natural);
@@ -52,6 +53,7 @@ begin
       g_addr_width             => g_addr_width,
       g_idle_time              => 3,
       g_dummy_time             => g_dummy_time,
+      g_config                 => g_config,
       g_input_latch_edge       => g_input_latch_edge,
       g_output_latch_edge      => g_output_latch_edge,
       g_input_to_output_cycles => g_input_to_output_cycles)

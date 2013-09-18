@@ -36,6 +36,7 @@ entity wb_spi_flash is
     g_addr_width             : natural   := 24; -- size dependent (EPCQ256=25, EPCS128=24, ...)
     g_idle_time              : natural   := 3;
     g_dummy_time             : natural   := 8;
+    g_config                 : boolean   := false;
     -- leave these at defaults if you have:
     --   a) slow clock, b) valid constraints, or c) registered in/outputs
     g_input_latch_edge       : std_logic := '1'; -- rising
@@ -485,7 +486,11 @@ begin
         
         when S_INIT =>
           r_count <= (others => '1');
-          r_state_n <= S_ENABLE_VSTATUS;
+          if g_config then
+            r_state_n <= S_ENABLE_VSTATUS;
+          else
+            r_state_n <= S_LOWER_CS_WAIT;
+          end if;
         
         when S_DISPATCH =>
           r_count   <= (others => '-');
