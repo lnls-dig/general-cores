@@ -1288,7 +1288,7 @@ package body wishbone_pkg is
     variable result : t_sdb_device := (
       abi_class     => x"0000", -- undocumented device
       abi_ver_major => x"01",
-      abi_ver_minor => x"00",
+      abi_ver_minor => x"01",
       wbd_endian    => c_sdb_endian_big,
       wbd_width     => x"7", -- 8/16/32-bit port granularity
       sdb_component => (

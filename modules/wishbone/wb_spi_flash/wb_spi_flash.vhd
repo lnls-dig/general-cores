@@ -166,6 +166,7 @@ architecture rtl of wb_spi_flash is
   signal r_stall_n : std_logic       := '0';
   signal r_ack     : t_ack_delay     := (others => '0');
   signal r_ack_n   : std_logic       := '0';
+  signal r_err     : std_logic       := '0';
   signal r_dat     : t_wishbone_data := (others => '-');
   signal r_adr     : t_address       := (others => '-');
   signal r_ncs     : std_logic       := '1';
@@ -212,8 +213,8 @@ begin
       ppulse_o => open);
   
   master_i.ack <= r_ack(r_ack'left);
+  master_i.err <= r_err;
   master_i.rty <= '0';
-  master_i.err <= '0';
   master_i.int <= '0';
   master_i.dat <= r_shift_i;
   master_i.stall <= r_stall;
@@ -450,6 +451,7 @@ begin
       r_stall_n <= '0';
       r_ack     <= (others => '0');
       r_ack_n   <= '0';
+      r_err     <= '0';
       r_dat     <= (others => '-');
       r_adr     <= (others => '-');
       
@@ -460,6 +462,7 @@ begin
       r_state  <= S_WAIT;
       r_stall  <= '1';
       r_ack(0) <= '0';
+      r_err    <= '0';
       
       if g_input_to_output_cycles > 1 then
         r_ack(g_input_to_output_cycles-1 downto 1) <=
@@ -678,7 +681,7 @@ begin
              unsigned(master_o.adr(t_address'range)) = c_magic_reg then
             r_dat      <= (others => '0');
             r_stall    <= '0';
-            r_ack_n    <= '1';
+            r_err      <= '1';
           end if;
           
           if s_wip = '0' then -- not busy
