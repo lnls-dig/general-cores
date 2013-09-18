@@ -78,6 +78,9 @@ architecture rtl of wb_spi_flash is
   constant c_write_bytes4 : t_byte := "00010010"; -- address, dataout
   constant c_erase_sector : t_byte := "11011000"; -- address
   constant c_4addr        : t_byte := "10110111"; -- 
+  constant c_3addr        : t_byte := "11101001"; -- 
+  constant c_write_vstatus: t_byte := "10000001"; -- 
+  constant c_vstatus_data : t_byte := std_logic_vector(to_unsigned(g_dummy_time-1, 4)) & "1111"; -- no XIP (1), res (1), sequential read (11)
   
   function f_addr_bits(x : natural) return natural is begin
     if x <= 24 then return 24; else return 32; end if;
@@ -99,7 +102,8 @@ architecture rtl of wb_spi_flash is
     S_ENABLE_WRITE, S_LOWER_CS_WRITE, S_WRITE, S_WRITE_ADDR, S_WRITE_DATA, 
     S_ENABLE_ERASE, S_LOWER_CS_ERASE, S_ERASE, 
       S_ERASE_ADDR3, S_ERASE_ADDR2, S_ERASE_ADDR1, S_ERASE_ADDR0,
-    S_ENABLE_4ADDR, S_LOWER_CS_4ADDR, S_4ADDR,
+    S_ENABLE_VSTATUS, S_LOWER_CS_VSTATUS, S_VSTATUS, S_VSTATUS_DATA, S_LOWER2_CS_VSTATUS,
+    S_ENABLE_XADDR, S_LOWER_CS_XADDR, S_XADDR,
     S_LOWER_CS_WAIT, S_READ_STATUS, S_LOAD_STATUS, S_WAIT_READY);
   
   -- Format a command for output
@@ -350,18 +354,47 @@ begin
           r_ncs     <= '0';
           r_oe      <= c_oe_default;
         
-        when S_ENABLE_4ADDR =>
+        when S_ENABLE_VSTATUS =>
           r_shift_o <= f_stripe(c_write_enable);
           r_ncs     <= '0';
           r_oe      <= c_oe_default;
         
-        when S_LOWER_CS_4ADDR =>
+        when S_LOWER_CS_VSTATUS =>
           r_shift_o <= c_idle;
           r_ncs     <= '1';
           r_oe      <= c_oe_default;
         
-        when S_4ADDR =>
-          r_shift_o <= f_stripe(c_4addr);
+        when S_VSTATUS =>
+          r_shift_o <= f_stripe(c_write_vstatus);
+          r_ncs     <= '0';
+          r_oe      <= c_oe_default;
+        
+        when S_VSTATUS_DATA =>
+          r_shift_o <= f_stripe(c_vstatus_data);
+          r_ncs     <= '0';
+          r_oe      <= c_oe_default;
+        
+        when S_LOWER2_CS_VSTATUS =>
+          r_shift_o <= c_idle;
+          r_ncs     <= '1';
+          r_oe      <= c_oe_default;
+        
+        when S_ENABLE_XADDR =>
+          r_shift_o <= f_stripe(c_write_enable);
+          r_ncs     <= '0';
+          r_oe      <= c_oe_default;
+        
+        when S_LOWER_CS_XADDR =>
+          r_shift_o <= c_idle;
+          r_ncs     <= '1';
+          r_oe      <= c_oe_default;
+        
+        when S_XADDR =>
+          if g_addr_width > 24 then
+            r_shift_o <= f_stripe(c_4addr);
+          else
+            r_shift_o <= f_stripe(c_3addr);
+          end if;
           r_ncs     <= '0';
           r_oe      <= c_oe_default;
         
@@ -452,11 +485,7 @@ begin
         
         when S_INIT =>
           r_count <= (others => '1');
-          if g_addr_width > 24 then
-            r_state_n <= S_ENABLE_4ADDR;
-          else
-            r_state_n <= S_LOWER_CS_WAIT;
-          end if;
+          r_state_n <= S_ENABLE_VSTATUS;
         
         when S_DISPATCH =>
           r_count   <= (others => '-');
@@ -588,18 +617,38 @@ begin
           end if;
         
         when S_ERASE_ADDR0 =>
-          r_count    <= c_cmd_time;
-          r_state_n  <= S_LOWER_CS_WAIT;
-        
-        when S_ENABLE_4ADDR =>
           r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_4ADDR;
+          r_state_n <= S_LOWER_CS_WAIT;
         
-        when S_LOWER_CS_4ADDR =>
+        when S_ENABLE_VSTATUS =>
+          r_count   <= c_cmd_time;
+          r_state_n <= S_LOWER_CS_VSTATUS;
+          
+        when S_LOWER_CS_VSTATUS =>
           r_count   <= c_low_time;
-          r_state_n <= S_4ADDR;
+          r_state_n <= S_VSTATUS;
+          
+        when S_VSTATUS =>
+          r_count   <= c_cmd_time;
+          r_state_n <= S_VSTATUS_DATA;
+          
+        when S_VSTATUS_DATA =>
+          r_count   <= c_cmd_time;
+          r_state_n <= S_LOWER2_CS_VSTATUS;
         
-        when S_4ADDR =>
+        when S_LOWER2_CS_VSTATUS =>
+          r_count   <= c_low_time;
+          r_state_n <= S_ENABLE_XADDR;
+        
+        when S_ENABLE_XADDR =>
+          r_count   <= c_cmd_time;
+          r_state_n <= S_LOWER_CS_XADDR;
+        
+        when S_LOWER_CS_XADDR =>
+          r_count   <= c_low_time;
+          r_state_n <= S_XADDR;
+        
+        when S_XADDR =>
           r_count   <= c_cmd_time;
           r_state_n <= S_LOWER_CS_WAIT;
         
