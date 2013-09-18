@@ -41,7 +41,7 @@ entity wb_spi_flash is
     --   a) slow clock, b) valid constraints, or c) registered in/outputs
     g_input_latch_edge       : std_logic := '1'; -- rising
     g_output_latch_edge      : std_logic := '0'; -- falling
-    g_input_to_output_cycles : natural   := 1);  -- between 1 and 32
+    g_input_to_output_cycles : natural   := 1);  -- between 1 and 8
   port(
     clk_i     : in  std_logic;
     rstn_i    : in  std_logic;
@@ -81,7 +81,7 @@ architecture rtl of wb_spi_flash is
   constant c_4addr        : t_byte := "10110111"; -- 
   constant c_3addr        : t_byte := "11101001"; -- 
   constant c_write_vstatus: t_byte := "10000001"; -- 
-  constant c_vstatus_data : t_byte := std_logic_vector(to_unsigned(g_dummy_time-1, 4)) & "1111"; -- no XIP (1), res (1), sequential read (11)
+  constant c_vstatus_data : t_byte := std_logic_vector(to_unsigned(g_dummy_time, 4)) & "1111"; -- no XIP (1), res (1), sequential read (11)
   
   function f_addr_bits(x : natural) return natural is begin
     if x <= 24 then return 24; else return 32; end if;
@@ -90,7 +90,7 @@ architecture rtl of wb_spi_flash is
   
   constant c_low_time    : t_count := to_unsigned(g_idle_time-1,                           t_count'length);
   constant c_cmd_time    : t_count := to_unsigned(t_byte'length-1,                         t_count'length);
-  constant c_status_time : t_count := to_unsigned(8*((g_input_to_output_cycles+14)/8),     t_count'length);
+  constant c_status_time : t_count := to_unsigned(8*((g_input_to_output_cycles+14)/8)-1,   t_count'length);
   constant c_addr_time   : t_count := to_unsigned((c_addr_bits/g_port_width)-1,            t_count'length);
   constant c_data_time   : t_count := to_unsigned((t_wishbone_data'length/g_port_width)-1, t_count'length);
 
@@ -183,6 +183,10 @@ begin
 
   assert (g_port_width = 1 or g_port_width = 2 or g_port_width = 4)
   report "g_port_width must be 1, 2, or 4, not " & integer'image(g_port_width)
+  severity error;
+  
+  assert (g_input_to_output_cycles >= 1 and g_input_to_output_cycles <= 8)
+  report "g_input_to_output_cycles must be between 1 and 8, not " & integer'image(g_input_to_output_cycles)
   severity error;
 
   crossing : xwb_clock_crossing
@@ -429,12 +433,11 @@ begin
     end if;
   end process;
   
-  -- bit position 0 ... and correct when g_input_to_output_cycles=1
   wip1 : if g_port_width = 1 generate
-    s_wip <= r_shift_i((g_input_to_output_cycles+7) mod 8);
+    s_wip <= r_shift_i((9-g_input_to_output_cycles) mod 8);
   end generate;
   wipx : if g_port_width /= 1 generate
-    s_wip <= r_shift_i(((33-g_input_to_output_cycles) mod 8) * g_port_width + 1);
+    s_wip <= r_shift_i(((9-g_input_to_output_cycles) mod 8) * g_port_width + 1);
   end generate;
   
   main : process(clk_out_i, clk_out_rstn) is
@@ -538,7 +541,7 @@ begin
           r_adr     <= f_increment(r_adr);
         
         when S_READ_DUMMY =>
-          r_count <= to_unsigned(g_dummy_time-1, t_count'length);
+          r_count   <= to_unsigned(g_dummy_time-1, t_count'length);
           r_state_n <= S_READ_DATA;
         
         when S_READ_DATA =>

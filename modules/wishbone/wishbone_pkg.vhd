@@ -862,7 +862,7 @@ package wishbone_pkg is
       --   a) slow clock, b) valid constraints, or c) registered in/outputs
       g_input_latch_edge       : std_logic := '1'; -- rising
       g_output_latch_edge      : std_logic := '0'; -- falling
-      g_input_to_output_cycles : natural   := 1);  -- between 1 and 32
+      g_input_to_output_cycles : natural   := 1);  -- between 1 and 8
     port(
       clk_i     : in  std_logic;
       rstn_i    : in  std_logic;
