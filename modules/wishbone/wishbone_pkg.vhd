@@ -959,8 +959,9 @@ package body wishbone_pkg is
     result(511 downto 496) := device.abi_class;
     result(495 downto 488) := device.abi_ver_major;
     result(487 downto 480) := device.abi_ver_minor;
-    result(479 downto 453) := (others => '0');
-    result(452)            := device.wbd_endian;
+    result(479 downto 456) := (others => '0');
+    result(455)            := device.wbd_endian;
+    result(454 downto 452) := (others => '0');
     result(451 downto 448) := device.wbd_width;
     result(447 downto 8)   := f_sdb_embed_component(device.sdb_component, address);
     result(7 downto 0)     := x"01";    -- device
