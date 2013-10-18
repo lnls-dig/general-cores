@@ -41,7 +41,6 @@ package wb_irq_pkg is
 
   type t_ivec_array_ad is array(natural range <>) of t_ivec_ad;
 
-  function f_hot_to_bin(x : std_logic_vector)       return integer;
   function f_bin_to_hot(x : natural; len : natural) return std_logic_vector;
   function or_all(slv_in : std_logic_vector)        return std_logic; 
   
@@ -62,7 +61,7 @@ package wb_irq_pkg is
     name          => "IRQ_HOSTBRIDGE_EP  ")));
   
   constant c_irq_ep_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+    abi_class     => x"0000", -- undocumented device           
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
     wbd_endian    => c_sdb_endian_big,
@@ -72,7 +71,7 @@ package wb_irq_pkg is
     addr_last     => x"00000000000000ff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"10050081",
+    device_id     => x"10050082",
     version       => x"00000001",
     date          => x"20120308",
     name          => "IRQ_ENDPOINT       ")));
@@ -88,11 +87,11 @@ package wb_irq_pkg is
     addr_last     => x"00000000000000ff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"10040081",
+    device_id     => x"10040083",
     version       => x"00000001",
     date          => x"20120308",
     name          => "IRQ_CTRL           ")));
-  
+
   component wb_irq_master is
     port    (clk_i          : std_logic;
            rst_n_i        : std_logic; 
@@ -149,22 +148,7 @@ end package;
 
 package body wb_irq_pkg is
 
-  
 
-  function f_hot_to_bin(x : std_logic_vector)
-    return integer is
-    variable rv : integer;
-  begin
-    rv := 0;
-    -- if there are few ones set in _x_ then the most significant will be
-    -- translated to bin
-    for i in 0 to x'left loop
-      if x(i) = '1' then
-        rv := i+1;
-      end if;
-    end loop;
-    return rv;
-  end function;
 
 function f_bin_to_hot(x : natural; len : natural
   ) return std_logic_vector is
