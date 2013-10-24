@@ -1137,22 +1137,25 @@ package body wishbone_pkg is
    return t_sdb_record_array is
       variable result   : t_sdb_record_array(instances-1 downto 0);  
       variable i,j, pos : natural;
-      variable dev      : t_sdb_device;
-      variable serial_no : string(1 to 3); 
+      variable dev, newdev      : t_sdb_device;
+      variable serial_no : string(1 to 3);
+      variable text_possible : boolean := false; 
    begin
+      dev := device;
+             
+      report "### Creating " & integer'image(instances) & " x " & dev.sdb_component.product.name
+      severity note;       
       for i in 0 to instances-1 loop
-         dev := device;         
+         newdev := dev;        
          if(g_enum_dev_id) then         
             dev.sdb_component.product.device_id :=  
             std_logic_vector( unsigned(dev.sdb_component.product.device_id) 
                               + to_unsigned(i+g_dev_id_offs, dev.sdb_component.product.device_id'length));        
          end if;
-         if(g_enum_dev_name) then         
+         if(g_enum_dev_name AND NOT text_possible) then         
          -- find end of name
             for j in dev.sdb_component.product.name'length downto 1 loop
-               if(dev.sdb_component.product.name(j) /= ' ') then
-                   report "Found non space " & dev.sdb_component.product.name(j) & "@" & integer'image(j)
-                  severity note;                   
+               if(dev.sdb_component.product.name(j) /= ' ') then               
                   pos := j;                  
                   exit;
                end if;
@@ -1160,19 +1163,23 @@ package body wishbone_pkg is
          -- convert i+g_dev_name_offs to string
             serial_no := f_string_fix_len(integer'image(i+g_dev_name_offs), serial_no'length);
          -- check if space is sufficient
-            assert (serial_no'length <= dev.sdb_component.product.name'length - pos)
+            assert (serial_no'length+1 <= dev.sdb_component.product.name'length - pos)
             report "Not enough space in namestring of sdb_device " & dev.sdb_component.product.name
             & " to add serial number " & serial_no & ". Space available " & 
-            integer'image(dev.sdb_component.product.name'length-pos) & ", required " 
+            integer'image(dev.sdb_component.product.name'length-pos-1) & ", required " 
             & integer'image(serial_no'length+1)    
-            severity Failure;            
-         -- insert
-            dev.sdb_component.product.name(pos+1) := '_'; 
-            for j in 1 to serial_no'length loop
-               dev.sdb_component.product.name(pos+1+j) := serial_no(j);
-            end loop;
+            severity Failure;
+            text_possible := true;
          end if;
-         result(i) := f_sdb_embed_device(dev, (others=>'1'));
+         if(g_enum_dev_name AND text_possible) then
+            newdev.sdb_component.product.name(pos+1) := '_'; 
+            for j in 1 to serial_no'length loop
+               newdev.sdb_component.product.name(pos+1+j) := serial_no(j);
+            end loop;            
+         end if;
+          
+      -- insert
+         result(i) := f_sdb_embed_device(newdev, (others=>'1'));
       end loop;
       return result;
    end f_sdb_create_array;
