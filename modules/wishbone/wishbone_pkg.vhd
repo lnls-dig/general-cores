@@ -1152,8 +1152,9 @@ package body wishbone_pkg is
             std_logic_vector( unsigned(dev.sdb_component.product.device_id) 
                               + to_unsigned(i+g_dev_id_offs, dev.sdb_component.product.device_id'length));        
          end if;
-         if(g_enum_dev_name AND NOT text_possible) then         
+         if(g_enum_dev_name) then         
          -- find end of name
+            
             for j in dev.sdb_component.product.name'length downto 1 loop
                if(dev.sdb_component.product.name(j) /= ' ') then               
                   pos := j;                  
@@ -1162,6 +1163,7 @@ package body wishbone_pkg is
             end loop;
          -- convert i+g_dev_name_offs to string
             serial_no := f_string_fix_len(integer'image(i+g_dev_name_offs), serial_no'length);
+            report "### Now: " & serial_no & " of " & dev.sdb_component.product.name severity note;
          -- check if space is sufficient
             assert (serial_no'length+1 <= dev.sdb_component.product.name'length - pos)
             report "Not enough space in namestring of sdb_device " & dev.sdb_component.product.name
@@ -1169,9 +1171,8 @@ package body wishbone_pkg is
             integer'image(dev.sdb_component.product.name'length-pos-1) & ", required " 
             & integer'image(serial_no'length+1)    
             severity Failure;
-            text_possible := true;
          end if;
-         if(g_enum_dev_name AND text_possible) then
+         if(g_enum_dev_name) then
             newdev.sdb_component.product.name(pos+1) := '_'; 
             for j in 1 to serial_no'length loop
                newdev.sdb_component.product.name(pos+1+j) := serial_no(j);
@@ -1179,6 +1180,7 @@ package body wishbone_pkg is
          end if;
           
       -- insert
+         report "### to: " & newdev.sdb_component.product.name severity note;
          result(i) := f_sdb_embed_device(newdev, (others=>'1'));
       end loop;
       return result;
