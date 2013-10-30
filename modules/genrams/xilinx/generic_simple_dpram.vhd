@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-03-04
--- Last update: 2013-03-04
+-- Last update: 2013-10-30
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -70,6 +70,7 @@ end generic_simple_dpram;
 
 
 architecture syn of generic_simple_dpram is
+
 begin
 
   -- Works well enough until a Xilinx guru can optimize it.
@@ -90,10 +91,10 @@ begin
       da_i    => da_i,
       qa_o    => open,
       clkb_i  => clkb_i,
-      bweb_i  => (others => '0'),
+      bweb_i  => f_zeros((g_data_width+7)/8),
       web_i   => '0',
       ab_i    => ab_i,
-      db_i    => (others => '0'),
+      db_i    => f_zeros(g_data_width),
       qb_o    => qb_o);
 
 end syn;

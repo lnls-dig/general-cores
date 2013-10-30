@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-01-24
+-- Last update: 2013-10-30
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -38,11 +38,13 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 package genram_pkg is
 
   function f_log2_size (A       : natural) return natural;
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
+  function f_zeros (size : integer) return std_logic_vector;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
   
@@ -211,6 +213,12 @@ package body genram_pkg is
     end loop;  -- i
     return tmp;
   end f_gen_dummy_vec;
+
+  function f_zeros(size : integer)
+    return std_logic_vector is
+  begin
+    return std_logic_vector(to_unsigned(0, size));
+  end f_zeros;
 
 
 end genram_pkg;
