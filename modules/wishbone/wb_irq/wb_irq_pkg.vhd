@@ -123,7 +123,40 @@ package wb_irq_pkg is
            ctrl_slave_i  : in  t_wishbone_slave_in
   );
   end component;
-  
+ 
+
+  constant c_irq_timer_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"10040088",
+    version       => x"00000001",
+    date          => x"20120308",
+    name          => "IRQ_TIMER          ")));
+ 
+  component wb_irq_timer is
+  generic ( g_timers  : natural := 4);
+  port    (clk_sys_i    : in std_logic;           
+           rst_sys_n_i  : in std_logic;             
+         
+           tm_tai8ns_i  : in std_logic_vector(63 downto 0);         
+
+           ctrl_slave_o : out t_wishbone_slave_out;  -- ctrl interface for LM32 irq processing
+           ctrl_slave_i : in  t_wishbone_slave_in;
+           
+           irq_master_o : out t_wishbone_master_out;                             -- wb msi interface 
+           irq_master_i : in  t_wishbone_master_in
+   );
+   end component;
+ 
+
   component wb_irq_lm32 is
   generic(g_msi_queues: natural := 3;
           g_profile: string);
