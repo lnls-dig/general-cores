@@ -1,5 +1,5 @@
--- megafunction wizard: %Transceiver Reconfiguration Controller v12.1%
--- Retrieval info: <instance entity-name="alt_xcvr_reconfig" version="12.1" >
+-- megafunction wizard: %Transceiver Reconfiguration Controller v13.1%
+-- Retrieval info: <instance entity-name="alt_xcvr_reconfig" version="13.1" >
 -- Retrieval info: 	<generic name="device_family" value="Arria V" />
 -- Retrieval info: 	<generic name="number_of_reconfig_interfaces" value="5" />
 -- Retrieval info: 	<generic name="gui_split_sizes" value="" />
@@ -8,6 +8,7 @@
 -- Retrieval info: 	<generic name="enable_dcd_power_up" value="1" />
 -- Retrieval info: 	<generic name="enable_analog" value="1" />
 -- Retrieval info: 	<generic name="enable_eyemon" value="0" />
+-- Retrieval info: 	<generic name="ber_en" value="0" />
 -- Retrieval info: 	<generic name="enable_dfe" value="0" />
 -- Retrieval info: 	<generic name="enable_adce" value="0" />
 -- Retrieval info: 	<generic name="enable_mif" value="0" />
