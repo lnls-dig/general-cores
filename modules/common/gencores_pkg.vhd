@@ -172,7 +172,7 @@ package gencores_pkg is
       d_p_i       : in  std_logic;
       q_p_o       : out std_logic);
   end component;
-  
+
   component gc_frequency_meter
     generic (
       g_with_internal_timebase : boolean;
@@ -257,18 +257,101 @@ package gencores_pkg is
     c2_o    : out std_logic);
   end component;
   
+ ------------------------------------------------------------------------------
+  -- I2C slave
+  ------------------------------------------------------------------------------
+  constant c_i2cs_idle      : std_logic_vector(1 downto 0) := "00";
+  constant c_i2cs_addr_good : std_logic_vector(1 downto 0) := "01";
+  constant c_i2cs_rd_done   : std_logic_vector(1 downto 0) := "10";
+  constant c_i2cs_wr_done   : std_logic_vector(1 downto 0) := "11";
+
+  component gc_i2c_slave is
+    port
+    (
+      -- Clock, reset ports
+      clk_i      : in  std_logic;
+      rst_n_i    : in  std_logic;
+
+      -- I2C lines
+      scl_i      : in  std_logic;
+      scl_o      : out std_logic;
+      scl_en_o   : out std_logic;
+      sda_i      : in  std_logic;
+      sda_o      : out std_logic;
+      sda_en_o   : out std_logic;
+
+      -- Slave address
+      i2c_addr_i : in  std_logic_vector(6 downto 0);
+
+      -- ACK input, should be set after done_p_o = '1'
+      -- (note that the bit is reversed wrt I2C ACK bit)
+      -- '1' - ACK
+      -- '0' - NACK
+      i2c_ack_i  : in  std_logic;
+
+      -- I2C bus operation, set after address detection
+      -- '0' - write
+      -- '1' - read
+      op_o       : out std_logic;
+
+      -- Byte to send, should be loaded while done_p_o = '1'
+      tx_byte_i  : in  std_logic_vector(7 downto 0);
+
+      -- Received byte, valid after done_p_o = '1'
+      rx_byte_o  : out std_logic_vector(7 downto 0);
+
+      -- Done pulse signal, valid when
+      -- * received address matches i2c_addr_i, signaling valid op_o;
+      -- * a byte was received, signaling valid rx_byte_o and an ACK/NACK should be
+      -- sent to master;
+      -- * sent a byte, should set tx_byte_i.
+      done_p_o   : out std_logic;
+
+      -- I2C transfer state
+      -- "00" - Idle
+      -- "01" - Got address, matches i2c_addr_i
+      -- "10" - Read done, waiting ACK/NACK
+      -- "11" - Write done, waiting next byte
+      stat_o     : out std_logic_vector(1 downto 0)
+    );
+  end component gc_i2c_slave;
+
+  ------------------------------------------------------------------------------
+  -- Glitch filter
+  ------------------------------------------------------------------------------
+  component gc_glitch_filt is
+    generic
+    (
+      -- Length of glitch filter:
+      -- g_len = 1 => data width should be > 1 clk_i cycle
+      -- g_len = 2 => data width should be > 2 clk_i cycle
+      -- etc.
+      g_len : natural := 4
+    );
+    port
+    (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+
+      -- Data input
+      dat_i   : in  std_logic;
+
+      -- Data output
+      -- latency: g_len+1 clk_i cycles
+      dat_o   : out std_logic
+    );
+  end component gc_glitch_filt;
+
+
+  --============================================================================
+  -- Procedures
+  --============================================================================  procedure f_rr_arbitrate (
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
 
-  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
-  function f_gray_encode(x : std_logic_vector) return std_logic_vector;
-  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
-
 end package;
-
-
 
 package body gencores_pkg is
 
