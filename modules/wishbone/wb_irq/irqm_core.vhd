@@ -8,9 +8,12 @@ use work.genram_pkg.all;
 use work.wb_irq_pkg.all;
 
 entity irqm_core is
-generic( g_channels     : natural := 32;   -- number of interrupt lines
-         g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
-         g_det_edge     : boolean := true  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+generic( g_channels     : natural := 32;     -- number of interrupt lines
+         g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
+         g_det_edge     : boolean := true;   -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
+         g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+         g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
 ); 
 port    (clk_i          : std_logic;   -- clock
          rst_n_i        : std_logic;   -- reset, active LO
@@ -140,22 +143,33 @@ irq_master_o.we   <= '1';
 -- send pending MSI IRQs over WB
   wb_irq_master : process(clk_i)
       variable v_state        : t_state;
-      variable v_ID           : std_logic_vector(6 downto 0);
+      variable v_dst          : std_logic_vector(31 downto 0);
   begin
     
+
    if rising_edge(clk_i) then
 		if(rst_n_i = '0') then
 			irq_master_o.cyc  <= '0';
 			irq_master_o.stb  <= '0';
 			r_state           <= st_IDLE;
-		else
+         v_dst             := (others => '0');
+      else
 			v_state       := r_state;
 			r_wb_sending  <= '0';
-			case r_state is
+         
+         case r_state is
 			  when st_IDLE    => if(s_wb_send = '1') then
                                  v_state      := st_SEND;
-                                 v_ID         := std_logic_vector(to_unsigned(idx, 5)) & "00";                
-                                 irq_master_o.adr <= s_dst(idx)(31 downto 7) & v_ID; 
+                                                               
+                                 v_dst(6 downto 2) := std_logic_vector(to_unsigned(idx, 5));
+                                 if(g_has_dev_id) then
+                                    v_dst(15 downto 8)   := g_dev_id;
+                                    v_dst(31 downto 16)  := s_dst(idx)(31 downto 16);    
+                                 else
+                                    v_dst(31 downto 7)   := s_dst(idx)(31 downto 7);
+                                 end if;
+                
+                                 irq_master_o.adr <= v_dst; 
                                  irq_master_o.dat <= s_msg(idx);
                                  r_wb_sending     <= '1';
 										end if;

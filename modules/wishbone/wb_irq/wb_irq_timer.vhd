@@ -135,12 +135,12 @@ signal r_src      : std_logic_vector(g_timers-1 downto 0);  --comps sources
 signal r_mod      : std_logic_vector(g_timers-1 downto 0);  --counters mode
 signal r_csc      : std_logic_vector(g_timers-1 downto 0);  --cascade starts
 signal r_msg      : t_wishbone_data_array(g_timers-1 downto 0);   
-signal r_dst      : t_wishbone_data_array(g_timers-1 downto 0);
+signal r_dst      : t_wishbone_address_array(g_timers-1 downto 0);
 signal r_csl      : t_wishbone_data_array(g_timers-1 downto 0);  --cascade selects
 signal r_ddl_hi   : t_wishbone_data_array(g_timers-1 downto 0);   
 signal r_ddl_lo   : t_wishbone_data_array(g_timers-1 downto 0);
 
-signal  s_comp_mask, s_comp_edge_masked      : std_logic_vector(g_timers-1 downto 0);
+signal s_comp_mask, s_comp_edge_masked      : std_logic_vector(g_timers-1 downto 0);
 signal r_msk_cnt        : t_msk_cnt_array(g_timers-1 downto 0);
 signal r_time           : t_time;
 signal s_deadline       : t_time_array(g_timers-1 downto 0);
@@ -149,22 +149,10 @@ signal r_deadline_offs  : t_time_array(g_timers-1 downto 0);
 signal s_x, s_y, s_sy   : t_time_array(g_timers-1 downto 0);
 signal s_ovf1, s_ovf2   : std_logic_vector(g_timers-1 downto 0);
 
-
-
-
 signal s_csc_arm, s_csc_arm_edge : std_logic_vector(g_timers-1 downto 0);  --cascade starts
-
-
 --------------------------------------------------------------------------------------------
 
---******************************************************************************************   
--- WB irq interface definitions and constants
---------------------------------------------------------------------------------------------
-signal r_comp_1st, comp, s_comp_edge, r_comp, r_pending : std_logic_vector(g_timers-1 downto 0);
-signal r_wb_sending, s_wb_send : std_logic;
-signal s_idx, r_idx : natural range g_timers-1 downto 0; 
-signal r_state : t_state;  
-signal s_set_pending : std_logic_vector(r_pending'length-1 downto 0);
+signal r_comp_1st, comp, s_comp_edge, r_comp : std_logic_vector(g_timers-1 downto 0);
 
       
 begin
@@ -317,7 +305,7 @@ G1: for I in 0 to g_timers-1 generate
       end process deadline_offs;
   
  
- --create comparators
+   --create comparators
  
   -- carry-save
   s_x(I)   <= s_deadline_abs(I) xor r_deadline_offs(I) xor not r_time;
@@ -328,8 +316,6 @@ G1: for I in 0 to g_timers-1 generate
 
   s_sy(I)(63 downto 1) <= s_y(I)(62 downto 0);
   s_sy(I)(0) <= '0';
-
-  
 
   ea : eca_adder
   port map(
@@ -342,13 +328,7 @@ G1: for I in 0 to g_timers-1 generate
       x2_o    => open,
       c2_o    => open);
   
-      
-      
-   
-
    end generate;
-   
-   
    
       comps : process(clk_sys_i)    
       begin
@@ -365,87 +345,24 @@ G1: for I in 0 to g_timers-1 generate
       
        s_comp_edge_masked <= s_comp_edge and s_comp_mask;
 
---******************************************************************************************   
--- WB IRQ Interface Arbitration
---------------------------------------------------------------------------------------------
-   with f_hot_to_bin(r_pending) select
-   s_idx          <= 0 when 0,
-                     f_hot_to_bin(r_pending)-1 when others;  
 
-   s_wb_send      <= f_or_vec(r_pending);
- 
-   -- keep track of what needs sending
-   queue_mux : process(clk_sys_i, rst_sys_n_i)
-   variable v_set_pending, v_clr_pending : std_logic_vector(r_pending'length-1 downto 0);
-   begin
-      if rising_edge(clk_sys_i) then
-         if((rst_sys_n_i and r_rst_n) = '0') then            
-            r_pending <= (others => '0');
-         else
-            v_clr_pending        := (others => '1');                
-            v_clr_pending(r_idx) := not r_wb_sending;
-            v_set_pending        := s_comp_edge_masked; 
-              
-            r_pending            <= (r_pending or v_set_pending) and v_clr_pending;
-          end if;
-      end if;
-   end process queue_mux; 
-
-
---******************************************************************************************   
--- WB IRQ Interface
---------------------------------------------------------------------------------------------
-
--- send pending MSI IRQs over WB
-  wb_irq_master : process(clk_sys_i)
-      variable v_state        : t_state;
-  begin
-    
-   if rising_edge(clk_sys_i) then
-		if(rst_sys_n_i = '0') then
-			irq_master_o.cyc  <= '0';
-			irq_master_o.stb  <= '0';
-			irq_master_o.we <= '1';
-			irq_master_o.sel <= (others => '1');
-			r_state         <= st_IDLE;
-			r_idx <= 0;
-		else
-			v_state       := r_state;
-			
-			case r_state is
-			  when st_IDLE   =>  if(s_wb_send = '1') then
-											v_state      := st_SEND;
-											irq_master_o.adr <= r_dst(s_idx)(31 downto 8) & std_logic_vector(to_unsigned(s_idx, 6)) & "00";               
-											irq_master_o.dat <= r_msg(s_idx);
-											r_idx <= s_idx;   
-									  end if;
-			  when st_SEND   =>  if(irq_master_i.stall = '0') then
-										 v_state := st_IDLE;
-									  end if;
-			  when others   =>  v_state := st_IDLE;
-			end case;
-			-- flags on state transition
-			if(v_state = st_IDLE) then
-			  r_wb_sending  <= '0';
-			  
-			else
-			  r_wb_sending <= '1';
-			end if;
-			
-			if(v_state = st_SEND) then
-			  irq_master_o.cyc <= '1';
-			  irq_master_o.stb <= '1';
-			  
-				
-			else
-			  irq_master_o.cyc <= '0';
-			  irq_master_o.stb <= '0';
-			end if;
-			
-			r_state <= v_state;
-		end if;
-    end if;
-  end process;
+   irq :  irqm_core
+   generic map(g_channels     => g_timers,
+               g_round_rb     => true,
+               g_det_edge     => false
+   ) 
+   port map(   clk_i          => clk_sys_i,
+               rst_n_i        => rst_sys_n_i, 
+            --msi if
+               irq_master_o   => irq_master_o,
+               irq_master_i   => irq_master_i,
+            --config        
+               msi_dst_array  => r_dst,
+               msi_msg_array  => r_msg,  
+               mask_i         => s_comp_mask,
+            --irq lines
+               irq_i          => s_comp_edge
+   );
 
 
 end architecture behavioral;
