@@ -52,7 +52,7 @@ package wb_irq_pkg is
     wbd_width     => x"7", -- 8/16/32-bit port granularity
     sdb_component => (
     addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
+    addr_last     => x"0000000000000fff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
     device_id     => x"10050081",
@@ -68,7 +68,7 @@ package wb_irq_pkg is
     wbd_width     => x"7", -- 8/16/32-bit port granularity
     sdb_component => (
     addr_first    => x"0000000000000000",
-    addr_last     => x"00000000000000ff",
+    addr_last     => x"0000000000000fff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
     device_id     => x"10050082",
@@ -93,15 +93,24 @@ package wb_irq_pkg is
     name          => "IRQ_CTRL           ")));
 
   component wb_irq_master is
-    port    (clk_i          : std_logic;
-           rst_n_i        : std_logic; 
-           
-           master_o       : out t_wishbone_master_out;
-           master_i       : in  t_wishbone_master_in;
-           
-           irq_i          : std_logic;
-           adr_i          : t_wishbone_address;
-           msg_i          : t_wishbone_data
+  generic( g_channels     : natural := 32;   -- number of interrupt lines
+         g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
+         g_det_edge     : boolean := true;  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
+         g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+         g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+); 
+port    (clk_i          : std_logic;   -- clock
+         rst_n_i        : std_logic;   -- reset, active LO
+         --msi if
+         irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
+         irq_master_i   : in  t_wishbone_master_in;
+         -- ctrl interface  
+         ctrl_slave_o : out t_wishbone_slave_out;         
+         ctrl_slave_i : in  t_wishbone_slave_in;
+         --irq lines
+         mask_i         : std_logic_vector(g_channels-1 downto 0); -- irq mask. to use mask register only, tie all bits to HI
+         irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
   );
   end component;
   
@@ -123,7 +132,61 @@ package wb_irq_pkg is
            ctrl_slave_i  : in  t_wishbone_slave_in
   );
   end component;
-  
+ 
+
+  constant c_irq_timer_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"10040088",
+    version       => x"00000001",
+    date          => x"20120308",
+    name          => "IRQ_TIMER          ")));
+ 
+  component wb_irq_timer is
+  generic ( g_timers  : natural := 4);
+  port    (clk_sys_i    : in std_logic;           
+           rst_sys_n_i  : in std_logic;             
+         
+           tm_tai8ns_i  : in std_logic_vector(63 downto 0);         
+
+           ctrl_slave_o : out t_wishbone_slave_out;  -- ctrl interface for LM32 irq processing
+           ctrl_slave_i : in  t_wishbone_slave_in;
+           
+           irq_master_o : out t_wishbone_master_out;                             -- wb msi interface 
+           irq_master_i : in  t_wishbone_master_in
+   );
+   end component;
+ 
+   component irqm_core is
+   generic( g_channels     : natural := 32;     -- number of interrupt lines
+         g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
+         g_det_edge     : boolean := true;   -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
+         g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+         g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+); 
+port    (clk_i          : std_logic;   -- clock
+         rst_n_i        : std_logic;   -- reset, active LO
+         --msi if
+         irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
+         irq_master_i   : in  t_wishbone_master_in;
+         --config        
+         msi_dst_array  : in t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
+         msi_msg_array  : in t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
+         --irq lines         
+         mask_i         : std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
+         irq_i          : std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
+);
+   end component; 
+
   component wb_irq_lm32 is
   generic(g_msi_queues: natural := 3;
           g_profile: string);

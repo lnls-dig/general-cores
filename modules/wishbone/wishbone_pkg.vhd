@@ -48,8 +48,8 @@ package wishbone_pkg is
 
   subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
-
-
+  type t_wishbone_byte_select_array is array(natural range <>) of t_wishbone_byte_select; 
+  type t_wishbone_data_array is array(natural range <>) of t_wishbone_data; 
   type t_wishbone_address_array is array(natural range <>) of t_wishbone_address;
   type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
   --type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
@@ -365,7 +365,6 @@ package wishbone_pkg is
       -- Common wishbone signals
       clk_i       : in  std_logic;
       rst_n_i     : in  std_logic;
-      -- Slave control port
       slave_i     : in  t_wishbone_slave_in;
       slave_o     : out t_wishbone_slave_out;
       -- Master reader port
@@ -1274,7 +1273,7 @@ package body wishbone_pkg is
          prev_rng    := this_rng;
          prev_offs   := this_offs;
       end loop;
-
+      report "##* " & integer'image(sdb_array'length) & " Elements, last address: " & f_bits2string(std_logic_vector(this_offs+this_rng)) severity Note;
       return result;
    end f_sdb_automap_array;
 
