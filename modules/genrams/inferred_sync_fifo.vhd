@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2013-07-29
+-- Last update: 2013-11-14
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ begin  -- syn
   end process;
 
 
-  process(rd_ptr, rd_i)
+  process(rd_ptr, rd_i, rd_int)
   begin
     if(rd_int = '1' and g_show_ahead) then
       rd_ptr_muxed <= rd_ptr + 1;
