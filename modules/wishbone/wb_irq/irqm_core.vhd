@@ -44,6 +44,8 @@ signal r_pending     : std_logic_vector(g_channels-1 downto 0);
 signal s_wb_send     : std_logic;
 signal r_wb_sending  : std_logic;
 signal idx           : natural range 0 to g_channels-1;
+signal idx_robin     : natural range 0 to g_channels-1;
+signal idx_prio      : natural range 0 to g_channels-1;
 
 begin
 
@@ -79,39 +81,33 @@ irq_master_o.we   <= '1';
       s_irq_edge <= r_irq;
    end generate;
 
- G_RR_1 : if(g_round_rb) generate
  
- begin 
      -- round robin
-     process(clk_i)
+     idx_round_robin : process(clk_i)
      begin
        if rising_edge(clk_i) then
          if(rst_n_i = '0') then
-            idx       <= 0;
+            idx_robin       <= 0;
          else 
 
-           if((not r_wb_sending and r_pending(idx)) = '0') then 
-              if(idx = g_channels-1) then
-                  idx <= 0;   
+           if((not r_wb_sending and r_pending(idx_robin)) = '0') then 
+              if(idx_robin = g_channels-1) then
+                  idx_robin <= 0;   
               else
-                  idx <= idx +1; 
+                  idx_robin <= idx_robin +1; 
               end if;         
            end if; 
           
          end if;
        end if;
      end process;
-   end generate;
     
-   G_RR_2 : if(not g_round_rb) generate
-   
-   begin    
       -- priority
       with f_hot_to_bin(r_pending) select
-      idx          <= 0 when 0,
+      idx_prio          <= 0 when 0,
                       f_hot_to_bin(r_pending)-1 when others; 
 
-   end generate;
+   idx <= idx_robin when g_round_rb else idx_prio;
 
 -------------------------------------------------------------------------
 
@@ -163,7 +159,7 @@ irq_master_o.we   <= '1';
                                                                
                                  v_dst(6 downto 2) := std_logic_vector(to_unsigned(idx, 5));
                                  if(g_has_dev_id) then
-                                    v_dst(15 downto 8)   := g_dev_id;
+                                    v_dst(12 downto 8)   := g_dev_id;
                                     v_dst(31 downto 16)  := s_dst(idx)(31 downto 16);    
                                  else
                                     v_dst(31 downto 7)   := s_dst(idx)(31 downto 7);
