@@ -16,6 +16,6 @@ files = [	"gencores_pkg.vhd",
                 "gc_word_packer.vhd",
                 "gc_i2c_slave.vhd",
                 "gc_glitch_filt.vhd",
-				"gc_big_adder.vhd"
-
+				"gc_big_adder.vhd",
+                "gc_fsm_watchdog.vhd"
 				];
