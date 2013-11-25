@@ -231,12 +231,33 @@ package gencores_pkg is
       q_req_i   : in  std_logic);
   end component;
   
+  component gc_big_adder is
+  generic(
+    g_data_bits : natural := 64;
+    g_parts     : natural := 4);
+  port(
+    clk_i   : in  std_logic;
+    stall_i : in  std_logic := '0';
+    a_i     : in  std_logic_vector(g_data_bits-1 downto 0);
+    b_i     : in  std_logic_vector(g_data_bits-1 downto 0);
+    c_i     : in  std_logic := '0';
+    c1_o    : out std_logic;
+    x2_o    : out std_logic_vector(g_data_bits-1 downto 0);
+    c2_o    : out std_logic);
+  end component;
+  
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
 
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
+  function f_gray_encode(x : std_logic_vector) return std_logic_vector;
+  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+
 end package;
+
+
 
 package body gencores_pkg is
 
@@ -277,5 +298,39 @@ package body gencores_pkg is
     end if;
     
   end f_rr_arbitrate;
+
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector is
+    constant len : natural := a'length;
+    variable aw, bw, rw : std_logic_vector(len+1 downto 0);
+    variable x : std_logic_vector(len downto 0);
+  begin
+    aw := "0" & a & c;
+    bw := "0" & b & c;
+    rw := std_logic_vector(unsigned(aw) + unsigned(bw));
+    x := rw(len+1 downto 1);
+    return x;
+  end f_big_ripple;
+  
+ 
+  function f_gray_encode(x : std_logic_vector) return std_logic_vector is
+    variable o : std_logic_vector(x'length downto 0);
+  begin
+    o := (x & '0') xor ('0' & x);
+    return o(x'length downto 1);
+  end f_gray_encode;
+  
+  -- Call with step=1
+  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector is
+    constant len : natural := x'length;
+    alias    y : std_logic_vector(len-1 downto 0) is x;
+    variable z : std_logic_vector(len-1 downto 0) := (others => '0');
+  begin
+    if step >= len then
+      return y;
+    else
+      z(len-step-1 downto 0) := y(len-1 downto step);
+      return f_gray_decode(y xor z, step+step);
+    end if;
+  end f_gray_decode; 
 
 end gencores_pkg;

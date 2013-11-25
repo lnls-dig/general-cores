@@ -212,6 +212,17 @@ end package;
 package body wb_irq_pkg is
 
 
+function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector is
+    constant len : natural := a'length;
+    variable aw, bw, rw : std_logic_vector(len+1 downto 0);
+    variable x : std_logic_vector(len downto 0);
+  begin
+    aw := "0" & a & c;
+    bw := "0" & b & c;
+    rw := std_logic_vector(unsigned(aw) + unsigned(bw));
+    x := rw(len+1 downto 1);
+    return x;
+  end f_big_ripple;
 
 function f_bin_to_hot(x : natural; len : natural
   ) return std_logic_vector is

@@ -27,7 +27,7 @@ library work;
 use work.wishbone_pkg.all;
 use work.genram_pkg.all;
 use work.wb_irq_pkg.all;
-use work.eca_pkg.all;
+use work.gencores_pkg.all;
 
 
 entity wb_irq_timer is
@@ -41,7 +41,7 @@ entity wb_irq_timer is
            ctrl_slave_o : out t_wishbone_slave_out;         -- timer ctrl interface
            ctrl_slave_i : in  t_wishbone_slave_in;
            
-           irq_master_o : out t_wishbone_master_out;         -- msi irq src 
+           irq_master_o : out t_wishbone_master_out;        -- msi irq src 
            irq_master_i : in  t_wishbone_master_in
   );
 end entity;
@@ -317,7 +317,7 @@ G1: for I in 0 to g_timers-1 generate
   s_sy(I)(63 downto 1) <= s_y(I)(62 downto 0);
   s_sy(I)(0) <= '0';
 
-  ea : eca_adder
+  ea : gc_big_adder
   port map(
       clk_i   => clk_sys_i,
       stall_i => '0',
