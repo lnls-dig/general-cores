@@ -140,7 +140,7 @@ signal r_csl      : t_wishbone_data_array(g_timers-1 downto 0);  --cascade selec
 signal r_ddl_hi   : t_wishbone_data_array(g_timers-1 downto 0);   
 signal r_ddl_lo   : t_wishbone_data_array(g_timers-1 downto 0);
 
-signal s_comp_mask, s_comp_edge_masked      : std_logic_vector(g_timers-1 downto 0);
+signal s_comp_mask      : std_logic_vector(g_timers-1 downto 0);
 signal r_msk_cnt        : t_msk_cnt_array(g_timers-1 downto 0);
 signal r_time           : t_time;
 signal s_deadline       : t_time_array(g_timers-1 downto 0);
@@ -343,9 +343,6 @@ G1: for I in 0 to g_timers-1 generate
          end if;
       end process comps;
       
-       s_comp_edge_masked <= s_comp_edge and s_comp_mask;
-
-
    irq :  irqm_core
    generic map(g_channels     => g_timers,
                g_round_rb     => true,

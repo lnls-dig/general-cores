@@ -26,6 +26,9 @@
 -- 2013-08-10  1.0      mkreider        Created
 -------------------------------------------------------------------------------
 
+
+         
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -39,8 +42,9 @@ entity wb_irq_master is
 generic( g_channels     : natural := 32;   -- number of interrupt lines
          g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
          g_det_edge     : boolean := true;  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
+         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 11..7 hold g_dev_id as device identifier
          g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+         g_has_ch_id    : boolean := false;  -- if set, dst adr bits  6..2 hold g_ch_id  as device identifier         
          g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
 ); 
 port    (clk_i          : std_logic;   -- clock
@@ -52,7 +56,6 @@ port    (clk_i          : std_logic;   -- clock
          ctrl_slave_o : out t_wishbone_slave_out;         
          ctrl_slave_i : in  t_wishbone_slave_in;
          --irq lines
-         mask_i         : std_logic_vector(g_channels-1 downto 0); -- irq mask. to use mask register only, tie all bits to HI
          irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
   );
 end entity;
@@ -61,12 +64,12 @@ architecture behavioral of wb_irq_master is
 
 function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector is
    variable n_sel     : std_logic_vector(pval'range);
-	variable n_val     : std_logic_vector(pval'range);
-   variable result 	 : std_logic_vector(pval'range);   
+   variable n_val     : std_logic_vector(pval'range);
+   variable result     : std_logic_vector(pval'range);   
 begin
   for i in pval'range loop 
    n_sel(i) := sel(i / 8);
-	n_val(i) := ival(i);
+   n_val(i) := ival(i);
   end loop;
 
   if(mode = "set") then  
@@ -102,7 +105,8 @@ constant c_RST             : natural := 0;                     --0x00, wo, Reset
 constant c_MSK_GET         : natural := c_RST            +4;   --0x04, ro, get irq mask. to only use irq mask vector (mask_i), set all bits to HI
 constant c_MSK_SET         : natural := c_MSK_GET        +4;   --0x08, wo, set irq mask bits. 
 constant c_MSK_CLR         : natural := c_MSK_SET        +4;   --0x0C, wo, clr irq mask bits,         
-constant c_CHANNEL_INFO    : natural := c_MSK_CLR        +4;   --0x10  ro  number of channels in this device
+constant c_SW_IRQ          : natural := c_MSK_CLR        +4;   --0x10, wo, software irq
+constant c_CHANNEL_INFO    : natural := c_SW_IRQ         +4;   --0x14  ro  number of channels in this device
 
 constant c_CHANNEL_SEL     : natural :=              16#20#;   --0x20, rw, channel select. !!!CAUTION!!! content of all c_CH_... regs depends on this
 constant c_CH_MSG          : natural := c_CHANNEL_SEL    +4;   --0x24, rw, MSI msg to be sent on MSI when deadline is hit
@@ -112,11 +116,21 @@ signal r_csl               : t_wishbone_data;                                 --
 signal r_msk, s_msk        : std_logic_vector(g_channels-1 downto 0);         -- mask
 signal r_msg               : t_wishbone_data_array(g_channels-1 downto 0);    -- messages  
 signal r_dst               : t_wishbone_address_array(g_channels-1 downto 0); -- destinations
+signal s_irq, r_swirq      : std_logic_vector(g_channels-1 downto 0);         -- 
+
+--v_dst(6 downto 2) := std_logic_vector(to_unsigned(idx, 5));
+--if(g_has_dev_id) then
+--   v_dst(12 downto 8)   := g_dev_id;
+--   v_dst(31 downto 16)  := s_dst(idx)(31 downto 16);    
+--else
+--   v_dst(31 downto 7)   := s_dst(idx)(31 downto 7);
+--end if;
 
 begin
 
 --combine mask register and mask lines
-s_msk <= r_msk and mask_i;
+s_msk <= r_msk;
+s_irq <= irq_i or r_swirq; 
 
 --******************************************************************************************   
 -- WB ctrl interface implementation
@@ -145,6 +159,7 @@ s_msk <= r_msk and mask_i;
             r_rst_n  <= '1';
             r_csl    <= (others => '0'); -- channel select
             r_msk    <= (others => '0'); -- irq mask
+            r_swirq  <= (others => '0'); -- software irq
 
             --init code for messages
             if(g_default_msg) then         
@@ -167,6 +182,7 @@ s_msk <= r_msk and mask_i;
                      when c_RST           => r_rst_n           <= '0'; 
                      when c_MSK_SET       => r_msk             <= f_wb_wr(r_msk,             s_c_dati, s_c_sel, "set");  
                      when c_MSK_CLR       => r_msk             <= f_wb_wr(r_msk,             s_c_dati, s_c_sel, "clr");
+                     when c_SW_IRQ        => r_swirq           <= f_wb_wr(r_swirq,           s_c_dati, s_c_sel, "owr");
                      when c_CHANNEL_SEL   => if(f_oob(s_c_dati, g_channels)) then  -- owr with limit check
                                                 r_c_ack <= '0'; r_c_err <= '1';
                                              else
@@ -206,7 +222,7 @@ s_msk <= r_msk and mask_i;
                msi_msg_array  => r_msg,  
             --irq lines               
                mask_i         => s_msk,
-               irq_i          => irq_i
+               irq_i          => s_irq
    );
           
                  

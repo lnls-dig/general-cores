@@ -52,7 +52,7 @@ package wb_irq_pkg is
     wbd_width     => x"7", -- 8/16/32-bit port granularity
     sdb_component => (
     addr_first    => x"0000000000000000",
-    addr_last     => x"0000000000000fff",
+    addr_last     => x"00000000000000ff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
     device_id     => x"10050081",
@@ -68,7 +68,7 @@ package wb_irq_pkg is
     wbd_width     => x"7", -- 8/16/32-bit port granularity
     sdb_component => (
     addr_first    => x"0000000000000000",
-    addr_last     => x"0000000000000fff",
+    addr_last     => x"00000000000000ff",
     product => (
     vendor_id     => x"0000000000000651", -- GSI
     device_id     => x"10050082",
@@ -95,10 +95,7 @@ package wb_irq_pkg is
   component wb_irq_master is
   generic( g_channels     : natural := 32;   -- number of interrupt lines
          g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
-         g_det_edge     : boolean := true;  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
-         g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
-         g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+         g_det_edge     : boolean := true  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
 ); 
 port    (clk_i          : std_logic;   -- clock
          rst_n_i        : std_logic;   -- reset, active LO
@@ -109,7 +106,6 @@ port    (clk_i          : std_logic;   -- clock
          ctrl_slave_o : out t_wishbone_slave_out;         
          ctrl_slave_i : in  t_wishbone_slave_in;
          --irq lines
-         mask_i         : std_logic_vector(g_channels-1 downto 0); -- irq mask. to use mask register only, tie all bits to HI
          irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
   );
   end component;
@@ -166,12 +162,9 @@ port    (clk_i          : std_logic;   -- clock
    end component;
  
    component irqm_core is
-   generic( g_channels     : natural := 32;     -- number of interrupt lines
+   generic( g_channels     : natural := 32;  -- number of interrupt lines
          g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
-         g_det_edge     : boolean := true;   -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-         g_has_dev_id   : boolean := false;  -- if set, dst adr bits 15..8 hold g_dev_id as device identifier
-         g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
-         g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+         g_det_edge     : boolean := true    -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
 ); 
 port    (clk_i          : std_logic;   -- clock
          rst_n_i        : std_logic;   -- reset, active LO
@@ -243,8 +236,8 @@ variable ret : std_logic;
 begin
   ret := '0';
   for I in 0 to slv_in'left loop
-	ret := ret or slv_in(I);
-  end loop; 	
+   ret := ret or slv_in(I);
+  end loop;    
   return ret;
 end function or_all;  
   
