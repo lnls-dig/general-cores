@@ -355,7 +355,8 @@ G1: for I in 0 to g_timers-1 generate
                irq_master_i   => irq_master_i,
             --config        
                msi_dst_array  => r_dst,
-               msi_msg_array  => r_msg,  
+               msi_msg_array  => r_msg,
+               en_i           => '1',  
                mask_i         => s_comp_mask,
             --irq lines
                irq_i          => s_comp_edge

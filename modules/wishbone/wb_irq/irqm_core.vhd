@@ -12,17 +12,18 @@ generic( g_channels     : natural := 32;     -- number of interrupt lines
          g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
          g_det_edge     : boolean := true    -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
 ); 
-port    (clk_i          : std_logic;   -- clock
-         rst_n_i        : std_logic;   -- reset, active LO
+port    (clk_i          : in  std_logic;   -- clock
+         rst_n_i        : in  std_logic;   -- reset, active LO
          --msi if
          irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
          irq_master_i   : in  t_wishbone_master_in;
          --config        
-         msi_dst_array  : in t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
-         msi_msg_array  : in t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
-         --irq lines         
-         mask_i         : std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
-         irq_i          : std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
+         msi_dst_array  : in  t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
+         msi_msg_array  : in  t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
+         --irq lines
+         en_i           : in  std_logic;         
+         mask_i         : in  std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
+         irq_i          : in  std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
 );
 end entity;
 
@@ -44,6 +45,8 @@ signal idx           : natural range 0 to g_channels-1;
 signal idx_robin     : natural range 0 to g_channels-1;
 signal idx_prio      : natural range 0 to g_channels-1;
 
+signal s_en          : std_logic_vector(g_channels-1 downto 0); 
+
 begin
 
 --shorter names
@@ -54,6 +57,8 @@ s_dst             <= msi_dst_array;
 irq_master_o.sel  <= (others => '1');
 irq_master_o.we   <= '1';
 
+s_en <= (others => en_i);
+
 -------------------------------------------------------------------------
 -- registering and counters
 -------------------------------------------------------------------------
@@ -62,7 +67,7 @@ irq_master_o.we   <= '1';
     if rising_edge(clk_i) then
       if(rst_n_i = '0') then
       else 
-         r_irq <= irq_i and mask_i;
+         r_irq <= irq_i and mask_i and s_en;
       end if;
     end if;
   end process; 

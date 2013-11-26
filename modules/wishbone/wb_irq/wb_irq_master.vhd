@@ -220,7 +220,8 @@ s_irq <= irq_i or r_swirq;
             --config        
                msi_dst_array  => r_dst,
                msi_msg_array  => r_msg,  
-            --irq lines               
+            --irq lines
+               en_i           => '1',               
                mask_i         => s_msk,
                irq_i          => s_irq
    );

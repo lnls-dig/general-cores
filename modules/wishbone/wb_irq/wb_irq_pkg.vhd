@@ -162,21 +162,22 @@ port    (clk_i          : std_logic;   -- clock
    end component;
  
    component irqm_core is
-   generic( g_channels     : natural := 32;  -- number of interrupt lines
+   generic( g_channels  : natural := 32;  -- number of interrupt lines
          g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
          g_det_edge     : boolean := true    -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
 ); 
-port    (clk_i          : std_logic;   -- clock
-         rst_n_i        : std_logic;   -- reset, active LO
+port    (clk_i          : in std_logic;   -- clock
+         rst_n_i        : in std_logic;   -- reset, active LO
          --msi if
          irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
          irq_master_i   : in  t_wishbone_master_in;
          --config        
          msi_dst_array  : in t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
          msi_msg_array  : in t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
-         --irq lines         
-         mask_i         : std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
-         irq_i          : std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
+         --irq lines
+         en_i           : in std_logic;                                 -- global interrupt enable          
+         mask_i         : in std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
+         irq_i          : in std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
 );
    end component; 
 
