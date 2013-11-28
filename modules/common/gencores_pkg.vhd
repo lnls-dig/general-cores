@@ -162,6 +162,17 @@ package gencores_pkg is
       q_p_o     : out std_logic);
   end component;
 
+  component gc_pulse_synchronizer2 is
+    port (
+      clk_in_i    : in  std_logic;
+      rst_in_n_i  : in  std_logic;
+      clk_out_i   : in  std_logic;
+      rst_out_n_i : in  std_logic;
+      d_ready_o   : out std_logic;
+      d_p_i       : in  std_logic;
+      q_p_o       : out std_logic);
+  end component;
+  
   component gc_frequency_meter
     generic (
       g_with_internal_timebase : boolean;
