@@ -29,9 +29,6 @@ end entity;
 
 architecture behavioral of irqm_core is
 
-type   t_state is (st_IDLE, st_SEND, st_WAITACK);
-signal r_state       : t_state;
-
 signal s_msg         : t_wishbone_data_array(g_channels-1 downto 0);    
 signal s_dst         : t_wishbone_address_array(g_channels-1 downto 0);
 
@@ -46,6 +43,8 @@ signal idx_robin     : natural range 0 to g_channels-1;
 signal idx_prio      : natural range 0 to g_channels-1;
 
 signal s_en          : std_logic_vector(g_channels-1 downto 0); 
+signal r_cyc         : std_logic;
+signal r_stb         : std_logic;
 
 begin
 
@@ -54,6 +53,8 @@ s_msg             <= msi_msg_array;
 s_dst             <= msi_dst_array;
 
 -- always full words, always write 
+irq_master_o.cyc  <= r_cyc;
+irq_master_o.stb  <= r_stb;
 irq_master_o.sel  <= (others => '1');
 irq_master_o.we   <= '1';
 
@@ -140,46 +141,29 @@ s_en <= (others => en_i);
 -------------------------------------------------------------------------
 -- send pending MSI IRQs over WB
   wb_irq_master : process(clk_i)
-      variable v_state        : t_state;
   begin
    if rising_edge(clk_i) then
       if(rst_n_i = '0') then
-         irq_master_o.cyc  <= '0';
-         irq_master_o.stb  <= '0';
-         r_state           <= st_IDLE;
+         r_cyc <= '0';
+         r_stb <= '0';
+         r_wb_sending <= '0';
       else
-         v_state       := r_state;
-         r_wb_sending  <= '0';
-         
-         case r_state is
-           when st_IDLE    => if(s_wb_send = '1') then
-                                 v_state      := st_SEND;
-                                                               
-                                 irq_master_o.adr <= s_dst(idx); 
-                                 irq_master_o.dat <= s_msg(idx);
-                                 r_wb_sending     <= '1';
-                              end if;
-           
-           when st_SEND    => if(irq_master_i.stall = '0') then
-                               v_state := st_WAITACK;
-                              end if;
-                              
-           when st_WAITACK => if(irq_master_i.ack = '1') then
-                               v_state := st_IDLE;
-                              end if; 
-   
-           when others     => v_state := st_IDLE;
-         end case;
-         
-         -- flags on state transition
-         if(v_state = st_SEND) then
-           irq_master_o.cyc   <= '1';
-           irq_master_o.stb   <= '1';
+         r_wb_sending <= '0';
+        
+         if r_cyc = '1' then
+           if irq_master_i.stall = '0' then
+             r_stb <= '0';
+           end if;
+           if (irq_master_i.ack or irq_master_i.err or irq_master_i.rty) = '1' then
+             r_cyc <= '0';
+           end if;
          else
-           irq_master_o.cyc   <= '0';
-           irq_master_o.stb   <= '0';
+           r_cyc <= s_wb_send;
+           r_stb <= s_wb_send;
+           r_wb_sending <= s_wb_send;
+           irq_master_o.adr <= s_dst(idx); 
+           irq_master_o.dat <= s_msg(idx);
          end if;
-         r_state <= v_state;
       end if;
     end if;
   end process;
