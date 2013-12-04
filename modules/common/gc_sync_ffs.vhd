@@ -58,6 +58,11 @@ end gc_sync_ffs;
 
 architecture behavioral of gc_sync_ffs is
   signal sync0, sync1, sync2 : std_logic;
+
+  attribute shreg_extract : string;
+  attribute shreg_extract of sync0  : signal is "no";
+  attribute shreg_extract of sync1  : signal is "no";
+  attribute shreg_extract of sync2  : signal is "no";
 begin
 
 

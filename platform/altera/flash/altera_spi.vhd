@@ -9,6 +9,7 @@ entity altera_spi is
   port(
     dclk_i : in  std_logic;
     ncs_i  : in  std_logic;
+    oe_i   : in  std_logic_vector(g_port_width-1 downto 0);
     asdo_i : in  std_logic_vector(g_port_width-1 downto 0);
     data_o : out std_logic_vector(g_port_width-1 downto 0));
 end entity;
@@ -186,12 +187,12 @@ begin
   data_o <= data(data_o'range);
   
   width1 : if g_port_width = 1 generate
-    oe   <= (0 => '0',       others => '1');
-    asdo <= (0 => asdo_i(0), others => '-');
+    oe   <= (0 => '1', 1 => '0', others => '1');
+    asdo <= (0 => asdo_i(0), others => '1');
   end generate;
   
   width4 : if g_port_width = 4 generate
-    oe   <= (others => '0');
+    oe   <= oe_i;
     asdo <= asdo_i;
   end generate;
   
@@ -202,7 +203,7 @@ begin
         scein    => ncs_i,
         sdoin    => asdo(0),
         data0out => data(0),
-        oe       => oe(0));
+        oe       => '0');
   end generate;
   
   cycloneii : if c_block = T_CYCLONEII generate
@@ -212,7 +213,7 @@ begin
         scein    => ncs_i,
         sdoin    => asdo(0),
         data0out => data(0),
-        oe       => oe(0));
+        oe       => '0');
   end generate;
 
   stratixii : if c_block = T_STRATIXII generate
@@ -222,7 +223,7 @@ begin
         scein    => ncs_i,
         sdoin    => asdo(0),
         data0out => data(0),
-        oe       => oe(0));
+        oe       => '0');
   end generate;
   
   stratixiii : if c_block = T_STRATIXIII generate
@@ -232,7 +233,7 @@ begin
 	scein    => ncs_i,
 	sdoin    => asdo(0),
 	data0out => data(0),
-	oe       => oe(0));
+	oe       => '0');
   end generate;
   
   stratixiv : if c_block = T_STRATIXIV generate
@@ -242,7 +243,7 @@ begin
 	scein    => ncs_i,
 	sdoin    => asdo(0),
 	data0out => data(0),
-	oe       => oe(0));
+	oe       => '0');
   end generate;
   
   stratixv : if c_block = T_STRATIXV generate
@@ -250,7 +251,7 @@ begin
       port map(
         dclk     => dclk_i,
         sce      => ncs_i,
-        oe       => oe(0),
+        oe       => '0',
         data0out => asdo(0),
         data1out => asdo(1),
         data2out => asdo(2),
@@ -270,7 +271,7 @@ begin
       port map(
         dclk     => dclk_i,
         sce      => ncs_i,
-        oe       => oe(0),
+        oe       => '0',
         data0out => asdo(0),
         data1out => asdo(1),
         data2out => asdo(2),
@@ -290,7 +291,7 @@ begin
       port map(
         dclk     => dclk_i,
         sce      => ncs_i,
-        oe       => oe(0),
+        oe       => '0',
         data0out => asdo(0),
         data1out => asdo(1),
         data2out => asdo(2),

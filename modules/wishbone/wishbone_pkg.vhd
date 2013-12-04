@@ -48,8 +48,8 @@ package wishbone_pkg is
 
   subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
-
-
+  type t_wishbone_byte_select_array is array(natural range <>) of t_wishbone_byte_select; 
+  type t_wishbone_data_array is array(natural range <>) of t_wishbone_data; 
   type t_wishbone_address_array is array(natural range <>) of t_wishbone_address;
   type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
   --type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
@@ -58,7 +58,7 @@ package wishbone_pkg is
   --type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
   subtype t_wishbone_master_in_array is t_wishbone_slave_out_array;
 
-  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0):=
+  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_data : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
@@ -73,40 +73,48 @@ package wishbone_pkg is
     ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
   constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
 
+  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := (0 => cc_dummy_address);
+
   -- A generally useful function.
-  function f_ceil_log2(x : natural) return natural;
+  function f_ceil_log2(x   : natural) return natural;
   function f_bits2string(s : std_logic_vector) return string;
 
+  function f_string2bits(s : string) return std_logic_vector;
+  function f_string2svl (s : string) return std_logic_vector;
+  function f_slv2string (slv : std_logic_vector) return string;
+
+  function f_string_fix_len( s : string; ret_len : natural := 10; fill_char : character := '0' ) return string;
+  function f_hot_to_bin(x : std_logic_vector) return natural;
 ------------------------------------------------------------------------------
 -- SDB declaration
 ------------------------------------------------------------------------------
 
-  constant c_sdb_device_length : natural := 512; -- bits
-  subtype t_sdb_record is std_logic_vector(c_sdb_device_length-1 downto 0);
-  type t_sdb_record_array is array(natural range <>) of t_sdb_record;
+  constant c_sdb_device_length : natural := 512;  -- bits
+  subtype  t_sdb_record is std_logic_vector(c_sdb_device_length-1 downto 0);
+  type     t_sdb_record_array is array(natural range <>) of t_sdb_record;
 
   type t_sdb_product is record
-    vendor_id     : std_logic_vector(63 downto 0);
-    device_id     : std_logic_vector(31 downto 0);
-    version       : std_logic_vector(31 downto 0);
-    date          : std_logic_vector(31 downto 0);
-    name          : string(1 to 19);
+    vendor_id : std_logic_vector(63 downto 0);
+    device_id : std_logic_vector(31 downto 0);
+    version   : std_logic_vector(31 downto 0);
+    date      : std_logic_vector(31 downto 0);
+    name      : string(1 to 19);
   end record t_sdb_product;
 
   type t_sdb_component is record
-    addr_first    : std_logic_vector(63 downto 0);
-    addr_last     : std_logic_vector(63 downto 0);
-    product       : t_sdb_product;
+    addr_first : std_logic_vector(63 downto 0);
+    addr_last  : std_logic_vector(63 downto 0);
+    product    : t_sdb_product;
   end record t_sdb_component;
 
   constant c_sdb_endian_big    : std_logic := '0';
   constant c_sdb_endian_little : std_logic := '1';
-  type t_sdb_device is record
+  type     t_sdb_device is record
     abi_class     : std_logic_vector(15 downto 0);
     abi_ver_major : std_logic_vector(7 downto 0);
     abi_ver_minor : std_logic_vector(7 downto 0);
-    wbd_endian    : std_logic;                    -- 0 = big, 1 = little
-    wbd_width     : std_logic_vector(3 downto 0); -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
+    wbd_endian    : std_logic;          -- 0 = big, 1 = little
+    wbd_width     : std_logic_vector(3 downto 0);  -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
     sdb_component : t_sdb_component;
   end record t_sdb_device;
 
@@ -115,21 +123,58 @@ package wishbone_pkg is
     sdb_component : t_sdb_component;
   end record t_sdb_bridge;
 
+  type t_sdb_integration is record
+    product : t_sdb_product;
+  end record t_sdb_integration;
+
+  type t_sdb_repo_url is record
+    repo_url : string(1 to 63);
+  end record t_sdb_repo_url;
+
+  type t_sdb_synthesis is record
+    syn_module_name  : string(1 to 16);
+    syn_commit_id    : string(1 to 32);
+    syn_tool_name    : string(1 to 8);
+    syn_tool_version : std_logic_vector(31 downto 0);
+    syn_date         : std_logic_vector(31 downto 0);
+    syn_username     : string(1 to 15);
+  end record t_sdb_synthesis;
+
+
+  
+  -- general crossbar building functions
+  function f_sdb_create_array(g_enum_dev_id  : boolean := false;
+                              g_dev_id_offs    : natural := 0;
+                              g_enum_dev_name  : boolean := false;
+                              g_dev_name_offs  : natural := 0;       
+                              device           : t_sdb_device; 
+                              instances        : natural := 1) return t_sdb_record_array;  
+  function f_sdb_join_arrays(a : t_sdb_record_array; b : t_sdb_record_array) return t_sdb_record_array;
+  function f_sdb_extract_base_addr(sdb_record : t_sdb_record) return std_logic_vector;
+  function f_sdb_extract_end_addr(sdb_record : t_sdb_record)  return std_logic_vector;
+  function f_sdb_automap_array(sdb_array : t_sdb_record_array; start_offset : t_wishbone_address := (others => '0')) return t_sdb_record_array;  
+  function f_align_addr_offset(offs : unsigned; this_rng : unsigned; prev_rng : unsigned) return unsigned; 
+  function f_sdb_create_rom_addr(sdb_array : t_sdb_record_array) return t_wishbone_address;
+
+
   -- Used to configure a device at a certain address
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address) return t_sdb_record;
+  function f_sdb_embed_integration(integr : t_sdb_integration) return t_sdb_record;
+  function f_sdb_embed_repo_url(url : t_sdb_repo_url) return t_sdb_record;
+  function f_sdb_embed_synthesis(syn : t_sdb_synthesis) return t_sdb_record;
 
   function f_sdb_extract_device(sdb_record : t_sdb_record) return t_sdb_device;
   function f_sdb_extract_bridge(sdb_record : t_sdb_record) return t_sdb_bridge;
+  function f_sdb_extract_integration(sdb_record : t_sdb_record) return t_sdb_integration;
+  function f_sdb_extract_repo_url(sdb_record : t_sdb_record) return t_sdb_repo_url;
+  function f_sdb_extract_synthesis(sdb_record : t_sdb_record) return t_sdb_synthesis;
 
   -- For internal use by the crossbar
-  function f_sdb_embed_product(product : t_sdb_product) return std_logic_vector; -- (319 downto 8)
-  function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector; -- (447 downto 8)
-  function f_sdb_extract_product(sdb_record : std_logic_vector(319 downto 8))  return t_sdb_product;
-  function f_sdb_extract_component(sdb_record : std_logic_vector(447 downto 8)) return t_sdb_component;
-
-  function f_bus_end(g_wraparound : boolean := true; g_layout : t_sdb_record_array;
-    c_rom_bytes : natural; g_sdb_addr : t_wishbone_address) return unsigned;
+  function f_sdb_embed_product(product         : t_sdb_product) return std_logic_vector;  -- (319 downto 8)
+  function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector;  -- (447 downto 8)
+  function f_sdb_extract_product(sdb_record    : std_logic_vector(319 downto 8)) return t_sdb_product;
+  function f_sdb_extract_component(sdb_record  : std_logic_vector(447 downto 8)) return t_sdb_component;
 
 ------------------------------------------------------------------------------
 -- Components declaration
@@ -246,23 +291,23 @@ package wishbone_pkg is
       g_address     : t_wishbone_address_array;
       g_mask        : t_wishbone_address_array);
     port (
-      clk_sys_i     : in  std_logic;
-      rst_n_i       : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-      slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
-      master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
+      slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+      master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
+      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
   -- Use the f_xwb_bridge_*_sdb to bridge a crossbar to another
-  function f_xwb_bridge_manual_sdb( -- take a manual bus size
-      g_size        : t_wishbone_address;
-      g_sdb_addr    : t_wishbone_address) return t_sdb_bridge;
+  function f_xwb_bridge_manual_sdb(     -- take a manual bus size
+    g_size     : t_wishbone_address;
+    g_sdb_addr : t_wishbone_address) return t_sdb_bridge;
 
-  function f_xwb_bridge_layout_sdb( -- determine bus size from layout
-      g_wraparound  : boolean := true;
-      g_layout      : t_sdb_record_array;
-      g_sdb_addr    : t_wishbone_address) return t_sdb_bridge;
+  function f_xwb_bridge_layout_sdb(     -- determine bus size from layout
+    g_wraparound : boolean := true;
+    g_layout     : t_sdb_record_array;
+    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge;
 
   component xwb_sdb_crossbar
     generic (
@@ -273,12 +318,12 @@ package wishbone_pkg is
       g_layout      : t_sdb_record_array;
       g_sdb_addr    : t_wishbone_address);
     port (
-      clk_sys_i     : in  std_logic;
-      rst_n_i       : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-      slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
-      master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
+      slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+      master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
+      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
 
   component sdb_rom is
@@ -286,26 +331,26 @@ package wishbone_pkg is
       g_layout      : t_sdb_record_array;
       g_bus_end     : unsigned(63 downto 0));
     port(
-      clk_sys_i     : in  std_logic;
-      slave_i       : in  t_wishbone_slave_in;
-      slave_o       : out t_wishbone_slave_out);
+      clk_sys_i : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out);
   end component;
-
+  
   constant c_xwb_dma_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
+    abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"00",
     wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"000000000000001f",
-    product => (
-    vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"cababa56",
-    version       => x"00000001",
-    date          => x"20120518",
-    name          => "WB4-Streaming-DMA_0")));
+      addr_first  => x"0000000000000000",
+      addr_last   => x"000000000000001f",
+      product     => (
+        vendor_id => x"0000000000000651",  -- GSI
+        device_id => x"cababa56",
+        version   => x"00000001",
+        date      => x"20120518",
+        name      => "WB4-Streaming-DMA_0")));
   component xwb_dma is
     generic(
       -- Value 0 cannot stream
@@ -315,12 +360,11 @@ package wishbone_pkg is
       -- Value 4 only slaves with combined latency <= 14 can stream
       -- ....
       logRingLen : integer := 4
-    );
+      );
     port(
       -- Common wishbone signals
       clk_i       : in  std_logic;
       rst_n_i     : in  std_logic;
-      -- Slave control port
       slave_i     : in  t_wishbone_slave_in;
       slave_o     : out t_wishbone_slave_out;
       -- Master reader port
@@ -331,7 +375,7 @@ package wishbone_pkg is
       w_master_o  : out t_wishbone_master_out;
       -- Pulsed high completion signal
       interrupt_o : out std_logic
-    );
+      );
   end component;
 
   -- If you reset one clock domain, you must reset BOTH!
@@ -371,7 +415,7 @@ package wishbone_pkg is
       slave2_i  : in  t_wishbone_slave_in;
       slave2_o  : out t_wishbone_slave_out);
   end component;
-
+  
   -- Just like the DMA controller, but constantly at address 0
   component xwb_streamer is
     generic(
@@ -394,6 +438,24 @@ package wishbone_pkg is
       w_master_i  : in  t_wishbone_master_in;
       w_master_o  : out t_wishbone_master_out);
   end component;
+
+
+  constant c_xwb_gpio_port_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"441c5143",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-GPIO-Port       ")));
+
 
   component wb_gpio_port
     generic (
@@ -436,6 +498,23 @@ package wishbone_pkg is
       gpio_in_i  : in    std_logic_vector(g_num_pins-1 downto 0);
       gpio_oen_o : out   std_logic_vector(g_num_pins-1 downto 0));
   end component;
+
+  constant c_xwb_i2c_master_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"123c5443",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-I2C-Master      ")));
+
 
   component wb_i2c_master
     generic (
@@ -482,7 +561,8 @@ package wishbone_pkg is
 
   component xwb_lm32
     generic (
-      g_profile : string);
+      g_profile : string;
+      g_reset_vector : std_logic_vector(31 downto 0) := x"00000000");
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
@@ -492,6 +572,22 @@ package wishbone_pkg is
       iwb_o     : out t_wishbone_master_out;
       iwb_i     : in  t_wishbone_master_in);
   end component;
+
+  constant c_xwb_onewire_master_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"779c5443",
+        version   => x"00000001",
+        date      => x"20121129",
+        name      => "WB-OneWire-Master  ")));
 
   component wb_onewire_master
     generic (
@@ -618,6 +714,45 @@ package wishbone_pkg is
       uart_txd_o : out std_logic);
   end component;
 
+  component wb_simple_pwm
+    generic (
+      g_num_channels        : integer range 1 to 8;
+      g_default_period      : integer range 0 to 255 := 0;
+      g_default_presc       : integer range 0 to 255 := 0;
+      g_default_val         : integer range 0 to 255 := 0;
+      g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
+      g_address_granularity : t_wishbone_address_granularity := BYTE);
+    port (
+      clk_sys_i  : in  std_logic;
+      rst_n_i    : in  std_logic;
+      wb_adr_i   : in  std_logic_vector(5 downto 0);
+      wb_dat_i   : in  std_logic_vector(31 downto 0);
+      wb_dat_o   : out std_logic_vector(31 downto 0);
+      wb_cyc_i   : in  std_logic;
+      wb_sel_i   : in  std_logic_vector(3 downto 0);
+      wb_stb_i   : in  std_logic;
+      wb_we_i    : in  std_logic;
+      wb_ack_o   : out std_logic;
+      wb_stall_o : out std_logic;
+      pwm_o      : out std_logic_vector(g_num_channels-1 downto 0));
+  end component;
+
+  component xwb_simple_pwm
+    generic (
+      g_num_channels        : integer range 1 to 8;
+      g_default_period      : integer range 0 to 255 := 0;
+      g_default_presc       : integer range 0 to 255 := 0;
+      g_default_val         : integer range 0 to 255 := 0;
+      g_interface_mode      : t_wishbone_interface_mode      := PIPELINED;
+      g_address_granularity : t_wishbone_address_granularity := BYTE);
+    port (
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
+      pwm_o     : out std_logic_vector(g_num_channels-1 downto 0));
+  end component;
+
   component wb_tics
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
@@ -654,7 +789,9 @@ package wishbone_pkg is
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
       g_address_granularity : t_wishbone_address_granularity;
-      g_num_interrupts      : natural);
+      g_num_interrupts      : natural;
+      g_init_vectors        : t_wishbone_address_array := cc_dummy_address_array
+      );
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
@@ -670,6 +807,22 @@ package wishbone_pkg is
       irqs_i       : in  std_logic_vector(g_num_interrupts-1 downto 0);
       irq_master_o : out std_logic);
   end component;
+
+  constant c_xwb_vic_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"00000013",
+        version   => x"00000002",
+        date      => x"20120113",
+        name      => "WB-VIC-Int.Control ")));   
 
   component xwb_vic
     generic (
@@ -772,44 +925,33 @@ package wishbone_pkg is
       di_dat_o     : out std_logic);
   end component;
 
-  constant c_wb_spi_flash_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
-    abi_ver_major => x"01",
-    abi_ver_minor => x"00",
-    wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
-    sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"0000000000ffffff",
-    product => (
-    vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"5cf12a1c",
-    version       => x"00000001",
-    date          => x"20130415",
-    name          => "SPI-FLASH-16M-MMAP ")));
+  function f_wb_spi_flash_sdb(g_bits : natural) return t_sdb_device;
   component wb_spi_flash is
     generic(
-      g_port_width             : natural   := 1;  --  1 for EPCS,  4 for EPCQ
-      g_addr_width             : natural   := 24; -- 24 for EPCS, 32 for EPCQ
+      g_port_width             : natural   := 1;  -- 1 for EPCS, 4 for EPCQ
+      g_addr_width             : natural   := 24; -- log of memory (24=16MB)
       g_idle_time              : natural   := 3;
+      g_dummy_time             : natural   := 8;
+      g_config                 : boolean   := false;
       -- leave these at defaults if you have:
       --   a) slow clock, b) valid constraints, or c) registered in/outputs
       g_input_latch_edge       : std_logic := '1'; -- rising
       g_output_latch_edge      : std_logic := '0'; -- falling
-      g_input_to_output_cycles : natural   := 1);  -- between 1 and 32
+      g_input_to_output_cycles : natural   := 1);  -- between 1 and 8
     port(
       clk_i     : in  std_logic;
       rstn_i    : in  std_logic;
       slave_i   : in  t_wishbone_slave_in;
       slave_o   : out t_wishbone_slave_out;
-
+      
       -- For properly constrained designs, set clk_out_i = clk_in_i.
       clk_out_i : in  std_logic;
       clk_in_i  : in  std_logic;
       ncs_o     : out std_logic;
+      oe_o      : out std_logic_vector(g_port_width-1 downto 0);
       asdi_o    : out std_logic_vector(g_port_width-1 downto 0);
       data_i    : in  std_logic_vector(g_port_width-1 downto 0);
-
+      
       external_request_i : in  std_logic; -- JTAG wants to use SPI?
       external_granted_o : out std_logic);
   end component;
@@ -826,7 +968,7 @@ package body wishbone_pkg is
   end f_ceil_log2;
 
   function f_sdb_embed_product(product : t_sdb_product)
-    return std_logic_vector -- (319 downto 8)
+    return std_logic_vector             -- (319 downto 8)
   is
     variable result : std_logic_vector(319 downto 8);
   begin
@@ -834,7 +976,7 @@ package body wishbone_pkg is
     result(255 downto 224) := product.device_id;
     result(223 downto 192) := product.version;
     result(191 downto 160) := product.date;
-    for i in 0 to 18 loop -- string to ascii
+    for i in 0 to 18 loop               -- string to ascii
       result(159-i*8 downto 152-i*8) :=
         std_logic_vector(to_unsigned(character'pos(product.name(i+1)), 8));
     end loop;
@@ -850,14 +992,14 @@ package body wishbone_pkg is
     result.device_id := sdb_record(255 downto 224);
     result.version   := sdb_record(223 downto 192);
     result.date      := sdb_record(191 downto 160);
-    for i in 0 to 18 loop -- ascii to string
+    for i in 0 to 18 loop               -- ascii to string
       result.name(i+1) := character'val(to_integer(unsigned(sdb_record(159-i*8 downto 152-i*8))));
     end loop;
     return result;
   end;
 
   function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address)
-    return std_logic_vector -- (447 downto 8)
+    return std_logic_vector             -- (447 downto 8)
   is
     variable result : std_logic_vector(447 downto 8);
 
@@ -869,7 +1011,7 @@ package body wishbone_pkg is
 
     result(447 downto 384) := std_logic_vector(base);
     result(383 downto 320) := std_logic_vector(base + last - first);
-    result(319 downto   8) := f_sdb_embed_product(sdb_component.product);
+    result(319 downto 8)   := f_sdb_embed_product(sdb_component.product);
     return result;
   end;
 
@@ -892,11 +1034,12 @@ package body wishbone_pkg is
     result(511 downto 496) := device.abi_class;
     result(495 downto 488) := device.abi_ver_major;
     result(487 downto 480) := device.abi_ver_minor;
-    result(479 downto 453) := (others => '0');
-    result(452)            := device.wbd_endian;
+    result(479 downto 456) := (others => '0');
+    result(455)            := device.wbd_endian;
+    result(454 downto 452) := (others => '0');
     result(451 downto 448) := device.wbd_width;
-    result(447 downto   8) := f_sdb_embed_component(device.sdb_component, address);
-    result(  7 downto   0) := x"01"; -- device
+    result(447 downto 8)   := f_sdb_embed_component(device.sdb_component, address);
+    result(7 downto 0)     := x"01";    -- device
     return result;
   end;
 
@@ -913,7 +1056,90 @@ package body wishbone_pkg is
     result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
 
     assert sdb_record(7 downto 0) = x"01"
-    report "Cannot extract t_sdb_device from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      report "Cannot extract t_sdb_device from record of type " & integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      severity failure;
+    
+    return result;
+  end;
+
+  function f_sdb_embed_integration(integr : t_sdb_integration)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 320) := (others => '0');
+    result(319 downto 8)   := f_sdb_embed_product(integr.product);
+    result(7 downto 0)     := x"80"; -- integration record
+    return result;
+  end f_sdb_embed_integration;
+
+  function f_sdb_extract_integration(sdb_record : t_sdb_record)
+    return t_sdb_integration
+  is
+    variable result : t_sdb_integration;
+  begin
+    result.product := f_sdb_extract_product(sdb_record(319 downto 8));
+
+    assert sdb_record(7 downto 0) = x"80"
+    report "Cannot extract t_sdb_integration from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+    severity Failure;
+
+    return result;
+  end f_sdb_extract_integration;
+
+  function f_sdb_embed_repo_url(url : t_sdb_repo_url)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 8) := f_string2svl(url.repo_url);
+    result(  7 downto 0) := x"81"; -- repo_url record
+    return result;
+  end;
+
+  function f_sdb_extract_repo_url(sdb_record : t_sdb_record)
+    return t_sdb_repo_url
+  is
+    variable result : t_sdb_repo_url;
+  begin
+    result.repo_url     := f_slv2string(sdb_record(511 downto 8));
+
+    assert sdb_record(7 downto 0) = x"81"
+    report "Cannot extract t_sdb_repo_url from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+    severity Failure;
+
+    return result;
+  end;
+
+  function f_sdb_embed_synthesis(syn : t_sdb_synthesis)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 384) := f_string2svl(syn.syn_module_name);
+    result(383 downto 256) := f_string2bits(syn.syn_commit_id);
+    result(255 downto 192) := f_string2svl(syn.syn_tool_name);
+    result(191 downto 160) := syn.syn_tool_version;
+    result(159 downto 128) := syn.syn_date;
+    result(127 downto   8) := f_string2svl(syn.syn_username);
+    result(  7 downto   0) := x"82"; -- synthesis record
+    return result;
+  end;
+
+  function f_sdb_extract_synthesis(sdb_record : t_sdb_record)
+    return t_sdb_synthesis
+  is
+    variable result : t_sdb_synthesis;
+  begin
+    result.syn_module_name  := f_slv2string(sdb_record(511 downto 384));
+    result.syn_commit_id    := f_bits2string(sdb_record(383 downto 256));
+    result.syn_tool_name    := f_slv2string(sdb_record(255 downto 192));
+    result.syn_tool_version := sdb_record(191 downto 160);
+    result.syn_date         := sdb_record(159 downto 128);
+    result.syn_username     := f_slv2string(sdb_record(127 downto   8));
+
+    assert sdb_record(7 downto 0) = x"82"
+    report "Cannot extract t_sdb_repo_url from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
     severity Failure;
 
     return result;
@@ -931,8 +1157,8 @@ package body wishbone_pkg is
     base(address'length-1 downto 0) := unsigned(address);
 
     result(511 downto 448) := std_logic_vector(base + child - first);
-    result(447 downto   8) := f_sdb_embed_component(bridge.sdb_component, address);
-    result(  7 downto   0) := x"02"; -- bridge
+    result(447 downto 8)   := f_sdb_embed_component(bridge.sdb_component, address);
+    result(7 downto 0)     := x"02";    -- bridge
     return result;
   end;
 
@@ -945,26 +1171,221 @@ package body wishbone_pkg is
     result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
 
     assert sdb_record(7 downto 0) = x"02"
-    report "Cannot extract t_sdb_bridge from record of type " & Integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
-    severity Failure;
-
+      report "Cannot extract t_sdb_bridge from record of type " & integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      severity failure;
+    
     return result;
   end;
+  
+
+
+--**************************************************************************************************************************--
+-- START MAT's NEW FUNCTIONS FROM 18th Oct 2013
+------------------------------------------------------------------------------------------------------------------------------
+
+
+   function f_sdb_create_array(g_enum_dev_id    : boolean := false;
+                            g_dev_id_offs    : natural := 0;
+                            g_enum_dev_name  : boolean := false;
+                            g_dev_name_offs  : natural := 0;       
+                            device           : t_sdb_device; 
+                            instances        : natural := 1) 
+   return t_sdb_record_array is
+      variable result   : t_sdb_record_array(instances-1 downto 0);  
+      variable i,j, pos : natural;
+      variable dev, newdev      : t_sdb_device;
+      variable serial_no : string(1 to 3);
+      variable text_possible : boolean := false; 
+   begin
+      dev := device;
+             
+      report "### Creating " & integer'image(instances) & " x " & dev.sdb_component.product.name
+      severity note;       
+      for i in 0 to instances-1 loop
+         newdev := dev;        
+         if(g_enum_dev_id) then         
+            dev.sdb_component.product.device_id :=  
+            std_logic_vector( unsigned(dev.sdb_component.product.device_id) 
+                              + to_unsigned(i+g_dev_id_offs, dev.sdb_component.product.device_id'length));        
+         end if;
+         if(g_enum_dev_name) then         
+         -- find end of name
+            
+            for j in dev.sdb_component.product.name'length downto 1 loop
+               if(dev.sdb_component.product.name(j) /= ' ') then               
+                  pos := j;                  
+                  exit;
+               end if;
+            end loop;
+         -- convert i+g_dev_name_offs to string
+            serial_no := f_string_fix_len(integer'image(i+g_dev_name_offs), serial_no'length);
+            report "### Now: " & serial_no & " of " & dev.sdb_component.product.name severity note;
+         -- check if space is sufficient
+            assert (serial_no'length+1 <= dev.sdb_component.product.name'length - pos)
+            report "Not enough space in namestring of sdb_device " & dev.sdb_component.product.name
+            & " to add serial number " & serial_no & ". Space available " & 
+            integer'image(dev.sdb_component.product.name'length-pos-1) & ", required " 
+            & integer'image(serial_no'length+1)    
+            severity Failure;
+         end if;
+         if(g_enum_dev_name) then
+            newdev.sdb_component.product.name(pos+1) := '_'; 
+            for j in 1 to serial_no'length loop
+               newdev.sdb_component.product.name(pos+1+j) := serial_no(j);
+            end loop;            
+         end if;
+          
+      -- insert
+         report "### to: " & newdev.sdb_component.product.name severity note;
+         result(i) := f_sdb_embed_device(newdev, (others=>'1'));
+      end loop;
+      return result;
+   end f_sdb_create_array;
+
+   function f_sdb_join_arrays(a : t_sdb_record_array; b : t_sdb_record_array) return t_sdb_record_array is
+      variable result   : t_sdb_record_array(a'length+b'length-1 downto 0);  
+      variable i : natural;
+   begin
+      for i in 0 to a'left loop
+         result(i) := a(i);
+      end loop;
+      for i in 0 to b'left loop
+         result(i+a'length) := b(i);
+      end loop;
+      return result;
+   end f_sdb_join_arrays;
+
+
+   function f_sdb_extract_base_addr(sdb_record : t_sdb_record) return std_logic_vector is
+   begin
+      return sdb_record(447 downto 384);
+   end f_sdb_extract_base_addr;
+
+   function f_sdb_extract_end_addr(sdb_record : t_sdb_record) return std_logic_vector is
+   begin
+      return sdb_record(383 downto 320);
+   end f_sdb_extract_end_addr;
+
+
+   function f_align_addr_offset(offs : unsigned; this_rng : unsigned; prev_rng : unsigned)
+   return unsigned is
+      variable this_pow, prev_pow   : natural;  
+      variable start, env, result : unsigned(63 downto 0) := (others => '0');
+   begin
+      start(offs'left downto 0) := offs;   
+      --calculate address envelopes (next power of 2) for previous and this component and choose the larger one
+      this_pow := f_hot_to_bin(std_logic_vector(this_rng)); 
+      prev_pow := f_hot_to_bin(std_logic_vector(prev_rng));    
+      -- no max(). thank you very much, std_numeric :-/   
+      if(this_pow >= prev_pow) then
+         env(this_pow) := '1';
+      else
+         env(prev_pow) := '1';
+      end if;
+      --round up to the next multiple of the envelope...
+      if(prev_rng /= 0) then   
+         result := start + env - (start mod env);
+      else
+         result := start;   --...except for first element, result is start. 
+      end if;
+      return result;
+   end f_align_addr_offset;
+
+
+ -- generates aligned address map for an sdb_record_array, accepts optional start offset 
+   function f_sdb_automap_array(sdb_array : t_sdb_record_array; start_offset : t_wishbone_address := (others => '0'))
+   return t_sdb_record_array is
+      variable this_rng    : unsigned(63 downto 0) := (others => '0');   
+      variable prev_rng    : unsigned(63 downto 0) := (others => '0');   
+      variable prev_offs   : unsigned(63 downto 0) := (others => '0');   
+      variable this_offs   : unsigned(63 downto 0) := (others => '0');   
+      variable device      : t_sdb_device;
+      variable bridge      : t_sdb_bridge;  
+      variable sdb_type    : std_logic_vector(7 downto 0);
+      variable i           : natural;
+      variable result      : t_sdb_record_array(sdb_array'length-1 downto 0); -- last 
+   begin
+   
+      prev_offs(start_offset'left downto 0) := unsigned(start_offset);
+      --traverse the array   
+      for i in 0 to sdb_array'length-1 loop
+         -- find the fitting extraction function by evaling the type byte. 
+         -- could also use the component, but it's safer to use Wes' embed and extract functions.      
+         sdb_type := sdb_array(i)(7 downto 0);
+         case sdb_type is
+            --device         
+            when x"01"  => device      := f_sdb_extract_device(sdb_array(i));
+                           this_rng    := unsigned(device.sdb_component.addr_last) - unsigned(device.sdb_component.addr_first);                      
+                           this_offs   := f_align_addr_offset(prev_offs, this_rng, prev_rng);
+                           result(i)   := f_sdb_embed_device(device, std_logic_vector(this_offs(31 downto 0)));
+            --bridge
+            when x"02"  => bridge      := f_sdb_extract_bridge(sdb_array(i));
+                           this_rng    := unsigned(bridge.sdb_component.addr_last) - unsigned(bridge.sdb_component.addr_first);
+                           this_offs   := f_align_addr_offset(prev_offs, this_rng, prev_rng);
+                           result(i)   := f_sdb_embed_bridge(bridge, std_logic_vector(this_offs(31 downto 0)) );
+            --other
+            when others => result(i) := sdb_array(i);   
+         end case;
+         -- doesnt hurt because this_* doesnt change if its not a device or bridge
+         prev_rng    := this_rng;
+         prev_offs   := this_offs;
+      end loop;
+      report "##* " & integer'image(sdb_array'length) & " Elements, last address: " & f_bits2string(std_logic_vector(this_offs+this_rng)) severity Note;
+      return result;
+   end f_sdb_automap_array;
+
+
+  -- find place for sdb rom on crossbar and return address. try to put it in an address gap.
+   function f_sdb_create_rom_addr(sdb_array : t_sdb_record_array) return t_wishbone_address is
+      constant rom_bytes            : natural := (2**f_ceil_log2(sdb_array'length + 1)) * (c_sdb_device_length / 8);
+      variable result               : t_wishbone_address  := (others => '0');
+      variable this_base, this_end  : unsigned(63 downto 0)          := (others => '0');    
+      variable prev_base, prev_end  : unsigned(63 downto 0)          := (others => '0');
+      variable rom_base             : unsigned(63 downto 0)          := (others => '0');
+      variable sdb_type             : std_logic_vector(7 downto 0);     
+   begin
+      --traverse the array   
+      for i in 0 to sdb_array'length-1 loop     
+         sdb_type := sdb_array(i)(7 downto 0);
+         if(sdb_type = x"01" or sdb_type = x"02") then
+            -- get         
+            this_base := unsigned(f_sdb_extract_base_addr(sdb_array(i)));
+            this_end  := unsigned(f_sdb_extract_end_addr(sdb_array(i)));
+            if(unsigned(result) = 0) then
+               rom_base := f_align_addr_offset(prev_base, to_unsigned(rom_bytes-1, 64), (prev_end-prev_base));
+               if(rom_base + to_unsigned(rom_bytes, 64) <= this_base) then
+                  result := std_logic_vector(rom_base(t_wishbone_address'left downto 0));
+               end if;   
+            end if;
+            prev_base := this_base;
+            prev_end  := this_end;      
+         end if;
+      end loop;   
+      -- if there was no gap to fit the sdb rom, place it at the end   
+      if(unsigned(result) = 0) then
+            result := std_logic_vector(f_align_addr_offset(this_base, to_unsigned(rom_bytes-1, 64), 
+                                       this_end-this_base)(t_wishbone_address'left downto 0));   
+      end if;      
+      return result;
+   end f_sdb_create_rom_addr; 
+------------------------------------------------------------------------------------------------------------------------------
+-- END MAT's NEW FUNCTIONS FROM  18th Oct 2013
+------------------------------------------------------------------------------------------------------------------------------
 
   function f_xwb_bridge_manual_sdb(
-    g_size       : t_wishbone_address;
-    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
+    g_size     : t_wishbone_address;
+    g_sdb_addr : t_wishbone_address) return t_sdb_bridge
   is
     variable result : t_sdb_bridge;
   begin
-    result.sdb_child := (others => '0');
+    result.sdb_child                                      := (others => '0');
     result.sdb_child(c_wishbone_address_width-1 downto 0) := g_sdb_addr;
 
-    result.sdb_component.addr_first := (others => '0');
-    result.sdb_component.addr_last  := (others => '0');
+    result.sdb_component.addr_first                                     := (others => '0');
+    result.sdb_component.addr_last                                      := (others => '0');
     result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
 
-    result.sdb_component.product.vendor_id := x"0000000000000651"; -- GSI
+    result.sdb_component.product.vendor_id := x"0000000000000651";  -- GSI
     result.sdb_component.product.device_id := x"eef0b198";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120511";
@@ -972,14 +1393,20 @@ package body wishbone_pkg is
 
     return result;
   end f_xwb_bridge_manual_sdb;
-
-  function f_bus_end(
-    g_wraparound  : boolean := true;
-    g_layout      : t_sdb_record_array;
-    c_rom_bytes   : natural;
-    g_sdb_addr    : t_wishbone_address) return unsigned
+  
+  function f_xwb_bridge_layout_sdb(
+    g_wraparound : boolean := true;
+    g_layout     : t_sdb_record_array;
+    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
   is
-  alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
+    alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
+
+    -- How much space does the ROM need?
+    constant c_used_entries : natural := c_layout'length + 1;
+    constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries);  -- next power of 2
+    constant c_sdb_bytes    : natural := c_sdb_device_length / 8;
+    constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
+    
     variable result : unsigned(63 downto 0);
     variable sdb_component : t_sdb_component;
   begin
@@ -993,59 +1420,36 @@ package body wishbone_pkg is
       result := (others => '0');
       result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
       result := result + to_unsigned(c_rom_bytes, 64) - 1;
-
+      
       for i in c_layout'range loop
-      sdb_component := f_sdb_extract_component(g_layout(i)(447 downto 8));
+        sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
         if unsigned(sdb_component.addr_last) > result then
           result := unsigned(sdb_component.addr_last);
         end if;
       end loop;
-
       -- round result up to a power of two -1
       for i in 62 downto 0 loop
         result(i) := result(i) or result(i+1);
       end loop;
     end if;
-
-    return result;
-  end f_bus_end;
-
-  function f_xwb_bridge_layout_sdb(
-    g_wraparound  : boolean := true;
-    g_layout      : t_sdb_record_array;
-    g_sdb_addr    : t_wishbone_address) return t_sdb_bridge
-  is
-    alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
-
-    -- How much space does the ROM need?
-    constant c_used_entries : natural := c_layout'length + 1;
-    constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-
-    constant c_sdb_bytes   : natural := c_sdb_device_length / 8;
-    constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
-
-    variable sdb_component : t_sdb_component;
-    variable bus_end : unsigned(63 downto 0);
-  begin
-    bus_end := f_bus_end(g_wraparound, c_layout, c_rom_bytes, g_sdb_addr);
-
-    return f_xwb_bridge_manual_sdb(std_logic_vector(bus_end(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
+    
+    return f_xwb_bridge_manual_sdb(std_logic_vector(result(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
 
   function f_xwb_dpram(g_size : natural) return t_sdb_device
   is
     variable result : t_sdb_device;
   begin
-    result.abi_class     := x"0001"; -- RAM device
+    result.abi_class     := x"0001";    -- RAM device
     result.abi_ver_major := x"01";
     result.abi_ver_minor := x"00";
-    result.wbd_width     := x"7"; -- 32/16/8-bit supported
+    result.wbd_width     := x"7";       -- 32/16/8-bit supported
     result.wbd_endian    := c_sdb_endian_big;
 
     result.sdb_component.addr_first := (others => '0');
     result.sdb_component.addr_last  := std_logic_vector(to_unsigned(g_size*4-1, 64));
 
-    result.sdb_component.product.vendor_id := x"000000000000CE42"; -- CERN
+    result.sdb_component.product.vendor_id := x"000000000000CE42";  -- CERN
     result.sdb_component.product.device_id := x"66cfeb52";
     result.sdb_component.product.version   := x"00000001";
     result.sdb_component.product.date      := x"20120305";
@@ -1094,4 +1498,111 @@ package body wishbone_pkg is
     return "0x" & result(cut downto 1);
   end f_bits2string;
 
+  -- Converts string (hex number, without leading 0x) to std_logic_vector
+  function f_string2bits(s : string) return std_logic_vector is
+    variable slv : std_logic_vector(s'length*4-1 downto 0);
+    variable nibble : std_logic_vector(3 downto 0);
+  begin
+    for i in 0 to s'length-1 loop
+      case s(i+1) is
+        when '0' => nibble := X"0";
+        when '1' => nibble := X"1";
+        when '2' => nibble := X"2";
+        when '3' => nibble := X"3";
+        when '4' => nibble := X"4";
+        when '5' => nibble := X"5";
+        when '6' => nibble := X"6";
+        when '7' => nibble := X"7";
+        when '8' => nibble := X"8";
+        when '9' => nibble := X"9";
+        when 'a' => nibble := X"A";
+        when 'A' => nibble := X"A";
+        when 'b' => nibble := X"B";
+        when 'B' => nibble := X"B";
+        when 'c' => nibble := X"C";
+        when 'C' => nibble := X"C";
+        when 'd' => nibble := X"D";
+        when 'D' => nibble := X"D";
+        when 'e' => nibble := X"E";
+        when 'E' => nibble := X"E";
+        when 'f' => nibble := X"F";
+        when 'F' => nibble := X"F";
+        when others => nibble := "XXXX";
+      end case;
+      slv(((i+1)*4)-1 downto i*4) := nibble;
+    end loop;
+    return slv;
+  end f_string2bits;
+
+  -- Converts string to ascii (std_logic_vector)
+  function f_string2svl (s : string) return std_logic_vector is
+    variable slv : std_logic_vector((s'length * 8) - 1 downto 0);
+  begin
+    for i in 0 to s'length-1 loop
+      slv(slv'high-i*8 downto (slv'high-7)-i*8) :=
+        std_logic_vector(to_unsigned(character'pos(s(i+1)), 8));
+    end loop;
+    return slv;
+  end f_string2svl;
+
+  -- Converts ascii (std_logic_vector) to string
+  function f_slv2string (slv : std_logic_vector) return string is
+    variable s : string(1 to slv'length/8);
+  begin
+    for i in 0 to (slv'length/8)-1 loop
+      s(i+1) := character'val(to_integer(unsigned(slv(slv'high-i*8 downto (slv'high-7)-i*8))));
+    end loop;
+    return s;
+  end f_slv2string;
+
+    -- pads a string of unknown length to a given length (useful for integer'image)
+  function f_string_fix_len ( s : string; ret_len : natural := 10; fill_char : character := '0' ) return string is
+      variable ret_v : string (1 to ret_len);
+      constant pad_len : integer := ret_len - s'length ;
+      variable pad_v : string (1 to abs(pad_len));
+   begin
+         if pad_len < 1 then
+         ret_v := s(ret_v'range);
+      else
+         pad_v := (others => fill_char);
+         ret_v := pad_v & s;
+      end if;
+      return ret_v;
+   end f_string_fix_len;
+
+   function f_hot_to_bin(x : std_logic_vector) return natural is
+      variable rv : natural;
+   begin
+      rv := 0;
+      -- if there are few ones set in _x_ then the most significant will be
+      -- translated to bin
+      for i in 0 to x'left loop
+         if x(i) = '1' then
+           rv := i+1;
+         end if;
+      end loop;
+      return rv;
+  end function;  
+
+  function f_wb_spi_flash_sdb(g_bits : natural) return t_sdb_device is
+    variable result : t_sdb_device := (
+      abi_class     => x"0000", -- undocumented device
+      abi_ver_major => x"01",
+      abi_ver_minor => x"01",
+      wbd_endian    => c_sdb_endian_big,
+      wbd_width     => x"7", -- 8/16/32-bit port granularity
+      sdb_component => (
+      addr_first    => x"0000000000000000",
+      addr_last     => x"0000000000ffffff",
+      product => (
+      vendor_id     => x"0000000000000651", -- GSI
+      device_id     => x"5cf12a1c",
+      version       => x"00000001",
+      date          => x"20130415",
+      name          => "SPI-FLASH-16M-MMAP ")));
+  begin
+    result.sdb_component.addr_last := std_logic_vector(to_unsigned(2**g_bits-1, 64));
+    return result;
+  end f_wb_spi_flash_sdb;
+  
 end wishbone_pkg;

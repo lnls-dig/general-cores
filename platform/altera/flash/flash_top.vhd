@@ -7,8 +7,10 @@ use work.wishbone_pkg.all;
 entity flash_top is
   generic(
     g_family                 : string;
-    g_port_width             : natural;
-    g_addr_width             : natural;
+    g_port_width             : natural := 1;
+    g_addr_width             : natural := 24;
+    g_dummy_time             : natural := 8;
+    g_config                 : boolean := false;
     g_input_latch_edge       : std_logic;
     g_output_latch_edge      : std_logic;
     g_input_to_output_cycles : natural);
@@ -19,6 +21,7 @@ entity flash_top is
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
     -- Clock lines for flash chip
+    clk_ext_i : in  std_logic;
     clk_out_i : in  std_logic;
     clk_in_i  : in  std_logic);
 end flash_top;
@@ -32,11 +35,13 @@ architecture rtl of flash_top is
     port(
       dclk_i : in  std_logic;
       ncs_i  : in  std_logic;
+      oe_i   : in  std_logic_vector(g_port_width-1 downto 0);
       asdo_i : in  std_logic_vector(g_port_width-1 downto 0);
       data_o : out std_logic_vector(g_port_width-1 downto 0));
   end component;
   
   signal flash_ncs  : std_logic;
+  signal flash_oe   : std_logic_vector(g_port_width-1 downto 0);
   signal flash_asdo : std_logic_vector(g_port_width-1 downto 0);
   signal flash_data : std_logic_vector(g_port_width-1 downto 0);
   
@@ -47,6 +52,8 @@ begin
       g_port_width             => g_port_width,
       g_addr_width             => g_addr_width,
       g_idle_time              => 3,
+      g_dummy_time             => g_dummy_time,
+      g_config                 => g_config,
       g_input_latch_edge       => g_input_latch_edge,
       g_output_latch_edge      => g_output_latch_edge,
       g_input_to_output_cycles => g_input_to_output_cycles)
@@ -58,6 +65,7 @@ begin
       clk_out_i          => clk_out_i,
       clk_in_i           => clk_in_i,
       ncs_o              => flash_ncs,
+      oe_o               => flash_oe,
       asdi_o             => flash_asdo,
       data_i             => flash_data,
       external_request_i => '0',
@@ -68,8 +76,9 @@ begin
       g_family     => g_family,
       g_port_width => g_port_width)
     port map(
-      dclk_i => clk_out_i,
+      dclk_i => clk_ext_i,
       ncs_i  => flash_ncs,
+      oe_i   => flash_oe,
       asdo_i => flash_asdo,
       data_o => flash_data);
   

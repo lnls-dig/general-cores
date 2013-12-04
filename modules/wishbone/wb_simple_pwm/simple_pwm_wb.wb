@@ -1,0 +1,123 @@
+-- -*- Mode: LUA; tab-width: 2 -*-
+
+-------------------------------------------------------------------------------
+-- Title      : Simple PWM controller
+-- Project    : General Cores Collection
+-------------------------------------------------------------------------------
+-- File       : simple_pwm_wb.wb
+-- Author     : Tomasz Włostowski
+-- Company    : CERN BE-CO-HT
+-- Created    : 2012-12-10
+-- Last update: 2013-01-09
+-------------------------------------------------------------------------------
+-- Description: A simple, multichannel PWM controller (register layout)
+-------------------------------------------------------------------------------
+--
+-- Copyright (c) 2013 CERN / BE-CO-HT
+--
+-- This source file is free software; you can redistribute it   
+-- and/or modify it under the terms of the GNU Lesser General   
+-- Public License as published by the Free Software Foundation; 
+-- either version 2.1 of the License, or (at your option) any   
+-- later version.                                               
+--
+-- This source is distributed in the hope that it will be       
+-- useful, but WITHOUT ANY WARRANTY; without even the implied   
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
+-- PURPOSE.  See the GNU Lesser General Public License for more 
+-- details.                                                     
+--
+-- You should have received a copy of the GNU Lesser General    
+-- Public License along with this source; if not, download it   
+-- from http://www.gnu.org/licenses/lgpl-2.1l.html
+--
+-------------------------------------------------------------------------------
+peripheral {
+    name = "Simple Pulse Width Modulation Controller";
+    description = "A very simple multichannel PWM controller.";
+    prefix = "spwm";
+    hdl_entity = "simple_pwm_wb";
+
+   reg {
+			name = "Control Register";
+			prefix = "CR";
+			
+			field {
+				 name = "Prescaler Ratio";
+				 description = "PWM Base clock prescaler. Divides the system clock to obtain the PWM counter clock. The division ratio is (PRESC + 1).";
+				 type = SLV;
+         size = 16;
+         prefix = "PRESC";
+				 access_bus = READ_WRITE;
+				 access_dev = READ_WRITE;
+         load = LOAD_EXT;
+			};
+
+			field {
+				 name = "Period";
+				 description = "PWM Cycle Period. The real-time period value <code>PERIOD * (PRESC + 1) * t_clk_sys.</code>. Acceptable values: 0..65534.";
+				 type = SLV;
+         size = 16;
+         prefix = "PERIOD";
+				 access_bus = READ_WRITE;
+				 access_dev = READ_WRITE;
+         load = LOAD_EXT;
+			};
+	 };
+
+
+   reg {
+      name = "Status Register";
+      prefix = "SR";
+      field {
+				 name = "Channel count";
+				 description = "Number of channels supported by this particular implementation, from 1 to 8. ";
+				 type = SLV;
+         size = 4;
+         prefix = "N_CHANNELS";
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+         
+      };
+   };
+};
+
+drive_reg_template = 
+	 {
+
+   reg {
+			name = "Channel %d Drive Register";
+			
+			description = "Current PWM duty cycle for channel %d.";
+			prefix = "DR%d";
+			
+      field {
+				 name = "Value";
+				 type = SLV;
+         size = 16;
+				 access_bus = READ_WRITE;
+				 access_dev = READ_WRITE;
+				 load = LOAD_EXT;
+      };
+   };
+};
+
+function generate_dregs(n)
+   local i;
+
+   for i=0,n-1 do
+      local T=deepcopy(drive_reg_template);
+			
+			
+      foreach_reg({TYPE_REG}, function(r)
+																 r.name = string.format(r.name, i);
+																 r.prefix = string.format(r.prefix, i);
+																 print(r.name)
+															end, T);
+
+
+      table_join(periph, T);
+   end
+end
+
+generate_dregs(8);

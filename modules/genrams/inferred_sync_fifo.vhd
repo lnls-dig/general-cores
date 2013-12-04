@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-09-18
+-- Last update: 2013-11-14
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ architecture syn of inferred_sync_fifo is
   signal   usedw                                   : unsigned(c_pointer_width downto 0);
   signal   full, empty                             : std_logic;
   signal   q_int                                   : std_logic_vector(g_data_width-1 downto 0);
-  signal   we                                      : std_logic;
+  signal   we_int, rd_int                          : std_logic;
   signal   guard_bit                               : std_logic;
 
   signal q_reg, q_comb : std_logic_vector(g_data_width-1 downto 0);
@@ -83,8 +83,9 @@ begin  -- syn
 
   --assert g_show_ahead = false report "Show ahead mode not implemented (yet). Sorry" severity failure;
   
-  we <= we_i and not full;
-
+  we_int <= we_i and not full;
+  rd_int <= rd_i and not empty;
+  
   U_FIFO_Ram : generic_dpram
     generic map (
       g_data_width               => g_data_width,
@@ -95,7 +96,7 @@ begin  -- syn
     port map (
       rst_n_i => rst_n_i,
       clka_i  => clk_i,
-      wea_i   => we,
+      wea_i   => we_int,
       aa_i    => std_logic_vector(wr_ptr(c_pointer_width-1 downto 0)),
       da_i    => d_i,
       clkb_i  => '0',
@@ -105,24 +106,24 @@ begin  -- syn
   p_output_reg : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if rd_i = '1' then
+      if rd_int = '1' then
         q_reg <= q_comb;
       end if;
     end if;
   end process;
 
-  
-  process(rd_ptr, rd_i)
+
+  process(rd_ptr, rd_i, rd_int)
   begin
-    if(rd_i = '1' and g_show_ahead) then
+    if(rd_int = '1' and g_show_ahead) then
       rd_ptr_muxed <= rd_ptr + 1;
-    elsif((rd_i = '1' and not g_show_ahead) or (g_show_ahead)) then
+    elsif((rd_int = '1' and not g_show_ahead) or (g_show_ahead)) then
       rd_ptr_muxed <= rd_ptr;
     else
       rd_ptr_muxed <= rd_ptr - 1;
     end if;
   end process;
-  
+
 --  q_o <= q_comb when g_show_ahead = true else q_reg;
 
   q_o <= q_comb;
@@ -134,11 +135,11 @@ begin  -- syn
         wr_ptr <= (others => '0');
         rd_ptr <= (others => '0');
       else
-        if(we_i = '1' and full = '0') then
+        if(we_int = '1') then
           wr_ptr <= wr_ptr + 1;
         end if;
 
-        if(rd_i = '1' and empty = '0') then
+        if(rd_int = '1') then
           rd_ptr <= rd_ptr + 1;
         end if;
       end if;
@@ -150,7 +151,7 @@ begin  -- syn
     process(clk_i)
     begin
       if rising_edge(clk_i) then
-        if ((rd_ptr + 1 = wr_ptr and rd_i = '1') or (rd_ptr = wr_ptr)) then
+        if ((rd_ptr + 1 = wr_ptr and rd_int = '1') or (rd_ptr = wr_ptr)) then
           empty <= '1';
         else
           empty <= '0';
@@ -170,7 +171,7 @@ begin  -- syn
       if rising_edge(clk_i) then
         if rst_n_i = '0' then
           guard_bit <= '0';
-        elsif(wr_ptr + 1 = rd_ptr and we_i = '1') then
+        elsif(wr_ptr + 1 = rd_ptr and we_int = '1') then
           guard_bit <= '1';
         elsif(rd_i = '1') then
           guard_bit <= '0';
@@ -188,15 +189,15 @@ begin  -- syn
           full  <= '0';
           empty <= '1';
         else
-          if(usedw = 1 and rd_i = '1' and we_i = '0') then
+          if(usedw = 1 and rd_int = '1' and we_int = '0') then
             empty <= '1';
-          elsif(we_i = '1' and rd_i = '0') then
+          elsif(we_int = '1' and rd_int = '0') then
             empty <= '0';
           end if;
 
-          if(usedw = g_size-2 and we_i = '1' and rd_i = '0') then
+          if(usedw = g_size-2 and we_int = '1' and rd_int = '0') then
             full <= '1';
-          elsif(usedw = g_size-1 and rd_i = '1' and we_i = '0') then
+          elsif(usedw = g_size-1 and rd_int = '1' and we_int = '0') then
             full <= '0';
           end if;
         end if;
@@ -213,9 +214,9 @@ begin  -- syn
         if rst_n_i = '0' then
           usedw <= (others => '0');
         else
-          if(we_i = '1' and rd_i = '0' and full = '0') then
+          if(we_int = '1' and rd_int = '0') then
             usedw <= usedw + 1;
-          elsif(we_i = '0' and rd_i = '1' and empty = '0') then
+          elsif(we_int = '0' and rd_int = '1') then
             usedw <= usedw - 1;
           end if;
         end if;
@@ -234,9 +235,9 @@ begin  -- syn
           almost_full_o <= '0';
         else
           if(usedw = g_almost_full_threshold-1) then
-            if(we_i = '1' and rd_i = '0') then
+            if(we_int = '1' and rd_int = '0') then
               almost_full_o <= '1';
-            elsif(rd_i = '1' and we_i = '0') then
+            elsif(rd_int = '1' and we_int = '0') then
               almost_full_o <= '0';
             end if;
 
@@ -254,9 +255,9 @@ begin  -- syn
           almost_empty_o <= '1';
         else
           if(usedw = g_almost_empty_threshold+1) then
-            if(rd_i = '1' and we_i = '0') then
+            if(rd_int = '1' and we_int = '0') then
               almost_empty_o <= '1';
-            elsif(we_i = '1' and rd_i = '0') then
+            elsif(we_int = '1' and rd_int = '0') then
               almost_empty_o <= '0';
             end if;
 

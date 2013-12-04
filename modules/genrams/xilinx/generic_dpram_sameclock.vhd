@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-03-28
+-- Last update: 2012-07-09
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ architecture syn of generic_dpram_sameclock is
   begin
     return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
   end f_file_contents;
-  
+
   shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
@@ -111,6 +111,17 @@ architecture syn of generic_dpram_sameclock is
 
 
   signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
+
+  function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer is
+  begin
+    if(x < minx) then
+      return minx;
+    elsif(x > maxx) then
+      return maxx;
+    else
+      return x;
+    end if;
+  end f_check_bounds;
 
 begin
 
@@ -126,14 +137,14 @@ begin
     process (clk_i)
     begin
       if rising_edge(clk_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
-        qb_o <= ram(to_integer(unsigned(ab_i)));
+        qa_o <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
+        qb_o <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
-            ram(to_integer(unsigned(aa_i)))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
+            ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
           end if;
           if(s_we_b(i) = '1') then
-            ram(to_integer(unsigned(ab_i)))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
+            ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
           end if;
         end loop;
       end if;

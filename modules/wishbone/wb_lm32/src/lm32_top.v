@@ -89,6 +89,7 @@ module lm32_top (
     D_BTE_O
     );
 
+parameter eba_reset = 32'h00000000;
 /////////////////////////////////////////////////////
 // Inputs
 /////////////////////////////////////////////////////
@@ -210,7 +211,10 @@ wire trace_bret;                                // Indicates a bret instruction 
 ///////////////////////////////////////////////////// 
    
 // LM32 CPU   
-lm32_cpu cpu (
+lm32_cpu 
+	#(
+		.eba_reset(eba_reset)
+	) cpu (
     // ----- Inputs -------
     .clk_i                 (clk_i),
 `ifdef CFG_EBR_NEGEDGE_REGISTER_FILE

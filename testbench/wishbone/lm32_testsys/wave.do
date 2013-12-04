@@ -9,8 +9,10 @@ add wave -noupdate /main/DUT/U_CPU/gen_profile_medium/U_Wrapped_LM32/D_ACK_I
 add wave -noupdate /main/DUT/U_CPU/data_was_busy
 add wave -noupdate /main/DUT/U_CPU/data_addr_reg
 add wave -noupdate /main/DUT/U_CPU/data_remaining
+add wave -noupdate /main/DUT/U_CPU/iwb_o
+add wave -noupdate /main/DUT/U_CPU/iwb_i
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {2672526 ps} 0}
+WaveRestoreCursors {{Cursor 1} {25475000 ps} 0}
 configure wave -namecolwidth 350
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -25,4 +27,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {2262366 ps} {3082686 ps}
+WaveRestoreZoom {0 ps} {105 us}

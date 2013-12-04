@@ -1,0 +1,157 @@
+@regsection Memory map summary
+@multitable  @columnfractions .10 .15 .15 .55
+@headitem Address @tab Type @tab Prefix @tab Name
+@item @code{0x0} @tab
+REG @tab
+@code{CTL} @tab
+VIC Control Register
+@item @code{0x4} @tab
+REG @tab
+@code{RISR} @tab
+Raw Interrupt Status Register
+@item @code{0x8} @tab
+REG @tab
+@code{IER} @tab
+Interrupt Enable Register
+@item @code{0xc} @tab
+REG @tab
+@code{IDR} @tab
+Interrupt Disable Register
+@item @code{0x10} @tab
+REG @tab
+@code{IMR} @tab
+Interrupt Mask Register
+@item @code{0x14} @tab
+REG @tab
+@code{VAR} @tab
+Vector Address Register
+@item @code{0x18} @tab
+REG @tab
+@code{SWIR} @tab
+Software Interrupt Register
+@item @code{0x1c} @tab
+REG @tab
+@code{EOIR} @tab
+End Of Interrupt Acknowledge Register
+@item @code{0x20 - 0x3f}
+@tab MEM @tab @code{IVT_RAM} @tab Interrupt Vector Table
+@end multitable 
+@regsection @code{CTL} - VIC Control Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{0}
+@tab R/W @tab
+@code{ENABLE}
+@tab @code{0} @tab 
+VIC Enable
+@item @code{1}
+@tab R/W @tab
+@code{POL}
+@tab @code{0} @tab 
+VIC output polarity
+@item @code{2}
+@tab R/W @tab
+@code{EMU_EDGE}
+@tab @code{0} @tab 
+Emulate Edge sensitive output
+@item @code{18...3}
+@tab R/W @tab
+@code{EMU_LEN}
+@tab @code{0} @tab 
+Emulated Edge pulse timer
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{ENABLE} @tab @bullet{}  1: enables VIC operation@*@bullet{}  0: disables VIC operation
+@item @code{POL} @tab @bullet{}  1: IRQ output is active high@*@bullet{}  0: IRQ output is active low
+@item @code{EMU_EDGE} @tab @bullet{}  1: Forces a low pulse of @code{EMU_LEN} clock cycles at each write to @code{EOIR}. Useful for edge-only IRQ controllers such as Gennum.@*@bullet{}  0: Normal IRQ master line behavior
+@item @code{EMU_LEN} @tab Length of the delay (in @code{clk_sys_i} cycles) between write to @code{EOIR} and re-assertion of @code{irq_master_o}.
+@end multitable
+@regsection @code{RISR} - Raw Interrupt Status Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab R/O @tab
+@code{RISR}
+@tab @code{X} @tab 
+Raw interrupt status
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{RISR} @tab Each bit reflects the current state of corresponding IRQ input line.@*@bullet{}  read 1: interrupt line is currently active@*@bullet{}  read 0: interrupt line is inactive
+@end multitable
+@regsection @code{IER} - Interrupt Enable Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{IER}
+@tab @code{0} @tab 
+Enable IRQ
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{IER} @tab @bullet{}  write 1: enables interrupt associated with written bit@*@bullet{}  write 0: no effect
+@end multitable
+@regsection @code{IDR} - Interrupt Disable Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{IDR}
+@tab @code{0} @tab 
+Disable IRQ
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{IDR} @tab @bullet{}  write 1: enables interrupt associated with written bit@*@bullet{}  write 0: no effect
+@end multitable
+@regsection @code{IMR} - Interrupt Mask Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab R/O @tab
+@code{IMR}
+@tab @code{X} @tab 
+IRQ disabled/enabled
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{IMR} @tab @bullet{}  read 1: interrupt associated with read bit is enabled@*@bullet{}  read 0: interrupt is disabled
+@end multitable
+@regsection @code{VAR} - Vector Address Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab R/O @tab
+@code{VAR}
+@tab @code{X} @tab 
+Vector Address
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{VAR} @tab Address of pending interrupt vector, read from Interrupt Vector Table
+@end multitable
+@regsection @code{SWIR} - Software Interrupt Register
+Writing 1 to one of bits of this register causes a software emulation of the respective interrupt.
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{SWIR}
+@tab @code{0} @tab 
+SWI interrupt mask
+@end multitable
+@regsection @code{EOIR} - End Of Interrupt Acknowledge Register
+@multitable @columnfractions .10 .10 .15 .10 .55
+@headitem Bits @tab Access @tab Prefix @tab Default @tab Name
+@item @code{31...0}
+@tab W/O @tab
+@code{EOIR}
+@tab @code{0} @tab 
+End of Interrupt
+@end multitable
+@multitable @columnfractions 0.15 0.85
+@headitem Field @tab Description
+@item @code{EOIR} @tab Any write operation acknowledges the pending interrupt. Then, VIC advances to another pending interrupt(s) or releases the master interrupt output.
+@end multitable

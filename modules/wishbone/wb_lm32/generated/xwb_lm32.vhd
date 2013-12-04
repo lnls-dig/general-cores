@@ -4,7 +4,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 entity xwb_lm32 is
-generic(g_profile: string);
+generic(g_profile: string;
+g_reset_vector: std_logic_vector(31 downto 0) := x"00000000");
 port(
 clk_sys_i : in  std_logic;
 rst_n_i : in  std_logic;
@@ -37,7 +38,9 @@ if profile_name = "full" then return 4; end if;
 if profile_name = "full_debug" then return 4; end if; 
 return 0;
 end function;
-component lm32_top_minimal is port (
+component lm32_top_minimal is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -69,7 +72,9 @@ component lm32_top_minimal is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_medium is port (
+component lm32_top_medium is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -101,7 +106,9 @@ component lm32_top_medium is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_medium_icache is port (
+component lm32_top_medium_icache is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -133,7 +140,9 @@ component lm32_top_medium_icache is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_medium_debug is port (
+component lm32_top_medium_debug is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -165,7 +174,9 @@ component lm32_top_medium_debug is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_medium_icache_debug is port (
+component lm32_top_medium_icache_debug is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -197,7 +208,9 @@ component lm32_top_medium_icache_debug is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_full is port (
+component lm32_top_full is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -229,7 +242,9 @@ component lm32_top_full is port (
    D_LOCK_O : out std_logic;
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
-component lm32_top_full_debug is port (
+component lm32_top_full_debug is 
+generic ( eba_reset: std_logic_vector(31 downto 0) );
+port (
  
   clk_i    : in  std_logic;
   rst_i    : in  std_logic;
@@ -326,6 +341,8 @@ begin
 gen_profile_minimal: if (g_profile = "minimal") generate
 U_Wrapped_LM32: lm32_top_minimal
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -367,6 +384,8 @@ end generate gen_profile_minimal;
 gen_profile_medium: if (g_profile = "medium") generate
 U_Wrapped_LM32: lm32_top_medium
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -408,6 +427,8 @@ end generate gen_profile_medium;
 gen_profile_medium_icache: if (g_profile = "medium_icache") generate
 U_Wrapped_LM32: lm32_top_medium_icache
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -449,6 +470,8 @@ end generate gen_profile_medium_icache;
 gen_profile_medium_debug: if (g_profile = "medium_debug") generate
 U_Wrapped_LM32: lm32_top_medium_debug
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -490,6 +513,8 @@ end generate gen_profile_medium_debug;
 gen_profile_medium_icache_debug: if (g_profile = "medium_icache_debug") generate
 U_Wrapped_LM32: lm32_top_medium_icache_debug
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -531,6 +556,8 @@ end generate gen_profile_medium_icache_debug;
 gen_profile_full: if (g_profile = "full") generate
 U_Wrapped_LM32: lm32_top_full
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -572,6 +599,8 @@ end generate gen_profile_full;
 gen_profile_full_debug: if (g_profile = "full_debug") generate
 U_Wrapped_LM32: lm32_top_full_debug
 
+generic map (
+			eba_reset => g_reset_vector)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,

@@ -1,0 +1,239 @@
+\input texinfo    @c -*-texinfo-*-
+%
+% fine-delay.in - main file for the documentation
+%
+%%%%
+
+%------------------------------------------------------------------------------
+%
+%                         NOTE FOR THE UNAWARE USER
+%                         =========================
+%
+%    This file is a texinfo source. It isn't the binary file of some strange
+%    editor of mine. If you want ASCII, you should "make fine-delay.txt".
+%
+%------------------------------------------------------------------------------
+
+%
+% This is not a conventional info file...
+% I use three extra features:
+%   - The '%' as a comment marker, if at beginning of line ("\%" -> "%")
+%   - leading blanks are allowed (this is something I can't live without)
+%   - braces are automatically escaped when they appear in example blocks
+%
+
+@comment %**start of header
+@documentlanguage en
+@documentencoding UTF-8
+@setfilename fine-delay.info
+@settitle fine-delay
+@iftex
+@afourpaper
+@end iftex
+@paragraphindent 3
+@comment %**end of header
+
+@setchapternewpage off
+
+@set update-month October 2012
+
+@finalout
+
+@titlepage
+@title @code{general-cores} VHDL library
+@subtitle Programmer's manual
+@author CERN BE-CO-HT / Tomasz Włostowski
+
+@end titlepage
+@headings single
+
+@iftex
+@contents
+@end iftex
+
+@macro regsection{name}
+@subsubsection \name\
+@end macro
+
+@c ##########################################################################
+@node Top
+@chapter Introduction
+
+The @code{general-cores} library incorporates a number of commonly used HDL modules,
+ranging from simple synchronizer chains to embedded CPUs. This document aims to be a more or less comprehensive
+user manual for all of them.
+
+The modules are organized into 3 categories:
+@itemize
+@item Common cores - commonly used simple cores, such as pulse detector/synchronizer or round robin arbiter.
+@item @code{genrams} library - a set of configurable RAM and FIFO models for Altera and Xilinx FPGAs
+@item Wishbone cores - a collection of Wishbone peripherals, interconnects and CPUs.
+@end itemize
+
+@chapter The Cores
+
+@section Common cores
+@subsection @code{gc_arbitrated_mux} - arbitrated N-to-1 multiplexer
+
+An N-to-1 multiplexer with round-robin arbitration on the inputs. A typical use is arbirating an access to a FIFO between multiple data sources.
+    
+@multitable @columnfractions .20 .20 .60
+@headitem Generic parameter @tab Default @tab Description
+@item @code{g_num_inputs} @tab none @tab Desired number of inputs.
+@item @code{g_width} @tab none @tab Width of a single input port.
+@end multitable
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{d_i} @tab in @tab Packed data input (@code{g_num_inputs} number of ports which are @code{g_width}-wide).
+@item @code{d_valid_i}  @tab in @tab When 1, the input is valid. Can only be asserted if @code{d_req_i} was active in previous clock cycle.
+@item @code{d_req_o} @tab out @tab Synchronous data request output. When 1, driver can assert @code{d_valid_i} in the following clock cycle.
+@item @code{q_o} @tab out @tab Multiplexed data output.
+@item @code{q_input_id_o} @tab out @tab Number of the input (@code{0..g_num_inputs-1}) the word currently available on @code{q_o} came from.
+@item @code{q_valid_o} @tab out @tab When 1, outputs @code{q_o} and @code{q_input_id_o} contain valid data.
+@end multitable
+
+@subsection @code{gc_sync_ffs} - synchronizer chain and pulse detector
+
+Just as the title says...
+
+@multitable @columnfractions .20 .20 .60
+@headitem Generic parameter @tab Default @tab Description
+@item @code{g_sync_edge} @tab positive @tab Edge of clock input on which the input signal is sampled.
+@end multitable
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{data_i} @tab in @tab Asynchronous signal input.
+@item @code{synced_o}  @tab in @tab Synchronized output.
+@item @code{npulse_o} @tab out @tab Asserted for single clock cycle upon detection of a falling edge in @code{data_i}.
+@item @code{ppulse_o} @tab out @tab Asserted for single clock cycle upon detection of a rising edge in @code{data_i}.
+@end multitable
+
+@subsection @code{gc_pulse_synchronizer} - cross clock domain pulse transfer
+
+Transfers a single-cycle pulse from one clock domain to another. There are no constraints neither on the frequencies of both clocks nor their ratios.
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{clk_in_i} @tab in @tab Input side clock.
+@item @code{clk_out_i} @tab in @tab Output side clock.
+@item @code{d_p_i}  @tab in @tab Pulse input, active high.
+@item @code{d_ready_o}  @tab out @tab When active, @code{d_p_i} input is ready to accept a pulse.
+@item @code{q_p_o} @tab out @tab Pulse output, active high.
+@end multitable
+
+
+@page
+@section Wishbone cores
+@subsection @code{wb_gpio_port} - simple GPIO port
+   
+The Wishbone GPIO Port module implements a very simple bidirectional I/O port capable
+of reading and writing up to 32 pins. Each pin can be independently configured
+as an input/output.
+
+@subsubsection Hardware interface
+@multitable @columnfractions .20 .20 .60
+@headitem Generic parameter @tab Default @tab Description
+%@item @code{g_interface_mode} @tab @code{CLASSIC} @tab Mode of the Wishbone slave. Can be either @code{CLASSIC} or @code{PIPELINED}.
+%@item @code{g_address_granularity} @tab @code{WORD} @tab Granularity of Wishbone addresses. Can be either @code{WORD}, where subsequent registers have addresses incremented by
+@item @code{g_num_pins} @tab @code{32} @tab Desired number of GPIO pins.
+@item @code{g_with_builtin_tristates} @tab @code{false} @tab When enabled, the GPIO port drivers the @code{gpio_b} inout with an internal tristate buffer. This might not work o
+some FPGA tools (notably Xilinx), which sometimes optimize them away. When disabled, the tristate buffer may be implemented (if necessary) in the top level of the design using
+@end multitable
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{gpio_b}     @tab bidir @tab Tri-state GPIO pins, used when @code{g_with_builtin_tristates == true}.
+@item @code{gpio_in_i}  @tab in @tab Input pins state.
+@item @code{gpio_out_o} @tab out @tab Output pins state.
+@item @code{gpio_oen_o} @tab out @tab Output tristate buffer enable.
+@end multitable
+   
+@include wb_gpio_port_regs.in
+
+@page
+@subsection @code{wb_vic} - Vectored Interrupt Controller
+
+The VIC implements a simple interrupt controller, capable of dispatching 32 discrete interrupt sources into single master interrupt output. The typical application of the VIC
+is multpilexing interrupts from a number of Wishbone peripherals within and FPGA and into a single output pin connected to the CPU interrupt input. The VIC features are:
+@itemize
+@item 1 to 32 prioritized inputs (high level active). Input 1 has highest priority, input 32 - lowest.
+@item Inputs interface directl with Embedded Interrupt Controllers (EICs) generated by @code{wbgen2}.
+@item Level- or edge- active  master IRQ output with programmable polarity.
+@item User-programmable Interrupt Vector Table and automatic vector fetching.
+@end itemize
+
+
+@subsubsection Initializing and handling interrupts
+
+The general initialization procedure goes as follows:
+@enumerate
+@item Disable the VIC by writing @code{0} to @code{CTL.ENA}. Program @code{CTL.POL} bit to match the polarity of your CPU/bridge IRQ input,
+@item If the CPU/bridge IRQ input is edge-sensitive, set @code{CTL.EMU_EDGE}, and write the edge emulation timeout @code{CTL.EMU_LEN}.
+The value of the latter determines the delay between the write to @code{EOIR} and the next active edge in the master IRQ output, must be big enough
+to accommodate for time required by the OS to exit from the IRQ handler.
+@item Disable all interrupt inputs by writing @code{0xffffffff} to @code{IDR}.
+@item Configure and enable the CPU/bridge interrupt controller,
+@item Write the VIC vector table (@code{IVT_RAM}) with vector addresses or initialize it with integers from 0 to 31 or your own IRQ identifiers.
+@item Enable the VIC,
+@item Configure peripheral interrupts and enable them by writing to @code{IER} if desired. 
+@end enumerate
+
+Handling VIC interrupts:
+@enumerate
+@item Read the @code{VAR} register to fetch the ID of currently pending interrupt,
+@item Call its' handler. It must acknowledge the interrupt according to the device's own interrupt handling scheme,
+@item Write to EOIR to advance to the next pending interrupt. Note that if you disable an IRQ from within the handler context, you must still acknowledge it by writing to @code{EOIR} (see state diagram below).
+@end enumerate
+
+
+@float Figure,fig:vic_fsm
+@center @image{drawings/vic_state, 10cm,,,.pdf}
+@caption{State diagram of @code{wb_vic}.}
+@end float
+
+@include wb_vic_regs.in
+
+@page
+@subsection @code{wb_onewire_master} - Dallas/Maxim OneWire bus master
+
+@subsubsection Hardware interface
+@multitable @columnfractions .20 .20 .60
+@headitem Generic parameter @tab Default @tab Description
+@item @code{g_num_ports} @tab @code{32} @tab Number of desired OneWire ports.
+@item @code{g_ow_btp_normal} @tab @code{"5.0"} @tab Bit duration in @i{normal} speed mode in microseconds
+@item @code{g_ow_btp_overdrive} @tab @code{"1.0"} @tab Bit duration in @i{overdrive} speed mode in microseconds
+@end multitable
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{owr_pwren_o}     @tab out @tab External power enable. Used only when devices are bus (parasite) powered. Actve low, connect to an external bus power switch.
+@item @code{owr_en_o}     @tab out @tab Tri-state OneWire bus driver enable. When @code{owr_en_o == 1}, drive the OneWire bidirectional pin to @code{0}, otherwise leave it in high impedance state.
+@item @code{owr_i}     @tab in @tab Tri-state OneWire bus input.
+@end multitable
+    
+@subsubsection User's manual
+
+@code{wb_onewire_master} is only a VHDL wrapper for SockIt OneWire master. The documentation and original sources are available on OpenCores's web page: @uref{http://opencores.org/project,sockit_owm}.
+
+@page
+@subsection @code{wb_i2c_master} - @math{I^2C} bus master
+
+@subsubsection Hardware interface
+
+@multitable @columnfractions .20 .20 .60
+@headitem Port @tab Direction @tab Description
+@item @code{scl_pad_i}     @tab in @tab Serial Clock input, connect to the tristate pin in the top level entity.
+@item @code{scl_pad_o}     @tab out @tab Serial Clock output, connect to the input of the tristate driver in the top level entity.
+@item @code{scl_padoen_o}  @tab out @tab Serial Clock buffer enable output, connect to the enable input of the tristate driver in the top level entity. Active low.
+@item @code{sda_pad_i}     @tab in @tab Serial Data input, same rules as for @code{scl_pad_i} signal apply.
+@item @code{sda_pad_o}     @tab out @tab Serial Data output, same rules as for @code{scl_pad_o} signal apply.
+@item @code{sda_padoen_o}  @tab out @tab Serial Data tristate, same rules as for @code{scl_padoen_o} signal apply.
+@end multitable
+    
+@subsubsection User's manual
+
+@code{wb_i2c_master} is a wrapper for OpenCores's @math{I^2C} master. The documentation and original sources are available on OpenCores's web page: @uref{http://opencores.org/project,i2c}.
+   
+@bye

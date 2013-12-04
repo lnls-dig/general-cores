@@ -26,7 +26,6 @@ use ieee.numeric_std.all;
 library work;
 use work.wishbone_pkg.all;
 use work.genram_pkg.all;
-use work.eb_internals_pkg.all;
 use work.wb_irq_pkg.all;
 
 
@@ -108,21 +107,27 @@ begin
       end if;
     end process;
 
-    irqfifo : eb_fifo -- TODO: change this to some other component fifo
-    generic map(
-      g_width => g_datbits + g_adrbits + g_selbits,
-      g_size  => g_depth)
-    port map (
-      clk_i     => clk_i,
-      rstn_i    => s_rst_n,
-      w_full_o  => irq_full(I),
-      w_push_i  => irq_push(I),
-      w_dat_i   => irq_d(I),
-      r_empty_o => irq_empty(I),
-      r_pop_i   => irq_pop(I),
-      r_dat_o   => irq_q(I));
+   irqfifo : generic_sync_fifo
+      generic map (
+        g_data_width    => g_datbits + g_adrbits + g_selbits, 
+        g_size          => g_depth,
+        g_show_ahead    => true,
+         g_with_empty   => true,
+        g_with_full     => true)
+      port map (
+         rst_n_i        => s_rst_n,         
+         clk_i          => clk_i,
+         d_i            => irq_d(I),
+         we_i           => irq_push(I),
+         q_o            => irq_q(I),
+         rd_i           => irq_pop(I),
+         empty_o        => irq_empty(I),
+         full_o         => irq_full(I),
+         almost_empty_o => open,
+         almost_full_o  => open,
+         count_o        => open);
 
-  end generate;  
+  end generate;
   -------------------------------------------------------------------------
 
 

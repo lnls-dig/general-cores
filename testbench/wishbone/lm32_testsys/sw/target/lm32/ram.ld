@@ -31,7 +31,7 @@ GROUP(-lgcc -lc)
 
 MEMORY
 {
-    ram : ORIGIN = 0x00000000, LENGTH = 0x10000
+    ram : ORIGIN = 0x00880000, LENGTH = 0x10000
 }
 
 SECTIONS
