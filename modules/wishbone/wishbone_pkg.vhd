@@ -653,6 +653,22 @@ package wishbone_pkg is
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
   end component;
 
+  constant c_xwb_spi_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"000000000000001F",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"e503947e",       -- echo "WB-SPI.Control     " | md5sum | cut -c1-8
+        version   => x"00000001",
+        date      => x"20121116",
+        name      => "WB-SPI.Control     ")));
+
   component wb_spi
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
