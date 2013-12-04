@@ -1,11 +1,13 @@
--- megafunction wizard: %Arria V Hard IP for PCI Express v12.1%
--- Retrieval info: <instance entity-name="altera_pcie_av_hip_ast" version="12.1" >
--- Retrieval info: 	<generic name="INTENDED_DEVICE_FAMILY" value="Stratix" />
+-- megafunction wizard: %Arria V Hard IP for PCI Express v13.1%
+-- megafunction wizard: %Arria V Hard IP for PCI Express v13.1%
+-- Retrieval info: <instance entity-name="altera_pcie_av_hip_ast" version="13.1" >
+-- Retrieval info: 	<generic name="INTENDED_DEVICE_FAMILY" value="Arria V" />
 -- Retrieval info: 	<generic name="pcie_qsys" value="1" />
 -- Retrieval info: 	<generic name="lane_mask_hwtcl" value="x4" />
 -- Retrieval info: 	<generic name="gen12_lane_rate_mode_hwtcl" value="Gen1 (2.5 Gbps)" />
 -- Retrieval info: 	<generic name="porttype_func_hwtcl" value="Native endpoint" />
 -- Retrieval info: 	<generic name="pcie_spec_version_hwtcl" value="2.1" />
+-- Retrieval info: 	<generic name="altpcie_avmm_hwtcl" value="0" />
 -- Retrieval info: 	<generic name="ast_width_hwtcl" value="Avalon-ST 64-bit" />
 -- Retrieval info: 	<generic name="rxbuffer_rxreq_hwtcl" value="Low" />
 -- Retrieval info: 	<generic name="pll_refclk_freq_hwtcl" value="100 MHz" />
@@ -71,6 +73,7 @@
 -- Retrieval info: 	<generic name="serial_sim_hwtcl" value="0" />
 -- Retrieval info: 	<generic name="override_rxbuffer_cred_preset" value="0" />
 -- Retrieval info: 	<generic name="advanced_default_parameter_override" value="0" />
+-- Retrieval info: 	<generic name="override_tbpartner_driver_setting_hwtcl" value="0" />
 -- Retrieval info: 	<generic name="enable_rx_buffer_checking_advanced_default_hwtcl" value="false" />
 -- Retrieval info: 	<generic name="disable_link_x2_support_advanced_default_hwtcl" value="false" />
 -- Retrieval info: 	<generic name="device_number_advanced_default_hwtcl" value="0" />

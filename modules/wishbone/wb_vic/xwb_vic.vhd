@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2012-01-13
+-- Last update: 2013-04-16
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -41,7 +41,8 @@ entity xwb_vic is
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity : t_wishbone_address_granularity := WORD;
 
-    g_num_interrupts : natural := 32    -- number of IRQ inputs.
+    g_num_interrupts : natural                  := 32;  -- number of IRQ inputs.
+    g_init_vectors   : t_wishbone_address_array := cc_dummy_address_array
     );
 
   port (
@@ -66,7 +67,8 @@ begin  -- wrapper
     generic map (
       g_interface_mode      => g_interface_mode,
       g_address_granularity => g_address_granularity,
-      g_num_interrupts      => g_num_interrupts)
+      g_num_interrupts      => g_num_interrupts,
+      g_init_vectors        => g_init_vectors)
     port map (
       clk_sys_i    => clk_sys_i,
       rst_n_i      => rst_n_i,

@@ -12,6 +12,7 @@ arria5_pcie_reconf_sim
 arria5_pcie_reconf.sip
 arria5_pcie_reconf.spd
 arria5_pcie_reconf.vhd
+arria5_pcie_reconf_sim.f
 # arria5 pcie hard ip core
 arria5_pcie_hip_example_design/
 arria5_pcie_hip_sim/
@@ -24,6 +25,7 @@ arria5_pcie_hip_sim
 arria5_pcie_hip.sip
 arria5_pcie_hip.spd
 arria5_pcie_hip.vhd
+arria5_pcie_hip_sim.f
 # arria2 pcie reconfig core
 arria2_pcie_reconf.cmp
 arria2_pcie_reconf.qip

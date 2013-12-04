@@ -1,5 +1,5 @@
 action = "simulation"
-
+target = "xilinx"
 fetchto="../../../ip_cores"
 
 modules = { "local" :  "../../../" };

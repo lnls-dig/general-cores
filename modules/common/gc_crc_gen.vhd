@@ -72,7 +72,8 @@ entity gc_crc_gen is
 -- word when 0)
     g_dual_width              : integer range 0 to 1   := 0;
 -- if true, match_o output is registered, otherwise it's driven combinatorially
-    g_registered_match_output : boolean                := true); 
+    g_registered_match_output : boolean                := true;
+    g_registered_crc_output   : boolean                := true); 
   port (
     clk_i  : in std_logic;              -- clock
     rst_i  : in std_logic;              -- reset, active high
@@ -80,7 +81,8 @@ entity gc_crc_gen is
     half_i : in std_logic;              -- 1: input word has g_half_width bits
                                         -- 0: input word has g_data_width bits
 
-    data_i : in std_logic_vector(g_data_width - 1 downto 0);  -- data input
+    data_i    : in std_logic_vector(g_data_width - 1 downto 0);  -- data input
+    restart_i : in std_logic := '0';
 
     match_o : out std_logic;            -- CRC match flag: 1 - CRC matches
 
@@ -100,23 +102,35 @@ architecture rtl of gc_crc_gen is
     return v_result;
   end;
 
-  constant msb      : integer                        := g_polynomial'length - 1;
-  constant init_msb : integer                        := g_init_value'length - 1;
-  constant p        : std_logic_vector(msb downto 0) := g_polynomial;
-  constant dw       : integer                        := g_data_width;
-  constant pw       : integer                        := g_polynomial'length;
-  type fb_array is array (dw downto 1) of std_logic_vector(msb downto 0);
-  type dmsb_array is array (dw downto 1) of std_logic_vector(msb downto 1);
-  signal crca       : fb_array;
-  signal da, ma     : dmsb_array;
-  signal crc        : std_logic_vector(msb downto 0);
-  signal arst, srst : std_logic;
+  function f_reverse_bytes (a : in std_logic_vector)
+    return std_logic_vector is
+    variable tmp      : std_logic_vector(a'length-1 downto 0);
+    variable v_result : std_logic_vector(a'length-1 downto 0);
+  begin
+    tmp := a;
+    for i in tmp'range loop
+      v_result(i) := tmp(((tmp'length/8-1) - i/8)*8 + (i mod 8));
+    end loop;
+    return v_result;
+  end;
 
-  signal data_i2 : std_logic_vector(15 downto 0);
-  signal en_d0   : std_logic;
-  signal crc_tmp : std_logic_vector(31 downto 0);
-  signal crc_int : std_logic_vector(31 downto 0);
-  
+
+  constant msb        : integer                        := g_polynomial'length - 1;
+  constant init_msb   : integer                        := g_init_value'length - 1;
+  constant p          : std_logic_vector(msb downto 0) := g_polynomial;
+  constant dw         : integer                        := g_data_width;
+  constant pw         : integer                        := g_polynomial'length;
+  type     fb_array is array (dw downto 1) of std_logic_vector(msb downto 0);
+  type     dmsb_array is array (dw downto 1) of std_logic_vector(msb downto 1);
+  signal   crca       : fb_array;
+  signal   da, ma     : dmsb_array;
+  signal   crc        : std_logic_vector(msb downto 0);
+  signal   arst, srst : std_logic;
+
+
+  signal data_i2           : std_logic_vector(g_data_width-1 downto 0);
+  signal en_d0             : std_logic;
+  signal crc_cur, crc_next : std_logic_vector(g_polynomial'length-1 downto 0);
 
   
 begin
@@ -149,8 +163,9 @@ begin
     end process;
   end generate PCHK3;
 
-  data_i2(15 downto 0) <= (data_i(7 downto 0) & data_i(15 downto 8));
---  data_i2(15 downto 0) <= f_reverse_vector(data_i(15 downto 0));
+  data_i2 <= f_reverse_bytes(data_i);
+
+  crc_cur <= g_init_value when restart_i = '1' else crc;
 
 -- Generate vector of each data bit
   CA : for i in 1 to dw generate        -- data bits
@@ -161,7 +176,7 @@ begin
 
 -- Generate vector of each CRC MSB
   MS0 : for i in 1 to msb generate
-    ma(1)(i) <= crc(msb);
+    ma(1)(i) <= crc_cur(msb);
   end generate MS0;
   MSP : for i in 2 to dw generate
     MSU : for j in 1 to msb generate
@@ -170,8 +185,8 @@ begin
   end generate MSP;
 
 -- Generate feedback matrix
-  crca(1)(0)            <= da(1)(1) xor crc(msb);
-  crca(1)(msb downto 1) <= crc(msb - 1 downto 0) xor ((da(1) xor ma(1)) and p(msb downto 1));
+  crca(1)(0)            <= da(1)(1) xor crc_cur(msb);
+  crca(1)(msb downto 1) <= crc_cur(msb - 1 downto 0) xor ((da(1) xor ma(1)) and p(msb downto 1));
   FB : for i in 2 to dw generate
     crca(i)(0)            <= da(i)(1) xor crca(i - 1)(msb);
     crca(i)(msb downto 1) <= crca(i - 1)(msb - 1 downto 0) xor
@@ -188,11 +203,6 @@ begin
     arst <= rst_i;
   end generate AR;
 
--- CRC process
-  crc_tmp <= f_reverse_vector(not crc);
-  crc_int <= crc_tmp(7 downto 0) & crc_tmp(15 downto 8) & crc_tmp(23 downto 16) & crc_tmp(31 downto 24);
-
-  crc_o <= crc_int;
 
   CRCP : process (clk_i, arst)
   begin
@@ -212,6 +222,30 @@ begin
     end if;
   end process;
 
+  p_crc_next : process(crc, half_i, crca)
+  begin
+    if(g_registered_crc_output) then
+      crc_next <= f_reverse_bytes(f_reverse_vector(not crc));
+    else
+      if(half_i = '1' and g_dual_width = 1) then
+        crc_next <= f_reverse_bytes(f_reverse_vector(not crca(g_half_width)));
+      else
+        crc_next <= f_reverse_bytes(f_reverse_vector(not crca(g_data_width)));
+      end if;
+    end if;
+  end process;
+
+  p_crc_output : process(crc_next, crc, en_i)
+  begin
+    if(g_registered_crc_output) then
+      crc_o <= crc_next;
+    elsif(en_i = '1') then
+      crc_o <= crc_next;
+    else
+      crc_o <= f_reverse_bytes(f_reverse_vector(not crc));
+    end if;
+  end process;
+
   gen_reg_match_output : if(g_registered_match_output) generate
     
     match_gen : process (clk_i, arst)
@@ -227,7 +261,7 @@ begin
           en_d0 <= en_i;
 
           if(en_d0 = '1') then
-            if crc_int = g_residue then
+            if crc_next = g_residue then
               match_o <= '1';
             else
               match_o <= '0';
@@ -240,7 +274,7 @@ begin
   end generate gen_reg_match_output;
 
   gen_comb_match_output : if (not g_registered_match_output) generate
-    match_o <= '1' when crc_int = g_residue else '0';
+    match_o <= '1' when crc_next = g_residue else '0';
   end generate gen_comb_match_output;
 end rtl;
 

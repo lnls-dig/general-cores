@@ -15,16 +15,17 @@ end sdb_rom;
 
 architecture rtl of sdb_rom is
   alias c_layout : t_sdb_record_array(g_layout'length downto 1) is g_layout;
-  
-  -- The ROM must describe all slaves and the crossbar itself
-  constant c_used_entries : natural := c_layout'length + 1;
-  constant c_rom_entries  : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
-  constant c_sdb_words    : natural := c_sdb_device_length / c_wishbone_data_width;
-  constant c_rom_words    : natural := c_rom_entries * c_sdb_words;
-  constant c_rom_depth    : natural := f_ceil_log2(c_rom_words);
-  constant c_rom_lowbits  : natural := f_ceil_log2(c_wishbone_data_width / 8);
+
+  -- The ROM must describe all slaves, the crossbar itself and the optional information records
+  constant c_used_entries   : natural := c_layout'length + 1;
+  constant c_rom_entries    : natural := 2**f_ceil_log2(c_used_entries); -- next power of 2
+  constant c_sdb_words      : natural := c_sdb_device_length / c_wishbone_data_width;
+  constant c_rom_words      : natural := c_rom_entries * c_sdb_words;
+  constant c_rom_depth      : natural := f_ceil_log2(c_rom_words);
+  constant c_rom_lowbits    : natural := f_ceil_log2(c_wishbone_data_width / 8);
   
   type t_rom is array(c_rom_words-1 downto 0) of t_wishbone_data;
+
   function f_build_rom
     return t_rom 
   is
@@ -60,6 +61,7 @@ architecture rtl of sdb_rom is
           sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
       end loop;
     end loop;
+
     return res;
   end f_build_rom;
    
