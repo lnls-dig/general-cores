@@ -71,41 +71,53 @@ architecture struct of wb_xil_multiboot is
   -- Register component
   component multiboot_regs is
     port (
-      -- Clock and reset inputs
-      rst_n_i            : in     std_logic;
-      clk_sys_i          : in     std_logic;
-
-      -- Wishbone ports
-      wb_adr_i           : in     std_logic_vector(2 downto 0);
-      wb_dat_i           : in     std_logic_vector(31 downto 0);
-      wb_dat_o           : out    std_logic_vector(31 downto 0);
-      wb_cyc_i           : in     std_logic;
-      wb_sel_i           : in     std_logic_vector(3 downto 0);
-      wb_stb_i           : in     std_logic;
-      wb_we_i            : in     std_logic;
-      wb_ack_o           : out    std_logic;
-      wb_stall_o         : out    std_logic;
-
-      -- Fields of control register
-      multiboot_cr_rdcfgreg_o   : out    std_logic;
-      multiboot_cr_cfgregadr_o  : out    std_logic_vector(5 downto 0);
-      multiboot_cr_iprog_o      : out    std_logic;
-
-      -- Fields of status register
-      multiboot_sr_cfgreg_img_i : in std_logic_vector(15 downto 0);
-      multiboot_sr_valid_i      : in std_logic;
-
-      -- Fields of bitstream address registers
-      multiboot_gbbar_o      : out std_logic_vector(31 downto 0);
-      multiboot_mbbar_o      : out std_logic_vector(31 downto 0);
-
-      -- Fields of FAR register
-      multiboot_far_data_i   : in  std_logic_vector(23 downto 0);
-      multiboot_far_data_o   : out std_logic_vector(23 downto 0);
-      multiboot_far_nbytes_o : out std_logic_vector(1 downto 0);
-      multiboot_far_xfer_o   : out std_logic;
-      multiboot_far_cs_o     : out std_logic;
-      multiboot_far_ready_i  : in  std_logic
+      rst_n_i                                  : in     std_logic;
+      clk_sys_i                                : in     std_logic;
+      wb_adr_i                                 : in     std_logic_vector(2 downto 0);
+      wb_dat_i                                 : in     std_logic_vector(31 downto 0);
+      wb_dat_o                                 : out    std_logic_vector(31 downto 0);
+      wb_cyc_i                                 : in     std_logic;
+      wb_sel_i                                 : in     std_logic_vector(3 downto 0);
+      wb_stb_i                                 : in     std_logic;
+      wb_we_i                                  : in     std_logic;
+      wb_ack_o                                 : out    std_logic;
+      wb_stall_o                               : out    std_logic;
+      -- Port for std_logic_vector field: 'CFGREGADR' in reg: 'Control Register'
+      reg_cr_cfgregadr_o                       : out    std_logic_vector(5 downto 0);
+      -- Port for MONOSTABLE field: 'RDCFGREG' in reg: 'Control Register'
+      reg_cr_rdcfgreg_o                        : out    std_logic;
+      -- Port for BIT field: 'IPROG_UNLOCK' in reg: 'Control Register'
+      reg_cr_iprog_unlock_o                    : out    std_logic;
+      reg_cr_iprog_unlock_i                    : in     std_logic;
+      reg_cr_iprog_unlock_load_o               : out    std_logic;
+      -- Ports for BIT field: 'IPROG' in reg: 'Control Register'
+      reg_cr_iprog_o                           : out    std_logic;
+      reg_cr_iprog_i                           : in     std_logic;
+      reg_cr_iprog_load_o                      : out    std_logic;
+      -- Port for std_logic_vector field: 'CFGREGIMG' in reg: 'Status Register'
+      reg_sr_cfgregimg_i                       : in     std_logic_vector(15 downto 0);
+      -- Port for BIT field: 'IMGVALID' in reg: 'Status Register'
+      reg_sr_imgvalid_i                        : in     std_logic;
+      -- Ports for BIT field: 'WDTO' in reg: 'Status Register'
+      reg_sr_wdto_o                            : out    std_logic;
+      reg_sr_wdto_i                            : in     std_logic;
+      reg_sr_wdto_load_o                       : out    std_logic;
+      -- Port for std_logic_vector field: 'GBBAR' in reg: 'Golden Bitstream Base Address Register'
+      reg_gbbar_bits_o                         : out    std_logic_vector(31 downto 0);
+      -- Port for std_logic_vector field: 'MBBAR' in reg: 'MultiBoot Bitstream Base Address Register'
+      reg_mbbar_bits_o                         : out    std_logic_vector(31 downto 0);
+      -- Port for std_logic_vector field: 'DATA' in reg: 'Flash Access Register'
+      reg_far_data_o                           : out    std_logic_vector(23 downto 0);
+      reg_far_data_i                           : in     std_logic_vector(23 downto 0);
+      reg_far_data_load_o                      : out    std_logic;
+      -- Port for std_logic_vector field: 'NBYTES' in reg: 'Flash Access Register'
+      reg_far_nbytes_o                         : out    std_logic_vector(1 downto 0);
+      -- Port for MONOSTABLE field: 'XFER' in reg: 'Flash Access Register'
+      reg_far_xfer_o                           : out    std_logic;
+      -- Port for BIT field: 'CS' in reg: 'Flash Access Register'
+      reg_far_cs_o                             : out    std_logic;
+      -- Port for BIT field: 'READY' in reg: 'Flash Access Register'
+      reg_far_ready_i                          : in     std_logic
     );
   end component multiboot_regs;
 
@@ -127,6 +139,7 @@ architecture struct of wb_xil_multiboot is
       reg_mbbar_i          : in  std_logic_vector(31 downto 0);
 
       -- Outputs to status register
+      reg_wdto_p_o         : out std_logic;
       reg_cfgreg_img_o     : out std_logic_vector(15 downto 0);
       reg_cfgreg_valid_o   : out std_logic;
 
@@ -199,38 +212,48 @@ architecture struct of wb_xil_multiboot is
   -- Signal declarations
   --============================================================================
   -- Control and status register signals
-  signal rdcfgreg      : std_logic;
-  signal cfgregadr     : std_logic_vector(5 downto 0);
-  signal iprog         : std_logic;
-  signal cfgreg_img    : std_logic_vector(15 downto 0);
-  signal sr_valid      : std_logic;
-  signal gbbar, mbbar  : std_logic_vector(31 downto 0);
+  signal rdcfgreg            : std_logic;
+  signal cfgregadr           : std_logic_vector(5 downto 0);
+  signal iprog_unlock        : std_logic;
+  signal iprog_unlock_bit    : std_logic;
+  signal iprog_unlock_bit_ld : std_logic;
+  signal iprog               : std_logic;
+  signal iprog_bit           : std_logic;
+  signal iprog_bit_ld        : std_logic;
+  signal cfgregimg           : std_logic_vector(15 downto 0);
+  signal imgvalid            : std_logic;
+  signal wdto                : std_logic;
+  signal wdto_bit            : std_logic;
+  signal wdto_bit_ld         : std_logic;
+  signal gbbar, mbbar        : std_logic_vector(31 downto 0);
 
   -- FSM signals
-  signal fsm_icap_din  : std_logic_vector(15 downto 0);
-  signal fsm_icap_dout : std_logic_vector(15 downto 0);
+  signal fsm_icap_din        : std_logic_vector(15 downto 0);
+  signal fsm_icap_dout       : std_logic_vector(15 downto 0);
+  signal fsm_wdto_p          : std_logic;
 
   -- Flash controller signals
-  signal far_data_out  : std_logic_vector(23 downto 0);
-  signal far_data_in   : std_logic_vector(23 downto 0);
-  signal far_nbytes    : std_logic_vector(1 downto 0);
-  signal far_xfer      : std_logic;
-  signal far_cs        : std_logic;
-  signal far_ready     : std_logic;
+  signal far_data_out        : std_logic_vector(23 downto 0);
+  signal far_data_in         : std_logic_vector(23 downto 0);
+  signal far_data_ld         : std_logic;
+  signal far_nbytes          : std_logic_vector(1 downto 0);
+  signal far_xfer            : std_logic;
+  signal far_cs              : std_logic;
+  signal far_ready           : std_logic;
 
   -- SPI master signals
-  signal spi_data_in   : std_logic_vector(7 downto 0);
-  signal spi_data_out  : std_logic_vector(7 downto 0);
-  signal spi_xfer      : std_logic;
-  signal spi_cs        : std_logic;
-  signal spi_ready     : std_logic;
+  signal spi_data_in         : std_logic_vector(7 downto 0);
+  signal spi_data_out        : std_logic_vector(7 downto 0);
+  signal spi_xfer            : std_logic;
+  signal spi_cs              : std_logic;
+  signal spi_ready           : std_logic;
 
   -- ICAP signals
-  signal icap_ce_n     : std_logic;
-  signal icap_wr_n     : std_logic;
-  signal icap_busy     : std_logic;
-  signal icap_din      : std_logic_vector(15 downto 0);
-  signal icap_dout     : std_logic_vector(15 downto 0);
+  signal icap_ce_n           : std_logic;
+  signal icap_wr_n           : std_logic;
+  signal icap_busy           : std_logic;
+  signal icap_din            : std_logic_vector(15 downto 0);
+  signal icap_dout           : std_logic_vector(15 downto 0);
 
 --==============================================================================
 --  architecture begin
@@ -240,6 +263,7 @@ begin
   --============================================================================
   -- Register component instantiation
   --============================================================================
+  -- First, instantiate the register component
   cmp_regs : multiboot_regs
     port map
     (
@@ -256,23 +280,82 @@ begin
       wb_ack_o                   => wbs_o.ack,
       wb_stall_o                 => wbs_o.stall,
 
-      multiboot_cr_rdcfgreg_o    => rdcfgreg,
-      multiboot_cr_cfgregadr_o   => cfgregadr,
-      multiboot_cr_iprog_o       => iprog,
+      reg_cr_rdcfgreg_o          => rdcfgreg,
+      reg_cr_cfgregadr_o         => cfgregadr,
+      reg_cr_iprog_unlock_o      => iprog_unlock_bit,
+      reg_cr_iprog_unlock_i      => iprog_unlock,
+      reg_cr_iprog_unlock_load_o => iprog_unlock_bit_ld,
+      reg_cr_iprog_o             => iprog_bit,
+      reg_cr_iprog_i             => iprog,
+      reg_cr_iprog_load_o        => iprog_bit_ld,
 
-      multiboot_sr_cfgreg_img_i  => cfgreg_img,
-      multiboot_sr_valid_i       => sr_valid,
+      reg_sr_cfgregimg_i         => cfgregimg,
+      reg_sr_imgvalid_i          => imgvalid,
+      reg_sr_wdto_o              => wdto_bit,
+      reg_sr_wdto_i              => wdto,
+      reg_sr_wdto_load_o         => wdto_bit_ld,
 
-      multiboot_gbbar_o          => gbbar,
-      multiboot_mbbar_o          => mbbar,
+      reg_gbbar_bits_o           => gbbar,
+      reg_mbbar_bits_o           => mbbar,
 
-      multiboot_far_data_i       => far_data_in,
-      multiboot_far_data_o       => far_data_out,
-      multiboot_far_nbytes_o     => far_nbytes,
-      multiboot_far_xfer_o       => far_xfer,
-      multiboot_far_cs_o         => far_cs,
-      multiboot_far_ready_i      => far_ready
+      reg_far_data_o             => far_data_out,
+      reg_far_data_i             => far_data_in,
+      reg_far_data_load_o        => open,
+      reg_far_nbytes_o           => far_nbytes,
+      reg_far_xfer_o             => far_xfer,
+      reg_far_cs_o               => far_cs,
+      reg_far_ready_i            => far_ready
     );
+
+  -- Implement the IPROG_UNLOCK bit register
+  -- This bit is used to unlock the IPROG bit for writing
+  p_iprog_unl : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        iprog_unlock <= '0';
+      elsif (iprog_unlock_bit_ld = '1') then
+        if (iprog_unlock_bit = '1') then
+          iprog_unlock <= '1';
+        else
+          iprog_unlock <= '0';
+        end if;
+      end if;
+    end if;
+  end process p_iprog_unl;
+
+  -- Implement the IPROG bit register
+  -- The bit is set when the IPROG bit is set and the IPROG_UNLOCK bit has been
+  -- set in a previous cycle
+  p_iprog : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        iprog <= '0';
+      elsif (iprog_bit_ld = '1') and (iprog_bit = '1')
+            and (iprog_unlock = '1') then
+        iprog <= '1';
+      else
+        iprog <= '0';
+      end if;
+    end if;
+  end process p_iprog;
+
+  -- Implement the register for the WDTO bit in the SR
+  -- The bit is set by the pulse WDTO output from the FSM
+  -- The bit is cleared by writing a '1' to it
+  p_wdto_bit : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        wdto <= '0';
+      elsif (fsm_wdto_p = '1') then
+        wdto <= '1';
+      elsif (wdto_bit_ld = '1') and (wdto_bit = '1') then
+        wdto <= '0';
+      end if;
+    end if;
+  end process p_wdto_bit;
 
   --============================================================================
   -- FSM component instantiation
@@ -290,8 +373,9 @@ begin
       reg_gbbar_i          => gbbar,
       reg_mbbar_i          => mbbar,
 
-      reg_cfgreg_img_o     => cfgreg_img,
-      reg_cfgreg_valid_o   => sr_valid,
+      reg_wdto_p_o         => fsm_wdto_p,
+      reg_cfgreg_img_o     => cfgregimg,
+      reg_cfgreg_valid_o   => imgvalid,
 
       reg_far_data_i       => far_data_out,
       reg_far_data_o       => far_data_in,

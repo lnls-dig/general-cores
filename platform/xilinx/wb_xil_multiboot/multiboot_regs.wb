@@ -1,0 +1,148 @@
+peripheral {
+  name = "wb_xil_multiboot registers";
+  hdl_entity = "multiboot_regs";
+  prefix = "reg";
+
+  reg {
+    name = "Control Register";
+    prefix = "cr";
+    field {
+      name = "CFGREGADR";
+      description = "Address of FPGA configuration to read from";
+      prefix = "cfgregadr";
+      type = SLV;
+      size = 6;
+    };
+    field {
+      name = "RDCFGREG";
+      description = "Start FPGA configuration register sequence";
+      prefix = "rdcfgreg";
+      type = MONOSTABLE;
+    };
+    field {
+      name = "IPROG_UNLOCK";
+      description = "Unlocks IPROG bit";
+      prefix = "iprog_unlock";
+      type = BIT;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+      align = 16;
+    };
+    field {
+      name = "IPROG";
+      description = "Starts IPROG configuration sequence";
+      prefix = "iprog";
+      type = BIT;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+    };
+  };
+
+  reg {
+    name = "Status Register";
+    prefix = "sr";
+    field {
+      name = "CFGREGIMG";
+      description = "Image of the FPGA configuration register at address CFGREGADR";
+      prefix = "cfgregimg";
+      type = SLV;
+      size = 16;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+    field {
+      name = "IMGVALID";
+      description = "When '1', the image in CFGREGIMG is valid";
+      prefix = "imgvalid";
+      type = BIT;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+    field {
+      name = "WDTO";
+      description = "When '1', the FSM watchdog in mutiboot_fsm has fired";
+      prefix = "wdto";
+      type = BIT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      load = LOAD_EXT;
+    };
+  };
+
+  reg {
+    name = "Golden Bitstream Base Address Register";
+    prefix = "gbbar";
+    field {
+      name = "GBBAR";
+      description = "GBBAR \
+                     31..24 Read OPCODE of the flash chip \
+                     23..0  Golden bitstream address in flash";
+      prefix = "bits";
+      type = SLV;
+      size = 32;
+    };
+  };
+
+  reg {
+    name = "MultiBoot Bitstream Base Address Register";
+    prefix = "mbbar";
+    field {
+      name = "MBBAR";
+      description = "MBBAR \
+                     31..24 Read OPCODE of the flash chip \
+                     23..0  MultiBoot bitstream address in flash";
+      prefix = "bits";
+      type = SLV;
+      size = 32;
+    };
+  };
+
+  reg {
+    name = "Flash Access Register";
+    prefix = "far";
+    field {
+      name = "DATA";
+      description = "I/O flash data";
+      prefix = "data";
+      type = SLV;
+      size = 24;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+    };
+    field {
+      name = "NBYTES";
+      description = "Number of bytes to send to and receive from flash";
+      prefix = "nbytes";
+      type = SLV;
+      size = 2;
+    };
+    field {
+      name = "XFER";
+      description = "Start transfer to and from flash";
+      prefix = "xfer";
+      type = MONOSTABLE;
+      size = 1;
+    };
+    field {
+      name = "CS";
+      description = "Chip select bit \
+                     0 - Flash chip not selected (CS pin is high) \
+                     1 - Flash chip selected (CS pin low)";
+      prefix = "cs";
+      type = BIT;
+    };
+    field {
+      name = "READY";
+      description = "Flash access ready bit \
+                     0 - Flash access in progress \
+                     1 - Flash access completed";
+      prefix = "ready";
+      type = BIT;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+  };
+};

@@ -9,21 +9,21 @@
 --
 -- version: 1.0
 --
--- description: 
+-- description:
 --    The finite-state machine (FSM) module for the xil_multiboot module. Based
 --    on input received from the MultiBoot module registers, it starts one of
 --    three sequences:
---      - SPI     --  shift out up to three bytes (based on the NBYTES)
---                    value in FAR
+--      - SPI      --  shift out up to three bytes (based on the NBYTES)
+--                     value in FAR
 --      - RDCFGREG --  read a configuration register from the Xilinx FPGA
---                    configuration logic
---      - IPROG   --  issue an IPROG command to the Xilinx FPGA configuration
---                    logic
+--                     configuration logic
+--      - IPROG    --  issue an IPROG command to the Xilinx FPGA configuration
+--                     logic
 --
 -- references:
 --  [1]   Xilinx UG380 Spartan-6 FPGA Configuration Guide v2.5
 --        http://www.xilinx.com/support/documentation/user_guides/ug380.pdf
--- 
+--
 --==============================================================================
 -- GNU LESSER GENERAL PUBLIC LICENSE
 --==============================================================================
@@ -40,13 +40,14 @@
 -- last changes:
 --    2013-08-19   Theodor Stana     t.stana@cern.ch     File created
 --==============================================================================
--- TODO: - 
+-- TODO: -
 --==============================================================================
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.gencores_pkg.all;
 
 entity multiboot_fsm is
   port
@@ -65,6 +66,7 @@ entity multiboot_fsm is
     reg_mbbar_i          : in  std_logic_vector(31 downto 0);
 
     -- Outputs to status register
+    reg_wdto_p_o         : out std_logic;
     reg_cfgreg_img_o     : out std_logic_vector(15 downto 0);
     reg_cfgreg_valid_o   : out std_logic;
 
@@ -146,19 +148,21 @@ architecture behav of multiboot_fsm is
   --============================================================================
   -- Signal declarations
   --============================================================================
-  signal state       : t_state;
+  signal state         : t_state;
 
-  signal fsm_cmd     : std_logic_vector(2 downto 0);
-  signal fsm_cmd_reg : std_logic_vector(2 downto 0);
+  -- FSM command array (collection of trigger inputs from the MultiBoot
+  -- registers) and a register to hold the command for later in the FSM
+  signal fsm_cmd       : std_logic_vector(2 downto 0);
+  signal fsm_cmd_reg   : std_logic_vector(2 downto 0);
 
-  signal fl_bcnt     : unsigned(1 downto 0);
+  -- SPI signals
+  signal spi_data_int  : std_logic_vector(23 downto 0);
+  signal spi_cnt       : unsigned(1 downto 0);
 
-  signal fl_sreg     : std_logic_vector(31 downto 0);
-  
-  signal first       : std_logic;
-
-  signal spi_data_int : std_logic_vector(23 downto 0);
-  signal spi_cnt      : unsigned(1 downto 0);
+  -- FSM watchdog signals
+  signal rst_fr_wdt    : std_logic;
+  signal rst_fr_wdt_d0 : std_logic;
+  signal wdt_rst       : std_logic;
 
 --==============================================================================
 --  architecture begin
@@ -168,7 +172,7 @@ begin
   --============================================================================
   -- FSM logic
   --============================================================================
-  -- Form state machine command vector from inputs
+  -- Form state machine command vector from register inputs
   fsm_cmd <= reg_far_xfer_i &
              reg_iprog_i &
              reg_rdcfgreg_i;
@@ -182,8 +186,9 @@ begin
     variable v_idx : integer := 0;
   begin
     if rising_edge(clk_i) then
-      if (rst_n_i = '0') then
+      if (rst_n_i = '0') or (rst_fr_wdt = '1') then
         state              <= IDLE;
+        wdt_rst            <= '1';
         fsm_cmd_reg        <= (others => '0');
         icap_dat_o         <= (others => '0');
         icap_ce_n_o        <= '1';
@@ -207,14 +212,17 @@ begin
             icap_ce_n_o <= '1';
             icap_wr_n_o <= '1';
             fsm_cmd_reg <= fsm_cmd;
+            wdt_rst     <= '1';
             case fsm_cmd is
               when "010" | "001" =>
-                state <= DUMMY_1;
+                wdt_rst <= '0';
+                state   <= DUMMY_1;
               when "100" =>
                 spi_cnt         <= "00";
                 spi_data_int    <= reg_far_data_i;
                 reg_far_data_o  <= (others => '0');
                 reg_far_ready_o <= '0';
+                wdt_rst         <= '0';
                 state           <= SPI_XFER1;
               when others =>
                 state <= IDLE;
@@ -237,7 +245,7 @@ begin
               spi_cnt      <= spi_cnt + 1;
               spi_data_int <= x"00" & spi_data_int(23 downto 8);
               state        <= SPI_XFER1;
-              -- or if we've sent NBYTES, go back to IDLE
+              -- if we've sent NBYTES, go back to IDLE
               if (spi_cnt = unsigned(reg_far_nbytes_i)) then
                 reg_far_ready_o <= '1';
                 state           <= IDLE;
@@ -462,13 +470,13 @@ begin
             icap_ce_n_o <= '0';
             icap_wr_n_o <= '0';
             icap_dat_o  <= x"2000";
-            state       <= FINAL_NOOP_2; 
+            state       <= FINAL_NOOP_2;
 
           when FINAL_NOOP_2 =>
             icap_ce_n_o <= '0';
             icap_wr_n_o <= '0';
             icap_dat_o  <= x"2000";
-            state       <= PREPARE_IDLE; 
+            state       <= PREPARE_IDLE;
 
           --====================================================================
           -- Prepare transition to CE='1', WR='1' in IDLE state
@@ -488,6 +496,47 @@ begin
       end if;
     end if;
   end process p_fsm;
+
+  --============================================================================
+  -- FSM watchdog instantiation
+  --============================================================================
+  -- Max. value calculation
+  --    - FSM max. nr. of cycles
+  --      22 cycles for states switching
+  --      2x3 cycles waiting time for icap_busy_i signal (see [1], Table 6-3
+  --      p.116) in the RDCFGREG states
+  --      => max. ~32 cycles
+  --    - SPI:
+  --      8 bits per transfer
+  --      3 bytes to transfer
+  --      number of cycles for one transfer (resulting from simulation): 218
+  --      value: 512 for safety
+  cmp_fsm_watchdog : gc_fsm_watchdog
+    generic map
+    (
+      g_wdt_max => 512
+    )
+    port map
+    (
+      clk_i     => clk_i,
+      rst_n_i   => rst_n_i,
+      wdt_rst_i => wdt_rst,
+      fsm_rst_o => rst_fr_wdt
+    );
+
+  -- Set the watchdog timeout pulse output for a cycle when a reset occurs
+  p_wdto_outp : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        rst_fr_wdt_d0 <= '0';
+        reg_wdto_p_o  <= '0';
+      else
+        rst_fr_wdt_d0 <= rst_fr_wdt;
+        reg_wdto_p_o  <= rst_fr_wdt and (not rst_fr_wdt_d0);
+      end if;
+    end if;
+  end process p_wdto_outp;
 
 end architecture behav;
 --==============================================================================
