@@ -4,9 +4,10 @@
 -------------------------------------------------------------------------------
 -- File       : gencores_pkg.vhd
 -- Author     : Tomasz Wlostowski
+--              Theodor-Adrian Stana
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2013-07-02
+-- Last update: 2013-11-20
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -38,6 +39,7 @@
 -- Date        Version  Author          Description
 -- 2009-09-01  0.9      twlostow        Created
 -- 2011-04-18  1.0      twlostow        Added comments & header
+-- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -48,7 +50,9 @@ use work.genram_pkg.all;
 
 package gencores_pkg is
 
-
+  --============================================================================
+  -- Component instantiations
+  --============================================================================
   component gc_extend_pulse
     generic (
       g_width : natural);
@@ -201,7 +205,7 @@ package gencores_pkg is
       q_valid_o    : out std_logic;
       q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
   end component;
- 
+
   -- Power-On reset generation
   component gc_reset is
     generic(
@@ -240,7 +244,7 @@ package gencores_pkg is
       q_o       : out std_logic_vector(g_output_width-1 downto 0);
       q_valid_o : out std_logic;
       q_req_i   : in  std_logic);
-  end component;
+    end component;
   
   component gc_big_adder is
   generic(
@@ -256,8 +260,7 @@ package gencores_pkg is
     x2_o    : out std_logic_vector(g_data_bits-1 downto 0);
     c2_o    : out std_logic);
   end component;
-  
- ------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   -- I2C slave
   ------------------------------------------------------------------------------
   constant c_i2cs_idle      : std_logic_vector(1 downto 0) := "00";
@@ -266,53 +269,57 @@ package gencores_pkg is
   constant c_i2cs_wr_done   : std_logic_vector(1 downto 0) := "11";
 
   component gc_i2c_slave is
+    generic
+    (
+      -- Length of glitch filter
+      -- 0 - SCL and SDA lines are passed only through synchronizer
+      -- 1 - one clk_i glitches filtered
+      -- 2 - two clk_i glitches filtered
+      g_gf_len : natural := 0
+    );
     port
     (
       -- Clock, reset ports
-      clk_i      : in  std_logic;
-      rst_n_i    : in  std_logic;
+      clk_i         : in  std_logic;
+      rst_n_i       : in  std_logic;
 
       -- I2C lines
-      scl_i      : in  std_logic;
-      scl_o      : out std_logic;
-      scl_en_o   : out std_logic;
-      sda_i      : in  std_logic;
-      sda_o      : out std_logic;
-      sda_en_o   : out std_logic;
+      scl_i         : in  std_logic;
+      scl_o         : out std_logic;
+      scl_en_o      : out std_logic;
+      sda_i         : in  std_logic;
+      sda_o         : out std_logic;
+      sda_en_o      : out std_logic;
 
       -- Slave address
-      i2c_addr_i : in  std_logic_vector(6 downto 0);
+      addr_i        : in  std_logic_vector(6 downto 0);
 
       -- ACK input, should be set after done_p_o = '1'
       -- (note that the bit is reversed wrt I2C ACK bit)
       -- '1' - ACK
       -- '0' - NACK
-      i2c_ack_i  : in  std_logic;
+      ack_i         : in  std_logic;
+
+      -- Byte to send, should be loaded while done_p_o = '1'
+      tx_byte_i     : in  std_logic_vector(7 downto 0);
+
+      -- Received byte, valid after done_p_o = '1'
+      rx_byte_o     : out std_logic_vector(7 downto 0);
+
+      -- Pulse outputs signaling various I2C actions
+      -- Start and stop conditions
+      sta_p_o       : out std_logic;
+      sto_p_o       : out std_logic;
+      -- Received address corresponds addr_i
+      addr_good_p_o : out std_logic;
+      -- Read and write done
+      r_done_p_o    : out std_logic;
+      w_done_p_o    : out std_logic;
 
       -- I2C bus operation, set after address detection
       -- '0' - write
       -- '1' - read
-      op_o       : out std_logic;
-
-      -- Byte to send, should be loaded while done_p_o = '1'
-      tx_byte_i  : in  std_logic_vector(7 downto 0);
-
-      -- Received byte, valid after done_p_o = '1'
-      rx_byte_o  : out std_logic_vector(7 downto 0);
-
-      -- Done pulse signal, valid when
-      -- * received address matches i2c_addr_i, signaling valid op_o;
-      -- * a byte was received, signaling valid rx_byte_o and an ACK/NACK should be
-      -- sent to master;
-      -- * sent a byte, should set tx_byte_i.
-      done_p_o   : out std_logic;
-
-      -- I2C transfer state
-      -- "00" - Idle
-      -- "01" - Got address, matches i2c_addr_i
-      -- "10" - Read done, waiting ACK/NACK
-      -- "11" - Write done, waiting next byte
-      stat_o     : out std_logic_vector(1 downto 0)
+      op_o          : out std_logic
     );
   end component gc_i2c_slave;
 
@@ -342,10 +349,32 @@ package gencores_pkg is
     );
   end component gc_glitch_filt;
 
+  ------------------------------------------------------------------------------
+  -- FSM Watchdog Timer
+  ------------------------------------------------------------------------------
+  component gc_fsm_watchdog is
+    generic
+    (
+      -- Maximum value of watchdog timer in clk_i cycles
+      g_wdt_max : positive := 65535
+    );
+    port
+    (
+      -- Clock and active-low reset line
+      clk_i     : in  std_logic;
+      rst_n_i   : in  std_logic;
+
+      -- Active-high watchdog timer reset line, synchronous to clk_i
+      wdt_rst_i : in  std_logic;
+
+      -- Active-high reset output, synchronous to clk_i
+      fsm_rst_o : out std_logic
+    );
+  end component gc_fsm_watchdog;
 
   --============================================================================
-  -- Procedures
-  --============================================================================  procedure f_rr_arbitrate (
+  -- Procedures and functions
+  --============================================================================
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
@@ -359,7 +388,7 @@ package body gencores_pkg is
 -- req = requests (1 = pending request),
 -- pre_grant = previous grant vector (1 cycle delay)
 -- grant = new grant vector
-  
+
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
@@ -370,7 +399,7 @@ package body gencores_pkg is
     variable gnt   : std_logic_vector(req'length - 1 downto 0);
     variable gntM  : std_logic_vector(req'length - 1 downto 0);
     variable zeros : std_logic_vector(req'length - 1 downto 0);
-    
+
   begin
     zeros := (others => '0');
 
@@ -390,7 +419,7 @@ package body gencores_pkg is
     else
       grant <= pre_grant;
     end if;
-    
+
   end f_rr_arbitrate;
 
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector is

@@ -67,28 +67,9 @@ end entity gc_glitch_filt;
 architecture behav of gc_glitch_filt is
 
   --============================================================================
-  -- Component declarations
-  --============================================================================
-  component gc_sync_ffs is
-    generic(
-      g_sync_edge : string := "positive"
-      );
-    port(
-      clk_i    : in  std_logic;  -- clock from the destination clock domain
-      rst_n_i  : in  std_logic;           -- reset
-      data_i   : in  std_logic;           -- async input
-      synced_o : out std_logic;           -- synchronized output
-      npulse_o : out std_logic;  -- negative edge detect output (single-clock
-      -- pulse)
-      ppulse_o : out std_logic   -- positive edge detect output (single-clock
-     -- pulse)
-      );
-  end component gc_sync_ffs;
-
-  --============================================================================
   -- Signal declarations
   --============================================================================
-  signal gc_glitch_filt : std_logic_vector(g_len downto 0);
+  signal glitch_filt : std_logic_vector(g_len downto 0);
   signal dat_synced  : std_logic;
 
 --==============================================================================
@@ -112,7 +93,7 @@ begin
     );
 
   -- Then, assign the current sample of the glitch filter
-  gc_glitch_filt(0) <= dat_synced;
+  glitch_filt(0) <= dat_synced;
 
   -- Generate glitch filter FFs when the filter length is > 0
   gen_glitch_filt: if (g_len > 0) generate
@@ -120,9 +101,9 @@ begin
     begin
       if rising_edge(clk_i) then
         if (rst_n_i = '0') then
-          gc_glitch_filt(g_len downto 1) <= (others => '0');
+          glitch_filt(g_len downto 1) <= (others => '0');
         else
-          gc_glitch_filt(g_len downto 1) <= gc_glitch_filt(g_len-1 downto 0);
+          glitch_filt(g_len downto 1) <= glitch_filt(g_len-1 downto 0);
         end if;
       end if;
     end process p_glitch_filt;
@@ -134,9 +115,9 @@ begin
     if rising_edge(clk_i) then
       if (rst_n_i = '0') then
         dat_o <= '0';
-      elsif (gc_glitch_filt = (gc_glitch_filt'range => '1')) then
+      elsif (glitch_filt = (glitch_filt'range => '1')) then
         dat_o <= '1';
-      elsif (gc_glitch_filt = (gc_glitch_filt'range => '0')) then
+      elsif (glitch_filt = (glitch_filt'range => '0')) then
         dat_o <= '0';
       end if;
     end if;

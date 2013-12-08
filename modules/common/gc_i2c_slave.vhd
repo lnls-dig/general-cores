@@ -49,6 +49,8 @@
 --==============================================================================
 -- last changes:
 --    2013-03-13   Theodor Stana     t.stana@cern.ch     File created
+--    2013-11-22   Theodor Stana                         Changed to sampling SDA
+--                                                       on SCL rising edge
 --==============================================================================
 -- TODO:
 --    - Stop condition
@@ -61,53 +63,57 @@ use ieee.numeric_std.all;
 use work.gencores_pkg.all;
 
 entity gc_i2c_slave is
+  generic
+  (
+    -- Length of glitch filter
+    -- 0 - SCL and SDA lines are passed only through synchronizer
+    -- 1 - one clk_i glitches filtered
+    -- 2 - two clk_i glitches filtered
+    g_gf_len : natural := 0
+  );
   port
   (
     -- Clock, reset ports
-    clk_i      : in  std_logic;
-    rst_n_i    : in  std_logic;
+    clk_i         : in  std_logic;
+    rst_n_i       : in  std_logic;
 
     -- I2C lines
-    scl_i      : in  std_logic;
-    scl_o      : out std_logic;
-    scl_en_o   : out std_logic;
-    sda_i      : in  std_logic;
-    sda_o      : out std_logic;
-    sda_en_o   : out std_logic;
+    scl_i         : in  std_logic;
+    scl_o         : out std_logic;
+    scl_en_o      : out std_logic;
+    sda_i         : in  std_logic;
+    sda_o         : out std_logic;
+    sda_en_o      : out std_logic;
 
     -- Slave address
-    i2c_addr_i : in  std_logic_vector(6 downto 0);
+    addr_i        : in  std_logic_vector(6 downto 0);
 
     -- ACK input, should be set after done_p_o = '1'
     -- (note that the bit is reversed wrt I2C ACK bit)
     -- '1' - ACK
     -- '0' - NACK
-    i2c_ack_i  : in  std_logic;
+    ack_i         : in  std_logic;
+
+    -- Byte to send, should be loaded while done_p_o = '1'
+    tx_byte_i     : in  std_logic_vector(7 downto 0);
+
+    -- Received byte, valid after done_p_o = '1'
+    rx_byte_o     : out std_logic_vector(7 downto 0);
+
+    -- Pulse outputs signaling various I2C actions
+    -- Start and stop conditions
+    sta_p_o       : out std_logic;
+    sto_p_o       : out std_logic;
+    -- Received address corresponds addr_i
+    addr_good_p_o : out std_logic;
+    -- Read and write done
+    r_done_p_o    : out std_logic;
+    w_done_p_o    : out std_logic;
 
     -- I2C bus operation, set after address detection
     -- '0' - write
     -- '1' - read
-    op_o       : out std_logic;
-
-    -- Byte to send, should be loaded while done_p_o = '1'
-    tx_byte_i  : in  std_logic_vector(7 downto 0);
-
-    -- Received byte, valid after done_p_o = '1'
-    rx_byte_o  : out std_logic_vector(7 downto 0);
-
-    -- Done pulse signal, valid when
-    -- * received address matches i2c_addr_i, signaling valid op_o;
-    -- * a byte was received, signaling valid rx_byte_o and an ACK/NACK should be
-    -- sent to master;
-    -- * sent a byte, should set tx_byte_i.
-    done_p_o   : out std_logic;
-
-    -- I2C transfer state
-    -- "00" - Idle
-    -- "01" - Got address, matches i2c_addr_i
-    -- "10" - Read done, waiting ACK/NACK
-    -- "11" - Write done, waiting next byte
-    stat_o     : out std_logic_vector(1 downto 0)
+    op_o          : out std_logic
   );
 end entity gc_i2c_slave;
 
@@ -120,8 +126,8 @@ architecture behav of gc_i2c_slave is
   type t_state is
     (
       IDLE,            -- idle
-      STA,             -- start condition received
       ADDR,            -- shift in I2C address bits
+      ADDR_CHECK,      -- check received I2C address
       ADDR_ACK,        -- ACK/NACK to I2C address
       RD,              -- shift in byte to read
       RD_ACK,          -- ACK/NACK to received byte
@@ -134,8 +140,8 @@ architecture behav of gc_i2c_slave is
   -- Signal declarations
   --============================================================================
   -- Deglitched signals and delays for SCL and SDA lines
-  signal scl_deglitched     : std_logic;
-  signal scl_deglitched_d0  : std_logic;
+  signal scl_deglitched    : std_logic;
+  signal scl_deglitched_d0 : std_logic;
   signal sda_deglitched    : std_logic;
   signal sda_deglitched_d0 : std_logic;
   signal scl_r_edge_p      : std_logic;
@@ -143,30 +149,32 @@ architecture behav of gc_i2c_slave is
   signal sda_f_edge_p      : std_logic;
   signal sda_r_edge_p      : std_logic;
 
-  -- FSM
-  signal state : t_state;
-
-  -- FSM tick
-  signal tick_p   : std_logic;
-  signal tick_cnt : std_logic_vector(5 downto 0);
+  -- FSM signals
+  signal state             : t_state;
+  signal inhibit           : std_logic;
 
   -- RX and TX shift registers
-  signal txsr : std_logic_vector(7 downto 0);
-  signal rxsr : std_logic_vector(7 downto 0);
+  signal txsr              : std_logic_vector(7 downto 0);
+  signal rxsr              : std_logic_vector(7 downto 0);
 
   -- Bit counter on RX & TX
-  signal bit_cnt : unsigned(2 downto 0);
+  signal bit_cnt           : unsigned(2 downto 0);
 
-  -- Watchdog counter signals
-  signal watchdog_cnt    : unsigned(26 downto 0);
-  signal watchdog_rst    : std_logic;
-  signal rst_fr_watchdog : std_logic;
+  -- Start and stop condition pulse signals
+  signal sta_p, sto_p      : std_logic;
+
+  -- Master ACKed after it has read a byte from the slave
+  signal mst_acked         : std_logic;
+
+
+  signal sda_en : std_logic;
 
 --==============================================================================
 --  architecture begin
 --==============================================================================
 begin
 
+  sda_en_o  <= sda_en;
   --============================================================================
   -- I/O logic
   --============================================================================
@@ -187,7 +195,7 @@ begin
   cmp_scl_deglitch : gc_glitch_filt
     generic map
     (
-      g_len => 7
+      g_len => g_gf_len
     )
     port map
     (
@@ -203,9 +211,9 @@ begin
   begin
     if rising_edge(clk_i) then
       if (rst_n_i = '0') then
-        scl_deglitched_d0  <= '0';
-        scl_f_edge_p       <= '0';
-        scl_r_edge_p       <= '0';
+        scl_deglitched_d0 <= '0';
+        scl_f_edge_p      <= '0';
+        scl_r_edge_p      <= '0';
       else
         scl_deglitched_d0 <= scl_deglitched;
         scl_f_edge_p      <= (not scl_deglitched) and scl_deglitched_d0;
@@ -218,7 +226,7 @@ begin
   cmp_sda_deglitch : gc_glitch_filt
     generic map
     (
-      g_len => 7
+      g_len => g_gf_len
     )
     port map
     (
@@ -234,9 +242,9 @@ begin
   begin
     if rising_edge(clk_i) then
       if (rst_n_i = '0') then
-        sda_deglitched_d0  <= '0';
-        sda_f_edge_p       <= '0';
-        sda_r_edge_p       <= '0';
+        sda_deglitched_d0 <= '0';
+        sda_f_edge_p      <= '0';
+        sda_r_edge_p      <= '0';
       else
         sda_deglitched_d0 <= sda_deglitched;
         sda_f_edge_p      <= (not sda_deglitched) and sda_deglitched_d0;
@@ -246,30 +254,23 @@ begin
   end process p_sda_deglitched_d0;
 
   --============================================================================
-  -- Tick generation
+  -- Start and stop condition outputs
   --============================================================================
---  p_tick : process (clk_i) is
---  begin
---    if rising_edge(clk_i) then
---      if (rst_n_i = '0') then
---        tick_cnt <= '0';
---        tick_p   <= '0';
---      elsif (scl_f_edge_p = '1') then
---        tick_en <= '1';
---      else
---        if (tick_en = '1') then
---          tick_cnt <= tick_cnt + 1;
---          tick_p   <= '0';
---          if (tick_cnt = (tick_cnt'range => '1')) then
---            tick_p  <= '1';
---            tick_en <= '0';
---          end if;
---        else
---          tick_p <= '0';
---        end if;
---      end if;
---    end if;
---  end process p_tick;
+  p_sta_sto : process (clk_i) is
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        sta_p <= '0';
+        sto_p <= '0';
+      else
+        sta_p <= sda_f_edge_p and scl_deglitched;
+        sto_p <= sda_r_edge_p and scl_deglitched;
+      end if;
+    end if;
+  end process p_sta_sto;
+
+  sta_p_o <= sta_p;
+  sto_p_o <= sto_p;
 
   --============================================================================
   -- FSM logic
@@ -277,28 +278,24 @@ begin
   p_fsm: process (clk_i) is
   begin
     if rising_edge(clk_i) then
-      if (rst_n_i = '0') or (rst_fr_watchdog = '1') then
-        state        <= IDLE;
-        watchdog_rst <= '1';
-        bit_cnt      <= (others => '0');
-        rxsr         <= (others => '0');
-        txsr         <= (others => '0');
-        sda_en_o     <= '0';
-        done_p_o     <= '0';
-        op_o         <= '0';
-        stat_o       <= c_i2cs_idle;
+      if (rst_n_i = '0') then
+        state         <= IDLE;
+        inhibit       <= '0';
+        bit_cnt       <= (others => '0');
+        rxsr          <= (others => '0');
+        txsr          <= (others => '0');
+        mst_acked     <= '0';
+        sda_en      <= '0';
+        r_done_p_o    <= '0';
+        w_done_p_o    <= '0';
+        addr_good_p_o <= '0';
+        op_o          <= '0';
 
-      -- I2C start condition
-      elsif (sda_f_edge_p = '1') and (scl_deglitched = '1') then
-        state        <= ADDR;
-        bit_cnt      <= (others => '0');
-        watchdog_rst <= '0';
-
-      -- I2C stop condition
-      elsif (sda_r_edge_p = '1') and (scl_deglitched = '1') then
-        state    <= IDLE;
-        done_p_o <= '1';
-        stat_o   <= c_i2cs_idle;
+      -- start and stop conditions take the FSM back to IDLE and reset the
+      -- FSM inhibit signal to read the address
+      elsif (sta_p = '1') or (sto_p = '1') then
+        state   <= IDLE;
+        inhibit <= '0';
 
       -- state machine logic
       else
@@ -307,27 +304,20 @@ begin
           -- IDLE
           ---------------------------------------------------------------------
           -- When idle, outputs and bit counters are cleared, while waiting
-          -- for a start condition.
+          -- for a falling edge on SCL. The falling edge has to be validated
+          -- by the inhibit signal, which states whether it is this or another
+          -- slave being addressed.
           ---------------------------------------------------------------------
           when IDLE =>
-            bit_cnt      <= (others => '0');
-            sda_en_o     <= '0';
-            done_p_o     <= '0';
-            watchdog_rst <= '1';
-            stat_o       <= c_i2cs_idle;
-
---          ---------------------------------------------------------------------
---          -- STA
---          ---------------------------------------------------------------------
---          -- When a start condition is received, the bit counter gets cleared
---          -- to prepare for receiving the address byte. On the falling edge of
---          -- SCL, we go into the address state.
---          ---------------------------------------------------------------------
---          when STA =>
---            bit_cnt <= (others => '0');
---            if (scl_f_edge_p = '1') then
---              state <= ADDR;
---            end if;
+            bit_cnt       <= (others => '0');
+            sda_en      <= '0';
+            mst_acked     <= '0';
+            r_done_p_o    <= '0';
+            w_done_p_o    <= '0';
+            addr_good_p_o <= '0';
+            if (scl_f_edge_p = '1') and (inhibit = '0') then
+              state <= ADDR;
+            end if;
 
           ---------------------------------------------------------------------
           -- ADDR
@@ -342,67 +332,65 @@ begin
             if (scl_r_edge_p = '1') then
               rxsr    <= rxsr(6 downto 0) & sda_deglitched;
               bit_cnt <= bit_cnt + 1;
+            end if;
 
+            if (scl_f_edge_p = '1') then
               -- Shifted in 8 bits, go to ADDR_ACK. Check to see if received
               -- address is ours and set op_o if so.
-              if (bit_cnt = 7) then
-                state <= ADDR_ACK;
-                if (rxsr(6 downto 0) = i2c_addr_i) then
-                  op_o     <= sda_deglitched;
-                  done_p_o <= '1';
-                  stat_o   <= c_i2cs_addr_good;
-                end if;
+              if (bit_cnt = 0) then
+                state <= ADDR_CHECK;
               end if;
+            end if;
+
+          ---------------------------------------------------------------------
+          -- ADDR_CHECK
+          ---------------------------------------------------------------------
+          when ADDR_CHECK =>
+            -- if the address is ours, set the OP output and go to ACK state
+            if (rxsr(7 downto 1) = addr_i) then
+              op_o          <= rxsr(0);
+              addr_good_p_o <= '1';
+              state         <= ADDR_ACK;
+
+            -- if the address is not ours, the FSM should be inhibited so a
+            -- byte sent to another slave doesn't get interpreted as this
+            -- slave's address
+            else
+              inhibit <= '1';
+              state   <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
           -- ADDR_ACK
           ---------------------------------------------------------------------
-          -- Here, we check to see if the address is ours and ACK/NACK
-          -- accordingly. The next action is dependent upon the state of the
-          -- R/W bit received via I2C.
-          ---------------------------------------------------------------------
           when ADDR_ACK =>
-            -- Clear done pulse
-            done_p_o <= '0';
-
-            -- we write the ACK bit, so enable output
-            sda_en_o <= i2c_ack_i;
-
-            -- If the received address is ours, send the ACK set by external
-            -- module and, on the falling edge of SCL, go to appropriate state
-            -- based on R/W bit.
-            if (rxsr(7 downto 1) = i2c_addr_i) then
-              if (scl_f_edge_p = '1') then
-                sda_en_o <= '0';
-                if (rxsr(0) = '0') then
-                  state <= RD;
-                else
-                  state <= WR_LOAD_TXSR;
-                end if;
+            addr_good_p_o <= '0';
+            sda_en      <= ack_i;
+            if (scl_f_edge_p = '1') then
+              if (rxsr(0) = '0') then
+                state <= RD;
+              else
+                state <= WR_LOAD_TXSR;
               end if;
-            -- If received address is not ours, NACK and go back to IDLE
-            else
-              sda_en_o <= '0';
-              state    <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
           -- RD
           ---------------------------------------------------------------------
-          -- Shift in bits sent by the master.
+          -- Shift in bits sent by the master
           ---------------------------------------------------------------------
           when RD =>
-            -- Shifting occurs on falling edge of SCL
-            if (scl_f_edge_p = '1') then
+            sda_en <= '0';
+            if (scl_r_edge_p = '1') then
               rxsr    <= rxsr(6 downto 0) & sda_deglitched;
               bit_cnt <= bit_cnt + 1;
+            end if;
 
+            if (scl_f_edge_p = '1') then
               -- Received 8 bits, go to RD_ACK and signal external module
-              if (bit_cnt = 7) then
-                state    <= RD_ACK;
-                done_p_o <= '1';
-                stat_o   <= c_i2cs_rd_done;
+              if (bit_cnt = 0) then
+                state      <= RD_ACK;
+                r_done_p_o <= '1';
               end if;
             end if;
 
@@ -413,16 +401,15 @@ begin
           ---------------------------------------------------------------------
           when RD_ACK =>
             -- Clear done pulse
-            done_p_o <= '0';
+            r_done_p_o <= '0';
 
             -- we write the ACK bit, so enable output and send the ACK bit
-            sda_en_o <= i2c_ack_i;
+            sda_en <= ack_i;
 
             -- based on the ACK received by external command, we read the next
             -- bit (ACK) or go back to idle state (NACK)
             if (scl_f_edge_p = '1') then
-              sda_en_o <= '0';
-              if (i2c_ack_i = '1') then
+              if (ack_i = '1') then
                 state <= RD;
               else
                 state <= IDLE;
@@ -432,7 +419,7 @@ begin
           ---------------------------------------------------------------------
           -- WR_LOAD_TXSR
           ---------------------------------------------------------------------
-          -- Load TXSR with the input value.
+          -- Load TXSR with the input value
           ---------------------------------------------------------------------
           when WR_LOAD_TXSR =>
             txsr  <= tx_byte_i;
@@ -441,39 +428,48 @@ begin
           ---------------------------------------------------------------------
           -- WR
           ---------------------------------------------------------------------
-          -- Shift out the eight bits of TXSR.
+          -- Shift out the eight bits of TXSR
           ---------------------------------------------------------------------
           when WR =>
-            -- slave writes, so enable output
-            sda_en_o  <= txsr(7);
+            -- slave writes, SDA output enable is the negated value of the bit
+            -- to send (since on I2C, '1' is a release of the bus)
+            sda_en <= not txsr(7);
 
-            -- Shift TXSR on falling edge of SCL
-            if (scl_f_edge_p = '1') then
-              txsr    <= txsr(6 downto 0) & '0';
+            -- increment bit counter on rising edge
+            if (scl_r_edge_p = '1') then
               bit_cnt <= bit_cnt + 1;
+            end if;
 
-              --  Eight bits sent, disable SDA end go to WR_ACK
-              if (bit_cnt = 7) then
-                sda_en_o <= '0';
-                state    <= WR_ACK;
-                done_p_o <= '1';
-                stat_o   <= c_i2cs_wr_done;
+            -- Shift TXSR after falling edge of SCL
+            if (scl_f_edge_p = '1') then
+              txsr     <= txsr(6 downto 0) & '0';
+
+              -- Eight bits sent, disable SDA and go to WR_ACK
+              if (bit_cnt = 0) then
+                state      <= WR_ACK;
+                w_done_p_o <= '1';
               end if;
             end if;
 
           ---------------------------------------------------------------------
           -- WR_ACK
           ---------------------------------------------------------------------
-          -- The master drives the ACK bit here, so on the falling edge of
-          -- SCL, we check the ack bit. A '0' (ACK) means more bits should be sent,
-          -- so we load the next value of the TXSR. A '1' (NACK) means the
-          -- master is done reading and a STO follows, so we go back to IDLE
-          -- state.
+          -- Check the ACK bit received from the master and go back to writing
+          -- another byte if ACKed, or to IDLE if NACKed
           ---------------------------------------------------------------------
           when WR_ACK =>
-            done_p_o <= '0';
-            if (scl_f_edge_p = '1') then
+            sda_en   <= '0';
+            w_done_p_o <= '0';
+            if (scl_r_edge_p = '1') then
               if (sda_deglitched = '0') then
+                mst_acked <= '1';
+              else
+                mst_acked <= '0';
+              end if;
+            end if;
+
+            if (scl_f_edge_p = '1') then
+              if (mst_acked = '1') then
                 state <= WR_LOAD_TXSR;
               else
                 state <= IDLE;
@@ -481,7 +477,7 @@ begin
             end if;
 
           ---------------------------------------------------------------------
-          -- Any other state: go back to idle.
+          -- Any other state: go back to IDLE
           ---------------------------------------------------------------------
           when others =>
             state <= IDLE;
@@ -490,30 +486,6 @@ begin
       end if;
     end if;
   end process p_fsm;
-
-  --============================================================================
-  -- Watchdog counter process
-  --  Resets the FSM after one second. The watchdog_rst signal is controlled by
-  --  the FSM and resets the watchdog if the I2C master still controls the
-  --  slave, signaled by the SCL line going low. If for one second the master
-  --  does not toggle the SCL line, the FSM gets reset.
-  --============================================================================
-  p_watchdog: process(clk_i)
-  begin
-    if rising_edge(clk_i) then
-      if (rst_n_i = '0') or (watchdog_rst = '1') then
-        watchdog_cnt    <= (others => '0');
-        rst_fr_watchdog <= '0';
-      else
-        watchdog_cnt    <= watchdog_cnt + 1;
-        rst_fr_watchdog <= '0';
-        if (watchdog_cnt = 124999999) then
-          watchdog_cnt    <= (others => '0');
-          rst_fr_watchdog <= '1';
-        end if;
-      end if;
-    end if;
-  end process p_watchdog;
 
 end architecture behav;
 --==============================================================================

@@ -910,24 +910,30 @@ package wishbone_pkg is
       rst_n_i    : in  std_logic;
 
       -- I2C lines
-      sda_en_o   : out std_logic;
-      sda_i      : in  std_logic;
-      sda_o      : out std_logic;
-      scl_en_o   : out std_logic;
       scl_i      : in  std_logic;
       scl_o      : out std_logic;
+      scl_en_o   : out std_logic;
+      sda_i      : in  std_logic;
+      sda_o      : out std_logic;
+      sda_en_o   : out std_logic;
 
       -- I2C address
       i2c_addr_i : in  std_logic_vector(6 downto 0);
 
-      -- Transfer In Progress (TIP) and Error outputs
-      -- TIP : '1' when the I2C slave detects a matching I2C address, thus a
-      --           transfer is in progress
+      -- Status outputs
+      -- TIP  : Transfer In Progress
+      --        '1' when the I2C slave detects a matching I2C address, thus a
+      --            transfer is in progress
+      --        '0' when idle
+      -- ERR  : Error
+      --       '1' when the SysMon attempts to access an invalid WB slave
       --       '0' when idle
-      -- ERR : '1' when the SysMon attempts to access an invalid WB slave
-      --       '0' when idle
-      tip_o  : out std_logic;
-      err_o  : out std_logic;
+      -- WDTO : Watchdog timeout (single clock cycle pulse)
+      --        '1' -- timeout of watchdog occured
+      --        '0' -- when idle
+      tip_o      : out std_logic;
+      err_p_o    : out std_logic;
+      wdto_p_o   : out std_logic;
 
       -- Wishbone master signals
       wbm_stb_o  : out std_logic;

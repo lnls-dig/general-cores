@@ -66,24 +66,30 @@ entity wb_i2c_bridge is
     rst_n_i    : in  std_logic;
 
     -- I2C lines
-    sda_en_o   : out std_logic;
-    sda_i      : in  std_logic;
-    sda_o      : out std_logic;
-    scl_en_o   : out std_logic;
     scl_i      : in  std_logic;
     scl_o      : out std_logic;
+    scl_en_o   : out std_logic;
+    sda_i      : in  std_logic;
+    sda_o      : out std_logic;
+    sda_en_o   : out std_logic;
 
     -- I2C address
     i2c_addr_i : in  std_logic_vector(6 downto 0);
 
-    -- Transfer In Progress (TIP) and Error outputs
-    -- TIP : '1' when the I2C slave detects a matching I2C address, thus a
-    --           transfer is in progress
+    -- Status outputs
+    -- TIP  : Transfer In Progress
+    --        '1' when the I2C slave detects a matching I2C address, thus a
+    --            transfer is in progress
+    --        '0' when idle
+    -- ERR  : Error
+    --       '1' when the SysMon attempts to access an invalid WB slave
     --       '0' when idle
-    -- ERR : '1' when the SysMon attempts to access an invalid WB slave
-    --       '0' when idle
-    tip_o  : out std_logic;
-    err_o  : out std_logic;
+    -- WDTO : Watchdog timeout (single clock cycle pulse)
+    --        '1' -- timeout of watchdog occured
+    --        '0' -- when idle
+    tip_o      : out std_logic;
+    err_p_o    : out std_logic;
+    wdto_p_o   : out std_logic;
 
     -- Wishbone master signals
     wbm_stb_o  : out std_logic;
@@ -120,77 +126,75 @@ architecture behav of wb_i2c_bridge is
   -- Signal declarations
   --============================================================================
   -- Slave component signals
-  signal i2c_ack    : std_logic;
-  signal op         : std_logic;
-  signal start_op   : std_logic;
-  signal tx_byte    : std_logic_vector(7 downto 0);
-  signal rx_byte    : std_logic_vector(7 downto 0);
-  signal done       : std_logic;
-  signal done_d0    : std_logic;
-  signal stat       : std_logic_vector(1 downto 0);
+  signal slv_ack         : std_logic;
+  signal op              : std_logic;
+  signal tx_byte         : std_logic_vector(7 downto 0);
+  signal rx_byte         : std_logic_vector(7 downto 0);
+  signal slv_sta_p       : std_logic;
+  signal slv_sto_p       : std_logic;
+  signal slv_addr_good_p : std_logic;
+  signal slv_r_done_p    : std_logic;
+  signal slv_w_done_p    : std_logic;
 
   -- Wishbone temporary signals
-  signal wb_dat_out : std_logic_vector(31 downto 0);
-  signal wb_dat_in  : std_logic_vector(31 downto 0);
-  signal wb_adr     : std_logic_vector(15 downto 0);
-  signal wb_cyc     : std_logic;
-  signal wb_stb     : std_logic;
-  signal wb_we      : std_logic;
-  signal wb_ack     : std_logic;
-  signal wb_err     : std_logic;
-  signal wb_rty     : std_logic;
+  signal wb_dat_out      : std_logic_vector(31 downto 0);
+  signal wb_dat_in       : std_logic_vector(31 downto 0);
+  signal wb_adr          : std_logic_vector(15 downto 0);
+  signal wb_cyc          : std_logic;
+  signal wb_stb          : std_logic;
+  signal wb_we           : std_logic;
+  signal wb_ack          : std_logic;
+  signal wb_err          : std_logic;
+  signal wb_rty          : std_logic;
 
   -- FSM control signals
-  signal state        : t_state;
-  signal dat_byte_cnt : unsigned(1 downto 0);
-  signal adr_byte_cnt : unsigned(0 downto 0);
+  signal state           : t_state;
+  signal dat_byte_cnt    : unsigned(1 downto 0);
+  signal adr_byte_cnt    : unsigned(0 downto 0);
 
+  -- FSM watchdog signals
+  signal wdt_rst         : std_logic;
+  signal rst_fr_wdt      : std_logic;
+  signal rst_fr_wdt_d0   : std_logic;
+
+--==============================================================================
+--  architecture begin
+--==============================================================================
 begin
 
   --============================================================================
   -- Slave component instantiation and connection
   --============================================================================
   cmp_i2c_slave: gc_i2c_slave
+    generic map
+    (
+      g_gf_len => 8
+    )
     port map
     (
-      clk_i      => clk_i,
-      rst_n_i    => rst_n_i,
+      clk_i         => clk_i,
+      rst_n_i       => rst_n_i,
 
-      -- I2C lines
-      scl_i      => scl_i,
-      scl_o      => scl_o,
-      scl_en_o   => scl_en_o,
-      sda_i      => sda_i,
-      sda_o      => sda_o,
-      sda_en_o   => sda_en_o,
+      scl_i         => scl_i,
+      scl_o         => scl_o,
+      scl_en_o      => scl_en_o,
+      sda_i         => sda_i,
+      sda_o         => sda_o,
+      sda_en_o      => sda_en_o,
 
-      -- Slave address
-      i2c_addr_i => i2c_addr_i,
+      addr_i        => i2c_addr_i,
 
-      -- ACK input, should be set after done_p_o = '1'
-      -- '0' - ACK
-      -- '1' - NACK
-      i2c_ack_i  => i2c_ack,
+      ack_i         => slv_ack,
 
-      -- I2C bus operation, set after address detection
-      -- '0' - write
-      -- '1' - read
-      op_o       => op,
+      tx_byte_i     => tx_byte,
+      rx_byte_o     => rx_byte,
 
-      -- Byte to send, should be loaded while done_p_o = '1'
-      tx_byte_i  => tx_byte,
-
-      -- Received byte, valid after done_p_o = '1'
-      rx_byte_o  => rx_byte,
-
-      -- Done signal, valid when
-      -- * received address matches i2c_addr_i, signaling valid op_o;
-      -- * a byte was received, signaling valid rx_byte_o and an ACK/NACK should be
-      -- sent to master;
-      -- * sent a byte, should set tx_byte_i.
-      done_p_o   => done,
-
-      stat_o     => stat
+      sta_p_o       => open,
+      sto_p_o       => slv_sto_p,
+      addr_good_p_o => slv_addr_good_p,
+      r_done_p_o    => slv_r_done_p,
+      w_done_p_o    => slv_w_done_p,
+      op_o          => op
     );
 
   --============================================================================
@@ -218,7 +222,7 @@ begin
   p_fsm: process (clk_i) is
   begin
     if rising_edge(clk_i) then
-      if (rst_n_i = '0') then
+      if (rst_n_i = '0') or (rst_fr_wdt = '1') then
         state        <= IDLE;
         wb_adr       <= (others => '0');
         wb_dat_out   <= (others => '0');
@@ -226,12 +230,15 @@ begin
         wb_cyc       <= '0';
         wb_stb       <= '0';
         wb_we        <= '0';
-        start_op     <= '0';
-        i2c_ack      <= '0';
+        slv_ack      <= '0';
         tip_o        <= '0';
-        err_o        <= '0';
+        err_p_o      <= '0';
+        wdt_rst      <= '1';
         adr_byte_cnt <= (others => '0');
         dat_byte_cnt <= (others => '0');
+
+      elsif (slv_sto_p = '1') then
+        state <= IDLE;
 
       else
         case state is
@@ -245,15 +252,17 @@ begin
           -- address, start_op will be '0' (write).
           ---------------------------------------------------------------------
           when IDLE =>
-            err_o   <= '0';
-            tip_o   <= '0';
-            i2c_ack <= '0';
+            err_p_o      <= '0';
+            tip_o        <= '0';
+            slv_ack      <= '0';
+            adr_byte_cnt <= (others => '0');
             dat_byte_cnt <= (others => '0');
-            if (done = '1') and (stat = c_i2cs_addr_good) then
+            wdt_rst      <= '1';
+            if (slv_addr_good_p = '1') then
               tip_o    <= '1';
-              i2c_ack  <= '1';
+              slv_ack  <= '1';
+              wdt_rst  <= '0';
               state    <= SYSMON_WB_ADR;
-              start_op <= op;
             end if;
 
           ---------------------------------------------------------------------
@@ -263,17 +272,12 @@ begin
           -- them. The second byte's ACK is also controlled by the next state.
           ---------------------------------------------------------------------
           when SYSMON_WB_ADR =>
-            if (done = '1') then
-              if (stat = c_i2cs_rd_done) then
-                wb_adr       <= wb_adr(7 downto 0) & rx_byte;
-                i2c_ack      <= '1';
-                adr_byte_cnt <= adr_byte_cnt + 1;
-                if (adr_byte_cnt = 1) then
-                  state <= SIM_WB_TRANSF;
-                end if;
-              else
-                i2c_ack <= '0';
-                state   <= IDLE;
+            if (slv_r_done_p = '1') then
+              wb_adr       <= wb_adr(7 downto 0) & rx_byte;
+              slv_ack      <= '1';
+              adr_byte_cnt <= adr_byte_cnt + 1;
+              if (adr_byte_cnt = 1) then
+                state <= SIM_WB_TRANSF;
               end if;
             end if;
 
@@ -288,13 +292,13 @@ begin
             wb_cyc <= '1';
             wb_stb <= '1';
             if (wb_ack = '1') then
-              i2c_ack <= '1';
+              slv_ack <= '1';
               wb_cyc  <= '0';
               wb_stb  <= '0';
               state   <= OPER;
             elsif (wb_err = '1') then
-              err_o   <= '1';
-              i2c_ack <= '0';
+              err_p_o <= '1';
+              slv_ack <= '0';
               wb_cyc  <= '0';
               wb_stb  <= '0';
               state   <= IDLE;
@@ -317,19 +321,14 @@ begin
           -- output are cleared to avoid conflicts with future transfers.
           ---------------------------------------------------------------------
           when OPER =>
-            if (done = '1') then
-              if (stat = c_i2cs_rd_done) then
-                wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
-                dat_byte_cnt <= dat_byte_cnt + 1;
-                i2c_ack      <= '1';
-                state        <= SYSMON_WR;
-              elsif (stat = c_i2cs_addr_good) and (op /= start_op) then
-                i2c_ack <= '1';
-                state   <= SYSMON_RD_WB;
-              else
-                i2c_ack <= '0';
-                state   <= IDLE;
-              end if;
+            if (slv_r_done_p = '1') then
+              wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
+              dat_byte_cnt <= dat_byte_cnt + 1;
+              slv_ack      <= '1';
+              state        <= SYSMON_WR;
+            elsif (slv_addr_good_p = '1') and (op = '1') then
+              slv_ack <= '1';
+              state   <= SYSMON_RD_WB;
             end if;
 
           ---------------------------------------------------------------------
@@ -340,18 +339,15 @@ begin
           -- write transfer is initiated in the next state.
           ---------------------------------------------------------------------
           when SYSMON_WR =>
-            if (done = '1') then
-              if (stat = c_i2cs_rd_done) then
-                wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
-                dat_byte_cnt <= dat_byte_cnt + 1;
-                i2c_ack      <= '1';
-                if (dat_byte_cnt = 3) then
-                  state <= SYSMON_WR_WB;
-                end if;
-              else
-                i2c_ack <= '0';
-                state   <= IDLE;
+            if (slv_r_done_p = '1') then
+              wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
+              dat_byte_cnt <= dat_byte_cnt + 1;
+              slv_ack      <= '1';
+              if (dat_byte_cnt = 3) then
+                state <= SYSMON_WR_WB;
               end if;
+--            elsif (slv_sto_p = '1') then
+--              state <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -370,7 +366,7 @@ begin
               wb_we  <= '0';
               state  <= SYSMON_WR; --IDLE;
             elsif (wb_err = '1') then
-              err_o   <= '1';
+              err_p_o <= '1';
               state   <= IDLE;
             end if;
 
@@ -391,10 +387,10 @@ begin
               wb_stb    <= '0';
               state     <= SYSMON_RD;
             elsif (wb_err = '1') then
-              err_o  <= '1';
-              wb_cyc <= '0';
-              wb_stb <= '0';
-              state  <= IDLE;
+              err_p_o <= '1';
+              wb_cyc  <= '0';
+              wb_stb  <= '0';
+              state   <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -403,18 +399,15 @@ begin
           -- Shift out the bytes over I2C and go back to IDLE state.
           ---------------------------------------------------------------------
           when SYSMON_RD =>
-            if (done = '1') then
-              if (stat = c_i2cs_wr_done) then
-                wb_dat_in    <= x"00" & wb_dat_in(31 downto 8);
-                dat_byte_cnt <= dat_byte_cnt + 1;
-                i2c_ack      <= '1';
-                if (dat_byte_cnt = 3) then
-                  state <= IDLE;
-                end if;
-              else
-                i2c_ack <= '0';
-                state   <= IDLE;
+            if (slv_w_done_p = '1') then
+              wb_dat_in    <= x"00" & wb_dat_in(31 downto 8);
+              dat_byte_cnt <= dat_byte_cnt + 1;
+              slv_ack      <= '1';
+              if (dat_byte_cnt = 3) then
+                state <= IDLE;
               end if;
+--            elsif (slv_sto_p = '1') then
+--              state <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -428,4 +421,48 @@ begin
     end if;
   end process p_fsm;
 
+  --============================================================================
+  -- FSM watchdog timer
+  --============================================================================
+  -- * in the case of writemregs command, a maximum of 35 bytes can be written
+  --     - 1 I2C address byte
+  --     - 2 register (Wishbone) address bytes
+  --     - 8*4 Wishbone register values
+  -- * we will therefore set the watchdog max. value to allow for 36 bytes to
+  -- be sent, considering a maximum clk_i frequency of 20 MHz (period = 50 ns)
+  -- and an SCL frequency of 100 kHz
+  -- * 100 us / 50 ns = 2000 clock cycles to send one byte
+  -- * 2000 * 36 bytes = 72000 clock cycles to send 36 bytes
+  -- * g_wdt_max = 72000
+  cmp_watchdog : gc_fsm_watchdog
+    generic map
+    (
+      g_wdt_max => 72000
+    )
+    port map
+    (
+      clk_i     => clk_i,
+      rst_n_i   => rst_n_i,
+      wdt_rst_i => wdt_rst,
+      fsm_rst_o => rst_fr_wdt
+    );
+
+  -- Process to set the timeout status pulse
+  p_wdto_outp : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      if (rst_n_i = '0') then
+        rst_fr_wdt_d0 <= '0';
+        wdto_p_o      <= '0';
+      else
+        rst_fr_wdt_d0 <= rst_fr_wdt;
+        wdto_p_o      <= rst_fr_wdt and (not rst_fr_wdt_d0);
+      end if;
+    end if;
+  end process p_wdto_outp;
+
 end behav;
+--==============================================================================
+--  architecture end
+--==============================================================================
+
