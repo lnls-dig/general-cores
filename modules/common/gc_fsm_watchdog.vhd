@@ -66,7 +66,7 @@ architecture behav of gc_fsm_watchdog is
   --============================================================================
   -- Signal declarations
   --============================================================================
-  signal wdt : unsigned(f_log2_size(g_wdt_max)-1 downto 0);
+  signal wdt                : unsigned(f_log2_size(g_wdt_max)-1 downto 0);
 
 --==============================================================================
 --  architecture begin
@@ -84,7 +84,7 @@ begin
         fsm_rst_o <= '0';
       else
         wdt <= wdt + 1;
-        if (wdt = g_wdt_max) then
+        if (wdt = g_wdt_max-1) then
           fsm_rst_o <= '1';
         end if;
       end if;

@@ -61,7 +61,7 @@ architecture behav of tb_gc_fsm_watchdog is
   constant c_clk_per : time := 50 ns;
   constant c_reset_width : time := 112 ns;
 
-  constant c_fsm_time : positive := 32767;
+  constant c_fsm_time : positive := 32766;
 
   --============================================================================
   -- Signal declarations
@@ -105,7 +105,7 @@ begin
   DUT : gc_fsm_watchdog
   generic map
   (
-    g_wdt_max => 65536
+    g_wdt_max => 32768
   )
   port map
   (
