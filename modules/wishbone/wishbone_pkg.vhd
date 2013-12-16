@@ -325,6 +325,16 @@ package wishbone_pkg is
       master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
       master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
   end component;
+  
+  component xwb_register_link -- puts a register of delay between crossbars
+    port(
+      clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic;
+      slave_i   : in  t_wishbone_slave_in;
+      slave_o   : out t_wishbone_slave_out;
+      master_i  : in  t_wishbone_master_in;
+      master_o  : out t_wishbone_master_out);
+  end component;
 
   component sdb_rom is
     generic(
