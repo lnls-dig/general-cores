@@ -10,7 +10,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="647.03162"
+   width="619.46588"
    height="366.34814"
    id="svg2"
    version="1.1"
@@ -18,6 +18,19 @@
    sodipodi:docname="fsm.svg">
   <defs
      id="defs4">
+    <marker
+       inkscape:stockid="TriangleInM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleInM"
+       style="overflow:visible">
+      <path
+         id="path4180"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(-0.4)" />
+    </marker>
     <marker
        inkscape:stockid="TriangleOutM"
        orient="auto"
@@ -48,9 +61,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="233.79285"
-     inkscape:cy="219.89173"
+     inkscape:zoom="1.4"
+     inkscape:cx="172.95624"
+     inkscape:cy="160.43646"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -80,7 +93,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-80.908226,-95.838081)">
+     transform="translate(-83.725204,-95.838081)">
     <g
        id="g3791">
       <path
@@ -117,7 +130,7 @@
          sodipodi:cy="225.21933"
          sodipodi:rx="160.45929"
          sodipodi:ry="103.82829"
-         d="m 377.60214,225.21933 a 160.45929,103.82829 0 1 1 -320.918577,0 160.45929,103.82829 0 1 1 320.918577,0 z"
+         d="m 377.60214,225.21933 c 0,57.34278 -71.84007,103.82829 -160.45929,103.82829 -88.61922,0 -160.459287,-46.48551 -160.459287,-103.82829 0,-57.34278 71.840067,-103.82829 160.459287,-103.82829 88.61922,0 160.45929,46.48551 160.45929,103.82829 z"
          transform="matrix(0.32486115,0,0,0.16396873,190.54322,103.94267)" />
       <text
          xml:space="preserve"
@@ -331,27 +344,27 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="80.46682"
-       y="141.33536"
+       x="83.244736"
+       y="122.90007"
        id="text4712"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4714"
-         x="80.46682"
-         y="141.33536"
-         style="font-size:8px">done='0'</tspan></text>
+         x="83.244736"
+         y="122.90007"
+         style="font-size:8px">addr_good = '0'</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text4716"
        y="123.73908"
-       x="221.63564"
+       x="203.95796"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        xml:space="preserve"><tspan
          style="font-size:8px"
          y="123.73908"
-         x="221.63564"
+         x="203.95796"
          id="tspan4718"
-         sodipodi:role="line">done='1'</tspan></text>
+         sodipodi:role="line">addr_good = '1'</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -433,15 +446,15 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="386.4949"
+       x="411.74872"
        y="260.70016"
        id="text5490"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan5492"
-         x="386.4949"
+         x="411.74872"
          y="260.70016"
-         style="font-size:8px">op = start_op</tspan></text>
+         style="font-size:8px">op = '0'</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text5494"
@@ -453,7 +466,7 @@
          y="260.70016"
          x="553.17004"
          id="tspan5496"
-         sodipodi:role="line">op /= start_op</tspan></text>
+         sodipodi:role="line">op = '1'</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -481,14 +494,14 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="677.19373"
-       y="390.0943"
+       x="652.44501"
+       y="373.42679"
        id="text5506"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan5508"
-         x="677.19373"
-         y="390.0943"
+         x="652.44501"
+         y="373.42679"
          style="font-size:8px">byte_cnt &lt; 3</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
@@ -514,27 +527,6 @@
          x="360.84262"
          y="352.21359"
          style="font-size:8px">byte_cnt = 3</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text5884"
-       y="429.46619"
-       x="382.80508"
-       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       xml:space="preserve"><tspan
-         style="font-size:8px;text-align:center;text-anchor:middle"
-         y="429.46619"
-         x="382.80508"
-         sodipodi:role="line"
-         id="tspan5888">I<tspan
-   style="font-size:65.00091553%;text-align:center;text-anchor:middle;baseline-shift:super"
-   id="tspan4982">2</tspan>C stop condition</tspan><tspan
-         style="font-size:8px;text-align:center;text-anchor:middle"
-         y="439.46619"
-         x="382.80508"
-         sodipodi:role="line"
-         id="tspan4978"><tspan
-   style="font-style:italic;text-align:center;text-anchor:middle"
-   id="tspan4980">or </tspan>wb_err</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -614,24 +606,15 @@
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="382.80508"
+       x="402.50305"
        y="429.46619"
        id="text5864"
        sodipodi:linespacing="125%"><tspan
-         id="tspan5866"
-         sodipodi:role="line"
-         x="382.80508"
-         y="429.46619"
-         style="font-size:8px;text-align:center;text-anchor:middle">I<tspan
-   id="tspan5868"
-   style="font-size:65.00091553%;text-align:center;text-anchor:middle;baseline-shift:super">2</tspan>C stop condition</tspan><tspan
          id="tspan5870"
          sodipodi:role="line"
-         x="382.80508"
-         y="439.46619"
-         style="font-size:8px;text-align:center;text-anchor:middle"><tspan
-   id="tspan5872"
-   style="font-style:italic;text-align:center;text-anchor:middle">or </tspan>wb_err</tspan></text>
+         x="402.50305"
+         y="429.46619"
+         style="font-size:8px;text-align:center;text-anchor:middle">wb_err</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text5874"
@@ -644,5 +627,24 @@
          x="479.57578"
          id="tspan5876"
          sodipodi:role="line">wb_ack = '1'</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM)"
+       d="m 164.53741,160.15061 0,39.39595"
+       id="path3082"
+       inkscape:connector-curvature="0" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4486"
+       y="209.26811"
+       x="136.02521"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         style="font-size:8px"
+         y="209.26811"
+         x="136.02521"
+         id="tspan4488"
+         sodipodi:role="line">I<tspan
+   style="font-size:65%;baseline-shift:super"
+   id="tspan4490">2</tspan>C stop condition</tspan></text>
   </g>
 </svg>
