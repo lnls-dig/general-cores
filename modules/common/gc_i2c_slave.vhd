@@ -16,19 +16,19 @@
 --
 --    The gc_i2c_slave module waits for a master to initiate a transfer via
 --    a start condition. The address is sent next and if the address matches
---    the slave address set via the i2c_addr_i input, the done_p_o output
+--    the slave address set via the i2c_addr_i input, the addr_good_p_o output
 --    is set. Based on the eighth bit of the first I2C transfer byte, the module
 --    then starts shifting in or out each byte in the transfer, setting the
---    done_p_o output after each received/sent byte.
+--    r/w_done_p_o output after each received/sent byte.
 --
 --    For master write (slave read) transfers, the received byte can be read at
---    the rx_byte_o output when the done_p_o pin is high. For master read (slave
+--    the rx_byte_o output when the r_done_p_o pin is high. For master read (slave
 --    write) transfers, the slave sends the byte at the tx_byte_i input, which
---    should be set when the done_p_o output is high, either after I2C address
+--    should be set when the w_done_p_o output is high, either after I2C address
 --    reception, or a successful send of a previous byte.
 --
 -- dependencies:
---    none.
+--    OHWR general-cores library
 --
 -- references:
 --    [1] The I2C bus specification, version 2.1, NXP Semiconductor, Jan. 2000
@@ -48,9 +48,8 @@
 -- source; if not, download it from http://www.gnu.org/licenses/lgpl-2.1.html
 --==============================================================================
 -- last changes:
---    2013-03-13   Theodor Stana     t.stana@cern.ch     File created
---    2013-11-22   Theodor Stana                         Changed to sampling SDA
---                                                       on SCL rising edge
+--    2013-03-13   Theodor Stana     File created
+--    2013-11-22   Theodor Stana     Changed to sampling SDA on SCL rising edge
 --==============================================================================
 -- TODO:
 --    - Stop condition
@@ -86,7 +85,7 @@ entity gc_i2c_slave is
     sda_en_o      : out std_logic;
 
     -- Slave address
-    addr_i        : in  std_logic_vector(6 downto 0);
+    i2c_addr_i    : in  std_logic_vector(6 downto 0);
 
     -- ACK input, should be set after done_p_o = '1'
     -- (note that the bit is reversed wrt I2C ACK bit)
@@ -102,9 +101,9 @@ entity gc_i2c_slave is
 
     -- Pulse outputs signaling various I2C actions
     -- Start and stop conditions
-    sta_p_o       : out std_logic;
-    sto_p_o       : out std_logic;
-    -- Received address corresponds addr_i
+    i2c_sta_p_o   : out std_logic;
+    i2c_sto_p_o   : out std_logic;
+    -- Received address corresponds i2c_addr_i
     addr_good_p_o : out std_logic;
     -- Read and write done
     r_done_p_o    : out std_logic;
@@ -166,15 +165,11 @@ architecture behav of gc_i2c_slave is
   -- Master ACKed after it has read a byte from the slave
   signal mst_acked         : std_logic;
 
-
-  signal sda_en : std_logic;
-
 --==============================================================================
 --  architecture begin
 --==============================================================================
 begin
 
-  sda_en_o  <= sda_en;
   --============================================================================
   -- I/O logic
   --============================================================================
@@ -256,6 +251,7 @@ begin
   --============================================================================
   -- Start and stop condition outputs
   --============================================================================
+  -- First the process to set the start and stop conditions as per I2C standard
   p_sta_sto : process (clk_i) is
   begin
     if rising_edge(clk_i) then
@@ -269,8 +265,9 @@ begin
     end if;
   end process p_sta_sto;
 
-  sta_p_o <= sta_p;
-  sto_p_o <= sto_p;
+  -- Finally, set the outputs
+  i2c_sta_p_o <= sta_p;
+  i2c_sto_p_o <= sto_p;
 
   --============================================================================
   -- FSM logic
@@ -285,14 +282,15 @@ begin
         rxsr          <= (others => '0');
         txsr          <= (others => '0');
         mst_acked     <= '0';
-        sda_en      <= '0';
+        sda_en_o        <= '0';
         r_done_p_o    <= '0';
         w_done_p_o    <= '0';
         addr_good_p_o <= '0';
         op_o          <= '0';
 
-      -- start and stop conditions take the FSM back to IDLE and reset the
-      -- FSM inhibit signal to read the address
+      -- start and stop conditions are followed by I2C address, so any byte
+      -- following would be an address byte; therefore, it is safe to deinhibit
+      -- the FSM
       elsif (sta_p = '1') or (sto_p = '1') then
         state   <= IDLE;
         inhibit <= '0';
@@ -303,14 +301,10 @@ begin
           ---------------------------------------------------------------------
           -- IDLE
           ---------------------------------------------------------------------
-          -- When idle, outputs and bit counters are cleared, while waiting
-          -- for a falling edge on SCL. The falling edge has to be validated
-          -- by the inhibit signal, which states whether it is this or another
-          -- slave being addressed.
-          ---------------------------------------------------------------------
           when IDLE =>
+            -- clear outputs and bit counter
             bit_cnt       <= (others => '0');
-            sda_en      <= '0';
+            sda_en_o      <= '0';
             mst_acked     <= '0';
             r_done_p_o    <= '0';
             w_done_p_o    <= '0';
@@ -322,11 +316,6 @@ begin
           ---------------------------------------------------------------------
           -- ADDR
           ---------------------------------------------------------------------
-          -- Shift in the seven address bits and the R/W bit, and go to address
-          -- acknowledgement. When the eighth bit has been shifted in, check
-          -- if address is ours and signal to external module. Then, go to
-          -- ADDR_ACK state.
-          ---------------------------------------------------------------------
           when ADDR =>
             -- Shifting in is done on rising edge of SCL
             if (scl_r_edge_p = '1') then
@@ -335,8 +324,7 @@ begin
             end if;
 
             if (scl_f_edge_p = '1') then
-              -- Shifted in 8 bits, go to ADDR_ACK. Check to see if received
-              -- address is ours and set op_o if so.
+              -- If we've shifted in 8 bits, go to ADDR_CHECK
               if (bit_cnt = 0) then
                 state <= ADDR_CHECK;
               end if;
@@ -347,7 +335,7 @@ begin
           ---------------------------------------------------------------------
           when ADDR_CHECK =>
             -- if the address is ours, set the OP output and go to ACK state
-            if (rxsr(7 downto 1) = addr_i) then
+            if (rxsr(7 downto 1) = i2c_addr_i) then
               op_o          <= rxsr(0);
               addr_good_p_o <= '1';
               state         <= ADDR_ACK;
@@ -364,8 +352,11 @@ begin
           -- ADDR_ACK
           ---------------------------------------------------------------------
           when ADDR_ACK =>
+            -- clear addr_good pulse
             addr_good_p_o <= '0';
-            sda_en      <= ack_i;
+
+            -- send ACK from input and go start reading or writing based on OP
+            sda_en_o <= ack_i;
             if (scl_f_edge_p = '1') then
               if (rxsr(0) = '0') then
                 state <= RD;
@@ -380,7 +371,10 @@ begin
           -- Shift in bits sent by the master
           ---------------------------------------------------------------------
           when RD =>
-            sda_en <= '0';
+            -- not controlling SDA, clear enable signal
+            sda_en_o <= '0';
+
+            -- shift in on rising-edge
             if (scl_r_edge_p = '1') then
               rxsr    <= rxsr(6 downto 0) & sda_deglitched;
               bit_cnt <= bit_cnt + 1;
@@ -397,14 +391,12 @@ begin
           ---------------------------------------------------------------------
           -- RD_ACK
           ---------------------------------------------------------------------
-          -- Send ACK/NACK, as received from external command
-          ---------------------------------------------------------------------
           when RD_ACK =>
             -- Clear done pulse
             r_done_p_o <= '0';
 
-            -- we write the ACK bit, so enable output and send the ACK bit
-            sda_en <= ack_i;
+            -- we write the ACK bit, so control sda_en_o signal to send ACK/NACK
+            sda_en_o <= ack_i;
 
             -- based on the ACK received by external command, we read the next
             -- bit (ACK) or go back to idle state (NACK)
@@ -419,8 +411,6 @@ begin
           ---------------------------------------------------------------------
           -- WR_LOAD_TXSR
           ---------------------------------------------------------------------
-          -- Load TXSR with the input value
-          ---------------------------------------------------------------------
           when WR_LOAD_TXSR =>
             txsr  <= tx_byte_i;
             state <= WR;
@@ -428,21 +418,19 @@ begin
           ---------------------------------------------------------------------
           -- WR
           ---------------------------------------------------------------------
-          -- Shift out the eight bits of TXSR
-          ---------------------------------------------------------------------
           when WR =>
             -- slave writes, SDA output enable is the negated value of the bit
             -- to send (since on I2C, '1' is a release of the bus)
-            sda_en <= not txsr(7);
+            sda_en_o <= not txsr(7);
 
             -- increment bit counter on rising edge
             if (scl_r_edge_p = '1') then
               bit_cnt <= bit_cnt + 1;
             end if;
 
-            -- Shift TXSR after falling edge of SCL
+            -- Shift TXSR on falling edge of SCL
             if (scl_f_edge_p = '1') then
-              txsr     <= txsr(6 downto 0) & '0';
+              txsr <= txsr(6 downto 0) & '0';
 
               -- Eight bits sent, disable SDA and go to WR_ACK
               if (bit_cnt = 0) then
@@ -454,12 +442,14 @@ begin
           ---------------------------------------------------------------------
           -- WR_ACK
           ---------------------------------------------------------------------
-          -- Check the ACK bit received from the master and go back to writing
-          -- another byte if ACKed, or to IDLE if NACKed
-          ---------------------------------------------------------------------
           when WR_ACK =>
-            sda_en   <= '0';
+            -- master controls SDA, clear sda_en_o
+            sda_en_o <= '0';
+
+            -- clear done pulse
             w_done_p_o <= '0';
+
+            -- sample in ACK from master on rising edge
             if (scl_r_edge_p = '1') then
               if (sda_deglitched = '0') then
                 mst_acked <= '1';
@@ -468,6 +458,7 @@ begin
               end if;
             end if;
 
+            -- and check it on falling edge
             if (scl_f_edge_p = '1') then
               if (mst_acked = '1') then
                 state <= WR_LOAD_TXSR;

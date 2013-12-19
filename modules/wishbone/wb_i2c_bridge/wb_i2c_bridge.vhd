@@ -182,15 +182,15 @@ begin
       sda_o         => sda_o,
       sda_en_o      => sda_en_o,
 
-      addr_i        => i2c_addr_i,
+      i2c_addr_i    => i2c_addr_i,
 
       ack_i         => slv_ack,
 
       tx_byte_i     => tx_byte,
       rx_byte_o     => rx_byte,
 
-      sta_p_o       => open,
-      sto_p_o       => slv_sto_p,
+      i2c_sta_p_o   => open,
+      i2c_sto_p_o   => slv_sto_p,
       addr_good_p_o => slv_addr_good_p,
       r_done_p_o    => slv_r_done_p,
       w_done_p_o    => slv_w_done_p,

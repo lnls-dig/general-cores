@@ -292,7 +292,7 @@ package gencores_pkg is
       sda_en_o      : out std_logic;
 
       -- Slave address
-      addr_i        : in  std_logic_vector(6 downto 0);
+      i2c_addr_i    : in  std_logic_vector(6 downto 0);
 
       -- ACK input, should be set after done_p_o = '1'
       -- (note that the bit is reversed wrt I2C ACK bit)
@@ -308,8 +308,8 @@ package gencores_pkg is
 
       -- Pulse outputs signaling various I2C actions
       -- Start and stop conditions
-      sta_p_o       : out std_logic;
-      sto_p_o       : out std_logic;
+      i2c_sta_p_o   : out std_logic;
+      i2c_sto_p_o   : out std_logic;
       -- Received address corresponds addr_i
       addr_good_p_o : out std_logic;
       -- Read and write done
