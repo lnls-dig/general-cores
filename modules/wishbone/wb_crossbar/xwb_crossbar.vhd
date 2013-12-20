@@ -81,7 +81,9 @@ architecture rtl of xwb_crossbar is
   begin
     for i in 0 to g_num_slaves-2 loop
       for j in i+1 to g_num_slaves-1 loop
-        assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero)
+        assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero) or
+               ((c_mask(i) or not c_address(i)) = zero) or -- disconnected slave?
+               ((c_mask(j) or not c_address(j)) = zero)    -- disconnected slave?
         report "Address ranges must be distinct (slaves " & 
 	       Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
 	                                f_bits2string(c_mask(i)) & "] & " & 
