@@ -1135,7 +1135,7 @@ package body wishbone_pkg is
     return result;
   end;
   
-  function f_sdb_auto_device(device : t_sdb_device; enable : boolean)
+  function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true)
     return t_sdb_record
   is
     constant c_zero  : t_wishbone_address := (others => '0');
@@ -1149,7 +1149,7 @@ package body wishbone_pkg is
     end if;
   end f_sdb_auto_device;
   
-  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean)
+  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true)
     return t_sdb_record
   is
     constant c_zero  : t_wishbone_address := (others => '0');
@@ -1215,7 +1215,8 @@ package body wishbone_pkg is
     
     -- Start assigning addresses
     for j in 0 to 63 loop
-      v_increment := (j => '1', others => '0');
+      v_increment := (others => '0');
+      v_increment(j) := '1';
       
       for i in 0 to c_records'length loop
         if v_map(i) = '1' and v_sizes(i)(j) = '0' then
