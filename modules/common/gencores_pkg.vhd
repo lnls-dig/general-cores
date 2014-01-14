@@ -7,7 +7,7 @@
 --              Theodor-Adrian Stana
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2013-11-20
+-- Last update: 2014-01-13
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -380,6 +380,10 @@ package gencores_pkg is
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
 
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
+  function f_gray_encode(x : std_logic_vector) return std_logic_vector;
+  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+  
 end package;
 
 package body gencores_pkg is
