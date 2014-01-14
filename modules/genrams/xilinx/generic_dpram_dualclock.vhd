@@ -102,7 +102,15 @@ architecture syn of generic_dpram_dualclock is
   begin
     return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
   end f_file_contents;
-  
+
+  function f_is_synthesis return boolean is
+  begin
+    -- synthesis translate_off
+    return false;
+    -- synthesis translate_on
+    return true;
+  end f_is_synthesis; 
+
   shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
@@ -130,7 +138,11 @@ begin
     process (clka_i)
     begin
       if rising_edge(clka_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
+        if f_is_synthesis then
+          qa_o <= ram(to_integer(unsigned(aa_i)));
+        else
+          qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
+        end if;
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
             ram(to_integer(unsigned(aa_i)))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
@@ -143,7 +155,11 @@ begin
     process (clkb_i)
     begin
       if rising_edge(clkb_i) then
-        qb_o <= ram(to_integer(unsigned(ab_i)));
+        if f_is_synthesis then
+          qb_o <= ram(to_integer(unsigned(ab_i)));
+        else
+          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
+        end if;
         for i in 0 to c_num_bytes-1 loop
           if s_we_b(i) = '1' then
             ram(to_integer(unsigned(ab_i)))((i+1)*8-1 downto i*8)
