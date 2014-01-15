@@ -20,6 +20,7 @@ modules =  { "local" : [
   "wb_serial_lcd",
   "wb_spi_flash",
 	"wb_simple_pwm",
+  "wb_i2c_bridge",
   "wbgen2"
   ]}
 

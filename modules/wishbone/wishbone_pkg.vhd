@@ -956,6 +956,56 @@ package wishbone_pkg is
       external_granted_o : out std_logic);
   end component;
 
+  -----------------------------------------------------------------------------
+  -- I2C to Wishbone bridge, following protocol defined with ELMA
+  -----------------------------------------------------------------------------
+  component wb_i2c_bridge is
+    port
+    (
+      -- Clock, reset
+      clk_i      : in  std_logic;
+      rst_n_i    : in  std_logic;
+
+      -- I2C lines
+      scl_i      : in  std_logic;
+      scl_o      : out std_logic;
+      scl_en_o   : out std_logic;
+      sda_i      : in  std_logic;
+      sda_o      : out std_logic;
+      sda_en_o   : out std_logic;
+
+      -- I2C address
+      i2c_addr_i : in  std_logic_vector(6 downto 0);
+
+      -- Status outputs
+      -- TIP  : Transfer In Progress
+      --        '1' when the I2C slave detects a matching I2C address, thus a
+      --            transfer is in progress
+      --        '0' when idle
+      -- ERR  : Error
+      --       '1' when the SysMon attempts to access an invalid WB slave
+      --       '0' when idle
+      -- WDTO : Watchdog timeout (single clock cycle pulse)
+      --        '1' -- timeout of watchdog occured
+      --        '0' -- when idle
+      tip_o      : out std_logic;
+      err_p_o    : out std_logic;
+      wdto_p_o   : out std_logic;
+
+      -- Wishbone master signals
+      wbm_stb_o  : out std_logic;
+      wbm_cyc_o  : out std_logic;
+      wbm_sel_o  : out std_logic_vector(3 downto 0);
+      wbm_we_o   : out std_logic;
+      wbm_dat_i  : in  std_logic_vector(31 downto 0);
+      wbm_dat_o  : out std_logic_vector(31 downto 0);
+      wbm_adr_o  : out std_logic_vector(31 downto 0);
+      wbm_ack_i  : in  std_logic;
+      wbm_rty_i  : in  std_logic;
+      wbm_err_i  : in  std_logic
+    );
+  end component wb_i2c_bridge;
+
 end wishbone_pkg;
 
 package body wishbone_pkg is
