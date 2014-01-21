@@ -1326,7 +1326,7 @@ package body wishbone_pkg is
           
       -- insert
          report "### to: " & newdev.sdb_component.product.name severity note;
-         result(i) := f_sdb_embed_device(newdev, (others=>'1'));
+         result(i) := f_sdb_embed_device(newdev, (others=>'0'));
       end loop;
       return result;
    end f_sdb_create_array;
