@@ -129,7 +129,7 @@ begin  -- syn
         ALMOST_FULL_OFFSET      => to_bitvector(std_logic_vector(to_unsigned(g_almost_full_threshold, 16))),
         ALMOST_EMPTY_OFFSET     => to_bitvector(std_logic_vector(to_unsigned(g_almost_empty_threshold, 16))),
         DATA_WIDTH              => m.d_width + m.dp_width,
-        DO_REG                  => f_bool_2_int(g_dual_clock),
+        DO_REG                  => f_bool_2_int(not g_dual_clock),
         EN_SYN                  => not g_dual_clock,
         FIFO_MODE               => f_v6_fifo_mode(m),
         FIRST_WORD_FALL_THROUGH => false)
