@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="337.11417"
-   height="183.06703"
+   width="338.63583"
+   height="164.87885"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="205.23085"
-     inkscape:cy="131.97009"
+     inkscape:zoom="5.6"
+     inkscape:cx="231.34573"
+     inkscape:cy="135.10427"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4154"
      showgrid="true"
      inkscape:window-width="1855"
      inkscape:window-height="1176"
@@ -50,8 +50,8 @@
        units="mm"
        spacingx="0.5mm"
        spacingy="0.5mm"
-       originx="-29.929444mm"
-       originy="-240.83441mm" />
+       originx="-29.5mm"
+       originy="-240.96753mm" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -69,7 +69,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-101.21472,920.63478)">
+     transform="translate(-99.693069,902.91827)">
     <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 110.32299,-885.20174 8.85827,0 0,35.43307 -8.85827,0 0,-35.43307 -8.85827,0 0,35.43307 8.85827,0"
@@ -736,7 +736,7 @@
          y="125.78734"
          x="347.24408"
          height="65.551178"
-         width="154.13388"
+         width="155.9055"
          id="rect3339"
          style="fill:#000000;fill-opacity:0.1;fill-rule:evenodd;stroke:none" />
       <text
@@ -751,27 +751,6 @@
            x="389.76376"
            id="tspan4111"
            sodipodi:role="line">SYSMON_WB_ADR</tspan></text>
-    </g>
-    <g
-       id="g8006">
-      <path
-         style="fill:#000000;fill-opacity:0.3;stroke:none"
-         d="m 283.94504,-920.63478 -1e-5,14.17323 58.46458,0 0,69.09447 5.31496,0 0,-69.09447 28.34645,0 0,-14.17323 z"
-         id="path7225"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="ccccccccc" />
-      <text
-         xml:space="preserve"
-         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="330.00803"
-         y="-910.00488"
-         id="text4115"
-         sodipodi:linespacing="125%"><tspan
-           sodipodi:role="line"
-           id="tspan4117"
-           x="330.00803"
-           y="-910.00488"
-           style="font-size:8px;font-style:italic;font-weight:bold;text-align:center;text-anchor:middle">SIM_WB_TRANSFER</tspan></text>
     </g>
     <g
        id="g8201">

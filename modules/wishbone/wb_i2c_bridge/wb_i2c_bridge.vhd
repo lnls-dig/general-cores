@@ -114,7 +114,6 @@ architecture behav of wb_i2c_bridge is
     (
       IDLE,            -- idle state
       SYSMON_WB_ADR,   -- get the WB register address
-      SIM_WB_TRANSF,   -- simulate a WB transfer with the received address
       OPER,            -- operation to perform on the WB register
       SYSMON_RD_WB,    -- perform a WB read transfer, for sending word to the SysMon
       SYSMON_RD,       -- send the word to the SysMon during read transfer
@@ -274,34 +273,10 @@ begin
           when SYSMON_WB_ADR =>
             if (slv_r_done_p = '1') then
               wb_adr       <= wb_adr(7 downto 0) & rx_byte;
-              slv_ack      <= '1';
               adr_byte_cnt <= adr_byte_cnt + 1;
               if (adr_byte_cnt = 1) then
-                state <= SIM_WB_TRANSF;
+                state <= OPER;
               end if;
-            end if;
-
-          ---------------------------------------------------------------------
-          -- SIM_WB_TRANSF
-          ---------------------------------------------------------------------
-          -- Simulate a Wishbone transfer with the received address and go
-          -- to operation state if we get a WB ACK, or back to idle if we get
-          -- a WB error. In the latter case, an NACK is sent to the SysMon.
-          ---------------------------------------------------------------------
-          when SIM_WB_TRANSF =>
-            wb_cyc <= '1';
-            wb_stb <= '1';
-            if (wb_ack = '1') then
-              slv_ack <= '1';
-              wb_cyc  <= '0';
-              wb_stb  <= '0';
-              state   <= OPER;
-            elsif (wb_err = '1') then
-              err_p_o <= '1';
-              slv_ack <= '0';
-              wb_cyc  <= '0';
-              wb_stb  <= '0';
-              state   <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -324,11 +299,9 @@ begin
             if (slv_r_done_p = '1') then
               wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
               dat_byte_cnt <= dat_byte_cnt + 1;
-              slv_ack      <= '1';
               state        <= SYSMON_WR;
             elsif (slv_addr_good_p = '1') and (op = '1') then
-              slv_ack <= '1';
-              state   <= SYSMON_RD_WB;
+              state        <= SYSMON_RD_WB;
             end if;
 
           ---------------------------------------------------------------------
@@ -342,12 +315,9 @@ begin
             if (slv_r_done_p = '1') then
               wb_dat_out   <= rx_byte & wb_dat_out(31 downto 8);
               dat_byte_cnt <= dat_byte_cnt + 1;
-              slv_ack      <= '1';
               if (dat_byte_cnt = 3) then
-                state <= SYSMON_WR_WB;
+                state      <= SYSMON_WR_WB;
               end if;
---            elsif (slv_sto_p = '1') then
---              state <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -360,11 +330,11 @@ begin
             wb_cyc <= '1';
             wb_stb <= '1';
             wb_we  <= '1';
-            if (wb_ack = '1') then -- or (wb_err = '1') then
+            if (wb_ack = '1') then
               wb_cyc <= '0';
               wb_stb <= '0';
               wb_we  <= '0';
-              state  <= SYSMON_WR; --IDLE;
+              state  <= SYSMON_WR;
             elsif (wb_err = '1') then
               err_p_o <= '1';
               state   <= IDLE;
@@ -402,12 +372,9 @@ begin
             if (slv_w_done_p = '1') then
               wb_dat_in    <= x"00" & wb_dat_in(31 downto 8);
               dat_byte_cnt <= dat_byte_cnt + 1;
-              slv_ack      <= '1';
               if (dat_byte_cnt = 3) then
                 state <= IDLE;
               end if;
---            elsif (slv_sto_p = '1') then
---              state <= IDLE;
             end if;
 
           ---------------------------------------------------------------------

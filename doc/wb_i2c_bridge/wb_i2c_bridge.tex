@@ -301,10 +301,9 @@ shown in Table~\ref{tbl:cmds}.
     \hline
     writereg \textit{slot addr val}        & Writes the \textit{hex} value \textit{val} to hex address
                                              \textit{addr} of board in slot number \textit{slot} \\
-    writemregs \textit{slot addr v1 .. v8} & This command is similar to the \textit{writereg}
-                                             command, but it allows writing up to eight different values
-                                             to the same Wishbone register. The values are given in hexadecimal
-                                             format and are separated by spaces \\
+    writemregs \textit{slot addr v1 .. v8} & Similar to the \textit{writereg} command, but allows writing up to
+                                             eight different values to the same Wishbone register. The values
+                                             are given in hexadecimal format and are separated by spaces \\
     readreg \textit{slot addr}             & Returns the value of register at hex address \textit{addr} of
                                              board in slot number \textit{slot} \\
     \hline
@@ -333,7 +332,7 @@ As Figure~\ref{fig:writemregs} shows, the data words are sent in little-endian o
 word 0 is sent first, followed by word 1 and so forth, until word 7.
 
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=.55]{fig/fsm}}
+  \centerline{\includegraphics[width=\textwidth]{fig/fsm}}
   \caption{Main FSM of \textit{wb\_i2c\_bridge} module}
   \label{fig:fsm}
 \end{figure}
@@ -341,7 +340,6 @@ word 0 is sent first, followed by word 1 and so forth, until word 7.
 %==============================================================================
 % SEC: Implem
 %==============================================================================
-\pagebreak
 \section{Implementation}
 \label{sec:implem}
 
@@ -367,11 +365,7 @@ is writing and the \textit{wb\_i2c\_bridge} is reading.
     IDLE            & Wait for the \textit{gc\_i2c\_slave} module to receive the I$^2$C
                       address and go to \textit{WB\_ADR} \\
     WB\_ADR         & Shift in the two address bytes sent via I$^2$C and go to
-                      \textit{SIM\_WB\_TRANSF} \\
-    SIM\_WB\_TRANSF & Start a Wishbone read transfer from address received in previous
-                      state and go to \textit{OPER} if Wishbone address exists (Wishbone
-                      \textit{ack} received), or \textit{IDLE} otherwise (Wishbone \textit{err}
-                      received) \\
+                      \textit{OPER} \\
     OPER            & Check the \textit{op\_o} output of the \textit{gc\_i2c\_slave} module.
                       If '1', go to \textit{SYSMON\_RD\_WB} state (SysMon is reading from
                       \textit{wb\_i2c\_bridge}), otherwise continue shifting in bytes (SysMon
@@ -379,8 +373,10 @@ is writing and the \textit{wb\_i2c\_bridge} is reading.
     SYSMON\_WR      & Continue reading up to four bytes sent by the SysMon and go to 
                       \textit{SYSMON\_WR\_WB}\\
     SYSMON\_WR\_WB  & Perform a Wishbone write transfer to the register with the address obtained in 
-                      \textit{WB\_ADR} \\
-    SYSMON\_RD\_WB  & Perform a Wishbone read transfer from the address obtained in 
+                      \textit{WB\_ADR}. If the transfer is successful, go back to \textit{SYSMON\_WR}
+                      to continue receiving register data (useful for the \textit{writemregs} command
+                      -- see Section~\ref{sec:elma-prot-cmds}) \\
+    SYSMON\_RD\_WB  & Perform a Wishbone read transfer from the address obtained in
                       \textit{WB\_ADR} and go to \textit{SYSMON\_RD} \\
     SYSMON\_RD      & Shift out the four bytes of the Wishbone register when the \textit{gc\_i2c\_slave}
                       module successfully finishes a write \\
@@ -396,15 +392,10 @@ during reads and writes from the SysMon.
 When the SysMon writes (Figure~\ref{fig:sysmon-wr-fsm}), the
 \textit{wb\_i2c\_bridge} module waits in the \textit{IDLE} state until
 the I$^2$C address is received, then, while in the \textit{WB\_ADR} state,
-it shifts in the Wishbone address. A Wishbone simulation transfer is performed
-from the received address. The simulation transfer is in fact a read transfer
-from the address, but the data received from the register is not used in any way.
-The purpose of this transfer is only to see if the received address exists, indicated
-by a Wishbone \textit{ack} being received as a result of this transfer. If this
-\textit{ack} is received, the first byte is shifted in while in the \textit{OPER}
-state, followed by the next three bytes while in the \textit{SYSMON\_WR} state. The
-register is written to in the \textit{SYSMON\_WR\_WB} state using a Wishbone write
-transfer.
+it shifts in the Wishbone address. The first byte of the write transfer is shifted
+in while in the \textit{OPER} state, followed by the next three bytes while in the
+\textit{SYSMON\_WR} state. The register is written to in the \textit{SYSMON\_WR\_WB}
+state using a Wishbone write transfer.
 
 To allow for the \textit{writemregs} command, whereby up to eight registers can be
 written with one I$^2$C transfer, the FSM goes back to the \textit{SYSMON\_WR} state
@@ -413,7 +404,7 @@ if the Wishbone write transfer completed successfully. The FSM will go back into
 the SysMon after the \textit{writereg} or \textit{writemregs} has been completed.
 
 \begin{figure}[h]
-  \centerline{\includegraphics[width=\textwidth]{fig/sysmon-wr-fsm}}
+  \centerline{\includegraphics[width=.8\textwidth]{fig/sysmon-wr-fsm}}
   \caption{FSM states when the SysMon writes to the \textit{wb\_i2c\_bridge}}
   \label{fig:sysmon-wr-fsm}
 \end{figure}
@@ -424,14 +415,16 @@ the SysMon after the \textit{writereg} or \textit{writemregs} has been completed
   \label{fig:sysmon-rd-fsm}
 \end{figure}
 
-When the SysMon reads (Figure~\ref{fig:sysmon-rd-fsm}), the first few
-steps are the same as for a write. The address is shifted in and checked in the
-Wishbone transfer simulation state. In the case of a SysMon reading from a board,
+When the SysMon reads (Figure~\ref{fig:sysmon-rd-fsm}), the address is shifted in
+as in the case of a write. In the case of a SysMon reading from a board,
 however, the I$^2$C transfer is restarted and the order is reversed (SysMon starts
 reading). Thus, while in \textit{OPER}, the FSM detects a high value on \textit{op\_o}
 corresponding to an I$^2$C read transfer, and goes into the \textit{SYSMON\_RD\_WB}
 state. The value of the register is read while in this state, and sent via I$^2$C
 in the \textit{SYSMON\_RD} state.
+
+Note that on an error in any Wishbone transfer, the FSM goes back to the \textit{IDLE}
+state, setting the \textit{err\_p\_o} output for one \textit{clk\_i} cycle.
 
 The design also contains an FSM watchdog component, which resets the main FSM
 in case of errors in communication. The watchdog timeout value is configured
@@ -455,9 +448,9 @@ on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
   \hline
   \multicolumn{1}{c}{\textbf{Resource}} & \textbf{Used} & \textbf{Available} & \textbf{\%} \\
   \hline
-  Slices          & 76  & 6822  & 1.1 \\
-  Slice registers & 172 & 54576 & 0.3 \\
-  LUTs            & 151 & 27288 & 0.6 \\
+  Slices          & 94  & 6822  & 1.3 \\
+  Slice registers & 168 & 54576 & 0.3 \\
+  LUTs            & 188 & 27288 & 0.6 \\
   \hline
   \end{tabular}
   }
