@@ -372,10 +372,11 @@ Figure~\ref{fig:fsm-diag} shows a simplified state transition diagram of the FSM
 and Table~\ref{tbl:fsm} lists the states of the FSM and the operations performed in each
 state. Across the FSM, shifting of bits into the module is done on the rising edge
 of SCL and shifting out is done on the falling edge of SCL. A three-bit counter is
-used to count the number of received bits. This bit counter is incremented on the
-rising edge of SCL. During read and write cycles, the FSM also changes states on
-the SCL falling edge. A summary of the FSM actions with reference to the SCL line
-on read and write transfer is shown in Figure~\ref{fig:fsm-and-scl}.
+used to count the number of bits that are sent and received by the module. This bit
+counter is incremented on the rising edge of SCL. During read and write cycles, the
+FSM changes states on the SCL falling edge. A summary of the FSM actions with
+reference to the SCL line on read and write transfer is shown in
+Figure~\ref{fig:fsm-and-scl}.
 
 \begin{figure}[h]
   \centerline{\includegraphics[width=\textwidth]{fig/fsm-diag}}
@@ -409,8 +410,6 @@ on read and write transfer is shown in Figure~\ref{fig:fsm-and-scl}.
     \textit{IDLE} & Default state after reset and the state returned to after
                     reception of a start and stop condition. \\
     \textit{ADDR} & Shift in the address and R/W bit. \\
-    \textit{ADDR\_CHECK} & Check the address versus \textit{i2c\_addr\_i} and set the \textit{op\_o}
-                           output as per the R/W bit. \\
     \textit{ADDR\_ACK} & Send ACK depending on value of \textit{ack\_i} and go to \textit{RD} state
                          if the R/W bit is high, or to \textit{WR\_LOAD\_TXSR} state if R/W bit is low.
                          If \textit{ack\_i} is low, go back to \textit{IDLE}. \\

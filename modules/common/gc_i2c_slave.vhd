@@ -126,7 +126,6 @@ architecture behav of gc_i2c_slave is
     (
       IDLE,            -- idle
       ADDR,            -- shift in I2C address bits
-      ADDR_CHECK,      -- check received I2C address
       ADDR_ACK,        -- ACK/NACK to I2C address
       RD,              -- shift in byte to read
       RD_ACK,          -- ACK/NACK to received byte
@@ -282,7 +281,7 @@ begin
         rxsr          <= (others => '0');
         txsr          <= (others => '0');
         mst_acked     <= '0';
-        sda_en_o        <= '0';
+        sda_en_o      <= '0';
         r_done_p_o    <= '0';
         w_done_p_o    <= '0';
         addr_good_p_o <= '0';
@@ -323,29 +322,28 @@ begin
               bit_cnt <= bit_cnt + 1;
             end if;
 
+            --
+            -- Checking the bit counter is done on the falling edge of SCL
+            --
+            -- If 8 bits have been shifted in, the received address is checked
+            -- and the slave goes in the ADDR_ACK state.
+            --
+            -- If the address is not ours, go back to IDLE and set inhibit bits
+            -- so bytes sent to or received from another slave that happen to
+            -- coincide to the address of this slave don't get interpreted
+            -- as accesses to this slave.
+            --
             if (scl_f_edge_p = '1') then
-              -- If we've shifted in 8 bits, go to ADDR_CHECK
               if (bit_cnt = 0) then
-                state <= ADDR_CHECK;
+                if (rxsr(7 downto 1) = i2c_addr_i) then
+                  op_o          <= rxsr(0);
+                  addr_good_p_o <= '1';
+                  state         <= ADDR_ACK;
+                else
+                  inhibit <= '1';
+                  state   <= IDLE;
+                end if;
               end if;
-            end if;
-
-          ---------------------------------------------------------------------
-          -- ADDR_CHECK
-          ---------------------------------------------------------------------
-          when ADDR_CHECK =>
-            -- if the address is ours, set the OP output and go to ACK state
-            if (rxsr(7 downto 1) = i2c_addr_i) then
-              op_o          <= rxsr(0);
-              addr_good_p_o <= '1';
-              state         <= ADDR_ACK;
-
-            -- if the address is not ours, the FSM should be inhibited so a
-            -- byte sent to another slave doesn't get interpreted as this
-            -- slave's address
-            else
-              inhibit <= '1';
-              state   <= IDLE;
             end if;
 
           ---------------------------------------------------------------------
@@ -355,13 +353,18 @@ begin
             -- clear addr_good pulse
             addr_good_p_o <= '0';
 
-            -- send ACK from input and go start reading or writing based on OP
+            -- send ACK from input, check the ACK on falling edge and go to
+            -- loading of the TXSR if the OP bit is a write, or read otherwise
             sda_en_o <= ack_i;
             if (scl_f_edge_p = '1') then
-              if (rxsr(0) = '0') then
-                state <= RD;
+              if (ack_i = '1') then
+                if (rxsr(0) = '0') then
+                  state <= RD;
+                else
+                  state <= WR_LOAD_TXSR;
+                end if;
               else
-                state <= WR_LOAD_TXSR;
+                state <= IDLE;
               end if;
             end if;
 
