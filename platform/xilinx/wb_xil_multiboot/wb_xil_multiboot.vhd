@@ -82,41 +82,41 @@ architecture struct of wb_xil_multiboot is
       wb_we_i                                  : in     std_logic;
       wb_ack_o                                 : out    std_logic;
       wb_stall_o                               : out    std_logic;
-      -- Port for std_logic_vector field: 'CFGREGADR' in reg: 'Control Register'
+  -- Port for std_logic_vector field: 'Configuration register address' in reg: 'CR'
       reg_cr_cfgregadr_o                       : out    std_logic_vector(5 downto 0);
-      -- Port for MONOSTABLE field: 'RDCFGREG' in reg: 'Control Register'
+  -- Port for MONOSTABLE field: 'Read FPGA configuration register' in reg: 'CR'
       reg_cr_rdcfgreg_o                        : out    std_logic;
-      -- Port for BIT field: 'IPROG_UNLOCK' in reg: 'Control Register'
+  -- Ports for BIT field: 'Unlock bit for the IPROG command' in reg: 'CR'
       reg_cr_iprog_unlock_o                    : out    std_logic;
       reg_cr_iprog_unlock_i                    : in     std_logic;
       reg_cr_iprog_unlock_load_o               : out    std_logic;
-      -- Ports for BIT field: 'IPROG' in reg: 'Control Register'
+  -- Ports for BIT field: 'Start IPROG sequence' in reg: 'CR'
       reg_cr_iprog_o                           : out    std_logic;
       reg_cr_iprog_i                           : in     std_logic;
       reg_cr_iprog_load_o                      : out    std_logic;
-      -- Port for std_logic_vector field: 'CFGREGIMG' in reg: 'Status Register'
+  -- Port for std_logic_vector field: 'Configuration register image' in reg: 'SR'
       reg_sr_cfgregimg_i                       : in     std_logic_vector(15 downto 0);
-      -- Port for BIT field: 'IMGVALID' in reg: 'Status Register'
+  -- Port for BIT field: 'Configuration register image valid' in reg: 'SR'
       reg_sr_imgvalid_i                        : in     std_logic;
-      -- Ports for BIT field: 'WDTO' in reg: 'Status Register'
+  -- Ports for BIT field: 'MultiBoot FSM stalled at one point and was reset by FSM watchdog' in reg: 'SR'
       reg_sr_wdto_o                            : out    std_logic;
       reg_sr_wdto_i                            : in     std_logic;
       reg_sr_wdto_load_o                       : out    std_logic;
-      -- Port for std_logic_vector field: 'GBBAR' in reg: 'Golden Bitstream Base Address Register'
+  -- Port for std_logic_vector field: 'Bits of GBBAR register' in reg: 'GBBAR'
       reg_gbbar_bits_o                         : out    std_logic_vector(31 downto 0);
-      -- Port for std_logic_vector field: 'MBBAR' in reg: 'MultiBoot Bitstream Base Address Register'
+  -- Port for std_logic_vector field: 'Bits of MBBAR register' in reg: 'MBBAR'
       reg_mbbar_bits_o                         : out    std_logic_vector(31 downto 0);
-      -- Port for std_logic_vector field: 'DATA' in reg: 'Flash Access Register'
+  -- Port for std_logic_vector field: 'Flash data field' in reg: 'FAR'
       reg_far_data_o                           : out    std_logic_vector(23 downto 0);
       reg_far_data_i                           : in     std_logic_vector(23 downto 0);
       reg_far_data_load_o                      : out    std_logic;
-      -- Port for std_logic_vector field: 'NBYTES' in reg: 'Flash Access Register'
+  -- Port for std_logic_vector field: 'Number of DATA fields to send and receive in one transfer:' in reg: 'FAR'
       reg_far_nbytes_o                         : out    std_logic_vector(1 downto 0);
-      -- Port for MONOSTABLE field: 'XFER' in reg: 'Flash Access Register'
+  -- Port for MONOSTABLE field: 'Start transfer to and from flash' in reg: 'FAR'
       reg_far_xfer_o                           : out    std_logic;
-      -- Port for BIT field: 'CS' in reg: 'Flash Access Register'
+  -- Port for BIT field: 'Chip select bit' in reg: 'FAR'
       reg_far_cs_o                             : out    std_logic;
-      -- Port for BIT field: 'READY' in reg: 'Flash Access Register'
+  -- Port for BIT field: 'Flash access ready' in reg: 'FAR'
       reg_far_ready_i                          : in     std_logic
     );
   end component multiboot_regs;
