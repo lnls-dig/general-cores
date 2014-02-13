@@ -4,7 +4,7 @@
 \documentclass[a4paper,11pt]{article}
 
 % Color package
-\usepackage[usenames,dvipsnames]{color}
+\usepackage[usenames,dvipsnames,table]{xcolor}
 
 % Hyperrefs
 \usepackage[
@@ -14,21 +14,25 @@
   urlcolor   = blue,
 ]{hyperref}
 
+% Longtable
+\usepackage{longtable}
+
+% Graphics, multirow
 \usepackage{graphicx}
 \usepackage{multirow}
 
-\usepackage{color}
-
+% Appendix package
 \usepackage[toc,page]{appendix}
 
+% Listings package
 \usepackage{listings}
 
-% Header and footer customization
+
 \usepackage{fancyhdr}
 \setlength{\headheight}{15.2pt}
 \pagestyle{fancy}
 \fancyhead[L]{\nouppercase{\leftmark}}
-\fancyhead[R]{} 
+\fancyhead[R]{}
 \renewcommand{\footrulewidth}{0.4pt}
 
 % Row number command
@@ -53,6 +57,7 @@
 
 \centerline
 {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c p{.6\textwidth}}
   \hline
   \multicolumn{1}{c}{\textbf{Date}} & \multicolumn{1}{c}{\textbf{Version}} & \multicolumn{1}{c}{\textbf{Change}} \\
@@ -60,6 +65,7 @@
   28-10-2013 & 0.1 & First draft \\
   18-12-2013 & 1.0 & Added WDTO bit to status register and information about the FSM watchdog
                      mechanism \\
+  13-12-2013 & 1.1 & Made memory map prettier \\
   \hline
   \end{tabular}
 }
@@ -70,12 +76,16 @@
 \tableofcontents
 
 %------------------------------------------------------------------------------
-% List of figs, tables, abbrevs
+% List of figs, tables
 %------------------------------------------------------------------------------
 \pagebreak
 \listoffigures
 \listoftables
 
+%------------------------------------------------------------------------------
+% List of abbreviations
+%------------------------------------------------------------------------------
+\pagebreak
 \section*{List of Abbreviations}
 \begin{tabular}{l l}
 FPGA  & Field-Programmable Gate Array \\
@@ -164,6 +174,7 @@ connected directly to the FPGA output ports connected to the flash chip.
   \label{tbl:ports}
   \centerline
   {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{l c p{.6\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{Port}} & \textbf{Size} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -221,6 +232,7 @@ user should write as part of the MultiBoot workflow.
   \caption{MultiBoot workflow}
   \label{tbl:workflow}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{c p{.7\textwidth}}
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -318,6 +330,7 @@ or when the FPGA uses one of the other configuration modes~\cite{ug380}.
   \label{tbl:sync-word}
   \caption{Bitstream synchronization word}
   \centerline {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{c c c c}
     \hline
     \textbf{31 .. 24} & \textbf{23..16} & \textbf{15..8} & \textbf{7..0} \\
@@ -338,6 +351,7 @@ and the strike count is incremented as described above.
   \label{tbl:bitgen}
   \caption{\textit{bitgen} flags}
   \centerline {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l l p{.6\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{Flag}} & \multicolumn{1}{c}{\textbf{Setting}} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -402,6 +416,7 @@ repository~\cite{gencores-ohwr}.
   \caption{Phases of the \textit{multiboot\_fsm}}
   \label{tbl:fsm}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{p{.185\textwidth} p{.7\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{Phase}} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -443,6 +458,7 @@ description is offered below.
   \caption{Flash data sequence}
   \label{tbl:data-seq}
   \centerline{
+    \rowcolors{2}{white}{gray!25}
   \begin{tabular}{c p{.7\textwidth}}
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -468,7 +484,7 @@ description is offered below.
   }
 \end{table}
 
-Data to be sent to the flash chip is written in the FAR (see Appendix~\ref{app:far}).
+Data to be sent to the flash chip is written in the FAR (see Appendix~\ref{app:memmap-far}).
 Up to three data bytes can be sent via the FAR during one transfer phase. These data
 bytes are written in the DATA fields in little-endian order. The NBYTES field selects
 how many of the DATA fields contain bytes to send. Setting XFER to '1' with CS set to
@@ -527,6 +543,7 @@ module.
   \caption{Configuration register readout via \textit{wb\_xil\_multiboot}}
   \label{tbl:rdcfgreg-seq}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{c p{.7\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{Step}} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -574,6 +591,7 @@ p.130~\cite{ug380}) to the ICAP.
   \caption{Sequence for sending the IPROG command}
   \label{tbl:iprog}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{c p{.7\textwidth}}
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -636,6 +654,7 @@ the steps to be followed are listed in Table~\ref{tbl:ch-intercon}.
   \caption{Changing the Wishbone interconnect}
   \label{tbl:ch-intercon}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{c p{.7\textwidth}}
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -662,6 +681,7 @@ performed in case these SPI settings need to be changed.
   \caption{Modifying SPI settings}
   \label{tbl:ch-spi}
   \centerline {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{c p{.7\textwidth}}
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
@@ -698,6 +718,7 @@ on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
   \caption{Synthesis results}
   \label{tbl:synth-res}
   \centerline{
+    \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c c c}
   \hline
   \multicolumn{1}{c}{\textbf{Resource}} & \textbf{Used} & \textbf{Available} & \textbf{\%} \\
@@ -715,206 +736,11 @@ on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
 %==============================================================================
 \pagebreak
 \begin{appendices}
+
 %------------------------------------------------------------------------------
 % APP: Memmap
 %------------------------------------------------------------------------------
-\section{Memory map}
-\label{app:memmap}
-
-The memory map of the Xilinx MultiBoot module is shown below. The following
-sections detail the fields of each register.
-
-\vspace*{11pt}
-
-\centerline
-{
-    \begin{tabular}{l l p{.6\textwidth}}
-    \textbf{Offset} & \textbf{Name} & \textbf{Description} \\
-    0x00 & CR    & Control Register \\
-    0x04 & SR    & Status register \\
-    0x08 & GBBAR & Golden Bitstream Base Address Register \\
-    0x0c & MBBAR & Multiboot Bitstream Base Address Register \\
-    0x10 & FAR   & Flash access register \\
-    \end{tabular}
-}
-
-%------------------------------------------------------------------------------
-\subsection{CR -- Control Register}
-\label{app:cr}
-
-\begin{tabular}{l l c c l}
-\textbf{Bits} & \textbf{Field}    & \textbf{Access} & \textbf{Default} & \textbf{Description} \\
-31..18        & \textit{Reserved} & --              & X                &  \\
-17            & IPROG             & R/W             & 0                & IPROG bit \\
-16            & IPROG\_UNLOCK     & R/W             & 0                & IPROG unlock bit \\
-15..7         & \textit{Reserved} & --              & X                &  \\
-6             & RDCFGREG          & R/W             & 0                & Read config register \\
-5..0          & CFGREGADR         & R/W             & 0                & Config register address \\
-\end{tabular}
-
-\vspace*{11pt}
-
-\noindent
-{
-  \begin{tabular}{l p{.7\textwidth}}
-  \textbf{Field}    & \textbf{Description} \\
-  \textit{Reserved} & Write as '0'; read undefined \\
-  IPROG    & When 1, it triggers the FSM to send the IPROG command to the ICAP controller \newline
-             This bit needs to be unlocked by setting the IPROG\_UNL bit in a previous cycle \\
-  IPROG\_UNLOCK & Unlock bit for the IPROG command. This bit needs to be set to 1 prior to writing
-               the IPROG bit \\
-  RDCFGREG & Initiate a read from the FPGA configuration register at address CFGREGADR \newline
-             This bit is automatically cleared by hardware \\
-  CFGREGADR & The address of the FPGA configuration register to read (see Configuration Registers
-              section in~\cite{ug380})\\
-  \end{tabular}
-}
-
-%------------------------------------------------------------------------------
-\subsection{SR -- Status Register}
-\label{app:sr}
-
-\begin{tabular}{l l c c l}
-\textbf{Bits} & \textbf{Field}    & \textbf{Access} & \textbf{Default} & \textbf{Description} \\
-31..18        & \textit{Reserved} & --              & X                & \\
-17            & WDTO              & R/W             & 0                & FSM watchdog timeout \\
-16            & IMGVALID          & R/O             & 0                & Image register is valid \\
-15..0         & CFGREGIMG         & R/O             & 0                & Config. register image \\
-\end{tabular}
-
-\vspace*{11pt}
-
-\noindent
-{
-  \begin{tabular}{l p{.7\textwidth}}
-
-  \textbf{Field}  & \textbf{Description} \\
-  \textit{Reserved} & Write as '0'; read undefined \\
-  WDTO            & The FSM watchdog timer has timed out and reset the main FSM \newline
-                    This bit can be cleared by writing a '1' to it \\
-  IMGVALID        & A read has been performed from the FPGA configuration
-                    register at address CR.CFGREGADR, and its value is
-                    present in CFGREGIMG \\
-  CFGREGIMG       & Contains the value of the FPGA configuration register;
-                    validated by the VALID bit (see Configuration Registers
-                    section in~\cite{ug380}) \\
-  \end{tabular}
-}
-
-%------------------------------------------------------------------------------
-\subsection{GBBAR -- Golden Bitstream Base Address Register}
-\label{app:gbbar}
-
-\begin{tabular}{l l c c l}
-\textbf{Bits} & \textbf{Field}    & \textbf{Access} & \textbf{Default} & \textbf{Description} \\
-31..24        & OPCODE            & R/W             & 0                & Flash chip read op-code \\
-23..0         & GBA               & R/W             & 0                & Golden Bitstream Address \\
-\end{tabular}
-
-\vspace*{11pt}
-
-\noindent
-{
-  \begin{tabular}{l p{.7\textwidth}}
-
-  \textbf{Field}    & \textbf{Description} \\
-  OPCODE            & Op-code for the flash chip read (or fast-read) command. Get
-                      this value from the flash chip datasheet \\
-  GBA               & Start address of the Golden bitstream on the flash chip \\
-  \end{tabular}
-}
-
-\vspace*{11pt}
-
-%Guidelines on selecting a GBBAR:
-%
-%\begin{itemize}
-%  \item When generating the Header image via Xilinx ISE, the GBA is (normally)
-%  automatically set by the software to 0x44
-%  \item If different than the default, the starting address of the Golden
-%  bitstream should be set to a flash sector boundary
-%\end{itemize}
-
-%------------------------------------------------------------------------------
-\subsection{MBBAR -- MultiBoot Bitstream Base Address Register}
-\label{app:mbbar}
-
-\begin{tabular}{l l c c l}
-\textbf{Bits} & \textbf{Field}    & \textbf{Access} & \textbf{Default} & \textbf{Description} \\
-31..24        & OPCODE            & R/W             & 0                & Flash chip read op-code \\
-23..0         & MBA               & R/W             & 0                & MultiBoot Bitstream Address \\
-\end{tabular}
-
-\vspace*{11pt}
-
-\noindent
-{
-  \begin{tabular}{l p{.7\textwidth}}
-
-  \textbf{Field}    & \textbf{Description} \\
-  OPCODE            & Op-code for the flash chip read (or fast-read) command. Get
-                      this value from the flash chip datasheet \\
-  MBA               & Start address of the MultiBoot bitstream on the flash chip \\
-  \end{tabular}
-}
-
-\vspace*{11pt}
-
-%Guidelines on selecting an MBBAR:
-%
-%\begin{itemize}
-%  \item The MultiBoot bitstream should start on a flash sector boundary.
-%\end{itemize}
-
-%------------------------------------------------------------------------------
-\subsection{FAR -- Flash Access Register}
-\label{app:far}
-
-\begin{tabular}{l l c c l}
-\textbf{Bits} & \textbf{Field}    & \textbf{Access} & \textbf{Default} & \textbf{Description} \\
-31..29        & \textit{Reserved} & --              & 0                & Flash chip read op-code \\
-28            & READY             & R               & 1                & SPI access status \\
-27            & CS                & R/W             & 0                & SPI chip select \\
-26            & XFER              & R/W             & 0                & Start SPI transfer \\
-25..24        & NBYTES            & R/W             & 0                & Number of bytes to send \\
-23..16        & DATA[2]           & R/W             & 0                & Data at offset 2 \\
-15..8         & DATA[1]           & R/W             & 0                & Data at offset 1 \\
-7..0          & DATA[0]           & R/W             & 0                & Data at offset 0 \\
-\end{tabular}
-
-\vspace*{11pt}
-
-\noindent
-{
-  \begin{tabular}{l p{.7\textwidth}}
-
-  \textbf{Field}    & \textbf{Description} \\
-  \textit{Reserved} & Write as '0'; read undefined \\
-  READY             & SPI transfer ready; NBYTES have been sent to the flash chip,
-                      and NBYTES read from the chip present in DATA fields \\
-  CS                & SPI chip select. Note that this pin has opposite polarity
-                      than the normal SPI chip select pin: \newline
-                      '1' -- flash chip is selected (CS pin = 0) \newline
-                      '0' -- flash chip is not selected (CS pin = 1) \\
-  XFER              & '1' -- starts SPI transfer \newline
-                      This bit is automatically cleared by hardware \\
-  NBYTES            & Number of DATA fields to send in one transfer \newline
-                      0 -- send 1 byte (DATA[0]) \newline
-                      1 -- send 2 bytes (DATA[0], DATA[1]) \newline
-                      2 -- send 3 bytes (DATA[0], DATA[1], DATA[2]) \newline
-                      3 -- \textit{Reserved} \\
-  DATA[2]           & Write this register with the value of data byte 2 \newline
-                      After an SPI transfer, this register contains the value of
-                      data byte 2 read from the flash \\
-  DATA[1]           & Write this register with the value of data byte 1 \newline
-                      After an SPI transfer, this register contains the value of
-                      data byte 1 read from the flash \\
-  DATA[0]           & Write this register with the value of data byte 0 \newline
-                      After an SPI transfer, this register contains the value of
-                      data byte 0 read from the flash \\
-  \end{tabular}
-}
-
+\input{multiboot-regs}
 
 %==============================================================================
 % APP: Multiple data fields

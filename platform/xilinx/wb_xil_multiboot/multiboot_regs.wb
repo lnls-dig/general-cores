@@ -1,27 +1,30 @@
 peripheral {
-  name = "wb_xil_multiboot registers";
+  name = "MultiBoot controller";
   hdl_entity = "multiboot_regs";
   prefix = "reg";
 
   reg {
-    name = "Control Register";
+    name = "CR";
+    description = "Control Register";
     prefix = "cr";
     field {
-      name = "CFGREGADR";
-      description = "Address of FPGA configuration to read from";
+      name = "Configuration register address";
+      description = "Address of FPGA configuration register to read.";
       prefix = "cfgregadr";
       type = SLV;
       size = 6;
     };
     field {
-      name = "RDCFGREG";
-      description = "Start FPGA configuration register sequence";
+      name = "Read FPGA configuration register";
+      description = "1 -- Start FPGA configuration register sequence. \
+      0 -- No effect.";
       prefix = "rdcfgreg";
       type = MONOSTABLE;
     };
     field {
-      name = "IPROG_UNLOCK";
-      description = "Unlocks IPROG bit";
+      name = "Unlock bit for the IPROG command";
+      description = "1 -- Unlock IPROG bit. \
+      0 -- No effect.";
       prefix = "iprog_unlock";
       type = BIT;
       access_dev = READ_WRITE;
@@ -30,8 +33,11 @@ peripheral {
       align = 16;
     };
     field {
-      name = "IPROG";
-      description = "Starts IPROG configuration sequence";
+      name = "Start IPROG sequence";
+      description = "1 -- Start IPROG configuration sequence \
+      0 -- No effect \
+      This bit needs to be unlocked by writing the IPROG_UNLOCK bit first. \
+      A write to this bit with IPROG_UNLOCK cleared has no effect.";
       prefix = "iprog";
       type = BIT;
       access_dev = READ_WRITE;
@@ -41,11 +47,12 @@ peripheral {
   };
 
   reg {
-    name = "Status Register";
+    name = "SR";
+    description = "Status Register";
     prefix = "sr";
     field {
-      name = "CFGREGIMG";
-      description = "Image of the FPGA configuration register at address CFGREGADR";
+      name = "Configuration register image";
+      description = "Image of the FPGA configuration register at address CFGREGADR (see Configuration Registers section in Xilinx UG380~\\cite{ug380}); validated by IMGVALID bit";
       prefix = "cfgregimg";
       type = SLV;
       size = 16;
@@ -53,16 +60,18 @@ peripheral {
       access_bus = READ_ONLY;
     };
     field {
-      name = "IMGVALID";
-      description = "When '1', the image in CFGREGIMG is valid";
+      name = "Configuration register image valid";
+      description = "1 -- CFGREGIMG valid \
+      0 -- CFGREGIMG not valid;";
       prefix = "imgvalid";
       type = BIT;
       access_dev = WRITE_ONLY;
       access_bus = READ_ONLY;
     };
     field {
-      name = "WDTO";
-      description = "When '1', the FSM watchdog in mutiboot_fsm has fired";
+      name = "MultiBoot FSM stalled at one point and was reset by FSM watchdog";
+      description = "1 -- FSM watchdog fired \
+      0 -- FSM watchdog has not fired";
       prefix = "wdto";
       type = BIT;
       access_bus = READ_WRITE;
@@ -72,13 +81,13 @@ peripheral {
   };
 
   reg {
-    name = "Golden Bitstream Base Address Register";
+    name = "GBBAR";
+    description = "Golden Bitstream Base Address Register";
     prefix = "gbbar";
     field {
-      name = "GBBAR";
-      description = "GBBAR \
-                     31..24 Read OPCODE of the flash chip \
-                     23..0  Golden bitstream address in flash";
+      name = "Bits of GBBAR register";
+      description = "31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \
+                     23..0  -- Golden bitstream address in flash";
       prefix = "bits";
       type = SLV;
       size = 32;
@@ -86,13 +95,13 @@ peripheral {
   };
 
   reg {
-    name = "MultiBoot Bitstream Base Address Register";
+    name = "MBBAR";
+    description = "MultiBoot Bitstream Base Address Register";
     prefix = "mbbar";
     field {
-      name = "MBBAR";
-      description = "MBBAR \
-                     31..24 Read OPCODE of the flash chip \
-                     23..0  MultiBoot bitstream address in flash";
+      name = "Bits of MBBAR register";
+      description = "31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \
+                     23..0  -- MultiBoot bitstream start address in flash";
       prefix = "bits";
       type = SLV;
       size = 32;
@@ -100,11 +109,14 @@ peripheral {
   };
 
   reg {
-    name = "Flash Access Register";
+    name = "FAR";
+    description = "Flash Access Register";
     prefix = "far";
     field {
-      name = "DATA";
-      description = "I/O flash data";
+      name = "Flash data field";
+      description = "23..16 -- DATA[2]; after an SPI transfer, this register contains the value of data byte 2 read from the flash \
+      15..8 -- DATA[1]; after an SPI transfer, this register contains the value of data byte 1 read from the flash \
+      7..0  -- DATA[0]; after an SPI transfer, this register contains the value of data byte 0 read from the flash";
       prefix = "data";
       type = SLV;
       size = 24;
@@ -113,32 +125,33 @@ peripheral {
       load = LOAD_EXT;
     };
     field {
-      name = "NBYTES";
-      description = "Number of bytes to send to and receive from flash";
+      name = "Number of DATA fields to send and receive in one transfer:";
+      description = " 0x0 -- Send 1 byte (DATA[0]) \
+      0x1 -- Send 2 bytes (DATA[0], DATA[1]) \
+      0x2 -- Send 3 bytes (DATA[0], DATA[1], DATA[2])";
       prefix = "nbytes";
       type = SLV;
       size = 2;
     };
     field {
-      name = "XFER";
-      description = "Start transfer to and from flash";
+      name = "Start transfer to and from flash";
+      description = "1 -- Start transfer \
+      0 -- Idle";
       prefix = "xfer";
       type = MONOSTABLE;
       size = 1;
     };
     field {
-      name = "CS";
-      description = "Chip select bit \
-                     0 - Flash chip not selected (CS pin is high) \
-                     1 - Flash chip selected (CS pin low)";
+      name = "Chip select bit";
+      description = "1 - Flash chip selected (CS pin low) \
+      0 - Flash chip not selected (CS pin is high)";
       prefix = "cs";
       type = BIT;
     };
     field {
-      name = "READY";
-      description = "Flash access ready bit \
-                     0 - Flash access in progress \
-                     1 - Flash access completed";
+      name = "Flash access ready";
+      description = "1 - Flash access completed \
+      0 - Flash access in progress";
       prefix = "ready";
       type = BIT;
       access_dev = WRITE_ONLY;
