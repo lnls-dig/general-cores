@@ -147,6 +147,10 @@ architecture syn of generic_async_fifo is
 
   constant m : t_v6_fifo_mapping := f_v6_fifo_find_mapping(g_data_width, g_size);
 
+  -- Xilinx defines almost full threshold as number of available empty words in
+  -- FIFO (UG363 - Virtex 6 FPGA Memory Resources
+  constant c_virtex_almost_full_thr : integer := g_size - g_almost_full_threshold;
+
 begin  -- syn
 
    gen_inferred : if(m.d_width = 0 or g_with_wr_count or g_with_rd_count) generate
@@ -199,7 +203,7 @@ begin  -- syn
         g_size                   => g_size,
         g_dual_clock             => true,
         g_almost_empty_threshold => f_empty_thr(g_with_rd_almost_empty, g_almost_empty_threshold, g_size),
-        g_almost_full_threshold  => f_empty_thr(g_with_wr_almost_full, g_almost_full_threshold, g_size))
+        g_almost_full_threshold  => f_empty_thr(g_with_wr_almost_full, c_virtex_almost_full_thr, g_size))
       port map (
         rst_n_i           => rst_n_i,
         clk_wr_i          => clk_wr_i,
