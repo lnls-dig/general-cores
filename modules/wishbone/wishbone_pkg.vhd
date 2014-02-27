@@ -85,6 +85,12 @@ package wishbone_pkg is
 
   function f_string_fix_len( s : string; ret_len : natural := 10; fill_char : character := '0' ) return string;
   function f_hot_to_bin(x : std_logic_vector) return natural;
+  
+  -- *** Wishbone slave interface functions ***
+  -- f_wb_wr:
+  -- processes an incoming write reqest to a register while honoring the select lines
+  -- valid modes are overwrite "owr", set "set" (bits are or'ed) and clear "clr" (bits are nand'ed)
+  function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector;
 ------------------------------------------------------------------------------
 -- SDB declaration
 ------------------------------------------------------------------------------
@@ -917,6 +923,28 @@ package wishbone_pkg is
 end wishbone_pkg;
 
 package body wishbone_pkg is
+   -- f_wb_wr: processes a write reqest to a slave register with select lines. valid modes are "owr", "set" and "clr"
+   function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector is
+      variable n_sel     : std_logic_vector(pval'range);
+      variable n_val     : std_logic_vector(pval'range);
+      variable result 	 : std_logic_vector(pval'range);   
+   begin
+     for i in pval'range loop 
+      n_sel(i) := sel(i / 8);
+      n_val(i) := ival(i);
+     end loop;
+
+     if(mode = "set") then  
+      result := pval or (n_val and n_sel);
+     elsif (mode = "clr") then
+      result := pval and not (n_val and n_sel); 
+     else
+      result := (pval and not n_sel) or (n_val and n_sel);    
+     end if;  
+     
+     return result;
+   end f_wb_wr;
+  
   function f_ceil_log2(x : natural) return natural is
   begin
     if x <= 1
