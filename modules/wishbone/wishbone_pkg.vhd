@@ -698,7 +698,8 @@ package wishbone_pkg is
       g_with_virtual_uart   : boolean                        := false;
       g_with_physical_uart  : boolean                        := true;
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_vuart_fifo_size     : integer := 1024);
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
@@ -720,7 +721,8 @@ package wishbone_pkg is
       g_with_virtual_uart   : boolean                        := false;
       g_with_physical_uart  : boolean                        := true;
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_vuart_fifo_size     : integer := 1024);
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
