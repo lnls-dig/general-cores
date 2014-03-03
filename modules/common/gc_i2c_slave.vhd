@@ -138,8 +138,10 @@ architecture behav of gc_i2c_slave is
   -- Signal declarations
   --============================================================================
   -- Deglitched signals and delays for SCL and SDA lines
+  signal scl_synced        : std_logic;
   signal scl_deglitched    : std_logic;
   signal scl_deglitched_d0 : std_logic;
+  signal sda_synced        : std_logic;
   signal sda_deglitched    : std_logic;
   signal sda_deglitched_d0 : std_logic;
   signal scl_r_edge_p      : std_logic;
@@ -185,7 +187,21 @@ begin
   --============================================================================
   -- Deglitching logic
   --============================================================================
-  -- Generate deglitched SCL signal with 54-ns max. glitch width
+  -- First, synchronize the SCL signal in the clk_i domain
+  cmp_sync_scl : gc_sync_ffs
+    generic map
+    (
+      g_sync_edge => "positive"
+    )
+    port map
+    (
+      clk_i    => clk_i,
+      rst_n_i  => rst_n_i,
+      data_i   => scl_i,
+      synced_o => scl_synced
+    );
+
+  -- Generate deglitched SCL signal
   cmp_scl_deglitch : gc_glitch_filt
     generic map
     (
@@ -195,7 +211,7 @@ begin
     (
       clk_i   => clk_i,
       rst_n_i => rst_n_i,
-      dat_i   => scl_i,
+      dat_i   => scl_synced,
       dat_o   => scl_deglitched
     );
 
@@ -216,7 +232,21 @@ begin
     end if;
   end process p_scl_degl_d0;
 
-  -- Generate deglitched SDA signal with 54-ns max. glitch width
+  -- Synchronize SDA signal in clk_i domain
+  cmp_sda_sync : gc_sync_ffs
+    generic map
+    (
+      g_sync_edge => "positive"
+    )
+    port map
+    (
+      clk_i    => clk_i,
+      rst_n_i  => rst_n_i,
+      data_i   => sda_i,
+      synced_o => sda_synced
+    );
+
+  -- Generate deglitched SDA signal
   cmp_sda_deglitch : gc_glitch_filt
     generic map
     (
@@ -226,7 +256,7 @@ begin
     (
       clk_i   => clk_i,
       rst_n_i => rst_n_i,
-      dat_i   => sda_i,
+      dat_i   => sda_synced,
       dat_o   => sda_deglitched
     );
 

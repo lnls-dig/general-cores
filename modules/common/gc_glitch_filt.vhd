@@ -10,6 +10,9 @@
 -- version: 1.0
 --
 -- description:
+--    Glitch filter consisting of a set of chained flip-flops followed by a
+--    comparator. The comparator toggles to '1' when all FFs in the chain are
+--    '1' and respectively to '0' when all the FFS in the chain are '0'.
 --
 -- dependencies:
 --
@@ -54,7 +57,7 @@ entity gc_glitch_filt is
     clk_i   : in  std_logic;
     rst_n_i : in  std_logic;
 
-    -- Data input
+    -- Data input, synchronous to clk_i
     dat_i   : in  std_logic;
 
     -- Data output
@@ -70,7 +73,6 @@ architecture behav of gc_glitch_filt is
   -- Signal declarations
   --============================================================================
   signal glitch_filt : std_logic_vector(g_len downto 0);
-  signal dat_synced  : std_logic;
 
 --==============================================================================
 --  architecture begin
@@ -80,20 +82,7 @@ begin
   --============================================================================
   -- Glitch filtration logic
   --============================================================================
-  -- First, synchronize the data input in the clk_i domain
-  cmp_sync : gc_sync_ffs
-    port map
-    (
-      clk_i    => clk_i,
-      rst_n_i  => rst_n_i,
-      data_i   => dat_i,
-      synced_o => dat_synced,
-      npulse_o => open,
-      ppulse_o => open
-    );
-
-  -- Then, assign the current sample of the glitch filter
-  glitch_filt(0) <= dat_synced;
+  glitch_filt(0) <= dat_i;
 
   -- Generate glitch filter FFs when the filter length is > 0
   gen_glitch_filt: if (g_len > 0) generate
