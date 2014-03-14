@@ -7,7 +7,7 @@
 --              Theodor-Adrian Stana
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-01-13
+-- Last update: 2014-03-14
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -350,6 +350,32 @@ package gencores_pkg is
   end component gc_glitch_filt;
 
   ------------------------------------------------------------------------------
+  -- Dynamic glitch filter
+  ------------------------------------------------------------------------------
+  component gc_dyn_glitch_filt is
+    generic
+    (
+      -- Number of bit of the glitch filter length input
+      g_len_width : natural := 8
+    );
+    port
+    (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+
+      -- Glitch filter length
+      len_i : in std_logic_vector(g_len_width-1 downto 0);
+
+      -- Data input
+      dat_i   : in  std_logic;
+
+      -- Data output
+      -- latency: g_len+1 clk_i cycles
+      dat_o   : out std_logic
+    );
+  end component gc_dyn_glitch_filt;
+
+  ------------------------------------------------------------------------------
   -- FSM Watchdog Timer
   ------------------------------------------------------------------------------
   component gc_fsm_watchdog is
@@ -383,6 +409,7 @@ package gencores_pkg is
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
   function f_gray_encode(x : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
   
 end package;
 
@@ -458,6 +485,15 @@ package body gencores_pkg is
       z(len-step-1 downto 0) := y(len-1 downto step);
       return f_gray_decode(y xor z, step+step);
     end if;
-  end f_gray_decode; 
+  end f_gray_decode;
+
+  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector is
+    variable tmp : std_logic_vector(size-1 downto 0);
+  begin
+    for i in 0 to size-1 loop
+      tmp(i) := val;
+    end loop;  -- i
+    return tmp;
+  end f_gen_dummy_vec;
 
 end gencores_pkg;
