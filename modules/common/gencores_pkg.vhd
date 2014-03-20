@@ -5,6 +5,7 @@
 -- File       : gencores_pkg.vhd
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
+--              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
 -- Last update: 2014-03-20
@@ -40,6 +41,8 @@
 -- 2009-09-01  0.9      twlostow        Created
 -- 2011-04-18  1.0      twlostow        Added comments & header
 -- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
+-- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
+-- 2014-03-20  1.3      mcattin         Added bicolor led controller
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -49,6 +52,15 @@ use ieee.numeric_std.all;
 use work.genram_pkg.all;
 
 package gencores_pkg is
+
+  --============================================================================
+  -- Constants declaration
+  --============================================================================
+  constant c_led_red       : std_logic_vector(1 downto 0) := "10";
+  constant c_led_green     : std_logic_vector(1 downto 0) := "01";
+  constant c_led_red_green : std_logic_vector(1 downto 0) := "11";
+  constant c_led_off       : std_logic_vector(1 downto 0) := "00";
+
 
   --============================================================================
   -- Component instantiations
@@ -398,6 +410,28 @@ package gencores_pkg is
     );
   end component gc_fsm_watchdog;
 
+  ------------------------------------------------------------------------------
+  -- Bicolor LED controller
+  ------------------------------------------------------------------------------
+  component gc_bicolor_led_ctrl
+    generic(
+      g_nb_column    : natural := 4;
+      g_nb_line      : natural := 2;
+      g_clk_freq     : natural := 125000000;  -- in Hz
+      g_refresh_rate : natural := 250         -- in Hz
+      );
+    port
+      (
+        rst_n_i         : in  std_logic;
+        clk_i           : in  std_logic;
+        led_intensity_i : in  std_logic_vector(6 downto 0);
+        led_state_i     : in  std_logic_vector((g_nb_line * g_nb_column * 2) - 1 downto 0);
+        column_o        : out std_logic_vector(g_nb_column - 1 downto 0);
+        line_o          : out std_logic_vector(g_nb_line - 1 downto 0);
+        line_oen_o      : out std_logic_vector(g_nb_line - 1 downto 0)
+        );
+  end component;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
@@ -410,6 +444,7 @@ package gencores_pkg is
   function f_gray_encode(x : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
+  function log2_ceil(N : natural) return positive;
   
 end package;
 
@@ -495,5 +530,17 @@ package body gencores_pkg is
     end loop;  -- i
     return tmp;
   end f_gen_dummy_vec;
+
+  -- Returns log of 2 of a natural number
+  function log2_ceil(N : natural) return positive is
+  begin
+    if N <= 2 then
+      return 1;
+    elsif N mod 2 = 0 then
+      return 1 + log2_ceil(N/2);
+    else
+      return 1 + log2_ceil((N+1)/2);
+    end if;
+  end;
 
 end gencores_pkg;
