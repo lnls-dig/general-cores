@@ -298,5 +298,6 @@ begin  -- syn
   end process;
 
   regs_in.sr_tx_busy_i <= phys_tx_busy when (g_with_physical_uart) else '0';
+  regs_in.host_tdr_rdy_i <= not regs_in.sr_rx_rdy_i;
   
 end syn;
