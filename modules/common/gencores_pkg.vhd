@@ -7,7 +7,7 @@
 --              Theodor-Adrian Stana
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-03-14
+-- Last update: 2014-03-20
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------

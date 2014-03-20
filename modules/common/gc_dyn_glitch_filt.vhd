@@ -70,51 +70,42 @@ end entity gc_dyn_glitch_filt;
 architecture behav of gc_dyn_glitch_filt is
 
   --============================================================================
-  -- Constants declarations
-  --============================================================================
-  constant c_glitch_filt_width : natural := 2**g_len_width;
-
-  --============================================================================
   -- Signal declarations
   --============================================================================
-  signal glitch_filt : std_logic_vector(c_glitch_filt_width-1 downto 0);
+  signal filt_cnt    : unsigned(g_len_width-1 downto 0);
 
 --==============================================================================
 --  architecture begin
 --==============================================================================
 begin
 
-  --============================================================================
-  -- Glitch filtration logic
-  --============================================================================
-  glitch_filt(0) <= dat_i;
 
-  -- Glitch filter FFs
+  -- Glitch filter
   p_glitch_filt : process (clk_i)
   begin
-    if rising_edge(clk_i) then
-      if (rst_n_i = '0') then
-        glitch_filt(c_glitch_filt_width-1 downto 1) <= (others => '0');
+    if rising_edge (clk_i) then
+      if rst_n_i = '0' then
+        filt_cnt <= unsigned(len_i) srl 1;  -- middle value
+        dat_o    <= '0';
       else
-        glitch_filt(c_glitch_filt_width-1 downto 1) <= glitch_filt(c_glitch_filt_width-2 downto 0);
+        -- Arrival of a '0'
+        if dat_i = '0' then
+          if filt_cnt /= 0 then             -- counter updated
+            filt_cnt <= filt_cnt - 1;
+          else
+            dat_o <= '0';                   -- output updated
+          end if;
+          -- Arrival of a '1'
+        elsif dat_i = '1' then
+          if filt_cnt /= unsigned(len_i) then
+            filt_cnt <= filt_cnt + 1;       -- counter updated
+          else
+            dat_o <= '1';                   -- output updated
+          end if;
+        end if;
       end if;
     end if;
   end process p_glitch_filt;
-
-
-  -- Set the data output based on the state of the glitch filter
-  p_output : process(clk_i)
-  begin
-    if rising_edge(clk_i) then
-      if (rst_n_i = '0') then
-        dat_o <= '0';
-      elsif (glitch_filt(to_integer(unsigned(len_i)) downto 0) = f_gen_dummy_vec('1', to_integer(unsigned(len_i))+1)) then
-        dat_o <= '1';
-      elsif (glitch_filt(to_integer(unsigned(len_i)) downto 0) = f_gen_dummy_vec('0', to_integer(unsigned(len_i))+1)) then
-        dat_o <= '0';
-      end if;
-    end if;
-  end process p_output;
 
 end architecture behav;
 --==============================================================================
