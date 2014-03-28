@@ -4,7 +4,7 @@
 \documentclass[a4paper,11pt]{article}
 
 % Color package
-\usepackage[usenames,dvipsnames]{color}
+\usepackage[usenames,dvipsnames,table]{xcolor}
 
 % Appendix package
 \usepackage[toc,page]{appendix}
@@ -49,6 +49,7 @@
 
 \centerline
 {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c p{.6\textwidth}}
   \hline
   \multicolumn{1}{c}{\textbf{Date}} & \multicolumn{1}{c}{\textbf{Version}} & \multicolumn{1}{c}{\textbf{Change}} \\
@@ -59,7 +60,8 @@
                       changes in protocol \\
   29-10-2013 & 0.04 & Changed PDF link colors \\
   18-12-2013 & 1.00 & Finite version with watchdog timer and robust communication \\
-  12-02-2014 & 1.01 & Removed SIM_WB_TRANSFER state in FSM \\
+  12-02-2014 & 1.01 & Removed SIM\_WB\_TRANSFER state from FSM \\
+  28-03-2014 & 1.02 & Added generic for FSM watchdog timeout value \\
   \hline
   \end{tabular}
 }
@@ -126,40 +128,43 @@ Figure~\ref{fig:i2c-ports}; Wishbone slaves should be connected to the
 Wishbone master interface ports, prefixed with \textit{wbm}.
 
 \begin{table}[hbtp]
-  \caption{Ports of \textit{wb\_i2c\_bridge} module}
+  \caption{Ports and generics of \textit{wb\_i2c\_bridge} module}
   \label{tbl:ports}
   \centerline
   {
-    \begin{tabular}{l c p{.6\textwidth}}
+    \rowcolors{2}{white}{gray!25}
+    \begin{tabular}{l p{.8\textwidth}}
     \hline
-    \multicolumn{1}{c}{\textbf{Port}} & \textbf{Size} & \multicolumn{1}{c}{\textbf{Description}} \\
+    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{Description}} \\
     \hline
-    clk\_i       &  1 & Clock input \\
-    rst\_n\_i    &  1 & Active-low reset input \\
-    sda\_en\_o   &  1 & SDA line output tri-state enable \\    
-    sda\_i       &  1 & SDA line input \\
-    sda\_o       &  1 & SDA line output \\
-    scl\_en\_o   &  1 & SCL line tri-state enable \\
-    scl\_i       &  1 & SCL line input \\
-    scl\_o       &  1 & SCL line output \\
-    i2c\_addr\_i &  7 & I$^2$C slave address on ELMA I$^2$C bus \\
-    tip\_o       &  1 & Transfer In Progress \newline
-                        '1' -- I$^2$C address sent by SysMon matches that of the I$^2$C slave \newline
-                        '0' -- after transfer has completed and I$^2$C slave is idle \\
-    err\_p\_o    &  1 & Error bit, high for one \textit{clk\_i} cycle when the Wishbone address
-                        the SysMon tries to access is invalid \\
-    wdto\_p\_o   &  1 & FSM watchdog timer time-out, high for one \textit{clk\_i} cycle when
-                        the FSM watchdog has timed-out \\
-    wbm\_stb\_o  &  1 & Wishbone data strobe output \\
-    wbm\_cyc\_o  &  1 & Wishbone valid cycle output \\
-    wbm\_sel\_o  &  4 & Wishbone byte select output \\
-    wbm\_we\_o   &  1 & Wishbone write enable output \\
-    wbm\_dat\_i  & 32 & Wishbone data input (to master) \\
-    wbm\_dat\_o  & 32 & Wishbone data output (from master) \\
-    wbm\_adr\_o  & 32 & Wishbone address output \\
-    wbm\_ack\_i  &  1 & Wishbone acknowledge signal input \\
-    wbm\_rty\_i  &  1 & Wishbone retry signal input \\
-    wbm\_err\_i  &  1 & Wishbone error signal input \\
+    g\_fsm\_wdt   & Timeout value (in \textit{clk\_i} cycles) for the FSM watchdog timer \\
+    \hline
+    clk\_i       & Clock input \\
+    rst\_n\_i    & Active-low reset input \\
+    sda\_en\_o   & SDA line output tri-state enable \\
+    sda\_i       & SDA line input \\
+    sda\_o       & SDA line output \\
+    scl\_en\_o   & SCL line tri-state enable \\
+    scl\_i       & SCL line input \\
+    scl\_o       & SCL line output \\
+    i2c\_addr\_i & I$^2$C slave address on ELMA I$^2$C bus \\
+    tip\_o       & Transfer In Progress \newline
+                   '1' -- I$^2$C address sent by SysMon matches that of the I$^2$C slave \newline
+                   '0' -- after transfer has completed and I$^2$C slave is idle \\
+    err\_p\_o    & Error bit, high for one \textit{clk\_i} cycle when the Wishbone address
+                   the SysMon tries to access is invalid \\
+    wdto\_p\_o   & FSM watchdog timer time-out, high for one \textit{clk\_i} cycle when
+                   the FSM watchdog has timed-out \\
+    wbm\_stb\_o  & Wishbone data strobe output \\
+    wbm\_cyc\_o  & Wishbone valid cycle output \\
+    wbm\_sel\_o  & Wishbone byte select output \\
+    wbm\_we\_o   & Wishbone write enable output \\
+    wbm\_dat\_i  & Wishbone data input (to master) \\
+    wbm\_dat\_o  & Wishbone data output (from master) \\
+    wbm\_adr\_o  & Wishbone address output \\
+    wbm\_ack\_i  & Wishbone acknowledge signal input \\
+    wbm\_rty\_i  & Wishbone retry signal input \\
+    wbm\_err\_i  & Wishbone error signal input \\
     \hline
     \end{tabular}
   }
@@ -296,6 +301,7 @@ shown in Table~\ref{tbl:cmds}.
   \label{tbl:cmds}
   \centerline
   {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{l p{.6\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{Command}}   & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -359,6 +365,7 @@ is writing and the \textit{wb\_i2c\_bridge} is reading.
   \label{tbl:fsm}
   \centerline
   {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{l p{.7\textwidth}}
     \hline
     \multicolumn{1}{c}{\textbf{State}} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -429,7 +436,7 @@ state, setting the \textit{err\_p\_o} output for one \textit{clk\_i} cycle.
 
 The design also contains an FSM watchdog component, which resets the main FSM
 in case of errors in communication. The watchdog timeout value is configured
-via the \textit{g\_wdt\_max} generic and can be calculated as outlined in
+via the \textit{g\_fsm\_wdt} generic and can be calculated as outlined in
 Appendix~\ref{app:wdto-calc}.
 
 %==============================================================================
@@ -445,6 +452,7 @@ on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
   \caption{Synthesis results}
   \label{tbl:synth-res}
   \centerline{
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c c c}
   \hline
   \multicolumn{1}{c}{\textbf{Resource}} & \textbf{Used} & \textbf{Available} & \textbf{\%} \\
@@ -469,20 +477,18 @@ on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
 In order to calculate the maximum watchdog timeout value, the following procedure
 should be utilized.
 
-First, the frequency on the I$^2$C communication in ELMA crates is 100~kHz. One
-I$^2$C byte transfer always consists in 9 bits (eight bits for data plus one for
-acknowledgement). Therefore, one I$^2$C byte is transferred within 90~$\mu$s.
-
-To account for start and stop conditions and to allow for frequency changes on
-the bus, one can consider one I$^2$C byte as 10 bits, therefore one I$^2$C
-transfer can be considered to take 10~$\mu$s to complete.
+First, one should consider the bit period on the I$^2$C transfer, $T_{bit}$. One I$^2$C
+byte transfer consists of 9 bits (eight data bits plus one ACK). To account for start
+and stop conditions and to allow for frequency changes on the bus, one can consider
+one I$^2$C byte as 10 bits. Therefore, one I$^2$C transfer can be considered to take
+10*$T_{bit}$ to complete.
 
 Now, taking this into account and the period of the \textit{clk\_i} input,
 $T_{clk\_i}$, the number of clock cycles needed to complete one I$^2$C byte transfer
 can be calculated as:
 
 \begin{equation}
-N_{byte} = \frac{10 {\mu}s}{T_{clk\_i}}
+N_{clocks} = \frac{10*T_{bit}}{T_{clk\_i}}
 \end{equation}
 
 Within the ELMA crates, a maximum of 35 bytes can be sent through I$^2$C. This
@@ -493,8 +499,21 @@ maximum watchdog timeout value to be the time needed to send 40 bytes via I$^2$C
 on the bus:
 
 \begin{equation}
-g\_wdt\_max = 40 * N_{byte} = 40 * \frac{10 {\mu}s}{T_{clk\_i}}
+g\_fsm\_wdt = 40 * N_{clocks} = 40 * \frac{10*T_{bit}}{T_{clk\_i}}
 \end{equation}
+
+It is good practice to increase this value even further, to account for changes
+in bit widths, etc.
+
+For example, in converter board designs, where $T_{clk} = 50ns$, the
+\textit{g\_fsm\_wdt} value was calculated based on $T_{bit} = 30{\mu}s$.
+The final value was doubled to account for potential changes in the bit period:
+
+\begin{equation}
+g\_fsm\_wdt = 2 * \left( 40 * \frac{10*30{\mu}s}{50ns} \right) = 2 * 240000 = 480000
+\end{equation}
+
+This results in that the FSM watchdog would time out in 24~ms.
 
 \end{appendices}
 
