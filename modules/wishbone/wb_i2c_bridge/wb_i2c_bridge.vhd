@@ -59,6 +59,12 @@ use ieee.numeric_std.all;
 use work.gencores_pkg.all;
 
 entity wb_i2c_bridge is
+  generic
+  (
+    -- FSM watchdog timeout, see Appendix A in the component documentation for
+    -- an example of setting this generic
+    g_fsm_wdt : positive
+  );
   port
   (
     -- Clock, reset
@@ -391,20 +397,10 @@ begin
   --============================================================================
   -- FSM watchdog timer
   --============================================================================
-  -- * in the case of writemregs command, a maximum of 35 bytes can be written
-  --     - 1 I2C address byte
-  --     - 2 register (Wishbone) address bytes
-  --     - 8*4 Wishbone register values
-  -- * we will therefore set the watchdog max. value to allow for 36 bytes to
-  -- be sent, considering a maximum clk_i frequency of 20 MHz (period = 50 ns)
-  -- and an SCL frequency of 100 kHz
-  -- * 100 us / 50 ns = 2000 clock cycles to send one byte
-  -- * 2000 * 36 bytes = 72000 clock cycles to send 36 bytes
-  -- * g_wdt_max = 72000
   cmp_watchdog : gc_fsm_watchdog
     generic map
     (
-      g_wdt_max => 72000
+      g_wdt_max => g_fsm_wdt
     )
     port map
     (

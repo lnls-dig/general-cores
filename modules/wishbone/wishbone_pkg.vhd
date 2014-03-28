@@ -960,6 +960,12 @@ package wishbone_pkg is
   -- I2C to Wishbone bridge, following protocol defined with ELMA
   -----------------------------------------------------------------------------
   component wb_i2c_bridge is
+    generic
+    (
+      -- FSM watchdog timeout, see Appendix A in the component documentation for
+      -- an example of setting this generic
+      g_fsm_wdt : positive
+    );
     port
     (
       -- Clock, reset
