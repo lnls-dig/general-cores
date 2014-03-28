@@ -4,7 +4,7 @@
 \documentclass[a4paper,11pt]{article}
 
 % Color package
-\usepackage[usenames,dvipsnames]{color}
+\usepackage[usenames,dvipsnames,table]{xcolor}
 
 % Hyperrefs
 \usepackage[
@@ -45,6 +45,7 @@
 
 \centerline
 {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c p{.6\textwidth}}
   \hline
   \multicolumn{1}{c}{\textbf{Date}} & \multicolumn{1}{c}{\textbf{Version}} & \multicolumn{1}{c}{\textbf{Change}} \\
@@ -163,6 +164,7 @@ To instantiate a tri-state buffer in VHDL:
   \label{tbl:ports}
   \centerline
   {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{l p{.8\textwidth}}
       \hline
       \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -171,6 +173,7 @@ To instantiate a tri-state buffer in VHDL:
                      1 -- glitches narrower than 1 \textit{clk\_i} cycle are filtered \newline
                      2 -- glitches narrower than 2 \textit{clk\_i} cycles are filtered \newline
                      etc.\\
+      \hline
       clk\_i & Clock input \\
       rst\_n\_i & Active-low reset input \\
       scl\_i & SCL line input \\
@@ -391,6 +394,8 @@ Figure~\ref{fig:fsm-and-scl}.
   \label{fig:fsm-and-scl}
 \end{figure}
 
+{
+\rowcolors{2}{white}{gray!25}
 \begin{longtable}{l p{.7\textwidth}}
   \caption{The states of the \textit{gc\_i2c\_slave} FSM}
   \label{tbl:fsm} \\
@@ -425,6 +430,7 @@ Figure~\ref{fig:fsm-and-scl}.
     \textit{WR\_ACK} & Read ACK bit sent by master. If '0', go back to \textit{WR} state, otherwise
                        go to \textit{IDLE} state. \\
 \end{longtable}
+}
 
 %------------------------------------------------------------------------------
 \subsection{Output control}
