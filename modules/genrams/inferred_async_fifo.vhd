@@ -7,10 +7,10 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2013-07-29
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
--- Description: Dual-clock asynchronous FIFO. 
+-- Description: Dual-clock asynchronous FIFO.
 -- - configurable data width and size
 -- - configurable full/empty/almost full/almost empty/word count signals
 -------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ entity inferred_async_fifo is
 
     wr_empty_o        : out std_logic;
     wr_full_o         : out std_logic;
-    wr_almost_empty_o : out std_logic;
+    wr_almost_empty_o : out std_logic; -- TODO: assign
     wr_almost_full_o  : out std_logic;
     wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
 
@@ -75,7 +75,7 @@ entity inferred_async_fifo is
     rd_empty_o        : out std_logic;
     rd_full_o         : out std_logic;
     rd_almost_empty_o : out std_logic;
-    rd_almost_full_o  : out std_logic;
+    rd_almost_full_o  : out std_logic; -- TODO: assign
     rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
@@ -83,7 +83,7 @@ end inferred_async_fifo;
 
 
 architecture syn of inferred_async_fifo is
-  
+
   function f_bin2gray(bin : unsigned) return unsigned is
   begin
     return bin(bin'left) & (bin(bin'left-1 downto 0) xor bin(bin'left downto 1));
@@ -97,7 +97,7 @@ architecture syn of inferred_async_fifo is
       bin(i) := '0';
       for j in i to gray'left loop
         bin(i) := bin(i) xor gray(j);
-      end loop;  -- j 
+      end loop;  -- j
     end loop;  -- i
     return bin;
   end f_gray2bin;
@@ -117,15 +117,20 @@ architecture syn of inferred_async_fifo is
   attribute ASYNC_REG : string;
   attribute ASYNC_REG of wcb: signal is "TRUE";
   attribute ASYNC_REG of rcb: signal is "TRUE";
-  
+
   signal full_int, empty_int               : std_logic;
   signal almost_full_int, almost_empty_int : std_logic;
   signal going_full                        : std_logic;
 
   signal wr_count, rd_count : t_counter;
   signal rd_int, we_int : std_logic;
- 
-  
+
+  signal wr_empty_xm, wr_empty_x : std_logic;
+  signal rd_full_xm, rd_full_x   : std_logic;
+
+  signal almost_full_x, almost_full_xm   : std_logic;
+  signal almost_empty_x, almost_empty_xm : std_logic;
+
 begin  -- syn
 
   rd_int <= rd_i and not empty_int;
@@ -214,6 +219,17 @@ begin  -- syn
     end if;
   end process;
 
+  p_sync_empty : process(clk_wr_i)
+  begin
+    if rising_edge(clk_wr_i) then
+      wr_empty_xm <= empty_int;
+      wr_empty_x  <= wr_empty_xm;
+    end if;
+  end process;
+
+  rd_empty_o <= empty_int;
+  wr_empty_o <= wr_empty_x;
+
   p_gen_going_full : process(we_int, wcb, rcb)
   begin
     if ((wcb.bin (wcb.bin'left-1 downto 0) = rcb.bin_x(rcb.bin_x'left-1 downto 0))
@@ -237,8 +253,16 @@ begin  -- syn
     end if;
   end process;
 
-  wr_full_o  <= full_int;
-  rd_empty_o <= empty_int;
+  p_sync_full : process(clk_rd_i)
+  begin
+    if rising_edge(clk_rd_i) then
+      rd_full_xm <= full_int;
+      rd_full_x  <= rd_full_xm;
+    end if;
+  end process p_sync_full;
+
+  wr_full_o <= full_int;
+  rd_full_o <= rd_full_x;
 
   p_reg_almost_full : process(clk_wr_i, rst_n_i)
   begin
@@ -254,6 +278,17 @@ begin  -- syn
     end if;
   end process;
 
+  p_sync_almost_full : process(clk_rd_i)
+  begin
+    if rising_edge(clk_rd_i) then
+      almost_full_xm <= almost_full_int;
+      almost_full_x  <= almost_full_xm;
+    end if;
+  end process p_sync_almost_full;
+
+  wr_almost_full_o  <= almost_full_int;
+  rd_almost_full_o  <= almost_full_x;
+
   p_reg_almost_empty : process(clk_rd_i, rst_n_i)
   begin
     if rst_n_i = '0' then
@@ -268,10 +303,18 @@ begin  -- syn
     end if;
   end process;
 
+  p_sync_almost_empty : process(clk_wr_i)
+  begin
+    if rising_edge(clk_wr_i) then
+      almost_empty_xm <= almost_empty_int;
+      almost_empty_x  <= almost_empty_xm;
+    end if;
+  end process p_sync_almost_empty;
+
   rd_almost_empty_o <= almost_empty_int;
-  wr_almost_full_o  <= almost_full_int;
+  wr_almost_empty_o <= almost_empty_x;
 
   wr_count_o <= std_logic_vector(wr_count(f_log2_size(g_size)-1 downto 0));
   rd_count_o <= std_logic_vector(rd_count(f_log2_size(g_size)-1 downto 0));
-  
+
 end syn;

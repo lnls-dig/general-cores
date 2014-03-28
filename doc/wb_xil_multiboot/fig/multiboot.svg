@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="683.76678"
+   height="848.28174"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="multiboot.svg"
+   inkscape:export-filename="/home/tstana/Projects/conv-ttl-blo/conv-ttl-blo-gw/doc/multiboot/fig/multiboot.png"
+   inkscape:export-xdpi="72"
+   inkscape:export-ydpi="72">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="TriangleOutM"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutM"
+       style="overflow:visible">
+      <path
+         id="path3940"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="scale(0.4,0.4)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path3937"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="scale(0.8,0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="194.8645"
+     inkscape:cy="339.24015"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1855"
+     inkscape:window-height="1176"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       units="mm"
+       spacingx="1mm"
+       spacingy="1mm"
+       originx="26.236989mm"
+       originy="-87.554033mm" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(92.965711,106.15037)">
+    <rect
+       style="opacity:0.98999999;fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.76330256;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2987"
+       width="343.63577"
+       height="218.67723"
+       x="91.157005"
+       y="19.689743" />
+    <rect
+       y="394.56509"
+       x="91.157005"
+       height="156.19809"
+       width="343.63577"
+       id="rect2989"
+       style="opacity:0.98999999;fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.76330256;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="opacity:0.98999999;fill:#cccccc;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.76330256;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2991"
+       width="343.63577"
+       height="124.95845"
+       x="91.157005"
+       y="613.24243" />
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:1.76330256;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2995"
+       width="343.63577"
+       height="843.46954"
+       x="91.157005"
+       y="-105.26872" />
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="261.89005"
+       y="684.92462"
+       id="text3765"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3767"
+         x="261.89005"
+         y="684.92462"
+         style="font-size:24.68623734px;font-weight:bold;text-align:center;text-anchor:middle">Header</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3769"
+       y="466.43832"
+       x="262.83023"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         style="font-size:24.68623734px;font-weight:bold;text-align:center;text-anchor:middle"
+         y="466.43832"
+         x="262.83023"
+         id="tspan3771"
+         sodipodi:role="line">Golden</tspan><tspan
+         style="font-size:24.68623734px;font-weight:bold;text-align:center;text-anchor:middle"
+         y="497.29611"
+         x="262.83023"
+         sodipodi:role="line"
+         id="tspan3779">Bitstream</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="262.49268"
+       y="122.80256"
+       id="text3773"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3775"
+         x="262.49268"
+         y="122.80256"
+         style="font-size:24.68623734px;font-weight:bold;text-align:center;text-anchor:middle">MultiBoot</tspan><tspan
+         sodipodi:role="line"
+         x="262.49268"
+         y="153.66035"
+         style="font-size:24.68623734px;font-weight:bold;text-align:center;text-anchor:middle"
+         id="tspan3777">Bitstream</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="97.40493"
+       y="731.95288"
+       id="text3781"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3783"
+         x="97.40493"
+         y="731.95288">0x000000</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3785"
+       y="-86.52494"
+       x="97.40493"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="-86.52494"
+         x="97.40493"
+         id="tspan3787"
+         sodipodi:role="line">0xFFFFFF</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="m 441.04067,613.24237 c 56.2313,-124.95846 56.2313,-249.9169 0,-368.62742"
+       id="path3789"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="m 84.909072,19.689739 c -87.4709176,187.437671 -87.4709176,368.627411 0,524.825471"
+       id="path4421"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4607"
+       d="m 84.909072,394.56508 c -56.231295,124.95845 -56.231295,249.91689 0,343.63574"
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="m -65.041066,82.168958 c -37.487534,43.735472 68.7271507,43.735472 31.239611,0"
+       id="path4609"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4795"
+       d="m -65.041066,307.09416 c -37.487534,43.73546 68.7271507,43.73546 31.239611,0"
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.76330256px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#TriangleOutM)"
+       d="m -65.041066,650.72989 c -37.487534,43.73547 68.7271507,43.73547 31.239611,0"
+       id="path4797"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-94.128044"
+       y="75.921013"
+       id="text4799"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4801"
+         x="-94.128044"
+         y="75.921013">Strike 0..2</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4803"
+       y="300.84625"
+       x="-94.128044"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="300.84625"
+         x="-94.128044"
+         id="tspan4805"
+         sodipodi:role="line">Strike 3..5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-94.128044"
+       y="644.48206"
+       id="text4807"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4809"
+         x="-94.128044"
+         y="644.48206">Strike 6..8</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="497.272"
+       y="680.31494"
+       id="text4811"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4813"
+         x="497.272"
+         y="680.31494">1st Image</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4815"
+       y="477.52872"
+       x="497.272"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="477.52872"
+         x="497.272"
+         id="tspan4817"
+         sodipodi:role="line">2nd Image</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:17.63302612px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="497.272"
+       y="133.89293"
+       id="text4819"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4821"
+         x="497.272"
+         y="133.89293">3rd Image</tspan></text>
+  </g>
+</svg>

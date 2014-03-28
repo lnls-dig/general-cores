@@ -43,6 +43,9 @@ MAKEINFO ?= makeinfo
 
 all: images $(ALL)
 	$(MAKE) terse
+	$(MAKE) -C gc_i2c_slave
+	$(MAKE) -C wb_i2c_bridge
+	$(MAKE) -C wb_xil_multiboot
 
 images::
 	if [ -d images ]; then $(MAKE) -C images || exit 1; fi

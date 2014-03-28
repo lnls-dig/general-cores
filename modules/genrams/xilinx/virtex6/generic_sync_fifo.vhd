@@ -107,7 +107,8 @@ architecture syn of generic_sync_fifo is
       g_size                   : natural;
       g_dual_clock             : boolean;
       g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer);
+      g_almost_full_threshold  : integer;
+      g_with_count             : boolean := true);
     port (
       rst_n_i           : in  std_logic := '1';
       clk_wr_i          : in  std_logic;
@@ -125,6 +126,10 @@ architecture syn of generic_sync_fifo is
   end component;
 
   constant m : t_v6_fifo_mapping := f_v6_fifo_find_mapping(g_data_width, g_size);
+
+  -- Xilinx defines almost full threshold as number of available empty words in
+  -- FIFO (UG363 - Virtex 6 FPGA Memory Resources
+  constant c_virtex_almost_full_thr : integer := g_size - g_almost_full_threshold;
 
 begin  -- syn
 
@@ -168,7 +173,8 @@ begin  -- syn
         g_size                   => g_size,
         g_dual_clock             => false,
         g_almost_empty_threshold => f_empty_thr(g_with_almost_empty, g_almost_empty_threshold, g_size),
-        g_almost_full_threshold  => f_empty_thr(g_with_almost_full, g_almost_full_threshold, g_size))
+        g_almost_full_threshold  => f_empty_thr(g_with_almost_full, c_virtex_almost_full_thr, g_size),
+        g_with_count             => g_with_count)
       port map (
         rst_n_i           => rst_n_i,
         clk_wr_i          => clk_i,

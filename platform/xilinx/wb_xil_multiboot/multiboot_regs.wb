@@ -1,0 +1,161 @@
+peripheral {
+  name = "MultiBoot controller";
+  hdl_entity = "multiboot_regs";
+  prefix = "reg";
+
+  reg {
+    name = "CR";
+    description = "Control Register";
+    prefix = "cr";
+    field {
+      name = "Configuration register address";
+      description = "Address of FPGA configuration register to read.";
+      prefix = "cfgregadr";
+      type = SLV;
+      size = 6;
+    };
+    field {
+      name = "Read FPGA configuration register";
+      description = "1 -- Start FPGA configuration register sequence. \
+      0 -- No effect.";
+      prefix = "rdcfgreg";
+      type = MONOSTABLE;
+    };
+    field {
+      name = "Unlock bit for the IPROG command";
+      description = "1 -- Unlock IPROG bit. \
+      0 -- No effect.";
+      prefix = "iprog_unlock";
+      type = BIT;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+      align = 16;
+    };
+    field {
+      name = "Start IPROG sequence";
+      description = "1 -- Start IPROG configuration sequence \
+      0 -- No effect \
+      This bit needs to be unlocked by writing the IPROG_UNLOCK bit first. \
+      A write to this bit with IPROG_UNLOCK cleared has no effect.";
+      prefix = "iprog";
+      type = BIT;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+    };
+  };
+
+  reg {
+    name = "SR";
+    description = "Status Register";
+    prefix = "sr";
+    field {
+      name = "Configuration register image";
+      description = "Image of the FPGA configuration register at address CFGREGADR (see Configuration Registers section in Xilinx UG380~\\cite{ug380}); validated by IMGVALID bit";
+      prefix = "cfgregimg";
+      type = SLV;
+      size = 16;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+    field {
+      name = "Configuration register image valid";
+      description = "1 -- CFGREGIMG valid \
+      0 -- CFGREGIMG not valid;";
+      prefix = "imgvalid";
+      type = BIT;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+    field {
+      name = "MultiBoot FSM stalled at one point and was reset by FSM watchdog";
+      description = "1 -- FSM watchdog fired \
+      0 -- FSM watchdog has not fired";
+      prefix = "wdto";
+      type = BIT;
+      access_bus = READ_WRITE;
+      access_dev = READ_WRITE;
+      load = LOAD_EXT;
+    };
+  };
+
+  reg {
+    name = "GBBAR";
+    description = "Golden Bitstream Base Address Register";
+    prefix = "gbbar";
+    field {
+      name = "Bits of GBBAR register";
+      description = "31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \
+                     23..0  -- Golden bitstream address in flash";
+      prefix = "bits";
+      type = SLV;
+      size = 32;
+    };
+  };
+
+  reg {
+    name = "MBBAR";
+    description = "MultiBoot Bitstream Base Address Register";
+    prefix = "mbbar";
+    field {
+      name = "Bits of MBBAR register";
+      description = "31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \
+                     23..0  -- MultiBoot bitstream start address in flash";
+      prefix = "bits";
+      type = SLV;
+      size = 32;
+    };
+  };
+
+  reg {
+    name = "FAR";
+    description = "Flash Access Register";
+    prefix = "far";
+    field {
+      name = "Flash data field";
+      description = "23..16 -- DATA[2]; after an SPI transfer, this register contains the value of data byte 2 read from the flash \
+      15..8 -- DATA[1]; after an SPI transfer, this register contains the value of data byte 1 read from the flash \
+      7..0  -- DATA[0]; after an SPI transfer, this register contains the value of data byte 0 read from the flash";
+      prefix = "data";
+      type = SLV;
+      size = 24;
+      access_dev = READ_WRITE;
+      access_bus = READ_WRITE;
+      load = LOAD_EXT;
+    };
+    field {
+      name = "Number of DATA fields to send and receive in one transfer:";
+      description = " 0x0 -- Send 1 byte (DATA[0]) \
+      0x1 -- Send 2 bytes (DATA[0], DATA[1]) \
+      0x2 -- Send 3 bytes (DATA[0], DATA[1], DATA[2])";
+      prefix = "nbytes";
+      type = SLV;
+      size = 2;
+    };
+    field {
+      name = "Start transfer to and from flash";
+      description = "1 -- Start transfer \
+      0 -- Idle";
+      prefix = "xfer";
+      type = MONOSTABLE;
+      size = 1;
+    };
+    field {
+      name = "Chip select bit";
+      description = "1 - Flash chip selected (CS pin low) \
+      0 - Flash chip not selected (CS pin is high)";
+      prefix = "cs";
+      type = BIT;
+    };
+    field {
+      name = "Flash access ready";
+      description = "1 - Flash access completed \
+      0 - Flash access in progress";
+      prefix = "ready";
+      type = BIT;
+      access_dev = WRITE_ONLY;
+      access_bus = READ_ONLY;
+    };
+  };
+};

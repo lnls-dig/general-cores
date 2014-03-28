@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="497.06299"
+   height="178.16537"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="sys.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="TriangleOutM"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutM"
+       style="overflow:visible">
+      <path
+         id="path3928"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="scale(0.4,0.4)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path3925"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="scale(0.8,0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInM"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleInM"
+       style="overflow:visible">
+      <path
+         id="path3919"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="scale(-0.4,-0.4)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="218.37393"
+     inkscape:cy="-21.765683"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1855"
+     inkscape:window-height="1176"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       units="mm"
+       spacingx="1mm"
+       spacingy="1mm"
+       originx="-39.858889mm"
+       originy="-214.85889mm" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-141.23228,-112.8858)">
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect2987"
+       width="141.73228"
+       height="177.16536"
+       x="141.73228"
+       y="113.3858" />
+    <rect
+       y="113.38581"
+       x="354.33069"
+       height="177.16536"
+       width="283.4646"
+       id="rect3757"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="opacity:0.98999999;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.66666675;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3759"
+       width="29.527559"
+       height="118.11024"
+       x="354.33063"
+       y="142.91338" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.66666794px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="167.25984"
+       y="-363.01941"
+       id="text3761"
+       sodipodi:linespacing="125%"
+       transform="matrix(0,1,-1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan3763"
+         x="167.25984"
+         y="-363.01941"
+         style="font-weight:bold;fill:#ffffff;fill-opacity:1">VME P1</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM)"
+       d="m 287.00787,184.25195 63.77953,0"
+       id="path3775"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="299.33466"
+       y="180.70863"
+       id="text4599"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4601"
+         x="299.33466"
+         y="180.70863">SERCLK</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b2b2b2;fill-opacity:1;stroke:none;font-family:Sans"
+       x="160.3035"
+       y="208.28488"
+       id="text4607"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4609"
+         x="160.3035"
+         y="208.28488"
+         style="font-size:24px;font-weight:bold;fill:#000000;fill-opacity:1">SysMon</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4611"
+       y="134.64565"
+       x="423.92236"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         style="font-size:24px;font-weight:bold;fill:#000000;fill-opacity:1"
+         y="134.64565"
+         x="423.92236"
+         id="tspan4613"
+         sodipodi:role="line">VME board</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4615"
+       width="205.51183"
+       height="106.29921"
+       x="425.19684"
+       y="148.81888" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4619"
+       d="m 389.76378,184.25195 31.88977,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM)"
+       d="m 389.76378,219.68502 31.88977,0"
+       id="path4621"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4623"
+       y="180.70863"
+       x="396.85037"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="180.70863"
+         x="396.85037"
+         id="tspan4625"
+         sodipodi:role="line">SCL</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="396.85037"
+       y="216.14171"
+       id="text4627"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4629"
+         x="396.85037"
+         y="216.14171">SDA</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="509.36975"
+       y="159.44879"
+       id="text4631"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4633"
+         x="509.36975"
+         y="159.44879"
+         style="font-size:12px;font-weight:bold;fill:#000000;fill-opacity:1">FPGA</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4635"
+       d="m 287.00787,219.68503 63.77953,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM)" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4637"
+       y="216.14171"
+       x="298.89764"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="216.14171"
+         x="298.89764"
+         id="tspan4639"
+         sodipodi:role="line">SERDAT</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:#b2b2b2;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4955"
+       width="60.236233"
+       height="56.692913"
+       x="425.19684"
+       y="173.62202" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4957"
+       y="199.4465"
+       x="455.09521"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1"
+         y="199.4465"
+         x="455.09521"
+         id="tspan4959"
+         sodipodi:role="line">I2C slave</tspan><tspan
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1"
+         y="211.9465"
+         x="455.09521"
+         sodipodi:role="line"
+         id="tspan3022">module</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM)"
+       d="m 488.97638,201.96848 14.17323,0"
+       id="path4961"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       y="173.62202"
+       x="506.6929"
+       height="56.692913"
+       width="116.92915"
+       id="rect4963"
+       style="opacity:0.98999999;fill:#b2b2b2;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="565.16724"
+       y="192.22726"
+       id="text4965"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4967"
+         x="565.16724"
+         y="192.22726"
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1">Wishbone</tspan><tspan
+         sodipodi:role="line"
+         x="565.16724"
+         y="204.72726"
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1"
+         id="tspan4969">memory-mapped</tspan><tspan
+         sodipodi:role="line"
+         x="565.16724"
+         y="217.22726"
+         style="font-size:10px;font-weight:bold;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1"
+         id="tspan4971">peripherals</tspan></text>
+  </g>
+</svg>

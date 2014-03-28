@@ -1,0 +1,285 @@
+\section{MultiBoot controller}
+\label{app:memmap}
+
+{
+\rowcolors{2}{white}{gray!25}
+\begin{longtable}{l l l p{.5\textwidth}}
+\hline
+\textbf{Offset} & \textbf{Default} & \textbf{Name} 
+		& \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\hline
+\endhead
+\hline
+\endfoot
+0x0 &  0x00000000 & CR & Control Register\\
+0x4 &  0x00000000 & SR & Status Register\\
+0x8 &  0x00000000 & GBBAR & Golden Bitstream Base Address Register\\
+0xc &  0x00000000 & MBBAR & MultiBoot Bitstream Base Address Register\\
+0x10 & 0x10000000 & FAR & Flash Access Register\\
+\end{longtable}
+}
+
+\vspace{11pt}
+\subsection{CR -- Control Register}
+\label{app:memmap-cr}
+
+\vspace{11pt}
+\noindent
+\resizebox{\textwidth}{!}{
+\begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} }
+31 & 30 & 29 & 28 & 27 & 26 & 25 & 24\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & - & - & - & - & \multicolumn{1}{c|}{-}\\
+\hline
+23 & 22 & 21 & 20 & 19 & 18 & 17 & 16\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & - & - & - & \multicolumn{1}{|c|}{\cellcolor{gray!25}IPROG} & \multicolumn{1}{|c|}{\cellcolor{gray!25}IPROG\_UNLOCK}\\
+\hline
+15 & 14 & 13 & 12 & 11 & 10 & 9 & 8\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & - & - & - & - & \multicolumn{1}{c|}{-}\\
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0\\
+\hline
+\multicolumn{1}{|c}{-} & \multicolumn{1}{|c|}{\cellcolor{gray!25}RDCFGREG} & \multicolumn{6}{|c|}{\cellcolor{gray!25}CFGREGADR[5:0]}\\
+\hline
+\end{tabular}
+}
+
+\begin{itemize}
+\item \begin{small}
+{\bf 
+CFGREGADR
+} [\emph{read/write}]: Configuration register address
+\\
+Address of FPGA configuration register to read.
+\end{small}
+\item \begin{small}
+{\bf 
+RDCFGREG
+} [\emph{write-only}]: Read FPGA configuration register
+\\
+1 -- Start FPGA configuration register sequence. \\      0 -- No effect.
+\end{small}
+\item \begin{small}
+{\bf 
+IPROG\_UNLOCK
+} [\emph{read/write}]: Unlock bit for the IPROG command
+\\
+1 -- Unlock IPROG bit. \\      0 -- No effect.
+\end{small}
+\item \begin{small}
+{\bf 
+IPROG
+} [\emph{read/write}]: Start IPROG sequence
+\\
+1 -- Start IPROG configuration sequence \\      0 -- No effect \\      This bit needs to be unlocked by writing the IPROG\_UNLOCK bit first. \\      A write to this bit with IPROG\_UNLOCK cleared has no effect.
+\end{small}
+\item \begin{small}
+\textbf{Unimplemented bits}: write as '0', read undefined
+\end{small}
+\end{itemize}
+\vspace{11pt}
+\subsection{SR -- Status Register}
+\label{app:memmap-sr}
+
+\vspace{11pt}
+\noindent
+\resizebox{\textwidth}{!}{
+\begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} }
+31 & 30 & 29 & 28 & 27 & 26 & 25 & 24\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & - & - & - & - & \multicolumn{1}{c|}{-}\\
+\hline
+23 & 22 & 21 & 20 & 19 & 18 & 17 & 16\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & - & - & - & \multicolumn{1}{|c|}{\cellcolor{gray!25}WDTO} & \multicolumn{1}{|c|}{\cellcolor{gray!25}IMGVALID}\\
+\hline
+15 & 14 & 13 & 12 & 11 & 10 & 9 & 8\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}CFGREGIMG[15:8]}\\
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}CFGREGIMG[7:0]}\\
+\hline
+\end{tabular}
+}
+
+\begin{itemize}
+\item \begin{small}
+{\bf 
+CFGREGIMG
+} [\emph{read-only}]: Configuration register image
+\\
+Image of the FPGA configuration register at address CFGREGADR (see Configuration Registers section in Xilinx UG380~\cite{ug380}); validated by IMGVALID bit
+\end{small}
+\item \begin{small}
+{\bf 
+IMGVALID
+} [\emph{read-only}]: Configuration register image valid
+\\
+1 -- CFGREGIMG valid \\      0 -- CFGREGIMG not valid;
+\end{small}
+\item \begin{small}
+{\bf 
+WDTO
+} [\emph{read/write}]: MultiBoot FSM stalled at one point and was reset by FSM watchdog
+\\
+1 -- FSM watchdog fired \\      0 -- FSM watchdog has not fired
+\end{small}
+\item \begin{small}
+\textbf{Unimplemented bits}: write as '0', read undefined
+\end{small}
+\end{itemize}
+\vspace{11pt}
+\subsection{GBBAR -- Golden Bitstream Base Address Register}
+\label{app:memmap-gbbar}
+
+\vspace{11pt}
+\noindent
+\resizebox{\textwidth}{!}{
+\begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} }
+31 & 30 & 29 & 28 & 27 & 26 & 25 & 24\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[31:24]}\\
+\hline
+23 & 22 & 21 & 20 & 19 & 18 & 17 & 16\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[23:16]}\\
+\hline
+15 & 14 & 13 & 12 & 11 & 10 & 9 & 8\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[15:8]}\\
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[7:0]}\\
+\hline
+\end{tabular}
+}
+
+\begin{itemize}
+\item \begin{small}
+{\bf 
+BITS
+} [\emph{read/write}]: Bits of GBBAR register
+\\
+31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \\                     23..0  -- Golden bitstream address in flash
+\end{small}
+\item \begin{small}
+\textbf{Unimplemented bits}: write as '0', read undefined
+\end{small}
+\end{itemize}
+\vspace{11pt}
+\subsection{MBBAR -- MultiBoot Bitstream Base Address Register}
+\label{app:memmap-mbbar}
+
+\vspace{11pt}
+\noindent
+\resizebox{\textwidth}{!}{
+\begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} }
+31 & 30 & 29 & 28 & 27 & 26 & 25 & 24\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[31:24]}\\
+\hline
+23 & 22 & 21 & 20 & 19 & 18 & 17 & 16\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[23:16]}\\
+\hline
+15 & 14 & 13 & 12 & 11 & 10 & 9 & 8\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[15:8]}\\
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}BITS[7:0]}\\
+\hline
+\end{tabular}
+}
+
+\begin{itemize}
+\item \begin{small}
+{\bf 
+BITS
+} [\emph{read/write}]: Bits of MBBAR register
+\\
+31..24 -- Read or fast-read OPCODE of the flash chip (obtain it from the flash chip datasheet) \\                     23..0  -- MultiBoot bitstream start address in flash
+\end{small}
+\item \begin{small}
+\textbf{Unimplemented bits}: write as '0', read undefined
+\end{small}
+\end{itemize}
+\vspace{11pt}
+\subsection{FAR -- Flash Access Register}
+\label{app:memmap-far}
+
+\vspace{11pt}
+\noindent
+\resizebox{\textwidth}{!}{
+\begin{tabular}{>{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} }
+31 & 30 & 29 & 28 & 27 & 26 & 25 & 24\\
+\hline
+\multicolumn{1}{|c}{-} & - & - & \multicolumn{1}{|c|}{\cellcolor{gray!25}READY} & \multicolumn{1}{|c|}{\cellcolor{gray!25}CS} & \multicolumn{1}{|c|}{\cellcolor{gray!25}XFER} & \multicolumn{2}{|c|}{\cellcolor{gray!25}NBYTES[1:0]}\\
+\hline
+23 & 22 & 21 & 20 & 19 & 18 & 17 & 16\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}DATA[23:16]}\\
+\hline
+15 & 14 & 13 & 12 & 11 & 10 & 9 & 8\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}DATA[15:8]}\\
+\hline
+7 & 6 & 5 & 4 & 3 & 2 & 1 & 0\\
+\hline
+\multicolumn{8}{|c|}{\cellcolor{gray!25}DATA[7:0]}\\
+\hline
+\end{tabular}
+}
+
+\begin{itemize}
+\item \begin{small}
+{\bf 
+DATA
+} [\emph{read/write}]: Flash data field
+\\
+23..16 -- DATA[2]; after an SPI transfer, this register contains the value of data byte 2 read from the flash \\      15..8 -- DATA[1]; after an SPI transfer, this register contains the value of data byte 1 read from the flash \\      7..0  -- DATA[0]; after an SPI transfer, this register contains the value of data byte 0 read from the flash
+\end{small}
+\item \begin{small}
+{\bf 
+NBYTES
+} [\emph{read/write}]: Number of DATA fields to send and receive in one transfer:
+\\
+ 0x0 -- Send 1 byte (DATA[0]) \\      0x1 -- Send 2 bytes (DATA[0], DATA[1]) \\      0x2 -- Send 3 bytes (DATA[0], DATA[1], DATA[2])
+\end{small}
+\item \begin{small}
+{\bf 
+XFER
+} [\emph{write-only}]: Start transfer to and from flash
+\\
+1 -- Start transfer \\      0 -- Idle
+\end{small}
+\item \begin{small}
+{\bf 
+CS
+} [\emph{read/write}]: Chip select bit
+\\
+1 - Flash chip selected (CS pin low) \\      0 - Flash chip not selected (CS pin is high)
+\end{small}
+\item \begin{small}
+{\bf 
+READY
+} [\emph{read-only}]: Flash access ready
+\\
+1 - Flash access completed \\      0 - Flash access in progress
+\end{small}
+\item \begin{small}
+\textbf{Unimplemented bits}: write as '0', read undefined
+\end{small}
+\end{itemize}
+
+
+

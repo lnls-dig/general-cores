@@ -1,0 +1,1037 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="896.07611"
+   height="315.85431"
+   id="svg3820"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="fsm-and-scl.svg">
+  <defs
+     id="defs3822" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="600.62433"
+     inkscape:cy="113.09241"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1855"
+     inkscape:window-height="1176"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4192"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       units="mm"
+       spacingx="1mm"
+       spacingy="1mm"
+       originx="-5.1779689mm"
+       originy="-204.92945mm" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata3825">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-18.347134,-10.379911)">
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="35.433064"
+       y="81.496033"
+       id="text3904"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="35.433064"
+         y="81.496033"
+         style="font-size:12px;font-weight:bold;text-align:center;text-anchor:middle"
+         id="tspan3908">read</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="102.7559"
+       y="21.259825"
+       id="text3900"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan3902"
+         x="102.7559"
+         y="21.259825">BIT 7</tspan><tspan
+         id="tspan3948"
+         sodipodi:role="line"
+         x="102.7559"
+         y="33.759827">- bit_cnt++</tspan><tspan
+         sodipodi:role="line"
+         x="102.7559"
+         y="46.259827"
+         id="tspan3912">- shift in SDA</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3914"
+       width="70.866142"
+       height="38.976383"
+       x="99.212593"
+       y="10.629911" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3950"
+       y="21.259825"
+       x="191.33859"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="21.259825"
+         x="191.33859"
+         id="tspan3952"
+         sodipodi:role="line"
+         style="font-weight:bold">BIT 6</tspan><tspan
+         y="33.759827"
+         x="191.33859"
+         sodipodi:role="line"
+         id="tspan3954">- bit_cnt++</tspan><tspan
+         id="tspan3956"
+         y="46.259827"
+         x="191.33859"
+         sodipodi:role="line">- shift in SDA</tspan></text>
+    <rect
+       y="10.629911"
+       x="187.79529"
+       height="38.976383"
+       width="70.866142"
+       id="rect3958"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="279.92126"
+       y="21.259825"
+       id="text3962"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan3964"
+         x="279.92126"
+         y="21.259825">BIT 5</tspan><tspan
+         id="tspan3966"
+         sodipodi:role="line"
+         x="279.92126"
+         y="33.759827">- bit_cnt++</tspan><tspan
+         sodipodi:role="line"
+         x="279.92126"
+         y="46.259827"
+         id="tspan3968">- shift in SDA</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3970"
+       width="70.866142"
+       height="38.976383"
+       x="276.37793"
+       y="10.629911" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 99.212589,49.606279 0,24.80315"
+       id="path3922"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3960"
+       d="m 187.79526,49.606279 0,24.80315"
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 276.37793,49.606279 0,24.80315"
+       id="path3972"
+       inkscape:connector-curvature="0" />
+    <g
+       transform="translate(17.716525,-17.716531)"
+       id="g3984">
+      <path
+         inkscape:connector-curvature="0"
+         id="path5749"
+         d="m 35.433081,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.716539,0 17.71653,35.433066 35.43307,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 124.01576,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         id="path3838"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 212.59842,113.3858 35.43307,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         id="path3840"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3842"
+         d="m 301.18111,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 389.76378,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         id="path3844"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3846"
+         d="m 478.34646,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3848"
+         d="m 566.92912,113.3858 35.43307,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 655.51181,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         id="path3850"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3982"
+         d="m 744.0945,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <rect
+       y="10.629911"
+       x="364.96063"
+       height="38.976383"
+       width="70.866142"
+       id="rect4050"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4052"
+       d="m 364.96061,49.606279 0,24.80315"
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4064"
+       y="21.259825"
+       x="368.50397"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="21.259825"
+         x="368.50397"
+         id="tspan4066"
+         sodipodi:role="line"
+         style="font-weight:bold">BIT 4</tspan><tspan
+         y="33.759827"
+         x="368.50397"
+         sodipodi:role="line"
+         id="tspan4068">- bit_cnt++</tspan><tspan
+         id="tspan4070"
+         y="46.259827"
+         x="368.50397"
+         sodipodi:role="line">- shift in SDA</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4072"
+       width="70.866142"
+       height="38.976383"
+       x="453.54327"
+       y="10.629911" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 453.54327,49.606279 0,24.80315"
+       id="path4074"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="457.08661"
+       y="21.259825"
+       id="text4078"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan4080"
+         x="457.08661"
+         y="21.259825">BIT 3</tspan><tspan
+         id="tspan4082"
+         sodipodi:role="line"
+         x="457.08661"
+         y="33.759827">- bit_cnt++</tspan><tspan
+         sodipodi:role="line"
+         x="457.08661"
+         y="46.259827"
+         id="tspan4084">- shift in SDA</tspan></text>
+    <rect
+       y="10.629911"
+       x="542.12592"
+       height="38.976383"
+       width="70.866142"
+       id="rect4086"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4088"
+       d="m 542.126,49.606279 0,24.80315"
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4092"
+       y="21.259825"
+       x="545.66925"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="21.259825"
+         x="545.66925"
+         id="tspan4094"
+         sodipodi:role="line"
+         style="font-weight:bold">BIT 2</tspan><tspan
+         y="33.759827"
+         x="545.66925"
+         sodipodi:role="line"
+         id="tspan4096">- bit_cnt++</tspan><tspan
+         id="tspan4098"
+         y="46.259827"
+         x="545.66925"
+         sodipodi:role="line">- shift in SDA</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4100"
+       width="70.866142"
+       height="38.976383"
+       x="630.70856"
+       y="10.629911" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 630.70865,49.606279 0,24.80315"
+       id="path4102"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="634.25189"
+       y="21.259825"
+       id="text4106"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan4108"
+         x="634.25189"
+         y="21.259825">BIT 1</tspan><tspan
+         id="tspan4110"
+         sodipodi:role="line"
+         x="634.25189"
+         y="33.759827">- bit_cnt++</tspan><tspan
+         sodipodi:role="line"
+         x="634.25189"
+         y="46.259827"
+         id="tspan4112">- shift in SDA</tspan></text>
+    <rect
+       y="10.629911"
+       x="719.2912"
+       height="38.976383"
+       width="70.866142"
+       id="rect4114"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4116"
+       d="m 719.29132,49.606279 0,24.80315"
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4120"
+       y="21.259825"
+       x="722.83453"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="21.259825"
+         x="722.83453"
+         id="tspan4122"
+         sodipodi:role="line"
+         style="font-weight:bold">BIT 0</tspan><tspan
+         y="33.759827"
+         x="722.83453"
+         sodipodi:role="line"
+         id="tspan4124">- bit_cnt++</tspan><tspan
+         id="tspan4126"
+         y="46.259827"
+         x="722.83453"
+         sodipodi:role="line">- shift in SDA</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 843.30707,81.496049 0,24.803151"
+       id="path4130"
+       inkscape:connector-curvature="0" />
+    <rect
+       y="106.29919"
+       x="843.30707"
+       height="31.889772"
+       width="70.866119"
+       id="rect4132"
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="846.8504"
+       y="116.92914"
+       id="text4134"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan4136"
+         x="846.8504"
+         y="116.92914">ACK BIT</tspan><tspan
+         sodipodi:role="line"
+         x="846.8504"
+         y="129.42914"
+         id="tspan4140">- check ack_i</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="751.18103"
+       y="116.92914"
+       id="text4565"
+       sodipodi:linespacing="125%"><tspan
+         style="font-weight:bold"
+         sodipodi:role="line"
+         id="tspan4567"
+         x="751.18103"
+         y="116.92914">BIT 0</tspan><tspan
+         sodipodi:role="line"
+         x="751.18103"
+         y="129.42914"
+         id="tspan4687">- start sampling</tspan><tspan
+         sodipodi:role="line"
+         x="751.18103"
+         y="141.92914"
+         id="tspan3160">ack_i</tspan><tspan
+         sodipodi:role="line"
+         x="751.18103"
+         y="154.42914"
+         id="tspan4573">- set r_done_p_o</tspan></text>
+    <rect
+       style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4575"
+       width="88.58268"
+       height="53.14962"
+       x="747.63776"
+       y="106.29919" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 747.63778,67.322799 10e-6,38.976411"
+       id="path4577"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <g
+       transform="translate(17.716536,-17.716526)"
+       id="g3272">
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="17.716536"
+         y="276.37793"
+         id="text4144"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           x="17.716536"
+           y="276.37793"
+           style="font-size:12px;font-weight:bold;text-align:center;text-anchor:middle"
+           id="tspan4146">write</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="120.47244"
+         y="311.81097"
+         id="text4148"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4150"
+           x="120.47244"
+           y="311.81097">BIT 7</tspan><tspan
+           sodipodi:role="line"
+           x="120.47244"
+           y="324.31097"
+           id="tspan4154">- shift out SDA</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4156"
+         width="77.952751"
+         height="28.346464"
+         x="116.92914"
+         y="301.18106" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4283"
+         y="311.81097"
+         x="209.05511"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="311.81097"
+           x="209.05511"
+           id="tspan4285"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 6</tspan><tspan
+           id="tspan4287"
+           y="324.31097"
+           x="209.05511"
+           sodipodi:role="line">- shift out SDA</tspan></text>
+      <rect
+         y="301.18106"
+         x="205.51181"
+         height="28.346464"
+         width="77.952751"
+         id="rect4289"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="297.63779"
+         y="311.81097"
+         id="text4293"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4295"
+           x="297.63779"
+           y="311.81097">BIT 5</tspan><tspan
+           sodipodi:role="line"
+           x="297.63779"
+           y="324.31097"
+           id="tspan4297">- shift out SDA</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4299"
+         width="77.952751"
+         height="28.346464"
+         x="294.09448"
+         y="301.18106" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4303"
+         y="311.81097"
+         x="386.22049"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="311.81097"
+           x="386.22049"
+           id="tspan4305"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 4</tspan><tspan
+           id="tspan4307"
+           y="324.31097"
+           x="386.22049"
+           sodipodi:role="line">- shift out SDA</tspan></text>
+      <rect
+         y="301.18106"
+         x="382.67719"
+         height="28.346464"
+         width="77.952751"
+         id="rect4309"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4313"
+         y="311.81097"
+         x="474.80316"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="311.81097"
+           x="474.80316"
+           id="tspan4315"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 3</tspan><tspan
+           id="tspan4317"
+           y="324.31097"
+           x="474.80316"
+           sodipodi:role="line">- shift out SDA</tspan></text>
+      <rect
+         y="301.18106"
+         x="471.25986"
+         height="28.346464"
+         width="77.952751"
+         id="rect4319"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="563.3858"
+         y="311.81097"
+         id="text4321"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4323"
+           x="563.3858"
+           y="311.81097">BIT 2</tspan><tspan
+           sodipodi:role="line"
+           x="563.3858"
+           y="324.31097"
+           id="tspan4325">- shift out SDA</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4327"
+         width="77.952751"
+         height="28.346464"
+         x="559.84247"
+         y="301.18106" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4329"
+         y="311.81097"
+         x="651.96844"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="311.81097"
+           x="651.96844"
+           id="tspan4331"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 1</tspan><tspan
+           id="tspan4333"
+           y="324.31097"
+           x="651.96844"
+           sodipodi:role="line">- shift out SDA</tspan></text>
+      <rect
+         y="301.18106"
+         x="648.42517"
+         height="28.346464"
+         width="77.952751"
+         id="rect4335"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="733.46454"
+         y="311.81097"
+         id="text4337"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4339"
+           x="733.46454"
+           y="311.81097">BIT 0</tspan><tspan
+           sodipodi:role="line"
+           x="733.46454"
+           y="324.31097"
+           id="tspan4341">- shift out SDA</tspan><tspan
+           sodipodi:role="line"
+           x="733.46454"
+           y="336.81097"
+           id="tspan4355">- set w_done_p_o</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4343"
+         width="92.125977"
+         height="42.519688"
+         x="729.92126"
+         y="301.18106" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 116.92913,276.37793 0,24.80315"
+         id="path4178"
+         inkscape:connector-curvature="0" />
+      <g
+         transform="translate(0,177.16535)"
+         id="g4184">
+        <path
+           inkscape:connector-curvature="0"
+           id="path4186"
+           d="m 35.433081,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.716539,0 17.71653,35.433066 35.43307,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 124.01576,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           id="path4188"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 212.59842,113.3858 35.43307,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           id="path4190"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4192"
+           d="m 301.18111,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 389.76378,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           id="path4194"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4196"
+           d="m 478.34646,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4198"
+           d="m 566.92912,113.3858 35.43307,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 655.51181,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           id="path4200"
+           inkscape:connector-curvature="0" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path4202"
+           d="m 744.0945,113.3858 35.43306,0 0,0 17.71653,-35.433066 17.71654,0 17.71653,35.433066 35.43307,0"
+           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 825.59055,276.37793 0,24.80315"
+         id="path4264"
+         inkscape:connector-curvature="0" />
+      <rect
+         y="301.18106"
+         x="825.59058"
+         height="38.976383"
+         width="70.866119"
+         id="rect4266"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="829.13391"
+         y="311.811"
+         id="text4268"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4270"
+           x="829.13391"
+           y="311.811">ACK BIT</tspan><tspan
+           sodipodi:role="line"
+           x="829.13391"
+           y="324.311"
+           id="tspan4272">- check ACK </tspan><tspan
+           id="tspan4357"
+           sodipodi:role="line"
+           x="829.13391"
+           y="336.811">from master</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path4291"
+         d="m 205.51179,276.37793 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 294.09448,276.37793 0,24.80315"
+         id="path4301"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4311"
+         d="m 382.67717,276.37793 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4345"
+         d="m 471.25984,276.37793 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 559.8425,276.37793 0,24.80315"
+         id="path4347"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4349"
+         d="m 648.42519,276.37793 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4361"
+         width="70.866119"
+         height="38.976383"
+         x="790.15753"
+         y="205.5118" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4363"
+         y="216.14172"
+         x="793.70087"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="216.14172"
+           x="793.70087"
+           id="tspan4365"
+           sodipodi:role="line"
+           style="font-weight:bold">ACK BIT</tspan><tspan
+           id="tspan4367"
+           y="228.64172"
+           x="793.70087"
+           sodipodi:role="line">- sample ACK </tspan><tspan
+           y="241.14172"
+           x="793.70087"
+           sodipodi:role="line"
+           id="tspan4369">from master</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="path4371"
+         d="m 790.15748,244.48816 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="85.039368"
+         y="226.77165"
+         id="text4373"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4375"
+           x="85.039368"
+           y="226.77165">BIT 7</tspan><tspan
+           sodipodi:role="line"
+           x="85.039368"
+           y="239.27165"
+           id="tspan4379">- bit_cnt++</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4381"
+         width="70.866142"
+         height="28.346453"
+         x="81.496063"
+         y="216.14172" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 81.496063,244.48816 0,24.80315"
+         id="path4403"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4405"
+         d="m 170.07874,244.48816 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 258.66141,244.48816 0,24.80315"
+         id="path4407"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4411"
+         d="m 347.24409,244.48816 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 435.82675,244.48816 0,24.80315"
+         id="path4423"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4435"
+         d="m 524.40948,244.48816 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 612.99213,244.48816 0,24.80315"
+         id="path4447"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4459"
+         d="m 701.5748,244.48816 0,24.80315"
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4471"
+         y="226.77165"
+         x="173.62204"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="226.77165"
+           x="173.62204"
+           id="tspan4473"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 6</tspan><tspan
+           id="tspan4475"
+           y="239.27165"
+           x="173.62204"
+           sodipodi:role="line">- bit_cnt++</tspan></text>
+      <rect
+         y="216.14172"
+         x="170.07874"
+         height="28.346453"
+         width="70.866142"
+         id="rect4477"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="262.20471"
+         y="226.77165"
+         id="text4479"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4481"
+           x="262.20471"
+           y="226.77165">BIT 5</tspan><tspan
+           sodipodi:role="line"
+           x="262.20471"
+           y="239.27165"
+           id="tspan4483">- bit_cnt++</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4485"
+         width="70.866142"
+         height="28.346453"
+         x="258.66141"
+         y="216.14172" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4487"
+         y="226.77165"
+         x="350.78738"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="226.77165"
+           x="350.78738"
+           id="tspan4489"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 4</tspan><tspan
+           id="tspan4491"
+           y="239.27165"
+           x="350.78738"
+           sodipodi:role="line">- bit_cnt++</tspan></text>
+      <rect
+         y="216.14172"
+         x="347.24408"
+         height="28.346453"
+         width="70.866142"
+         id="rect4493"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="439.37009"
+         y="226.77165"
+         id="text4495"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4497"
+           x="439.37009"
+           y="226.77165">BIT 3</tspan><tspan
+           sodipodi:role="line"
+           x="439.37009"
+           y="239.27165"
+           id="tspan4499">- bit_cnt++</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4501"
+         width="70.866142"
+         height="28.346453"
+         x="435.82678"
+         y="216.14172" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4503"
+         y="226.77165"
+         x="527.95276"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="226.77165"
+           x="527.95276"
+           id="tspan4505"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 2</tspan><tspan
+           id="tspan4507"
+           y="239.27165"
+           x="527.95276"
+           sodipodi:role="line">- bit_cnt++</tspan></text>
+      <rect
+         y="216.14172"
+         x="524.40942"
+         height="28.346453"
+         width="70.866142"
+         id="rect4509"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <text
+         xml:space="preserve"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="616.53546"
+         y="226.77165"
+         id="text4511"
+         sodipodi:linespacing="125%"><tspan
+           style="font-weight:bold"
+           sodipodi:role="line"
+           id="tspan4513"
+           x="616.53546"
+           y="226.77165">BIT 1</tspan><tspan
+           sodipodi:role="line"
+           x="616.53546"
+           y="239.27165"
+           id="tspan4515">- bit_cnt++</tspan></text>
+      <rect
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="rect4517"
+         width="70.866142"
+         height="28.346453"
+         x="612.99213"
+         y="216.14172" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4519"
+         y="226.77165"
+         x="705.1181"
+         style="font-size:10px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="226.77165"
+           x="705.1181"
+           id="tspan4521"
+           sodipodi:role="line"
+           style="font-weight:bold">BIT 0</tspan><tspan
+           id="tspan4523"
+           y="239.27165"
+           x="705.1181"
+           sodipodi:role="line">- bit_cnt++</tspan></text>
+      <rect
+         y="216.14172"
+         x="701.57477"
+         height="28.346453"
+         width="70.866142"
+         id="rect4525"
+         style="opacity:0.98999999;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 729.92126,262.20465 1e-5,38.97641"
+         id="path3268"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+    </g>
+  </g>
+</svg>
