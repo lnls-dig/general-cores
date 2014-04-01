@@ -93,21 +93,27 @@ package wb_irq_pkg is
     name          => "IRQ_CTRL           ")));
 
   component wb_irq_master is
-  generic( g_channels     : natural := 32;   -- number of interrupt lines
-         g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
-         g_det_edge     : boolean := true  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-); 
-port    (clk_i          : std_logic;   -- clock
-         rst_n_i        : std_logic;   -- reset, active LO
-         --msi if
-         irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
-         irq_master_i   : in  t_wishbone_master_in;
-         -- ctrl interface  
-         ctrl_slave_o : out t_wishbone_slave_out;         
-         ctrl_slave_i : in  t_wishbone_slave_in;
-         --irq lines
-         irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
-  );
+  generic(
+    g_channels     : natural := 32;   -- number of interrupt lines
+    g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
+    g_det_edge     : boolean := true;  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+    g_has_dev_id   : boolean := false;  -- if set, dst adr bits 11..7 hold g_dev_id as device identifier
+    g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+    g_has_ch_id    : boolean := false;  -- if set, dst adr bits  6..2 hold g_ch_id  as device identifier         
+    g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+    ); 
+  port(
+    clk_i          : std_logic;   -- clock
+    rst_n_i        : std_logic;   -- reset, active LO
+    --msi if
+    irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
+    irq_master_i   : in  t_wishbone_master_in;
+    -- ctrl interface  
+    ctrl_slave_o : out t_wishbone_slave_out;         
+    ctrl_slave_i : in  t_wishbone_slave_in;
+    --irq lines
+    irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
+    );
   end component;
   
   component wb_irq_slave is
