@@ -6,7 +6,8 @@
 \usepackage{graphicx}
 \usepackage{multirow}
 
-\usepackage{color}
+% Color package
+\usepackage[usenames,dvipsnames,table]{xcolor}
 
 \usepackage[toc,page]{appendix}
 
@@ -36,6 +37,7 @@
 
 \centerline
 {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c p{.6\textwidth}}
   \hline
   \multicolumn{1}{c}{\textbf{Date}} & \multicolumn{1}{c}{\textbf{Version}} & \multicolumn{1}{c}{\textbf{Change}} \\
@@ -87,20 +89,21 @@ in the HDL code to reset the FSM.
 The ports of the \textit{gc\_fsm\_watchdog} module are shown in Table~\ref{tbl:ports}.
 
 \begin{table}[h]
-  \caption{Ports of \textit{vbcp\_wb} module}
+  \caption{Ports of \textit{gc\_fsm\_watchdog} module}
   \label{tbl:ports}
   \centerline
   {
-    \begin{tabular}{l c p{.6\textwidth}}
+    \rowcolors{2}{white}{gray!25}
+    \begin{tabular}{l p{.8\textwidth}}
     \hline
-    \multicolumn{1}{c}{\textbf{Port}} & \textbf{Size} & \multicolumn{1}{c}{\textbf{Description}} \\
+    \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{Description}} \\
     \hline
-    clk\_i      & 1 & Clock input \\
-    rst\_n\_i   & 1 & Active-low reset input \\
-    wdt\_rst\_i & 1 & Active-high reset input from the FSM to the watchdog timer \newline
-                      Synchronous to \textit{clk\_i}\\
-    fsm\_rst\_o & 1 & Active-high reset output from the watchdog timer to the FSM \newline
-                      Synchronous to \textit{clk\_i}\\ \\
+    clk\_i      & Clock input \\
+    rst\_n\_i   & Active-low reset input \\
+    wdt\_rst\_i & Active-high reset input from the FSM to the watchdog timer \newline
+                  Synchronous to \textit{clk\_i}\\
+    fsm\_rst\_o & Active-high reset output from the watchdog timer to the FSM \newline
+                  Synchronous to \textit{clk\_i}\\
     \hline
     \end{tabular}
   }

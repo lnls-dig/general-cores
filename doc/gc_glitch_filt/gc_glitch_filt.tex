@@ -4,7 +4,7 @@
 \documentclass[a4paper,11pt]{article}
 
 % Color package
-\usepackage[usenames,dvipsnames]{color}
+\usepackage[usenames,dvipsnames,table]{xcolor}
 
 % Hyperrefs
 \usepackage[
@@ -45,6 +45,7 @@
 
 \centerline
 {
+  \rowcolors{2}{white}{gray!25}
   \begin{tabular}{l c p{.6\textwidth}}
   \hline
   \multicolumn{1}{c}{\textbf{Date}} & \multicolumn{1}{c}{\textbf{Version}} & \multicolumn{1}{c}{\textbf{Change}} \\
@@ -116,6 +117,7 @@ clock cycles later.
   \label{tbl:ports}
   \centerline
   {
+    \rowcolors{2}{white}{gray!25}
     \begin{tabular}{l p{.7\textwidth}}
       \hline
       \multicolumn{1}{c}{\textbf{Name}} & \multicolumn{1}{c}{\textbf{Description}} \\
@@ -124,6 +126,7 @@ clock cycles later.
                1 -- glitches narrower than 1 \textit{clk\_i} cycle are filtered \newline
                2 -- glitches narrower than 2 \textit{clk\_i} cycles are filtered \newline
                etc.\\
+      \hline
       clk\_i & Clock input \\
       rst\_n\_i & Active-low reset input \\
       dat\_i & Data input (should be synchronous to \textit{clk\_i})\\
