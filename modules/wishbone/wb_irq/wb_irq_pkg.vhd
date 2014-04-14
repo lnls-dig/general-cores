@@ -76,7 +76,7 @@ package wb_irq_pkg is
     date          => x"20120308",
     name          => "IRQ_ENDPOINT       ")));
   
-  constant c_irq_ctrl_sdb : t_sdb_device := (
+  constant c_irq_slave_ctrl_sdb : t_sdb_device := (
     abi_class     => x"0000", -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
@@ -90,7 +90,23 @@ package wb_irq_pkg is
     device_id     => x"10040083",
     version       => x"00000001",
     date          => x"20120308",
-    name          => "IRQ_CTRL           ")));
+    name          => "IRQ_SLAVE_CTRL     ")));
+
+  constant c_irq_master_ctrl_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"10040084",
+    version       => x"00000001",
+    date          => x"20130414",
+    name          => "IRQ_MASTER_CTRL    ")));
 
   component wb_irq_master is
   generic(
