@@ -153,7 +153,7 @@ s_irq <= irq_i or r_swirq;
   variable v_ch_sl : natural range g_channels-1 downto 0; 
   begin
       if rising_edge(clk_i) then
-         if(rst_n_i = '0' or r_rst_n <= '0') then
+         if(rst_n_i = '0' or r_rst_n = '0') then
             r_c_ack  <= '0';
             r_c_err  <= '0';
             r_rst_n  <= '1';
