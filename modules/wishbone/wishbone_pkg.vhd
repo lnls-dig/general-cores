@@ -898,7 +898,6 @@ package wishbone_pkg is
       g_addr_width             : natural   := 24; -- log of memory (24=16MB)
       g_idle_time              : natural   := 3;
       g_dummy_time             : natural   := 8;
-      g_config                 : boolean   := false;
       -- leave these at defaults if you have:
       --   a) slow clock, b) valid constraints, or c) registered in/outputs
       g_input_latch_edge       : std_logic := '1'; -- rising
@@ -918,7 +917,7 @@ package wishbone_pkg is
       asdi_o    : out std_logic_vector(g_port_width-1 downto 0);
       data_i    : in  std_logic_vector(g_port_width-1 downto 0);
       
-      external_request_i : in  std_logic; -- JTAG wants to use SPI?
+      external_request_i : in  std_logic := '0'; -- JTAG wants to use SPI?
       external_granted_o : out std_logic);
   end component;
 
@@ -1763,7 +1762,7 @@ package body wishbone_pkg is
     variable result : t_sdb_device := (
       abi_class     => x"0000", -- undocumented device
       abi_ver_major => x"01",
-      abi_ver_minor => x"01",
+      abi_ver_minor => x"02",
       wbd_endian    => c_sdb_endian_big,
       wbd_width     => x"7", -- 8/16/32-bit port granularity
       sdb_component => (
@@ -1772,8 +1771,8 @@ package body wishbone_pkg is
       product => (
       vendor_id     => x"0000000000000651", -- GSI
       device_id     => x"5cf12a1c",
-      version       => x"00000001",
-      date          => x"20130415",
+      version       => x"00000002",
+      date          => x"20140417",
       name          => "SPI-FLASH-16M-MMAP ")));
   begin
     result.sdb_component.addr_last := std_logic_vector(to_unsigned(2**g_bits-1, 64));

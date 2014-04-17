@@ -36,7 +36,6 @@ entity wb_spi_flash is
     g_addr_width             : natural   := 24; -- size dependent (EPCQ256=25, EPCS128=24, ...)
     g_idle_time              : natural   := 3;
     g_dummy_time             : natural   := 8;
-    g_config                 : boolean   := false;
     -- leave these at defaults if you have:
     --   a) slow clock, b) valid constraints, or c) registered in/outputs
     g_input_latch_edge       : std_logic := '1'; -- rising
@@ -77,11 +76,6 @@ architecture rtl of wb_spi_flash is
   constant c_write_bytes  : t_byte := "00000010"; -- address, dataout
   constant c_write_bytes2 : t_byte := "11010010"; -- address, dataout
   constant c_write_bytes4 : t_byte := "00010010"; -- address, dataout
-  constant c_erase_sector : t_byte := "11011000"; -- address
-  constant c_4addr        : t_byte := "10110111"; -- 
-  constant c_3addr        : t_byte := "11101001"; -- 
-  constant c_write_vstatus: t_byte := "10000001"; -- 
-  constant c_vstatus_data : t_byte := std_logic_vector(to_unsigned(g_dummy_time, 4)) & "1111"; -- no XIP (1), res (1), sequential read (11)
   
   function f_addr_bits(x : natural) return natural is begin
     if x <= 24 then return 24; else return 32; end if;
@@ -98,13 +92,9 @@ architecture rtl of wb_spi_flash is
   constant c_magic_reg : t_address := (others => '1');
   
   type t_state is (
-    S_ERROR, S_WAIT, S_INIT, S_DISPATCH, S_JTAG,
+    S_ERROR, S_WAIT, S_DISPATCH, S_JTAG, S_CUSTOM,
     S_READ, S_READ_ADDR, S_READ_DUMMY, S_READ_DATA, S_LOWER_CS_IDLE,
     S_ENABLE_WRITE, S_LOWER_CS_WRITE, S_WRITE, S_WRITE_ADDR, S_WRITE_DATA, 
-    S_ENABLE_ERASE, S_LOWER_CS_ERASE, S_ERASE, 
-      S_ERASE_ADDR3, S_ERASE_ADDR2, S_ERASE_ADDR1, S_ERASE_ADDR0,
-    S_ENABLE_VSTATUS, S_LOWER_CS_VSTATUS, S_VSTATUS, S_VSTATUS_DATA, S_LOWER2_CS_VSTATUS,
-    S_ENABLE_XADDR, S_LOWER_CS_XADDR, S_XADDR,
     S_LOWER_CS_WAIT, S_READ_STATUS, S_LOAD_STATUS, S_WAIT_READY);
   
   -- Format a command for output
@@ -159,8 +149,8 @@ architecture rtl of wb_spi_flash is
   constant c_idle       : t_word   := f_stripe("--------");
   constant c_oe_default : t_status := c_full_oe(t_status'range);
   
-  signal r_state   : t_state         := S_INIT;
-  signal r_state_n : t_state         := S_INIT;
+  signal r_state   : t_state         := S_LOWER_CS_WAIT;
+  signal r_state_n : t_state         := S_LOWER_CS_WAIT;
   signal r_count   : t_count         := (others => '-');
   signal r_stall   : std_logic       := '0';
   signal r_stall_n : std_logic       := '0';
@@ -179,6 +169,13 @@ architecture rtl of wb_spi_flash is
   signal master_o     : t_wishbone_master_out;
   signal clk_out_rstn : std_logic;
   signal s_wip        : std_logic; -- write in progress
+  
+  -- Custom command FIFO
+  signal r_fifo_wen  : std_logic;
+  signal r_fifo_wad  : std_logic_vector(9 downto 0);
+  signal r_fifo_wdat : t_byte;
+  signal r_fifo_rad  : std_logic_vector(9 downto 0);
+  signal s_fifo_rdat : t_byte;
   
 begin
 
@@ -211,6 +208,22 @@ begin
       synced_o => clk_out_rstn,
       npulse_o => open,
       ppulse_o => open);
+  
+  fifo : generic_simple_dpram
+    generic map(
+      g_data_width       => 8,
+      g_size             => 1024,
+      g_with_byte_enable => false,
+      g_dual_clock       => false)
+    port map(
+      clka_i => clk_out_i,
+      bwea_i => (others => '1'),
+      wea_i  => r_fifo_wen,
+      aa_i   => r_fifo_wad,
+      da_i   => r_fifo_wdat,
+      clkb_i => clk_out_i,
+      ab_i   => r_fifo_rad,
+      qb_o   => s_fifo_rdat);
   
   master_i.ack <= r_ack(r_ack'left);
   master_i.err <= r_err;
@@ -250,11 +263,6 @@ begin
           r_ncs     <= r_ncs;
           r_oe      <= r_oe;
         
-        when S_INIT =>
-          r_shift_o <= c_idle;
-          r_ncs     <= '1';
-          r_oe      <= c_oe_default;
-        
         when S_DISPATCH =>
           r_shift_o <= c_idle;
           r_ncs     <= '1';
@@ -265,6 +273,11 @@ begin
           r_ncs     <= '1';
           r_oe      <= (others => '0');
         
+        when S_CUSTOM =>
+          r_shift_o <= f_stripe(s_fifo_rdat);
+          r_ncs     <= '0';
+          r_oe      <= c_oe_default;
+          
         when S_READ =>
           case g_port_width is
             when 1 => r_shift_o <= f_stripe(c_fast_read);
@@ -293,7 +306,7 @@ begin
         when S_LOWER_CS_IDLE =>
           r_shift_o <= c_idle;
           r_ncs     <= '1'; 
-          r_oe      <= c_oe_default;
+          r_oe      <= (others => '0');
         
         when S_ENABLE_WRITE =>
           r_shift_o <= f_stripe(c_write_enable);
@@ -324,85 +337,6 @@ begin
           r_shift_o <= r_dat;
           r_ncs     <= '0';
           r_oe      <= (others => '1');
-          
-        when S_ENABLE_ERASE =>
-          r_shift_o <= f_stripe(c_write_enable);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_LOWER_CS_ERASE =>
-          r_shift_o <= c_idle;
-          r_ncs     <= '1';
-          r_oe      <= c_oe_default;
-          
-        when S_ERASE =>
-          r_shift_o <= f_stripe(c_erase_sector);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-
-        when S_ERASE_ADDR3 =>
-          r_shift_o <= f_stripe(f_address(r_adr)(31 downto 24));
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_ERASE_ADDR2 =>
-          r_shift_o <= f_stripe(f_address(r_adr)(23 downto 16));
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_ERASE_ADDR1 =>
-          r_shift_o <= f_stripe(f_address(r_adr)(15 downto 8));
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_ERASE_ADDR0 =>
-          r_shift_o <= f_stripe(f_address(r_adr)(7 downto 0));
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_ENABLE_VSTATUS =>
-          r_shift_o <= f_stripe(c_write_enable);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_LOWER_CS_VSTATUS =>
-          r_shift_o <= c_idle;
-          r_ncs     <= '1';
-          r_oe      <= c_oe_default;
-        
-        when S_VSTATUS =>
-          r_shift_o <= f_stripe(c_write_vstatus);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_VSTATUS_DATA =>
-          r_shift_o <= f_stripe(c_vstatus_data);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_LOWER2_CS_VSTATUS =>
-          r_shift_o <= c_idle;
-          r_ncs     <= '1';
-          r_oe      <= c_oe_default;
-        
-        when S_ENABLE_XADDR =>
-          r_shift_o <= f_stripe(c_write_enable);
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
-        
-        when S_LOWER_CS_XADDR =>
-          r_shift_o <= c_idle;
-          r_ncs     <= '1';
-          r_oe      <= c_oe_default;
-        
-        when S_XADDR =>
-          if g_addr_width > 24 then
-            r_shift_o <= f_stripe(c_4addr);
-          else
-            r_shift_o <= f_stripe(c_3addr);
-          end if;
-          r_ncs     <= '0';
-          r_oe      <= c_oe_default;
         
         when S_LOWER_CS_WAIT =>
           r_shift_o <= c_idle;
@@ -444,7 +378,7 @@ begin
   main : process(clk_out_i, clk_out_rstn) is
   begin
     if clk_out_rstn = '0' then
-      r_state   <= S_INIT;
+      r_state   <= S_LOWER_CS_WAIT;
       r_state_n <= S_WAIT;
       r_count   <= (others => '-');
       r_stall   <= '0';
@@ -456,6 +390,11 @@ begin
       r_adr     <= (others => '-');
       
       external_granted_o  <= '0';
+      
+      r_fifo_wen  <= '0';
+      r_fifo_wad  <= (others => '1');
+      r_fifo_wdat <= (others => '-');
+      r_fifo_rad  <= (others => '0');
     elsif rising_edge(clk_out_i) then
       
       -- Default transition rules
@@ -463,6 +402,7 @@ begin
       r_stall  <= '1';
       r_ack(0) <= '0';
       r_err    <= '0';
+      r_fifo_wen <= '0';
       
       if g_input_to_output_cycles > 1 then
         r_ack(g_input_to_output_cycles-1 downto 1) <=
@@ -490,14 +430,6 @@ begin
             r_ack_n   <= '0';
           end if;
         
-        when S_INIT =>
-          r_count <= (others => '1');
-          if g_config then
-            r_state_n <= S_ENABLE_VSTATUS;
-          else
-            r_state_n <= S_LOWER_CS_WAIT;
-          end if;
-        
         when S_DISPATCH =>
           r_count   <= (others => '-');
           r_state_n <= S_ERROR;
@@ -512,8 +444,15 @@ begin
               r_state <= S_READ;
             else
               if unsigned(master_o.adr(t_address'range)) = c_magic_reg then
-                r_adr   <= unsigned(master_o.dat(t_address'range));
-                r_state <= S_ENABLE_ERASE;
+                if master_o.dat(31) = '0' then
+                  r_fifo_wen  <= '1';
+                  r_fifo_wad  <= std_logic_vector(unsigned(r_fifo_wad) + 1);
+                  r_fifo_wdat <= master_o.dat(7 downto 0);
+                  r_ack(0)<= '1';
+                  r_stall <= '0';
+                else
+                  r_state <= S_CUSTOM;
+                end if;
               else
                 r_state <= S_ENABLE_WRITE;
               end if;
@@ -532,6 +471,18 @@ begin
           else
             r_state <= S_LOWER_CS_WAIT;
             external_granted_o <= '0';
+          end if;
+        
+        when S_CUSTOM =>
+          r_count   <= c_cmd_time;
+          if r_fifo_rad = r_fifo_wad then
+            r_ack_n    <= '1';
+            r_state_n  <= S_LOWER_CS_WAIT;
+            r_fifo_rad <= (others => '0');
+            r_fifo_wad <= (others => '1');
+          else
+            r_state_n  <= S_CUSTOM;
+            r_fifo_rad <= std_logic_vector(unsigned(r_fifo_rad) + 1);
           end if;
         
         when S_READ =>
@@ -598,71 +549,6 @@ begin
             r_state_n  <= S_LOWER_CS_WAIT;
           end if;
           
-        when S_ENABLE_ERASE =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_ERASE;
-        
-        when S_LOWER_CS_ERASE =>
-          r_count   <= c_low_time;
-          r_state_n <= S_ERASE;
-          
-        when S_ERASE =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_ERASE_ADDR3;
-          r_ack_n   <= '1';
-
-        when S_ERASE_ADDR3 =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_ERASE_ADDR2;
-        
-        when S_ERASE_ADDR2 =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_ERASE_ADDR1;
-        
-        when S_ERASE_ADDR1 =>
-          r_count   <= c_cmd_time;
-          if g_addr_width > 24 then
-            r_state_n <= S_ERASE_ADDR0;
-          else
-            r_state_n <= S_LOWER_CS_WAIT;
-          end if;
-        
-        when S_ERASE_ADDR0 =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_WAIT;
-        
-        when S_ENABLE_VSTATUS =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_VSTATUS;
-          
-        when S_LOWER_CS_VSTATUS =>
-          r_count   <= c_low_time;
-          r_state_n <= S_VSTATUS;
-          
-        when S_VSTATUS =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_VSTATUS_DATA;
-          
-        when S_VSTATUS_DATA =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER2_CS_VSTATUS;
-        
-        when S_LOWER2_CS_VSTATUS =>
-          r_count   <= c_low_time;
-          r_state_n <= S_ENABLE_XADDR;
-        
-        when S_ENABLE_XADDR =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_XADDR;
-        
-        when S_LOWER_CS_XADDR =>
-          r_count   <= c_low_time;
-          r_state_n <= S_XADDR;
-        
-        when S_XADDR =>
-          r_count   <= c_cmd_time;
-          r_state_n <= S_LOWER_CS_WAIT;
-        
         when S_LOWER_CS_WAIT =>
           r_count   <= c_low_time;
           r_state_n <= S_READ_STATUS;
