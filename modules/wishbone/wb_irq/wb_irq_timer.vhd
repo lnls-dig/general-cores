@@ -49,28 +49,6 @@ end entity;
 
 architecture behavioral of wb_irq_timer is
 
-
-function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector is
-   variable n_sel     : std_logic_vector(pval'range);
-	variable n_val     : std_logic_vector(pval'range);
-   variable result 	 : std_logic_vector(pval'range);   
-begin
-  for i in pval'range loop 
-   n_sel(i) := sel(i / 8);
-	n_val(i) := ival(i);
-  end loop;
-
-  if(mode = "set") then  
-   result := pval or (n_val and n_sel);
-  elsif (mode = "clr") then
-   result := pval and not (n_val and n_sel); 
-  else
-   result := (pval and not n_sel) or (n_val and n_sel);    
-  end if;  
-  
-  return result;
-end f_wb_wr;
-
 function f_or_vec(a : std_logic_vector) return std_logic is
     variable result : std_logic := '0';
   begin
