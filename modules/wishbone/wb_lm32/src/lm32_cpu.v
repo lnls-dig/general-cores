@@ -156,6 +156,7 @@ parameter eba_reset = `CFG_EBA_RESET;                           // Reset value f
 `ifdef CFG_DEBUG_ENABLED
 parameter deba_reset = `CFG_DEBA_RESET;                         // Reset value for DEBA CSR
 `endif
+parameter sdb_address =  `CFG_SDB;
 
 `ifdef CFG_ICACHE_ENABLED
 parameter icache_associativity = `CFG_ICACHE_ASSOCIATIVITY;     // Associativity of the cache (Number of ways)
@@ -2077,6 +2078,7 @@ begin
     `LM32_CSR_JRX:  csr_read_data_x = jrx_csr_read_data;
 `endif
     `LM32_CSR_CFG2: csr_read_data_x = cfg2;
+    `LM32_CSR_SDB:  csr_read_data_x = sdb_address;
       
     default:        csr_read_data_x = {`LM32_WORD_WIDTH{1'bx}};
     endcase

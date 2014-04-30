@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 entity xwb_lm32 is
 generic(g_profile: string;
-g_reset_vector: std_logic_vector(31 downto 0) := x"00000000");
+g_reset_vector: std_logic_vector(31 downto 0) := x"00000000";
+g_sdb_address: std_logic_vector(31 downto 0) := x"00000000");
 port(
 clk_sys_i : in  std_logic;
 rst_n_i : in  std_logic;
@@ -39,7 +40,8 @@ if profile_name = "full_debug" then return 4; end if;
 return 0;
 end function;
 component lm32_top_minimal is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -73,7 +75,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_medium is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -107,7 +110,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_medium_icache is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -141,7 +145,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_medium_debug is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -175,7 +180,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_medium_icache_debug is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -209,7 +215,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_full is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -243,7 +250,8 @@ port (
    D_BTE_O  : out std_logic_vector(1 downto 0));
 end component;
 component lm32_top_full_debug is 
-generic ( eba_reset: std_logic_vector(31 downto 0) );
+generic ( eba_reset: std_logic_vector(31 downto 0);
+          sdb_address: std_logic_vector(31 downto 0));
 port (
  
   clk_i    : in  std_logic;
@@ -342,7 +350,8 @@ gen_profile_minimal: if (g_profile = "minimal") generate
 U_Wrapped_LM32: lm32_top_minimal
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -385,7 +394,8 @@ gen_profile_medium: if (g_profile = "medium") generate
 U_Wrapped_LM32: lm32_top_medium
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -428,7 +438,8 @@ gen_profile_medium_icache: if (g_profile = "medium_icache") generate
 U_Wrapped_LM32: lm32_top_medium_icache
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -471,7 +482,8 @@ gen_profile_medium_debug: if (g_profile = "medium_debug") generate
 U_Wrapped_LM32: lm32_top_medium_debug
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -514,7 +526,8 @@ gen_profile_medium_icache_debug: if (g_profile = "medium_icache_debug") generate
 U_Wrapped_LM32: lm32_top_medium_icache_debug
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -557,7 +570,8 @@ gen_profile_full: if (g_profile = "full") generate
 U_Wrapped_LM32: lm32_top_full
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
@@ -600,7 +614,8 @@ gen_profile_full_debug: if (g_profile = "full_debug") generate
 U_Wrapped_LM32: lm32_top_full_debug
 
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,
