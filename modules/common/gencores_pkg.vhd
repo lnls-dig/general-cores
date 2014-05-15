@@ -8,7 +8,7 @@
 --              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-03-20
+-- Last update: 2014-05-15
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -481,7 +481,6 @@ package gencores_pkg is
   function f_big_ripple(a, b    : std_logic_vector; c : std_logic) return std_logic_vector;
   function f_gray_encode(x      : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x      : std_logic_vector; step : natural) return std_logic_vector;
-  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
   function log2_ceil(N          : natural) return positive;
 
 end package;
@@ -569,15 +568,6 @@ package body gencores_pkg is
       return f_gray_decode(y xor z, step+step);
     end if;
   end f_gray_decode;
-
-  function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector is
-    variable tmp : std_logic_vector(size-1 downto 0);
-  begin
-    for i in 0 to size-1 loop
-      tmp(i) := val;
-    end loop;  -- i
-    return tmp;
-  end f_gen_dummy_vec;
 
   ------------------------------------------------------------------------------
   -- Returns log of 2 of a natural number
