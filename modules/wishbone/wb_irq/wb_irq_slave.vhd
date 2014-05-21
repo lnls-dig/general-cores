@@ -119,7 +119,7 @@ begin
   G1: for I in 0 to g_queues-1 generate
     
     irq_d(I)              <= irq_slave_i(I).sel & irq_slave_i(I).adr & irq_slave_i(I).dat;
-    irq_push(I)           <= irq_slave_i(I).cyc and irq_slave_i(I).stb and not irq_full(I) and r_ena(I); 
+    irq_push(I)           <= irq_slave_i(I).cyc and irq_slave_i(I).stb and irq_slave_i(I).we not irq_full(I) and r_ena(I); 
     irq_slave_o(I).stall  <= irq_full(I);
     irq_pop(I)            <= r_pop(I) and r_status(I);
     r_status(I)           <= not irq_empty(I);
