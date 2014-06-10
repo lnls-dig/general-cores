@@ -187,41 +187,43 @@ package wb_irq_pkg is
    generic( g_channels  : natural := 32;  -- number of interrupt lines
          g_round_rb     : boolean := true;   -- scheduler       true: round robin,                         false: prioritised 
          g_det_edge     : boolean := true    -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-); 
-port    (clk_i          : in std_logic;   -- clock
-         rst_n_i        : in std_logic;   -- reset, active LO
-         --msi if
-         irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
-         irq_master_i   : in  t_wishbone_master_in;
-         --config        
-         msi_dst_array  : in t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
-         msi_msg_array  : in t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
-         --irq lines
-         en_i           : in std_logic;                                 -- global interrupt enable          
-         mask_i         : in std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
-         irq_i          : in std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
-);
+   ); 
+   port    (clk_i          : in std_logic;   -- clock
+            rst_n_i        : in std_logic;   -- reset, active LO
+            --msi if
+            irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
+            irq_master_i   : in  t_wishbone_master_in;
+            --config        
+            msi_dst_array  : in t_wishbone_address_array(g_channels-1 downto 0); -- MSI Destination address for each channel
+            msi_msg_array  : in t_wishbone_data_array(g_channels-1 downto 0);    -- MSI Message for each channel
+            --irq lines
+            en_i           : in std_logic;                                 -- global interrupt enable          
+            mask_i         : in std_logic_vector(g_channels-1 downto 0);   -- interrupt mask
+            irq_i          : in std_logic_vector(g_channels-1 downto 0)    -- interrupt lines
+   );
    end component; 
 
-  component wb_irq_lm32 is
-  generic(g_msi_queues: natural := 3;
-          g_profile: string);
-  port(
-  clk_sys_i : in  std_logic;
-  rst_n_i : in  std_logic;
+   component wb_irq_lm32 is
+   generic( g_msi_queues    : natural := 3;
+            g_profile       : string;
+            g_reset_vector  : std_logic_vector(31 downto 0) := x"00000000"
+   );
+   port(
+      clk_sys_i      : in  std_logic;
+      rst_n_i        : in  std_logic;
 
-  dwb_o  : out t_wishbone_master_out;
-  dwb_i  : in  t_wishbone_master_in;
-  iwb_o  : out t_wishbone_master_out;
-  iwb_i  : in  t_wishbone_master_in;
+      dwb_o          : out t_wishbone_master_out;
+      dwb_i          : in  t_wishbone_master_in;
+      iwb_o          : out t_wishbone_master_out;
+      iwb_i          : in  t_wishbone_master_in;
 
-  irq_slave_o  : out t_wishbone_slave_out_array(g_msi_queues-1 downto 0);  -- wb msi interface
-  irq_slave_i  : in  t_wishbone_slave_in_array(g_msi_queues-1 downto 0);
-           
-  ctrl_slave_o : out t_wishbone_slave_out;                             -- ctrl interface for LM32 irq processing
-  ctrl_slave_i : in  t_wishbone_slave_in
-  );
-  end component;
+      irq_slave_o    : out t_wishbone_slave_out_array(g_msi_queues-1 downto 0);  -- wb msi interface
+      irq_slave_i    : in  t_wishbone_slave_in_array(g_msi_queues-1 downto 0);
+               
+      ctrl_slave_o   : out t_wishbone_slave_out;                             -- ctrl interface for LM32 irq processing
+      ctrl_slave_i   : in  t_wishbone_slave_in
+   );
+   end component;
   
 end package;
 
