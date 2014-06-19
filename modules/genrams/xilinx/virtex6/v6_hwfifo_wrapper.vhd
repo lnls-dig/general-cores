@@ -110,7 +110,7 @@ begin  -- syn
 
   srst <= not rst_n_i;
 
-  srstreg <= '0' when g_dual_clock = true else srst;
+  srstreg <= '0';
   
   gen_fifo36 : if(m.is_36 and m.d_width > 0) generate
     assert false report "generic_sync_fifo[xilinx]: using FIFO36E1 primitive." severity note;
@@ -130,7 +130,7 @@ begin  -- syn
         ALMOST_FULL_OFFSET      => to_bitvector(std_logic_vector(to_unsigned(g_almost_full_threshold, 16))),
         ALMOST_EMPTY_OFFSET     => to_bitvector(std_logic_vector(to_unsigned(g_almost_empty_threshold, 16))),
         DATA_WIDTH              => m.d_width + m.dp_width,
-        DO_REG                  => f_bool_2_int(not g_dual_clock),
+        DO_REG                  => f_bool_2_int(g_dual_clock),
         EN_SYN                  => not g_dual_clock,
         FIFO_MODE               => f_v6_fifo_mode(m),
         FIRST_WORD_FALL_THROUGH => false)

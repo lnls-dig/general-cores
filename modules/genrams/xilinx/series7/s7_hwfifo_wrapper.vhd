@@ -110,7 +110,9 @@ begin  -- syn
 
   srst <= not rst_n_i;
 
-  srstreg <= '0' when g_dual_clock = true else srst;
+  -- This can only be used if DO_REG = 1 and EN_SYN = TRUE, which is never the case
+  -- for the current mapping
+  srstreg <= '0';
   
   gen_fifo36 : if(m.is_36 and m.d_width > 0) generate
     assert false report "generic_sync_fifo[xilinx]: using FIFO36E1 primitive." severity note;
