@@ -451,7 +451,9 @@ begin
                   r_ack(0)<= '1';
                   r_stall <= '0';
                 else
-                  r_state <= S_CUSTOM;
+                  r_state_n <= S_CUSTOM;
+                  r_state   <= S_WAIT;
+                  r_count   <= to_unsigned(1, t_count'length);
                 end if;
               else
                 r_state <= S_ENABLE_WRITE;
