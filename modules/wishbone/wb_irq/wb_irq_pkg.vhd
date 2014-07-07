@@ -76,7 +76,7 @@ package wb_irq_pkg is
     date          => x"20120308",
     name          => "IRQ_ENDPOINT       ")));
   
-  constant c_irq_ctrl_sdb : t_sdb_device := (
+  constant c_irq_slave_ctrl_sdb : t_sdb_device := (
     abi_class     => x"0000", -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
@@ -90,24 +90,46 @@ package wb_irq_pkg is
     device_id     => x"10040083",
     version       => x"00000001",
     date          => x"20120308",
-    name          => "IRQ_CTRL           ")));
+    name          => "IRQ_SLAVE_CTRL     ")));
+
+  constant c_irq_master_ctrl_sdb : t_sdb_device := (
+    abi_class     => x"0000", -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7", -- 8/16/32-bit port granularity
+    sdb_component => (
+    addr_first    => x"0000000000000000",
+    addr_last     => x"00000000000000ff",
+    product => (
+    vendor_id     => x"0000000000000651", -- GSI
+    device_id     => x"10040084",
+    version       => x"00000001",
+    date          => x"20130414",
+    name          => "IRQ_MASTER_CTRL    ")));
 
   component wb_irq_master is
-  generic( g_channels     : natural := 32;   -- number of interrupt lines
-         g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
-         g_det_edge     : boolean := true  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
-); 
-port    (clk_i          : std_logic;   -- clock
-         rst_n_i        : std_logic;   -- reset, active LO
-         --msi if
-         irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
-         irq_master_i   : in  t_wishbone_master_in;
-         -- ctrl interface  
-         ctrl_slave_o : out t_wishbone_slave_out;         
-         ctrl_slave_i : in  t_wishbone_slave_in;
-         --irq lines
-         irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
-  );
+  generic(
+    g_channels     : natural := 32;   -- number of interrupt lines
+    g_round_rb     : boolean := true; -- scheduler       true: round robin,                         false: prioritised 
+    g_det_edge     : boolean := true;  -- edge detection. true: trigger on rising edge of irq lines, false: trigger on high level
+    g_has_dev_id   : boolean := false;  -- if set, dst adr bits 11..7 hold g_dev_id as device identifier
+    g_dev_id       : std_logic_vector(4 downto 0) := (others => '0'); -- device identifier
+    g_has_ch_id    : boolean := false;  -- if set, dst adr bits  6..2 hold g_ch_id  as device identifier         
+    g_default_msg  : boolean := true   -- initialises msgs to a default value in order to detect uninitialised irq master
+    ); 
+  port(
+    clk_i          : std_logic;   -- clock
+    rst_n_i        : std_logic;   -- reset, active LO
+    --msi if
+    irq_master_o   : out t_wishbone_master_out;  -- Wishbone msi irq interface
+    irq_master_i   : in  t_wishbone_master_in;
+    -- ctrl interface  
+    ctrl_slave_o : out t_wishbone_slave_out;         
+    ctrl_slave_i : in  t_wishbone_slave_in;
+    --irq lines
+    irq_i          : std_logic_vector(g_channels-1 downto 0)  -- irq lines
+    );
   end component;
   
   component wb_irq_slave is

@@ -65,7 +65,7 @@ architecture rtl of xwb_sdb_crossbar is
       result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
       result := result + to_unsigned(c_rom_bytes, 64) - 1;
 
-      for i in c_layout'range loop
+      for i in g_num_slaves-1 downto 0 loop
         if c_layout(i)(7) /= '1' then         -- Ignore meta-information
           sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
           if unsigned(sdb_component.addr_last) > result then
@@ -89,8 +89,11 @@ architecture rtl of xwb_sdb_crossbar is
     variable sdb_component : t_sdb_component;
     variable extend : unsigned(63 downto 0) := (others => '0');
   begin
-    for i in c_layout'range loop
-      if c_layout(i)(7) /= '1' then         -- Ignore meta-information
+    for i in g_num_slaves-1 downto 0 loop
+      if c_layout(i)(7) = '1' then
+        -- ignore meta-data
+        result(i) := (others => '1');
+      else
         sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
         result(i) := sdb_component.addr_first(c_wishbone_address_width-1 downto 0);
 
@@ -116,8 +119,11 @@ architecture rtl of xwb_sdb_crossbar is
     variable size : unsigned(63 downto 0);
     constant zero : unsigned(63 downto 0) := (others => '0');
   begin
-    for i in c_layout'range loop
-      if c_layout(i)(7) /= '1' then         -- Ignore meta-information
+    for i in g_num_slaves-1 downto 0 loop
+      if c_layout(i)(7) = '1' then
+        -- ignore meta-data
+        result(i) := (others => '0');
+      else
         sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
         size := unsigned(sdb_component.addr_last) - unsigned(sdb_component.addr_first);
 

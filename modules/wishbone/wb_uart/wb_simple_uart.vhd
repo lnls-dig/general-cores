@@ -36,7 +36,8 @@ entity wb_simple_uart is
     g_with_virtual_uart   : boolean;
     g_with_physical_uart  : boolean;
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD
+    g_address_granularity : t_wishbone_address_granularity := WORD;
+    g_vuart_fifo_size     : integer := 1024
     );
   port (
 
@@ -61,7 +62,6 @@ end wb_simple_uart;
 architecture syn of wb_simple_uart is
 
   constant c_baud_acc_width  : integer := 16;
-  constant c_vuart_fifo_size : integer := 1024;
 
   component uart_baud_gen
     generic (
@@ -135,7 +135,7 @@ architecture syn of wb_simple_uart is
   signal regs_out : t_UART_out_registers;
 
   signal fifo_empty, fifo_full, fifo_rd, fifo_wr : std_logic;
-  signal fifo_count                              : std_logic_vector(f_log2_size(c_vuart_fifo_size)-1 downto 0);
+  signal fifo_count                              : std_logic_vector(f_log2_size(g_vuart_fifo_size)-1 downto 0);
 
   signal phys_rx_ready, phys_tx_busy : std_logic;
   
@@ -246,7 +246,7 @@ begin  -- syn
     U_VUART_FIFO : generic_sync_fifo
       generic map (
         g_data_width => 8,
-        g_size       => c_vuart_fifo_size,
+        g_size       => g_vuart_fifo_size,
         g_with_count => true)
       port map (
         rst_n_i => rst_n_i,
@@ -298,5 +298,6 @@ begin  -- syn
   end process;
 
   regs_in.sr_tx_busy_i <= phys_tx_busy when (g_with_physical_uart) else '0';
+  regs_in.host_tdr_rdy_i <= not regs_in.sr_rx_rdy_i;
   
 end syn;

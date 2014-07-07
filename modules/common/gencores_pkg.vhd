@@ -5,9 +5,10 @@
 -- File       : gencores_pkg.vhd
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
+--              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-01-13
+-- Last update: 2014-05-15
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -40,6 +41,8 @@
 -- 2009-09-01  0.9      twlostow        Created
 -- 2011-04-18  1.0      twlostow        Added comments & header
 -- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
+-- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
+-- 2014-03-20  1.3      mcattin         Added bicolor led controller
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -53,6 +56,10 @@ package gencores_pkg is
   --============================================================================
   -- Component instantiations
   --============================================================================
+
+  ------------------------------------------------------------------------------
+  -- Pulse extender
+  ------------------------------------------------------------------------------
   component gc_extend_pulse
     generic (
       g_width : natural);
@@ -80,9 +87,12 @@ package gencores_pkg is
     pulse_i          : in  std_logic;      
     pulse_o          : out std_logic       
   );
-	end component;
+  end component;
 
-  component gc_crc_gen
+  ------------------------------------------------------------------------------
+  -- CRC generator
+  ------------------------------------------------------------------------------
+    component gc_crc_gen
     generic (
       g_polynomial              : std_logic_vector       := x"04C11DB7";
       g_init_value              : std_logic_vector       := x"ffffffff";
@@ -104,6 +114,9 @@ package gencores_pkg is
       crc_o     : out std_logic_vector(g_polynomial'length - 1 downto 0));
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Moving average
+  ------------------------------------------------------------------------------
   component gc_moving_average
     generic (
       g_data_width : natural;
@@ -117,6 +130,9 @@ package gencores_pkg is
       dout_stb_o : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- PI controller
+  ------------------------------------------------------------------------------
   component gc_dual_pi_controller
     generic (
       g_error_bits          : integer;
@@ -143,7 +159,9 @@ package gencores_pkg is
       pll_pbgr_p_ki_i   : in  std_logic_vector(g_coef_bits-1 downto 0));
   end component;
 
-
+  ------------------------------------------------------------------------------
+  -- Serial 16-bit DAC interface (SPI/QSPI/MICROWIRE compatible)
+  ------------------------------------------------------------------------------
   component gc_serial_dac
     generic (
       g_num_data_bits  : integer;
@@ -163,6 +181,9 @@ package gencores_pkg is
       busy_o        : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Synchronisation FF chain
+  ------------------------------------------------------------------------------
   component gc_sync_ffs
     generic (
       g_sync_edge : string := "positive");
@@ -175,6 +196,9 @@ package gencores_pkg is
       ppulse_o : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Pulse synchroniser
+  ------------------------------------------------------------------------------
   component gc_pulse_synchronizer
     port (
       clk_in_i  : in  std_logic;
@@ -185,6 +209,9 @@ package gencores_pkg is
       q_p_o     : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Pulse synchroniser (with reset from both clock domains)
+  ------------------------------------------------------------------------------
   component gc_pulse_synchronizer2 is
     port (
       clk_in_i    : in  std_logic;
@@ -196,6 +223,9 @@ package gencores_pkg is
       q_p_o       : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Frequency meter
+  ------------------------------------------------------------------------------
   component gc_frequency_meter
     generic (
       g_with_internal_timebase : boolean;
@@ -210,6 +240,9 @@ package gencores_pkg is
       freq_valid_o : out std_logic);
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Time-division multiplexer with round robin arbitration
+  ------------------------------------------------------------------------------
   component gc_arbitrated_mux
     generic (
       g_num_inputs : integer;
@@ -225,7 +258,9 @@ package gencores_pkg is
       q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
   end component;
 
-  -- Power-On reset generation
+  ------------------------------------------------------------------------------
+  -- Power-On reset generator
+  ------------------------------------------------------------------------------
   component gc_reset is
     generic(
       g_clocks    : natural := 1;
@@ -238,6 +273,9 @@ package gencores_pkg is
       rstn_o     : out std_logic_vector(g_clocks-1 downto 0));
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Round robin arbiter
+  ------------------------------------------------------------------------------
    component gc_rr_arbiter
     generic (
       g_size : integer);
@@ -249,6 +287,9 @@ package gencores_pkg is
       grant_comb_o : out std_logic_vector(g_size-1 downto 0));
   end component;
 
+  ------------------------------------------------------------------------------
+  -- Pack or unpack words
+  ------------------------------------------------------------------------------
   component gc_word_packer
     generic (
       g_input_width  : integer;
@@ -265,6 +306,9 @@ package gencores_pkg is
       q_req_i   : in  std_logic);
     end component;
   
+  ------------------------------------------------------------------------------
+  -- Adder
+  ------------------------------------------------------------------------------
   component gc_big_adder is
   generic(
     g_data_bits : natural := 64;
@@ -279,6 +323,7 @@ package gencores_pkg is
     x2_o    : out std_logic_vector(g_data_bits-1 downto 0);
     c2_o    : out std_logic);
   end component;
+
   ------------------------------------------------------------------------------
   -- I2C slave
   ------------------------------------------------------------------------------
@@ -369,6 +414,32 @@ package gencores_pkg is
   end component gc_glitch_filt;
 
   ------------------------------------------------------------------------------
+  -- Dynamic glitch filter
+  ------------------------------------------------------------------------------
+  component gc_dyn_glitch_filt is
+    generic
+      (
+        -- Number of bit of the glitch filter length input
+        g_len_width : natural := 8
+        );
+    port
+      (
+        clk_i   : in std_logic;
+        rst_n_i : in std_logic;
+
+        -- Glitch filter length
+        len_i : in std_logic_vector(g_len_width-1 downto 0);
+
+        -- Data input
+        dat_i : in std_logic;
+
+        -- Data output
+        -- latency: g_len+1 clk_i cycles
+        dat_o : out std_logic
+        );
+  end component gc_dyn_glitch_filt;
+
+  ------------------------------------------------------------------------------
   -- FSM Watchdog Timer
   ------------------------------------------------------------------------------
   component gc_fsm_watchdog is
@@ -391,6 +462,33 @@ package gencores_pkg is
     );
   end component gc_fsm_watchdog;
 
+  ------------------------------------------------------------------------------
+  -- Bicolor LED controller
+  ------------------------------------------------------------------------------
+  constant c_led_red       : std_logic_vector(1 downto 0) := "10";
+  constant c_led_green     : std_logic_vector(1 downto 0) := "01";
+  constant c_led_red_green : std_logic_vector(1 downto 0) := "11";
+  constant c_led_off       : std_logic_vector(1 downto 0) := "00";
+
+  component gc_bicolor_led_ctrl
+    generic(
+      g_nb_column    : natural := 4;
+      g_nb_line      : natural := 2;
+      g_clk_freq     : natural := 125000000;  -- in Hz
+      g_refresh_rate : natural := 250         -- in Hz
+      );
+    port
+      (
+        rst_n_i         : in  std_logic;
+        clk_i           : in  std_logic;
+        led_intensity_i : in  std_logic_vector(6 downto 0);
+        led_state_i     : in  std_logic_vector((g_nb_line * g_nb_column * 2) - 1 downto 0);
+        column_o        : out std_logic_vector(g_nb_column - 1 downto 0);
+        line_o          : out std_logic_vector(g_nb_line - 1 downto 0);
+        line_oen_o      : out std_logic_vector(g_nb_line - 1 downto 0)
+        );
+  end component;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
@@ -402,16 +500,18 @@ package gencores_pkg is
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
   function f_gray_encode(x : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+  function log2_ceil(N          : natural) return positive;
   
 end package;
 
 package body gencores_pkg is
 
+------------------------------------------------------------------------------
 -- Simple round-robin arbiter:
 -- req = requests (1 = pending request),
 -- pre_grant = previous grant vector (1 cycle delay)
 -- grant = new grant vector
-
+  ------------------------------------------------------------------------------
   procedure f_rr_arbitrate (
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
@@ -445,6 +545,9 @@ package body gencores_pkg is
 
   end f_rr_arbitrate;
 
+  ------------------------------------------------------------------------------
+  -- Carry ripple
+  ------------------------------------------------------------------------------
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector is
     constant len : natural := a'length;
     variable aw, bw, rw : std_logic_vector(len+1 downto 0);
@@ -458,6 +561,9 @@ package body gencores_pkg is
   end f_big_ripple;
   
  
+  ------------------------------------------------------------------------------
+  -- Gray encoder
+  ------------------------------------------------------------------------------
   function f_gray_encode(x : std_logic_vector) return std_logic_vector is
     variable o : std_logic_vector(x'length downto 0);
   begin
@@ -465,7 +571,10 @@ package body gencores_pkg is
     return o(x'length downto 1);
   end f_gray_encode;
   
-  -- Call with step=1
+  ------------------------------------------------------------------------------
+  -- Gray decoder
+  --  call with step=1
+  ------------------------------------------------------------------------------
   function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector is
     constant len : natural := x'length;
     alias    y : std_logic_vector(len-1 downto 0) is x;
@@ -478,5 +587,19 @@ package body gencores_pkg is
       return f_gray_decode(y xor z, step+step);
     end if;
   end f_gray_decode; 
+
+  ------------------------------------------------------------------------------
+  -- Returns log of 2 of a natural number
+  ------------------------------------------------------------------------------
+  function log2_ceil(N : natural) return positive is
+  begin
+    if N <= 2 then
+      return 1;
+    elsif N mod 2 = 0 then
+      return 1 + log2_ceil(N/2);
+    else
+      return 1 + log2_ceil((N+1)/2);
+    end if;
+  end;
 
 end gencores_pkg;
