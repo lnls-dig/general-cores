@@ -653,7 +653,7 @@ package wishbone_pkg is
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
   end component;
 
-  constant c_xwb_spi_sdb : t_sdb_device := (
+  constant c_xwb_spi_cern_sdb : t_sdb_device := (
     abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
