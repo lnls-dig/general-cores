@@ -8,7 +8,7 @@
 --              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-05-15
+-- Last update: 2014-07-15
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -477,11 +477,12 @@ package gencores_pkg is
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
+  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
 
-  function f_big_ripple(a, b    : std_logic_vector; c : std_logic) return std_logic_vector;
-  function f_gray_encode(x      : std_logic_vector) return std_logic_vector;
-  function f_gray_decode(x      : std_logic_vector; step : natural) return std_logic_vector;
-  function log2_ceil(N          : natural) return positive;
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
+  function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
+  function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
+  function log2_ceil(N       : natural) return positive;
 
 end package;
 
@@ -525,6 +526,18 @@ package body gencores_pkg is
     end if;
 
   end f_rr_arbitrate;
+
+  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector is
+  begin
+    for j in 0 to x'left loop
+      if x(j) /= '0' then
+        return std_logic_vector(to_unsigned(j, size));
+      end if;
+    end loop;  -- i
+    return std_logic_vector(to_unsigned(0, size));
+  end f_onehot_decode;
+
+
 
   ------------------------------------------------------------------------------
   -- Carry ripple
