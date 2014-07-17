@@ -54,12 +54,6 @@ begin
       end if;
     end process;
 
-  end generate gen_internal_timebase;
-
-  gen_external_timebase : if(g_with_internal_timebase = false) generate
-    gate_pulse <= pps_p1_i;
-  end generate gen_external_timebase;
-
   U_Sync_Gate : gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
@@ -68,6 +62,22 @@ begin
       d_ready_o => freq_valid_o,
       d_p_i     => gate_pulse,
       q_p_o     => gate_pulse_synced);
+
+  end generate gen_internal_timebase;
+
+  gen_external_timebase : if(g_with_internal_timebase = false) generate
+
+    U_Sync_Gate : gc_sync_ffs
+    generic map (
+      g_sync_edge => "positive")
+    port map (
+      clk_i    => clk_in_i,
+      rst_n_i  => '1',
+      data_i   => pps_p1_i,
+      ppulse_o => gate_pulse_synced);
+
+  end generate gen_external_timebase;
+
 
   p_freq_counter : process (clk_in_i, rst_n_i)
   begin
