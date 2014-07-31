@@ -996,7 +996,7 @@ package wishbone_pkg is
   ------------------------------------------------------------------------------
   -- MultiBoot component
   ------------------------------------------------------------------------------
-  component wb_xil_multiboot is
+  component xwb_xil_multiboot is
     port
     (
       -- Clock and reset input ports
@@ -1013,9 +1013,9 @@ package wishbone_pkg is
       spi_mosi_o : out std_logic;
       spi_miso_i : in  std_logic
     );
-  end component wb_xil_multiboot;
+  end component xwb_xil_multiboot;
 
-  constant c_wb_xil_multiboot_sdb : t_sdb_device := (
+  constant c_xwb_xil_multiboot_sdb : t_sdb_device := (
     abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"00",
