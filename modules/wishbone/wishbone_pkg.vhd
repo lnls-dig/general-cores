@@ -993,6 +993,44 @@ package wishbone_pkg is
     );
   end component wb_i2c_bridge;
 
+  ------------------------------------------------------------------------------
+  -- MultiBoot component
+  ------------------------------------------------------------------------------
+  component wb_xil_multiboot is
+    port
+    (
+      -- Clock and reset input ports
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+
+      -- Wishbone ports
+      wbs_i   : in  t_wishbone_slave_in;
+      wbs_o   : out t_wishbone_slave_out;
+
+      -- SPI ports
+      spi_cs_n_o : out std_logic;
+      spi_sclk_o : out std_logic;
+      spi_mosi_o : out std_logic;
+      spi_miso_i : in  std_logic
+    );
+  end component wb_xil_multiboot;
+
+  constant c_wb_xil_multiboot_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"000000000000001f",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"11da333d",          -- echo "WB-Xilinx-MultiBoot" | md5sum | cut -c1-8
+        version   => x"00000001",
+        date      => x"20140313",
+        name      => "WB-Xilinx-MultiBoot")));
+
 end wishbone_pkg;
 
 package body wishbone_pkg is
