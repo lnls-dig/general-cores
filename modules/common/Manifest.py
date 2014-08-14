@@ -19,5 +19,6 @@ files = [	"gencores_pkg.vhd",
                 "gc_dyn_glitch_filt.vhd",
                 "gc_big_adder.vhd",
                 "gc_fsm_watchdog.vhd",
-                "gc_bicolor_led_ctrl.vhd"
+                "gc_bicolor_led_ctrl.vhd",
+                "gc_sync_register.vhd"
                 ];

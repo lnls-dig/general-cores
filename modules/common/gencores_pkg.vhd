@@ -8,7 +8,7 @@
 --              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-07-15
+-- Last update: 2014-07-31
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -469,6 +469,16 @@ package gencores_pkg is
         line_oen_o      : out std_logic_vector(g_nb_line - 1 downto 0)
         );
   end component;
+
+  component gc_sync_register is
+    generic (
+      g_width : integer);
+    port (
+      clk_i     : in  std_logic;
+      rst_n_a_i : in  std_logic;
+      d_i       : in  std_logic_vector(g_width-1 downto 0);
+      q_o       : out std_logic_vector(g_width-1 downto 0));
+  end component gc_sync_register;
 
   --============================================================================
   -- Procedures and functions
