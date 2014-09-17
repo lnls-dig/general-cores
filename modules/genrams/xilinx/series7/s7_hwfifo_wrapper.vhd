@@ -7,10 +7,10 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-10-02
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
--- Description: Single-clock FIFO. 
+-- Description: Single-clock FIFO.
 -- - configurable data width and size
 -- - "show ahead" mode
 -- - configurable full/empty/almost full/almost empty/word count signals
@@ -33,11 +33,12 @@ use unisim.vcomponents.all;
 use work.genram_pkg.all;
 use work.s7_fifo_pkg.all;
 
-entity s7_hwfifo_wraper is
+entity s7_hwfifo_wrapper is
 
   generic (
     g_data_width : natural;
     g_size       : natural;
+    g_show_ahead : boolean := false;
     g_dual_clock : boolean;
     -- Read-side flag selection
 
@@ -66,9 +67,9 @@ entity s7_hwfifo_wraper is
     wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
-end s7_hwfifo_wraper;
+end s7_hwfifo_wrapper;
 
-architecture syn of s7_hwfifo_wraper is
+architecture syn of s7_hwfifo_wrapper is
 
   constant m : t_s7_fifo_mapping := f_s7_fifo_find_mapping(g_data_width, g_size);
 
@@ -104,16 +105,21 @@ architecture syn of s7_hwfifo_wraper is
       return x;
     end if;
   end f_clamp;
-  
-  
+
+
 begin  -- syn
+
+  -- We can only make a FWFT FIFO if EN_SYN is false
+  assert g_show_ahead and g_dual_clock
+  report "generic_sync_fifo[xilinx]: if g_show_ahead is true, g_dual clock must be too"
+  severity error;
 
   srst <= not rst_n_i;
 
   -- This can only be used if DO_REG = 1 and EN_SYN = TRUE, which is never the case
   -- for the current mapping
   srstreg <= '0';
-  
+
   gen_fifo36 : if(m.is_36 and m.d_width > 0) generate
     assert false report "generic_sync_fifo[xilinx]: using FIFO36E1 primitive." severity note;
 
@@ -135,8 +141,8 @@ begin  -- syn
         DO_REG                  => f_bool_2_int(g_dual_clock),
         EN_SYN                  => not g_dual_clock,
         FIFO_MODE               => f_s7_fifo_mode(m),
-        FIRST_WORD_FALL_THROUGH => false,
-	SIM_DEVICE		=> "7SERIES")
+        FIRST_WORD_FALL_THROUGH => g_show_ahead,
+	      SIM_DEVICE		          => "7SERIES")
       port map (
         ALMOSTEMPTY   => rd_almost_empty_o,
         ALMOSTFULL    => wr_almost_full_o,
@@ -158,7 +164,7 @@ begin  -- syn
         WRCLK         => clk_wr_i,
         WREN          => we_i);
 
-    
+
   end generate gen_fifo36;
 
   gen_fifo18 : if(not m.is_36 and m.d_width > 0) generate
@@ -186,8 +192,8 @@ begin  -- syn
         DO_REG                  => f_bool_2_int(g_dual_clock),
         EN_SYN                  => not g_dual_clock,
         FIFO_MODE               => f_s7_fifo_mode(m),
-        FIRST_WORD_FALL_THROUGH => false,
-	SIM_DEVICE		=> "7SERIES")
+        FIRST_WORD_FALL_THROUGH => g_show_ahead,
+	      SIM_DEVICE		          => "7SERIES")
       port map (
         ALMOSTEMPTY => rd_almost_empty_o,
         ALMOSTFULL  => wr_almost_full_o,
@@ -210,7 +216,7 @@ begin  -- syn
     rd_ptr(12) <= '0';
     wr_ptr(12) <= '0';
 
-    
+
   end generate gen_fifo18;
 
 

@@ -7,10 +7,10 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-07-03
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
--- Description: Single-clock FIFO. 
+-- Description: Single-clock FIFO.
 -- - configurable data width and size
 -- - "show ahead" mode
 -- - configurable full/empty/almost full/almost empty/word count signals
@@ -101,7 +101,7 @@ architecture syn of generic_sync_fifo is
       count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
   end component;
 
-  component s7_hwfifo_wraper
+  component s7_hwfifo_wrapper
     generic (
       g_data_width             : natural;
       g_size                   : natural;
@@ -167,7 +167,7 @@ begin  -- syn
 
   gen_native : if(m.d_width > 0) generate
 
-    U_Native_FIFO: s7_hwfifo_wraper
+    U_Native_FIFO: s7_hwfifo_wrapper
       generic map (
         g_data_width             => g_data_width,
         g_size                   => g_size,

@@ -7,10 +7,10 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-07-03
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
--- Description: Dual-clock asynchronous FIFO. 
+-- Description: Dual-clock asynchronous FIFO.
 -- - configurable data width and size
 -- - configurable full/empty/almost full/almost empty/word count signals
 -------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ end generic_async_fifo;
 
 
 architecture syn of generic_async_fifo is
-  
+
   component inferred_async_fifo
     generic (
       g_data_width             : natural;
@@ -122,10 +122,11 @@ architecture syn of generic_async_fifo is
       rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
   end component;
 
-  component s7_hwfifo_wraper
+  component s7_hwfifo_wrapper
     generic (
       g_data_width             : natural;
       g_size                   : natural;
+      g_show_ahead             : boolean;
       g_dual_clock             : boolean;
       g_almost_empty_threshold : integer;
       g_almost_full_threshold  : integer);
@@ -192,15 +193,16 @@ begin  -- syn
         rd_almost_full_o  => rd_almost_full_o,
         rd_count_o        => rd_count_o);
 
-    
+
    end generate gen_inferred;
 
   gen_native : if(m.d_width > 0 and not g_with_wr_count and not g_with_rd_count) generate
 
-    U_Native_FIFO: s7_hwfifo_wraper
+    U_Native_FIFO: s7_hwfifo_wrapper
       generic map (
         g_data_width             => g_data_width,
         g_size                   => g_size,
+        g_show_ahead             => g_show_ahead,
         g_dual_clock             => true,
         g_almost_empty_threshold => f_empty_thr(g_with_rd_almost_empty, g_almost_empty_threshold, g_size),
         g_almost_full_threshold  => f_empty_thr(g_with_wr_almost_full, c_virtex_almost_full_thr, g_size))
@@ -221,5 +223,5 @@ begin  -- syn
   end generate gen_native;
 
 
-   
+
 end syn;
