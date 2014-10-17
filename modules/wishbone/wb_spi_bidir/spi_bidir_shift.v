@@ -275,24 +275,19 @@ module spi_bidir_shift (clk, rst, latch, byte_sel, len, lsb, go,
 
   end
 
-  always @(posedge clk)
+  always @(posedge clk or posedge rst)
   begin
-     if (rst)
+    if (rst)
     begin
       data_miso   <= #Tp {`SPI_MAX_CHAR{1'b0}};
       data_mosi   <= #Tp {`SPI_MAX_CHAR{1'b0}};
     end
     else
     begin
-      if (rx_clk && bidir)
-        data_mosi[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp s_in_mosi;
-      else if (rx_clk)
-        data_miso[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp s_in_miso;
-      else
-      begin
-        data_miso[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp data_miso[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
-        data_mosi[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp data_mosi[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
-      end
+      if (bidir)
+        data_mosi[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in_mosi : data_mosi[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
+      else 
+        data_miso[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in_miso : data_miso[rx_bit_pos[`SPI_CHAR_LEN_BITS-1:0]];
     end
   end
 
