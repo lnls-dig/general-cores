@@ -47,6 +47,8 @@ entity generic_sync_fifo is
     g_with_almost_full  : boolean := false;
     g_with_count        : boolean := false;  -- with words counter
 
+    g_with_fifo_inferred : boolean := false;
+
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer;  -- threshold for almost full flag
     g_register_flag_outputs  : boolean := true
@@ -133,7 +135,7 @@ architecture syn of generic_sync_fifo is
 
 begin  -- syn
 
-  gen_inferred : if(m.d_width = 0) generate
+  gen_inferred : if(m.d_width = 0 or g_with_fifo_inferred) generate
     assert false report "generic_sync_fifo[xilinx]: using inferred BRAM-based FIFO." severity note;
 
     U_Inferred_FIFO : inferred_sync_fifo
@@ -165,7 +167,7 @@ begin  -- syn
 
   end generate gen_inferred;
 
-  gen_native : if(m.d_width > 0) generate
+  gen_native : if(m.d_width > 0 and not g_with_fifo_inferred) generate
 
     U_Native_FIFO: s7_hwfifo_wrapper
       generic map (

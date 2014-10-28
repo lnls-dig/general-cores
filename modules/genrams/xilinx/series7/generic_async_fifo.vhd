@@ -49,6 +49,8 @@ entity generic_async_fifo is
     g_with_wr_almost_full  : boolean := false;
     g_with_wr_count        : boolean := false;
 
+    g_with_fifo_inferred   : boolean := false;
+
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer   -- threshold for almost full flag
     );
@@ -154,7 +156,7 @@ architecture syn of generic_async_fifo is
 
 begin  -- syn
 
-   gen_inferred : if(m.d_width = 0 or g_with_wr_count or g_with_rd_count) generate
+   gen_inferred : if(m.d_width = 0 or g_with_wr_count or g_with_rd_count or g_with_fifo_inferred) generate
     assert false report "generic_async_fifo[xilinx]: using inferred BRAM-based FIFO." severity note;
 
     U_Inferred_FIFO: inferred_async_fifo
@@ -196,7 +198,7 @@ begin  -- syn
 
    end generate gen_inferred;
 
-  gen_native : if(m.d_width > 0 and not g_with_wr_count and not g_with_rd_count) generate
+  gen_native : if(m.d_width > 0 and not g_with_wr_count and not g_with_rd_count and not g_with_fifo_inferred) generate
 
     U_Native_FIFO: s7_hwfifo_wrapper
       generic map (

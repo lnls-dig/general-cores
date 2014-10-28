@@ -7,26 +7,26 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2013-10-30
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 --
 -- Copyright (c) 2011 CERN
 --
--- This source file is free software; you can redistribute it   
--- and/or modify it under the terms of the GNU Lesser General   
--- Public License as published by the Free Software Foundation; 
--- either version 2.1 of the License, or (at your option) any   
--- later version.                                               
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
 --
--- This source is distributed in the hope that it will be       
--- useful, but WITHOUT ANY WARRANTY; without even the implied   
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
--- PURPOSE.  See the GNU Lesser General Public License for more 
--- details.                                                     
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
 --
--- You should have received a copy of the GNU Lesser General    
--- Public License along with this source; if not, download it   
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
 -------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ package genram_pkg is
   function f_zeros (size : integer) return std_logic_vector;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
-  
+
   -- Single-port synchronous RAM
   component generic_spram
     generic (
@@ -125,6 +125,7 @@ package genram_pkg is
       g_with_wr_almost_empty   : boolean := false;
       g_with_wr_almost_full    : boolean := false;
       g_with_wr_count          : boolean := false;
+      g_with_fifo_inferred     : boolean := false;
       g_almost_empty_threshold : integer := 0;
       g_almost_full_threshold  : integer := 0);
     port (
@@ -158,6 +159,7 @@ package genram_pkg is
       g_with_almost_empty      : boolean := false;
       g_with_almost_full       : boolean := false;
       g_with_count             : boolean := false;
+      g_with_fifo_inferred     : boolean := false;
       g_almost_empty_threshold : integer := 0;
       g_almost_full_threshold  : integer := 0);
     port (
