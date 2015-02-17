@@ -3,5 +3,6 @@ files = [
 "generic_simple_dpram.vhd",
 "generic_dpram.vhd",
 "generic_spram.vhd",
+"generic_dpram_mixed.vhd",
 "generic_sync_fifo.vhd",
 "gc_shiftreg.vhd"]

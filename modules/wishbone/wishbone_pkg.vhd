@@ -436,6 +436,29 @@ package wishbone_pkg is
       slave2_i  : in  t_wishbone_slave_in;
       slave2_o  : out t_wishbone_slave_out);
   end component;
+
+  component xwb_dpram_mixed
+  generic(
+    g_size                  : natural := 16384;
+    g_init_file             : string  := "";
+    g_must_have_init_file   : boolean := true;
+    g_swap_word_endianness  : boolean := true;
+    g_slave1_interface_mode : t_wishbone_interface_mode;
+    g_slave2_interface_mode : t_wishbone_interface_mode;
+    g_dpram_port_a_width    : integer := 16;
+    g_dpram_port_b_width    : integer := 32;
+    g_slave1_granularity    : t_wishbone_address_granularity;
+    g_slave2_granularity    : t_wishbone_address_granularity);
+  port(
+    clk_slave1_i  : in std_logic;
+    clk_slave2_i  : in std_logic;
+    rst_n_i       : in std_logic;
+
+    slave1_i      : in  t_wishbone_slave_in;
+    slave1_o      : out t_wishbone_slave_out;
+    slave2_i      : in  t_wishbone_slave_in;
+    slave2_o      : out t_wishbone_slave_out);
+  end component;
   
   -- Just like the DMA controller, but constantly at address 0
   component xwb_streamer is
