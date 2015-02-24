@@ -414,7 +414,10 @@ package wishbone_pkg is
       master_clk_i   : in  std_logic;
       master_rst_n_i : in  std_logic;
       master_i       : in  t_wishbone_master_in;
-      master_o       : out t_wishbone_master_out);
+      master_o       : out t_wishbone_master_out;
+      -- Flow control back-channel for acks
+      slave_ready_o : out std_logic;
+      slave_stall_i : in  std_logic := '0');
   end component;
 
   -- g_size is in words

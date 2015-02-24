@@ -19,7 +19,10 @@ entity xwb_clock_crossing is
       master_clk_i   : in  std_logic;
       master_rst_n_i : in  std_logic;
       master_i       : in  t_wishbone_master_in;
-      master_o       : out t_wishbone_master_out);
+      master_o       : out t_wishbone_master_out;
+      -- Flow control back-channel for acks
+      slave_ready_o : out std_logic;
+      slave_stall_i : in  std_logic);
 end xwb_clock_crossing;
 
 architecture rtl of xwb_clock_crossing is
@@ -192,7 +195,8 @@ begin
    ssend.DAT <= master_i.DAT;
 
    -- Slave clock domain: sFIFO -> slave
-   sr_en <= not sr_empty;
+   slave_ready_o <= not sr_empty;
+   sr_en <= not sr_empty and not slave_stall_i;
    slave_o.DAT <= srecv.DAT;
    slave_o.ACK <= srecv.ACK and slave_o_PUSH;
    slave_o.RTY <= srecv.RTY and slave_o_PUSH;
