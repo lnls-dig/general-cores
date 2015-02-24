@@ -73,19 +73,17 @@ architecture rtl of xwb_clock_crossing is
 begin
 
    full <= '1' when mpushed = mpopped else '0';
-   count : process(slave_clk_i) is
+   count : process(slave_clk_i, slave_rst_n_i) is
    begin
-      if rising_edge(slave_clk_i) then
-         if slave_rst_n_i = '0' then
-            mpushed <= (others => '0');
-            mpopped <= to_unsigned(g_size, t_count'length);
-         else
-            if (not full and slave_i.CYC and slave_i.STB) = '1' then
-               mpushed <= mpushed + 1;
-            end if;
-            if slave_o_PUSH = '1' then
-               mpopped <= mpopped + 1;
-            end if;
+      if slave_rst_n_i = '0' then
+         mpushed <= (others => '0');
+         mpopped <= to_unsigned(g_size, t_count'length);
+      elsif rising_edge(slave_clk_i) then
+         if (not full and slave_i.CYC and slave_i.STB) = '1' then
+            mpushed <= mpushed + 1;
+         end if;
+         if slave_o_PUSH = '1' then
+            mpopped <= mpopped + 1;
          end if;
       end if;
    end process;
@@ -177,14 +175,12 @@ begin
    master_o.SEL <= mrecv.SEL;
    master_o.DAT <= mrecv.DAT;
 
-   drive_master_port : process(master_clk_i)
+   drive_master_port : process(master_clk_i, master_rst_n_i)
    begin
-      if rising_edge(master_clk_i) then
-         if master_rst_n_i = '0' then
-            master_o_STB <= '0';
-         else
-            master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
-         end if;
+      if master_rst_n_i = '0' then
+         master_o_STB <= '0';
+      elsif rising_edge(master_clk_i) then
+         master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
       end if;
    end process;
 
@@ -202,16 +198,14 @@ begin
    slave_o.RTY <= srecv.RTY and slave_o_PUSH;
    slave_o.ERR <= srecv.ERR and slave_o_PUSH;
 
-   drive_slave_port : process(slave_clk_i)
+   drive_slave_port : process(slave_clk_i, slave_rst_n_i)
    begin
-      if rising_edge(slave_clk_i) then
-         if slave_rst_n_i = '0' then
-            slave_o_PUSH <= '0';
-            slave_CYC <= '0';
-         else
-            slave_o_PUSH <= sr_en;
-            slave_CYC <= slave_i.CYC;
-         end if;
+      if slave_rst_n_i = '0' then
+         slave_o_PUSH <= '0';
+         slave_CYC <= '0';
+      elsif rising_edge(slave_clk_i) then
+         slave_o_PUSH <= sr_en;
+         slave_CYC <= slave_i.CYC;
       end if;
    end process;
 
