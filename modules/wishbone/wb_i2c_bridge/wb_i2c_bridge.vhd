@@ -343,6 +343,9 @@ begin
               state  <= SYSMON_WR;
             elsif (wb_err = '1') then
               err_p_o <= '1';
+              wb_cyc  <= '0';
+              wb_stb  <= '0';
+              wb_we   <= '0';
               state   <= IDLE;
             end if;
 
