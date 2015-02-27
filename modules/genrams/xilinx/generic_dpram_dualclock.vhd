@@ -7,7 +7,7 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-03-28
--- Platform   : 
+-- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 -- Description: True dual-port synchronous RAM for Xilinx FPGAs with:
@@ -79,10 +79,20 @@ architecture syn of generic_dpram_dualclock is
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
 
-  function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
+  impure function f_memarray_to_ramtype(mem_size : integer; mem_width : integer) return t_ram_type is
     variable tmp    : t_ram_type;
+    variable arr    : t_meminit_array(0 to mem_size-1, mem_width-1 downto 0);
     variable n, pos : integer;
   begin
+    if(g_init_file = "" or g_init_file = "none") then
+      for i in 0 to g_size-1 loop
+        tmp(i)(g_data_width-1 downto 0) := (others =>'0');
+      end loop;
+    return tmp;
+    end if;
+      
+    arr := f_load_mem_from_file(g_init_file, mem_size, mem_width, g_fail_if_file_not_found);
+
     pos := 0;
     while(pos < g_size)loop
       n := 0;
@@ -91,19 +101,14 @@ architecture syn of generic_dpram_dualclock is
         for i in 0 to g_data_width-1 loop
           tmp(pos)(i) := arr(pos, i);
         end loop;  -- i
-        n := n+1;
+        n   := n+1;
         pos := pos + 1;
       end loop;
     end loop;
     return tmp;
   end f_memarray_to_ramtype;
 
-  function f_file_contents return t_meminit_array is
-  begin
-    return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
-  end f_file_contents;
-  
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
@@ -152,7 +157,7 @@ begin
         end loop;
       end if;
     end process;
-    
+
 
 
 
@@ -241,6 +246,6 @@ begin
       end if;
     end process;
   end generate gen_without_byte_enable_nochange;
-  
+
 
 end syn;

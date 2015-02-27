@@ -16,7 +16,7 @@ package memory_loader_pkg is
   function f_hexstring_to_slv (s : string; n_digits : integer) return std_logic_vector;
   function f_get_token(s         : string; n : integer) return string;
 
-  function f_load_mem_from_file
+  impure function f_load_mem_from_file
     (file_name : string;
      mem_size  : integer;
      mem_width : integer;
@@ -126,7 +126,7 @@ package body memory_loader_pkg is
 
 
 
-  function f_load_mem_from_file
+  impure function f_load_mem_from_file
     (file_name        : string;
      mem_size         : integer;
      mem_width        : integer;
@@ -135,7 +135,7 @@ package body memory_loader_pkg is
 
     file f_in         : text;
     variable l        : line;
-    variable ls       : string(1 to 128);
+    variable ls       : string(1 to 128) := (others => '?');
     variable cmd      : string(1 to 128);
     variable line_len : integer;
     variable status   : file_open_status;
@@ -147,9 +147,10 @@ package body memory_loader_pkg is
     variable data_tmp : unsigned(mem_width-1 downto 0);
     variable data_int : integer;
   begin
+
     if(file_name = "" or file_name = "none") then
-      mem := (others => (others => '0'));
-      return mem;
+       mem := (others => (others => '0'));
+       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
@@ -166,26 +167,22 @@ package body memory_loader_pkg is
       i := 0;
       while (i < 4096) loop
         -- stupid ISE restricts the loop length
-        readline(f_in, l);
-        line_len := 0;
-        loop
-          read(l, ls(line_len+1), good);
-          exit when good = false;
-          line_len := line_len + 1;
-        end loop;
 
-        if(line_len /= 0 and f_get_token(ls, 1) = "write") then
+        readline(f_in, l);
+        read(l, ls);
+
+        if(ls(1) /= '?' and f_get_token(ls, 1) = "write") then
           addr     := to_integer(unsigned(f_hexstring_to_slv(f_get_token(ls, 2), 8)));
           data_tmp := resize(unsigned(f_hexstring_to_slv(f_get_token(ls, 3), 8)), mem_width);
           data_int := to_integer(data_tmp);
 
---          report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
-          
+          -- report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
+
           for i in 0 to mem_width-1 loop
             mem(addr, i) := std_logic(data_tmp(i));
           end loop;  -- i in 0 to mem_width-1
 
-        --   report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
+          -- report "addr: " & integer'image(addr) & " data: " & integer'image(data_int);
         end if;
 
         if endfile(f_in) then
