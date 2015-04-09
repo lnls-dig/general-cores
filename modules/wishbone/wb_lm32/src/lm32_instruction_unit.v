@@ -81,11 +81,6 @@ module lm32_instruction_unit (
     dcache_refill_request,
     dcache_refilling,
 `endif        
-`ifdef CFG_IROM_ENABLED
-    irom_store_data_m,
-    irom_address_xm,
-    irom_we_xm,
-`endif
 `ifdef CFG_IWB_ENABLED
     // From Wishbone
     i_dat_i,
@@ -112,8 +107,10 @@ module lm32_instruction_unit (
     icache_refill_request,
     icache_refilling,
 `endif
-`ifdef CFG_IROM_ENABLED
-    irom_data_m,
+`ifdef CFG_IRAM_ENABLED
+			      iram_address_f,
+                              iram_enable_f,
+			      iram_data_f,
 `endif
 `ifdef CFG_IWB_ENABLED
     // To Wishbone
@@ -194,10 +191,8 @@ input dcache_refill_request;                            // Request to refill dat
 input dcache_refilling;
 `endif        
 
-`ifdef CFG_IROM_ENABLED
-input [`LM32_WORD_RNG] irom_store_data_m;               // Data from load-store unit
-input [`LM32_WORD_RNG] irom_address_xm;                 // Address from load-store unit
-input irom_we_xm;                                       // Indicates if memory operation is load or store
+`ifdef CFG_IRAM_ENABLED
+   input [`LM32_WORD_RNG] iram_data_f;         
 `endif
 
 `ifdef CFG_IWB_ENABLED
@@ -240,9 +235,14 @@ output icache_refilling;                                // Indicates the icache 
 wire   icache_refilling;
 `endif
 
-`ifdef CFG_IROM_ENABLED
-output [`LM32_WORD_RNG] irom_data_m;                    // Data to load-store unit on load
-wire   [`LM32_WORD_RNG] irom_data_m;                      
+`ifdef CFG_IRAM_ENABLED
+   output [`LM32_PC_RNG] iram_address_f;            // Data to load-store unit on load
+   wire [`LM32_PC_RNG] iram_address_f;            // Data to load-store unit on load
+
+   output 	       iram_enable_f;
+   wire 	       iram_enable_f;
+   
+   
 `endif   
 
 `ifdef CFG_IWB_ENABLED
@@ -321,10 +321,10 @@ wire [`LM32_PC_RNG] first_address;                      // First cache refill ad
 reg [`LM32_INSTRUCTION_RNG] wb_data_f;                  // Instruction fetched from Wishbone
 `endif
 `endif
-`ifdef CFG_IROM_ENABLED
-wire irom_select_a;                                     // Indicates if A stage PC maps to a ROM address
-reg irom_select_f;                                      // Indicates if F stage PC maps to a ROM address
-wire [`LM32_INSTRUCTION_RNG] irom_data_f;               // Instruction fetched from ROM
+`ifdef CFG_IRAM_ENABLED
+wire iram_select_a;                                     // Indicates if A stage PC maps to a ROM address
+reg iram_enable_f;                                      // Indicates if F stage PC maps to a ROM address
+wire [`LM32_INSTRUCTION_RNG] iram_data_f;               // Instruction fetched from ROM
 `endif
 `ifdef CFG_EBR_POSEDGE_REGISTER_FILE
 `else
@@ -349,52 +349,11 @@ reg jtag_access;                                        // Indicates if a JTAG W
 /////////////////////////////////////////////////////
 
 // Instruction ROM
-`ifdef CFG_IROM_ENABLED  
-   pmi_ram_dp_true 
-     #(
-       // ----- Parameters -------
-       .pmi_family             (`LATTICE_FAMILY),
-	 
-       //.pmi_addr_depth_a       (1 << (clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_addr_width_a       ((clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_data_width_a       (`LM32_WORD_WIDTH),
-       //.pmi_addr_depth_b       (1 << (clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_addr_width_b       ((clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_data_width_b       (`LM32_WORD_WIDTH),
-	 
-       .pmi_addr_depth_a       (`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1),
-       .pmi_addr_width_a       (clogb2_v1(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)),
-       .pmi_data_width_a       (`LM32_WORD_WIDTH),
-       .pmi_addr_depth_b       (`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1),
-       .pmi_addr_width_b       (clogb2_v1(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)),
-       .pmi_data_width_b       (`LM32_WORD_WIDTH),
-	 
-       .pmi_regmode_a          ("noreg"),
-       .pmi_regmode_b          ("noreg"),
-       .pmi_gsr                ("enable"),
-       .pmi_resetmode          ("sync"),
-       .pmi_init_file          (`CFG_IROM_INIT_FILE),
-       .pmi_init_file_format   (`CFG_IROM_INIT_FILE_FORMAT),
-       .module_type            ("pmi_ram_dp_true")
-       ) 
-       ram (
-	    // ----- Inputs -------
-	    .ClockA                 (clk_i),
-	    .ClockB                 (clk_i),
-	    .ResetA                 (rst_i),
-	    .ResetB                 (rst_i),
-	    .DataInA                ({32{1'b0}}),
-	    .DataInB                (irom_store_data_m),
-	    .AddressA               (pc_a[(clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)+2-1:2]),
-	    .AddressB               (irom_address_xm[(clogb2(`CFG_IROM_LIMIT/4-`CFG_IROM_BASE_ADDRESS/4+1)-1)+2-1:2]),
-	    .ClockEnA               (!stall_a),
-	    .ClockEnB               (!stall_x || !stall_m),
-	    .WrA                    (`FALSE),
-	    .WrB                    (irom_we_xm), 
-	    // ----- Outputs -------
-	    .QA                     (irom_data_f),
-	    .QB                     (irom_data_m)
-	    );
+`ifdef CFG_IRAM_ENABLED
+
+   assign   iram_address_f = pc_a;
+   assign iram_enable_f = !stall_a;
+
 `endif    
  
 `ifdef CFG_ICACHE_ENABLED
@@ -434,17 +393,17 @@ lm32_icache #(
 /////////////////////////////////////////////////////
 
 `ifdef CFG_ICACHE_ENABLED
-// Generate signal that indicates when instruction cache misses are valid
-assign icache_read_enable_f =    (valid_f == `TRUE)
-                              && (kill_f == `FALSE)
-`ifdef CFG_DCACHE_ENABLED
-                              && (dcache_restart_request == `FALSE)
-`endif                         
-`ifdef CFG_IROM_ENABLED 
-                              && (irom_select_f == `FALSE)
-`endif       
-                              ;
-`endif
+   // Generate signal that indicates when instruction cache misses are valid
+   assign icache_read_enable_f =    (valid_f == `TRUE)
+     && (kill_f == `FALSE)
+ `ifdef CFG_DCACHE_ENABLED
+   && (dcache_restart_request == `FALSE)
+ `endif                         
+ `ifdef CFG_IRAM_ENABLED 
+				    && (iram_select_f == `FALSE)
+ `endif       
+				    ;
+`endif // CFG_ICACHE_ENABLED
 
 // Compute address of next instruction to fetch
 always @(*)
@@ -477,23 +436,23 @@ begin
 end
 
 // Select where instruction should be fetched from
-`ifdef CFG_IROM_ENABLED
-assign irom_select_a = ({pc_a, 2'b00} >= `CFG_IROM_BASE_ADDRESS) && ({pc_a, 2'b00} <= `CFG_IROM_LIMIT);
+`ifdef CFG_IRAM_ENABLED
+   assign iram_select_a = 1'b1;
 `endif
                      
 // Select instruction from selected source
 `ifdef CFG_ICACHE_ENABLED
-`ifdef CFG_IROM_ENABLED
-assign instruction_f = irom_select_f == `TRUE ? irom_data_f : icache_data_f;
+`ifdef CFG_IRAM_ENABLED
+assign instruction_f = iram_select_f == `TRUE ? iram_data_f : icache_data_f;
 `else
 assign instruction_f = icache_data_f;
 `endif
 `else
-`ifdef CFG_IROM_ENABLED
+`ifdef CFG_IRAM_ENABLED
 `ifdef CFG_IWB_ENABLED
-assign instruction_f = irom_select_f == `TRUE ? irom_data_f : wb_data_f;
+assign instruction_f = iram_select_f == `TRUE ? iram_data_f : wb_data_f;
 `else
-assign instruction_f = irom_data_f;
+assign instruction_f = iram_data_f;
 `endif
 `else
 assign instruction_f = wb_data_f;
@@ -599,15 +558,15 @@ end
 `endif
 
 // Record where instruction was fetched from
-`ifdef CFG_IROM_ENABLED
+`ifdef CFG_IRAM_ENABLED
 always @(posedge clk_i `CFG_RESET_SENSITIVITY)
 begin
     if (rst_i == `TRUE)
-        irom_select_f <= `FALSE;
+        iram_select_f <= `FALSE;
     else
     begin
         if (stall_f == `FALSE)
-            irom_select_f <= irom_select_a;
+            iram_select_f <= iram_select_a;
     end
 end
 `endif
@@ -626,218 +585,218 @@ end
 `endif
 
 `ifdef CFG_IWB_ENABLED
-// Instruction Wishbone interface
-`ifdef CFG_ICACHE_ENABLED                
-always @(posedge clk_i `CFG_RESET_SENSITIVITY)
-begin
-    if (rst_i == `TRUE)
-    begin
-        i_cyc_o <= `FALSE;
-        i_stb_o <= `FALSE;
-        i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
-        i_cti_o <= `LM32_CTYPE_END;
-        i_lock_o <= `FALSE;
-        icache_refill_data <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
-        icache_refill_ready <= `FALSE;
-`ifdef CFG_BUS_ERRORS_ENABLED
-        bus_error_f <= `FALSE;
-`endif
-`ifdef CFG_HW_DEBUG_ENABLED
-        i_we_o <= `FALSE;
-        i_sel_o <= 4'b1111;
-        jtag_access <= `FALSE;
-`endif
-    end
-    else
-    begin   
-        icache_refill_ready <= `FALSE;
-        // Is a cycle in progress?
-        if (i_cyc_o == `TRUE)
-        begin
-            // Has cycle completed?
-            if ((i_ack_i == `TRUE) || (i_err_i == `TRUE))
-            begin
-`ifdef CFG_HW_DEBUG_ENABLED
-                if (jtag_access == `TRUE)
-                begin
-                    i_cyc_o <= `FALSE;
-                    i_stb_o <= `FALSE;       
-                    i_we_o <= `FALSE;  
-                    jtag_access <= `FALSE;    
-                end
-                else
-`endif
-                begin
-                    if (last_word == `TRUE)
-                    begin
-                        // Cache line fill complete 
-                        i_cyc_o <= `FALSE;
-                        i_stb_o <= `FALSE;
-                        i_lock_o <= `FALSE;
-                    end
-                    // Fetch next word in cache line
-                    i_adr_o[addr_offset_msb:addr_offset_lsb] <= i_adr_o[addr_offset_msb:addr_offset_lsb] + 1'b1;
-                    i_cti_o <= next_cycle_type;
-                    // Write fetched data into instruction cache
-                    icache_refill_ready <= `TRUE;
-                    icache_refill_data <= i_dat_i;
-                end
-            end
-`ifdef CFG_BUS_ERRORS_ENABLED
-            if (i_err_i == `TRUE)
-            begin
-                bus_error_f <= `TRUE;
-                $display ("Instruction bus error. Address: %x", i_adr_o);
-            end
-`endif
-        end
-        else
-        begin
-            if ((icache_refill_request == `TRUE) && (icache_refill_ready == `FALSE))
-            begin
-                // Read first word of cache line
-`ifdef CFG_HW_DEBUG_ENABLED     
-                i_sel_o <= 4'b1111;
-`endif
-                i_adr_o <= {first_address, 2'b00};
-                i_cyc_o <= `TRUE;
-                i_stb_o <= `TRUE;                
-                i_cti_o <= first_cycle_type;
-                //i_lock_o <= `TRUE;
-`ifdef CFG_BUS_ERRORS_ENABLED
-                bus_error_f <= `FALSE;
-`endif
-            end
-`ifdef CFG_HW_DEBUG_ENABLED
-            else
-            begin
-                if ((jtag_read_enable == `TRUE) || (jtag_write_enable == `TRUE))
-                begin
-                    case (jtag_address[1:0])
-                    2'b00: i_sel_o <= 4'b1000;
-                    2'b01: i_sel_o <= 4'b0100;
-                    2'b10: i_sel_o <= 4'b0010;
-                    2'b11: i_sel_o <= 4'b0001;
-                    endcase
-                    i_adr_o <= jtag_address;
-                    i_dat_o <= {4{jtag_write_data}};
-                    i_cyc_o <= `TRUE;
-                    i_stb_o <= `TRUE;
-                    i_we_o <= jtag_write_enable;
-                    i_cti_o <= `LM32_CTYPE_END;
-                    jtag_access <= `TRUE;
-                end
-            end 
-`endif                    
-`ifdef CFG_BUS_ERRORS_ENABLED
-            // Clear bus error when exception taken, otherwise they would be 
-            // continually generated if exception handler is cached
-`ifdef CFG_FAST_UNCONDITIONAL_BRANCH    
-            if (branch_taken_x == `TRUE)
-                bus_error_f <= `FALSE;
-`endif
-            if (branch_taken_m == `TRUE)
-                bus_error_f <= `FALSE;
-`endif
-        end
-    end
-end
-`else
-always @(posedge clk_i `CFG_RESET_SENSITIVITY)
-begin
-    if (rst_i == `TRUE)
-    begin
-        i_cyc_o <= `FALSE;
-        i_stb_o <= `FALSE;
-        i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
-        i_cti_o <= `LM32_CTYPE_END;
-        i_lock_o <= `FALSE;
-        wb_data_f <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
-`ifdef CFG_BUS_ERRORS_ENABLED
-        bus_error_f <= `FALSE;
-`endif
-    end
-    else
-    begin   
-        // Is a cycle in progress?
-        if (i_cyc_o == `TRUE)
-        begin
-            // Has cycle completed?
-            if((i_ack_i == `TRUE) || (i_err_i == `TRUE))
-            begin
-                // Cycle complete
-                i_cyc_o <= `FALSE;
-                i_stb_o <= `FALSE;
-                // Register fetched instruction
-                wb_data_f <= i_dat_i;
-            end
-`ifdef CFG_BUS_ERRORS_ENABLED
-            if (i_err_i == `TRUE)
-            begin
-                bus_error_f <= `TRUE;
-                $display ("Instruction bus error. Address: %x", i_adr_o);
-            end
-`endif
-        end
-        else
-        begin
-            // Wait for an instruction fetch from an external address 
-            if (   (stall_a == `FALSE) 
-`ifdef CFG_IROM_ENABLED 
-                && (irom_select_a == `FALSE)
-`endif       
-               )
-            begin
-                // Fetch instruction
-`ifdef CFG_HW_DEBUG_ENABLED     
-                i_sel_o <= 4'b1111;
-`endif
-                i_adr_o <= {pc_a, 2'b00};
-                i_cyc_o <= `TRUE;
-                i_stb_o <= `TRUE;
-`ifdef CFG_BUS_ERRORS_ENABLED
-                bus_error_f <= `FALSE;
-`endif
-            end
-	    else
-	    begin
-	        if (   (stall_a == `FALSE) 
-`ifdef CFG_IROM_ENABLED 
-		    && (irom_select_a == `TRUE)
-`endif       
-	           )
-		begin
-`ifdef CFG_BUS_ERRORS_ENABLED
-		    bus_error_f <= `FALSE;
-`endif
-		end
-	    end
-        end
-    end
-end
-`endif
-`endif
+   // Instruction Wishbone interface
+ `ifdef CFG_ICACHE_ENABLED                
+   always @(posedge clk_i `CFG_RESET_SENSITIVITY)
+     begin
+	if (rst_i == `TRUE)
+	  begin
+             i_cyc_o <= `FALSE;
+             i_stb_o <= `FALSE;
+             i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
+             i_cti_o <= `LM32_CTYPE_END;
+             i_lock_o <= `FALSE;
+             icache_refill_data <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
+             icache_refill_ready <= `FALSE;
+  `ifdef CFG_BUS_ERRORS_ENABLED
+             bus_error_f <= `FALSE;
+  `endif
+  `ifdef CFG_HW_DEBUG_ENABLED
+             i_we_o <= `FALSE;
+             i_sel_o <= 4'b1111;
+             jtag_access <= `FALSE;
+  `endif
+	  end
+	else
+	  begin   
+             icache_refill_ready <= `FALSE;
+             // Is a cycle in progress?
+             if (i_cyc_o == `TRUE)
+               begin
+		  // Has cycle completed?
+		  if ((i_ack_i == `TRUE) || (i_err_i == `TRUE))
+		    begin
+  `ifdef CFG_HW_DEBUG_ENABLED
+                       if (jtag_access == `TRUE)
+			 begin
+			    i_cyc_o <= `FALSE;
+			    i_stb_o <= `FALSE;       
+			    i_we_o <= `FALSE;  
+			    jtag_access <= `FALSE;    
+			 end
+                       else
+  `endif
+			 begin
+			    if (last_word == `TRUE)
+			      begin
+				 // Cache line fill complete 
+				 i_cyc_o <= `FALSE;
+				 i_stb_o <= `FALSE;
+				 i_lock_o <= `FALSE;
+			      end
+			    // Fetch next word in cache line
+			    i_adr_o[addr_offset_msb:addr_offset_lsb] <= i_adr_o[addr_offset_msb:addr_offset_lsb] + 1'b1;
+			    i_cti_o <= next_cycle_type;
+			    // Write fetched data into instruction cache
+			    icache_refill_ready <= `TRUE;
+			    icache_refill_data <= i_dat_i;
+			 end
+		    end
+  `ifdef CFG_BUS_ERRORS_ENABLED
+		  if (i_err_i == `TRUE)
+		    begin
+                       bus_error_f <= `TRUE;
+                       $display ("Instruction bus error. Address: %x", i_adr_o);
+		    end
+  `endif
+               end
+             else
+               begin
+		  if ((icache_refill_request == `TRUE) && (icache_refill_ready == `FALSE))
+		    begin
+                       // Read first word of cache line
+  `ifdef CFG_HW_DEBUG_ENABLED     
+                       i_sel_o <= 4'b1111;
+  `endif
+                       i_adr_o <= {first_address, 2'b00};
+                       i_cyc_o <= `TRUE;
+                       i_stb_o <= `TRUE;                
+                       i_cti_o <= first_cycle_type;
+                       //i_lock_o <= `TRUE;
+  `ifdef CFG_BUS_ERRORS_ENABLED
+                       bus_error_f <= `FALSE;
+  `endif
+		    end
+  `ifdef CFG_HW_DEBUG_ENABLED
+		  else
+		    begin
+                       if ((jtag_read_enable == `TRUE) || (jtag_write_enable == `TRUE))
+			 begin
+			    case (jtag_address[1:0])
+			      2'b00: i_sel_o <= 4'b1000;
+			      2'b01: i_sel_o <= 4'b0100;
+			      2'b10: i_sel_o <= 4'b0010;
+			      2'b11: i_sel_o <= 4'b0001;
+			    endcase
+			    i_adr_o <= jtag_address;
+			    i_dat_o <= {4{jtag_write_data}};
+			    i_cyc_o <= `TRUE;
+			    i_stb_o <= `TRUE;
+			    i_we_o <= jtag_write_enable;
+			    i_cti_o <= `LM32_CTYPE_END;
+			    jtag_access <= `TRUE;
+			 end
+		    end 
+  `endif                    
+  `ifdef CFG_BUS_ERRORS_ENABLED
+		  // Clear bus error when exception taken, otherwise they would be 
+		  // continually generated if exception handler is cached
+   `ifdef CFG_FAST_UNCONDITIONAL_BRANCH    
+		  if (branch_taken_x == `TRUE)
+                    bus_error_f <= `FALSE;
+   `endif
+		  if (branch_taken_m == `TRUE)
+                    bus_error_f <= `FALSE;
+  `endif
+               end
+	  end
+     end
+ `else
+   always @(posedge clk_i `CFG_RESET_SENSITIVITY)
+     begin
+	if (rst_i == `TRUE)
+	  begin
+             i_cyc_o <= `FALSE;
+             i_stb_o <= `FALSE;
+             i_adr_o <= {`LM32_WORD_WIDTH{1'b0}};
+             i_cti_o <= `LM32_CTYPE_END;
+             i_lock_o <= `FALSE;
+             wb_data_f <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
+  `ifdef CFG_BUS_ERRORS_ENABLED
+             bus_error_f <= `FALSE;
+  `endif
+	  end
+	else
+	  begin   
+             // Is a cycle in progress?
+             if (i_cyc_o == `TRUE)
+               begin
+		  // Has cycle completed?
+		  if((i_ack_i == `TRUE) || (i_err_i == `TRUE))
+		    begin
+                       // Cycle complete
+                       i_cyc_o <= `FALSE;
+                       i_stb_o <= `FALSE;
+                       // Register fetched instruction
+                       wb_data_f <= i_dat_i;
+		    end
+  `ifdef CFG_BUS_ERRORS_ENABLED
+		  if (i_err_i == `TRUE)
+		    begin
+                       bus_error_f <= `TRUE;
+                       $display ("Instruction bus error. Address: %x", i_adr_o);
+		    end
+  `endif
+               end
+             else
+               begin
+		  // Wait for an instruction fetch from an external address 
+		  if (   (stall_a == `FALSE) 
+  `ifdef CFG_IRAM_ENABLED 
+			 && (iram_select_a == `FALSE)
+  `endif       
+			 )
+		    begin
+                       // Fetch instruction
+  `ifdef CFG_HW_DEBUG_ENABLED     
+                       i_sel_o <= 4'b1111;
+  `endif
+                       i_adr_o <= {pc_a, 2'b00};
+                       i_cyc_o <= `TRUE;
+                       i_stb_o <= `TRUE;
+  `ifdef CFG_BUS_ERRORS_ENABLED
+                       bus_error_f <= `FALSE;
+  `endif
+		    end
+		  else
+		    begin
+	               if (   (stall_a == `FALSE) 
+  `ifdef CFG_IRAM_ENABLED 
+			      && (iram_select_a == `TRUE)
+  `endif       
+			      )
+			 begin
+  `ifdef CFG_BUS_ERRORS_ENABLED
+			    bus_error_f <= `FALSE;
+  `endif
+			 end
+		    end
+               end
+	  end
+     end
+ `endif
+`endif // CFG_IWB_ENABLED
 
-// Instruction register
-always @(posedge clk_i `CFG_RESET_SENSITIVITY)
-begin
-    if (rst_i == `TRUE)
-    begin
-        instruction_d <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
+   // Instruction register
+   always @(posedge clk_i `CFG_RESET_SENSITIVITY)
+     begin
+	if (rst_i == `TRUE)
+	  begin
+             instruction_d <= {`LM32_INSTRUCTION_WIDTH{1'b0}};
 `ifdef CFG_BUS_ERRORS_ENABLED
-        bus_error_d <= `FALSE;
+             bus_error_d <= `FALSE;
 `endif
-    end
-    else
-    begin
-        if (stall_d == `FALSE)
-        begin
-            instruction_d <= instruction_f;
+	  end
+	else
+	  begin
+             if (stall_d == `FALSE)
+               begin
+		  instruction_d <= instruction_f;
 `ifdef CFG_BUS_ERRORS_ENABLED
-            bus_error_d <= bus_error_f;
+		  bus_error_d <= bus_error_f;
 `endif
-        end
-    end
-end  
-  
+               end
+	  end
+     end  
+   
 endmodule

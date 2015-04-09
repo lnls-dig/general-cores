@@ -135,7 +135,21 @@ module lm32_cpu (
     I_CTI_O,
     I_LOCK_O,
     I_BTE_O,
+`endif //  `ifdef CFG_IWB_ENABLED
+`ifdef CFG_IRAM_ENABLED
+		 iram_data_f,
+		 iram_address_f,
+		 iram_select_f,
+
+		 iram_data_m,
+		 iram_store_data_m,
+		 iram_address_m,
+		 iram_we_m,
+		 iram_byte_enable_m,
+		 iram_enable_m
 `endif
+		 
+		 
     // Data Wishbone master
     D_DAT_O,
     D_ADR_O,
@@ -146,6 +160,8 @@ module lm32_cpu (
     D_CTI_O,
     D_LOCK_O,
     D_BTE_O
+
+		 
     );
 
 /////////////////////////////////////////////////////
@@ -320,6 +336,22 @@ wire   D_LOCK_O;
 output [`LM32_BTYPE_RNG] D_BTE_O;               // Data Wishbone interface burst type 
 wire   [`LM32_BTYPE_RNG] D_BTE_O;
 
+`ifdef LM32_IRAM_ENABLED
+   input [`LM32_WORD_RNG] iram_data_f;
+   output [`LM32_PC_RNG] iram_address_f;       
+   output 	       iram_enable_f;
+
+   input [`LM32_WORD_RNG] iram_data_m;                     // Data from Instruction-ROM
+   output [`LM32_WORD_RNG] iram_store_data_m;                               // Store data to Instruction ROM
+   output [`LM32_WORD_RNG] iram_address_m;                // Load/store address to Instroutput iram_we_m;                                      // Write-enable of 2nd port of Instruction ROM
+   output 		   iram_we_m;
+   output [3:0 ] 	   iram_byte_enable_m;
+   
+
+
+`endif
+   
+   
 /////////////////////////////////////////////////////
 // Internal nets and registers 
 /////////////////////////////////////////////////////
@@ -609,13 +641,6 @@ wire icache_restart_request;                    // Restart instruction that caus
 wire icache_refill_request;                     // Request to refill instruction cache
 wire icache_refilling;                          // Indicates the instruction cache is being refilled
 `endif
-`ifdef CFG_IROM_ENABLED
-wire [`LM32_WORD_RNG] irom_store_data_m;        // Store data to instruction ROM
-wire [`LM32_WORD_RNG] irom_address_xm;          // Address to instruction ROM from load-store unit
-wire [`LM32_WORD_RNG] irom_data_m;              // Load data from instruction ROM
-wire irom_we_xm;                                // Indicates data needs to be written to instruction ROM
-wire irom_stall_request_x;                      // Indicates D stage needs to be stalled on a store to instruction ROM
-`endif
 
 // To/from load/store unit
 `ifdef CFG_DCACHE_ENABLED
@@ -780,11 +805,6 @@ lm32_instruction_unit #(
 `ifdef CFG_ICACHE_ENABLED
     .iflush                 (iflush),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_store_data_m      (irom_store_data_m),
-    .irom_address_xm        (irom_address_xm),
-    .irom_we_xm             (irom_we_xm),
-`endif
 `ifdef CFG_DCACHE_ENABLED
     .dcache_restart_request (dcache_restart_request),
     .dcache_refill_request  (dcache_refill_request),
@@ -816,9 +836,6 @@ lm32_instruction_unit #(
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_data_m            (irom_data_m),
-`endif
 `ifdef CFG_IWB_ENABLED
     // To Wishbone
     .i_dat_o                (I_DAT_O),
@@ -830,7 +847,14 @@ lm32_instruction_unit #(
     .i_cti_o                (I_CTI_O),
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
+`endif //  `ifdef CFG_IWB_ENABLED
+`ifdef CFG_IRAM_ENABLED
+		      .iram_data_f(iram_data_f),
+		      .iram_address_f(iram_address_f),
+		      .iram_select_f(iram_select_f),
 `endif
+		      
+		      
 `ifdef CFG_HW_DEBUG_ENABLED
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
@@ -841,7 +865,12 @@ lm32_instruction_unit #(
 `ifdef CFG_EBR_POSEDGE_REGISTER_FILE
     .instruction_f          (instruction_f),
 `endif
+
+		      
     .instruction_d          (instruction_d)
+
+
+		      
     );
 
 // Instruction decoder
@@ -956,9 +985,16 @@ lm32_load_store_unit #(
 `ifdef CFG_DCACHE_ENABLED
     .dflush                 (dflush_m),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_data_m            (irom_data_m),
+
+`ifdef CFG_IRAM_ENABLED
+		     .iram_data_m(iram_data_m),
+		     .iram_store_data_m(iram_store_data_m),
+		     .iram_address_m(iram_address_m),
+		     .iram_we_m(iram_we_m),
+		     .iram_byte_enable_m(iram_byte_enable_m),
+		     .iram_enable_m(iram_enable_m),
 `endif
+		     
     // From Wishbone
     .d_dat_i                (D_DAT_I),
     .d_ack_i                (D_ACK_I),
@@ -972,12 +1008,6 @@ lm32_load_store_unit #(
     .dcache_stall_request   (dcache_stall_request),
     .dcache_refilling       (dcache_refilling),
 `endif    
-`ifdef CFG_IROM_ENABLED
-    .irom_store_data_m      (irom_store_data_m),
-    .irom_address_xm        (irom_address_xm),
-    .irom_we_xm             (irom_we_xm),
-    .irom_stall_request_x   (irom_stall_request_x),
-`endif
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
     // To Wishbone
@@ -1836,15 +1866,6 @@ assign stall_x =    (stall_m == `TRUE)
                      && (kill_x == `FALSE)
                     ) 
 `endif
-`ifdef CFG_IROM_ENABLED
-                 // Stall load/store instruction in D stage if there is an ongoing store
-                 // operation to instruction ROM in M stage
-                 || (   (irom_stall_request_x == `TRUE)
-		     && (   (load_d == `TRUE)
-			 || (store_d == `TRUE)
-			)
-		    )
-`endif
                  ;
 
 assign stall_m =    (stall_wb_load == `TRUE)
@@ -2014,7 +2035,7 @@ assign cfg = {
 
 assign cfg2 = {
 		     30'b0,
-`ifdef CFG_IROM_ENABLED
+`ifdef CFG_IRAM_ENABLED
 		     `TRUE,
 `else
 		     `FALSE,

@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2012-07-09
+-- Last update: 2015-03-30
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -245,6 +245,31 @@ begin
 
     
   end generate gen_without_byte_enable_nochange;
-  
+
+   gen_with_byte_enable_writefirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "write_first")) generate
+
+    process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        for i in 0 to c_num_bytes-1 loop
+          if s_we_a(i) = '1' then
+            ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
+            qa_o((i+1)*8-1 downto i*8)                                                         <= da_i((i+1)*8-1 downto i*8);
+          else
+            qa_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
+          end if;
+
+          if s_we_b(i) = '1' then
+            ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
+            qb_o((i+1)*8-1 downto i*8)                                                         <= db_i((i+1)*8-1 downto i*8);
+          else
+            qb_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
+
+          end if;
+        end loop;
+      end if;
+    end process;
+
+  end generate gen_with_byte_enable_writefirst;
 
 end syn;
