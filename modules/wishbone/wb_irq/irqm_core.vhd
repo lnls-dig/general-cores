@@ -147,7 +147,7 @@ irq_master_o.we   <= '1';
          if(rst_n_i = '0') then
             idx_robin       <= 0;
          else 
-           if(r_cyc0 = '0' and r_cyc1 = '0') then 
+           if(r_cyc0 = '0') then 
               if(idx_robin = g_channels-1) then
                   idx_robin <= 0;   
               else
