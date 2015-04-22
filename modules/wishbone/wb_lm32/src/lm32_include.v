@@ -45,7 +45,10 @@
 `endif
 
 // Wishbone configuration
+`ifndef CFG_IRAM_ENABLED
 `define CFG_IWB_ENABLED
+`endif
+
 `define CFG_DWB_ENABLED
 
 // Data-path width
@@ -73,7 +76,8 @@
 `ifdef CFG_IWB_ENABLED
 `define LM32_PC_WIDTH                   (`LM32_WORD_WIDTH-2)
 `else
-`define LM32_PC_WIDTH                   `LM32_IROM_ADDRESS_WIDTH
+`define LM32_IRAM_ADDRESS_WIDTH 32
+`define LM32_PC_WIDTH                   (`LM32_IRAM_ADDRESS_WIDTH-2)
 `endif
 `endif
 `define LM32_PC_RNG                     (`LM32_PC_WIDTH+2-1):2

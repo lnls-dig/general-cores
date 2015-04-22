@@ -11,6 +11,7 @@ Currently there are 6 different profiles (all support interrupts)
 - medium_(icache_)debug - the above 2 versions with full JTAG debugger
 - full - full LM32 core (all instructions + I/D caches + bus errors)
 - full_debug - full core with debug
+- wrnode - special profile with internal single-cycle code/data RAM, for the WR node design
 
 The profiles are defined in lm32.profiles file. If you want to add/remove any, re-run gen_lmcores.py script afterwards (requires
 Modelsim vlog compiler for preprocessing Verilog sources).

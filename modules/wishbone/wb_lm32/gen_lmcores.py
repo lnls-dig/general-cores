@@ -87,6 +87,8 @@ def gen_customized_version(profile_name, feats):
 	`define CFG_DCACHE_BYTES_PER_LINE  16\n\
 	`define CFG_DCACHE_BASE_ADDRESS    32'h0\n\
 	`define CFG_DCACHE_LIMIT           32'h7fffffff\n\
+	`define CFG_IRAM_BASE_ADDRESS          0\n\
+	`define CFG_IRAM_LIMIT                32'h000fffff\n\
 	`ifdef CFG_WITH_DEBUG\n\
 	`define CFG_JTAG_ENABLED\n\
 	`define CFG_JTAG_UART_ENABLED\n\

@@ -107,11 +107,6 @@ module lm32_instruction_unit (
     icache_refill_request,
     icache_refilling,
 `endif
-`ifdef CFG_IRAM_ENABLED
-			      iram_address_f,
-                              iram_enable_f,
-			      iram_data_f,
-`endif
 `ifdef CFG_IWB_ENABLED
     // To Wishbone
     i_dat_o,
@@ -123,6 +118,11 @@ module lm32_instruction_unit (
     i_cti_o,
     i_lock_o,
     i_bte_o,
+`endif
+`ifdef CFG_IRAM_ENABLED
+    iram_i_adr_o,
+    iram_i_dat_i,
+    iram_i_en_o,
 `endif
 `ifdef CFG_HW_DEBUG_ENABLED
     jtag_read_data,
@@ -157,6 +157,12 @@ localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
 /////////////////////////////////////////////////////
 // Inputs
 /////////////////////////////////////////////////////
+`ifdef CFG_IRAM_ENABLED
+output [31:0] iram_i_adr_o;
+input [31:0]  iram_i_dat_i;
+   output     iram_i_en_o;
+   
+`endif
 
 input clk_i;                                            // Clock
 input rst_i;                                            // Reset
@@ -191,9 +197,6 @@ input dcache_refill_request;                            // Request to refill dat
 input dcache_refilling;
 `endif        
 
-`ifdef CFG_IRAM_ENABLED
-   input [`LM32_WORD_RNG] iram_data_f;         
-`endif
 
 `ifdef CFG_IWB_ENABLED
 input [`LM32_WORD_RNG] i_dat_i;                         // Instruction Wishbone interface read data
@@ -234,16 +237,6 @@ wire   icache_refill_request;
 output icache_refilling;                                // Indicates the icache is refilling
 wire   icache_refilling;
 `endif
-
-`ifdef CFG_IRAM_ENABLED
-   output [`LM32_PC_RNG] iram_address_f;            // Data to load-store unit on load
-   wire [`LM32_PC_RNG] iram_address_f;            // Data to load-store unit on load
-
-   output 	       iram_enable_f;
-   wire 	       iram_enable_f;
-   
-   
-`endif   
 
 `ifdef CFG_IWB_ENABLED
 output [`LM32_WORD_RNG] i_dat_o;                        // Instruction Wishbone interface write data
@@ -323,8 +316,8 @@ reg [`LM32_INSTRUCTION_RNG] wb_data_f;                  // Instruction fetched f
 `endif
 `ifdef CFG_IRAM_ENABLED
 wire iram_select_a;                                     // Indicates if A stage PC maps to a ROM address
-reg iram_enable_f;                                      // Indicates if F stage PC maps to a ROM address
-wire [`LM32_INSTRUCTION_RNG] iram_data_f;               // Instruction fetched from ROM
+   reg 			     iram_select_f;
+   
 `endif
 `ifdef CFG_EBR_POSEDGE_REGISTER_FILE
 `else
@@ -348,14 +341,7 @@ reg jtag_access;                                        // Indicates if a JTAG W
 // Instantiations
 /////////////////////////////////////////////////////
 
-// Instruction ROM
-`ifdef CFG_IRAM_ENABLED
 
-   assign   iram_address_f = pc_a;
-   assign iram_enable_f = !stall_a;
-
-`endif    
- 
 `ifdef CFG_ICACHE_ENABLED
 // Instruction cache
 lm32_icache #(
@@ -438,27 +424,41 @@ end
 // Select where instruction should be fetched from
 `ifdef CFG_IRAM_ENABLED
    assign iram_select_a = 1'b1;
+   assign iram_i_en_o = !stall_a;
+   assign iram_i_adr_o = {pc_a, 2'b00}; 
 `endif
+
+`ifdef CFG_IRAM_ENABLED
+
+   reg [31:0] prev_instruction_f;
+   reg 	      iram_i_en_d0;
+
+   always@(posedge clk_i) 
+     if(rst_i) begin
+	iram_i_en_d0 <= 0;
+     end else begin
+	iram_i_en_d0 <= !stall_a;
+	if(iram_i_en_d0)
+	  prev_instruction_f <= iram_i_dat_i;
+     end
+   
+   
+   assign instruction_f = (!iram_i_en_d0) ? prev_instruction_f : iram_i_dat_i;
+
+//   assign instruction_f = iram_i_dat_i;
+  
+   
+`else
                      
 // Select instruction from selected source
 `ifdef CFG_ICACHE_ENABLED
-`ifdef CFG_IRAM_ENABLED
-assign instruction_f = iram_select_f == `TRUE ? iram_data_f : icache_data_f;
-`else
 assign instruction_f = icache_data_f;
-`endif
-`else
-`ifdef CFG_IRAM_ENABLED
-`ifdef CFG_IWB_ENABLED
-assign instruction_f = iram_select_f == `TRUE ? iram_data_f : wb_data_f;
-`else
-assign instruction_f = iram_data_f;
-`endif
 `else
 assign instruction_f = wb_data_f;
 `endif
-`endif
 
+`endif // !`ifdef CFG_IRAM_ENABLED
+   
 // Unused/constant Wishbone signals
 `ifdef CFG_IWB_ENABLED
 `ifdef CFG_HW_DEBUG_ENABLED
