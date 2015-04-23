@@ -49,9 +49,6 @@ module lm32_load_store_unit
 (
     // ----- Inputs -------
     clk_i,
-`ifdef CFG_DOUBLE_CORE_CLOCK
-    clk_wb_i,
-`endif
     rst_i,
  // From pipeline
     stall_a,
@@ -271,37 +268,6 @@ reg  iram_enable_m;
 reg wb_select_m;
 reg [`LM32_WORD_RNG] wb_data_m;                         // Data read from Wishbone
 reg wb_load_complete;                                   // Indicates when a Wishbone load is complete
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-   `ifdef CFG_DOUBLE_CORE_CLOCK
-   input clk_wb_i;
-
-   always@(posedge clk_wb_i or posedge rst_i)
-     if(rst_i)
-       clk_div2 <= 0;
-     else
-       clk_div2 <= ~clk_div2;
-   
-
-   always@(posedge clk_i  or posedge rst_i)
-     if(rst_i)
-       begin
-	  clk_div2_d0 <= 0;
-	  wb_io_sync <= 0;
-       end  else begin
-	  clk_div2_d0 <= clk_div2;
-	  wb_io_sync <= ~(clk_div2_d0 ^ clk_div2);
-       end
-   `else // !`ifdef CFG_DOUBLE_CORE_CLOCK
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-   `endif // !`ifdef CFG_DOUBLE_CORE_CLOCK
-   
-	  
-   
    
 /////////////////////////////////////////////////////
 // Functions
@@ -579,7 +545,7 @@ begin
         dcache_refill_ready <= `FALSE;
 `endif                
     end
-    else
+    else 
     begin
 `ifdef CFG_DCACHE_ENABLED 
         // Refill ready should only be asserted for a single cycle               
@@ -620,7 +586,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             // synthesis translate_on
         end
-        else
+        else 
         begin
 `ifdef CFG_DCACHE_ENABLED                
             if (dcache_refill_request == `TRUE)

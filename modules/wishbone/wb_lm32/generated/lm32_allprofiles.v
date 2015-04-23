@@ -2006,7 +2006,7 @@ module lm32_cpu_full_debug (
   
     
 
-    
+
     rst_i,
     
   
@@ -5585,10 +5585,6 @@ module lm32_load_store_unit_full_debug
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -5822,39 +5818,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -6207,7 +6170,7 @@ begin
  
                 
     end
-    else
+    else 
     begin
   
  
@@ -6254,7 +6217,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
   
                 
@@ -14993,7 +14956,7 @@ module lm32_cpu_full (
   
     
 
-    
+
     rst_i,
     
   
@@ -18490,10 +18453,6 @@ module lm32_load_store_unit_full
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -18727,39 +18686,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -19112,7 +19038,7 @@ begin
  
                 
     end
-    else
+    else 
     begin
   
  
@@ -19159,7 +19085,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
   
                 
@@ -27713,7 +27639,7 @@ module lm32_cpu_medium_debug (
   
     
 
-    
+
     rst_i,
     
   
@@ -31230,10 +31156,6 @@ module lm32_load_store_unit_medium_debug
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -31462,39 +31384,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -31840,7 +31729,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -31884,7 +31773,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -40520,7 +40409,7 @@ module lm32_cpu_medium_icache_debug (
   
     
 
-    
+
     rst_i,
     
   
@@ -44037,10 +43926,6 @@ module lm32_load_store_unit_medium_icache_debug
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -44269,39 +44154,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -44647,7 +44499,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -44691,7 +44543,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -53300,7 +53152,7 @@ module lm32_cpu_medium_icache (
   
     
 
-    
+
     rst_i,
     
   
@@ -56739,10 +56591,6 @@ module lm32_load_store_unit_medium_icache
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -56971,39 +56819,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -57349,7 +57164,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -57393,7 +57208,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -65814,7 +65629,7 @@ module lm32_cpu_medium (
   
     
 
-    
+
     rst_i,
     
   
@@ -69246,10 +69061,6 @@ module lm32_load_store_unit_medium
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -69478,39 +69289,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -69856,7 +69634,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -69900,7 +69678,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -78229,7 +78007,7 @@ module lm32_cpu_minimal (
   
     
 
-    
+
     rst_i,
     
   
@@ -81636,10 +81414,6 @@ module lm32_load_store_unit_minimal
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -81868,39 +81642,6 @@ wire wb_select_x;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -82246,7 +81987,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -82290,7 +82031,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -88691,8 +88432,6 @@ endmodule
 
   
 
-  
-
 	  
 
 	  
@@ -88923,10 +88662,8 @@ endmodule
 
 
   
-
-  
-
  
+
 
   
  
@@ -89944,10 +89681,9 @@ module lm32_mc_arithmetic_wr_node (
     stall_d,
     kill_x,
   
+    
+    
 
-    divide_d,
-    modulus_d,
- 
 
   
     
@@ -89964,9 +89700,8 @@ module lm32_mc_arithmetic_wr_node (
     
     result_x,
   
+    
 
-    divide_by_zero_x,
- 
 
     stall_request_x
     );
@@ -89980,10 +89715,9 @@ input rst_i;
 input stall_d;                                  
 input kill_x;                                   
   
+                                  
+                                 
 
-input divide_d;                                 
-input modulus_d;                                
- 
 
   
                                 
@@ -90005,10 +89739,9 @@ input [ (32-1):0] operand_1_d;
 output [ (32-1):0] result_x;               
 reg    [ (32-1):0] result_x;
   
+                         
+    
 
-output divide_by_zero_x;                        
-reg    divide_by_zero_x;
- 
 
 output stall_request_x;                         
 wire   stall_request_x;
@@ -90021,9 +89754,8 @@ reg [ (32-1):0] p;
 reg [ (32-1):0] a;
 reg [ (32-1):0] b;
   
+  
 
-wire [32:0] t;
- 
 
 
 reg [ 2:0] state;                 
@@ -90044,9 +89776,8 @@ assign stall_request_x = state !=  3'b000;
 
   
 
+      
 
-assign t = {p[ 32-2:0], a[ 32-1]} - b;
- 
 
 
   
@@ -90073,9 +89804,8 @@ begin
 
 
   
+          
 
-        divide_by_zero_x <=  1'b0;
- 
 
         result_x <= { 32{1'b0}};
         state <=  3'b000;
@@ -90083,9 +89813,8 @@ begin
     else
     begin
   
+          
 
-        divide_by_zero_x <=  1'b0;
- 
 
         case (state)
          3'b000:
@@ -90097,12 +89826,11 @@ begin
                 a <= operand_0_d;
                 b <= operand_1_d;                    
   
+                   
+                      
+                   
+                      
 
-                if (divide_d ==  1'b1)
-                    state <=  3'b011 ;
-                if (modulus_d ==  1'b1)
-                    state <=  3'b010   ;
- 
                     
   
                    
@@ -90131,50 +89859,49 @@ begin
             end            
         end
   
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
+        
+        
+               
+            
+                  
+                   
+            
+             
+            
+                   
+                   
+            
+              
+                   
+            
+                
+                    
+                  
+            
+                
+        
 
-         3'b011 :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= a;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
-         3'b010   :
-        begin
-            if (t[32] == 1'b0)
-            begin
-                p <= t[31:0];
-                a <= {a[ 32-2:0], 1'b1};
-            end
-            else 
-            begin
-                p <= {p[ 32-2:0], a[ 32-1]};
-                a <= {a[ 32-2:0], 1'b0};
-            end
-            result_x <= p;
-            if ((cycles ==  32'd0) || (kill_x ==  1'b1))
-            begin
-                
-                divide_by_zero_x <= b == { 32{1'b0}};
-                state <=  3'b000;
-            end
-            cycles <= cycles - 1'b1;
-        end
- 
         
   
         
@@ -90614,7 +90341,7 @@ module lm32_cpu_wr_node (
   
     
 
-    
+
     rst_i,
     
   
@@ -90974,11 +90701,10 @@ wire [ 1:0] d_result_sel_1_d;
 wire x_result_sel_csr_d;                        
 reg x_result_sel_csr_x;
   
-
-wire q_d;
-wire x_result_sel_mc_arith_d;                   
-reg x_result_sel_mc_arith_x;
  
+                    
+ 
+
 
       
                        
@@ -91191,21 +90917,19 @@ wire [ (32-1):0] multiplier_result_w;
 
 
   
-
-wire divide_d;                                  
-wire divide_q_d;
-wire modulus_d;
-wire modulus_q_d;
-wire divide_by_zero_x;                          
+                                   
  
+ 
+ 
+                           
+
 
 
 
   
+                         
+  
 
-wire mc_stall_request_x;                        
-wire [ (32-1):0] mc_result_x;
- 
 
 
 
@@ -91372,9 +91096,8 @@ wire interrupt_exception;
 
 
   
+                   
 
-wire divide_by_zero_exception;                  
- 
 
 wire system_call_exception;                     
 
@@ -91576,9 +91299,8 @@ lm32_decoder_wr_node decoder (
     .d_result_sel_1         (d_result_sel_1_d),
     .x_result_sel_csr       (x_result_sel_csr_d),
   
+      
 
-    .x_result_sel_mc_arith  (x_result_sel_mc_arith_d),
- 
 
       
          
@@ -91638,10 +91360,9 @@ lm32_decoder_wr_node decoder (
 
 
   
+                     
+                    
 
-    .divide                 (divide_d),
-    .modulus                (modulus_d),
- 
 
     .branch                 (branch_d),
     .bi_unconditional       (bi_unconditional),
@@ -91801,41 +91522,34 @@ lm32_multiplier multiplier (
 
   
 
-
-lm32_mc_arithmetic_wr_node mc_arithmetic (
-    
-    .clk_i                  (clk_i),
-    .rst_i                  (rst_i),
-    .stall_d                (stall_d),
-    .kill_x                 (kill_x),
   
+    
+                      
+                      
+                    
+                     
+                   
+                   
                   
-    .divide_d               (divide_q_d),
-    .modulus_d              (modulus_q_d),
- 
 
-          
+         
                  
 
-
-  
+ 
                
               
               
-
     
-    .operand_0_d            (d_result_0),
-    .operand_1_d            (d_result_1),
+                
+                
     
-    .result_x               (mc_result_x),
-  
-                  
-    .divide_by_zero_x       (divide_by_zero_x),
- 
+                   
+                   
+           
 
-    .stall_request_x        (mc_stall_request_x)
-    );
- 
+            
+    
+
 
               
   
@@ -92322,9 +92036,8 @@ begin
 
 
   
+                  
 
-               : x_result_sel_mc_arith_x ? mc_result_x
- 
 
                : logic_result_x;
 end
@@ -92479,9 +92192,8 @@ assign kill_w =     1'b0
 
 
   
+     
 
-assign divide_by_zero_exception = divide_by_zero_x ==  1'b1;
- 
 
 
 assign system_call_exception = (   (scall_x ==  1'b1)
@@ -92530,9 +92242,8 @@ assign exception_x =           (system_call_exception ==  1'b1)
 
 
   
+                               
 
-                            || (divide_by_zero_exception ==  1'b1)
- 
 
   
 
@@ -92588,11 +92299,10 @@ begin
 
 
   
+            
+          
+    
 
-         if (divide_by_zero_exception ==  1'b1)
-        eid_x =  3'h5;
-    else
- 
 
   
 
@@ -92666,11 +92376,10 @@ assign stall_d =   (stall_x ==  1'b1)
                 
 assign stall_x =    (stall_m ==  1'b1)
   
+                       
+                        
+                     
 
-                 || (   (mc_stall_request_x ==  1'b1)
-                     && (kill_x ==  1'b0)
-                    ) 
- 
 
 
 	    
@@ -92732,24 +92441,22 @@ assign stall_m =    (stall_wb_load ==  1'b1)
 
 
   
-
-assign q_d = (valid_d ==  1'b1) && (kill_d ==  1'b0);
- 
-
-  
-         
          
 
 
   
          
+         
 
 
   
+         
 
-assign divide_q_d = (divide_d ==  1'b1) && (q_d ==  1'b1);
-assign modulus_q_d = (modulus_d ==  1'b1) && (q_d ==  1'b1);
- 
+
+  
+         
+         
+
 
 assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
@@ -92871,11 +92578,11 @@ assign cfg = {
 
 
   
-
-               1'b1,
- 
               
 
+
+               1'b0,
+ 
 
   
  
@@ -93151,9 +92858,8 @@ begin
         branch_target_x <= { (32-2){1'b0}};        
         x_result_sel_csr_x <=  1'b0;
   
+          
 
-        x_result_sel_mc_arith_x <=  1'b0;
- 
 
       
           
@@ -93294,9 +93000,8 @@ begin
             branch_target_x <= branch_reg_d ==  1'b1 ? bypass_data_0[ ((32-2)+2-1):2] : branch_target_d;            
             x_result_sel_csr_x <= x_result_sel_csr_d;
   
+              
 
-            x_result_sel_mc_arith_x <= x_result_sel_mc_arith_d;
- 
 
       
               
@@ -94067,10 +93772,6 @@ module lm32_load_store_unit_wr_node
 (
     
     clk_i,
-  
-    
-
-
     rst_i,
  
     stall_a,
@@ -94302,39 +94003,6 @@ reg  iram_enable_m;
 reg wb_select_m;
 reg [ (32-1):0] wb_data_m;                         
 reg wb_load_complete;                                   
-
-   reg clk_div2, clk_div2_d0;
-   reg wb_io_sync;
-
-     
-    
-
-       
-     
-         
-     
-         
-   
-
-        
-     
-       
-	    
-	    
-          
-	    
-	      
-       
-   
- 
-    always@(posedge clk_i)
-      wb_io_sync <= 1;
-   
-    
- 
-   
-	  
-   
    
 
 
@@ -94683,7 +94351,7 @@ begin
 
                 
     end
-    else
+    else 
     begin
    
         
@@ -94727,7 +94395,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             
         end
-        else
+        else 
         begin
                   
                
@@ -95363,9 +95031,8 @@ module lm32_decoder_wr_node (
     d_result_sel_1,        
     x_result_sel_csr,
   
+    
 
-    x_result_sel_mc_arith,
- 
     
       
     
@@ -95425,10 +95092,9 @@ module lm32_decoder_wr_node (
 
 
   
+    
+    
 
-    divide,
-    modulus,
- 
 
     branch,
     branch_reg,
@@ -95469,10 +95135,9 @@ reg    [ 1:0] d_result_sel_1;
 output x_result_sel_csr;
 reg    x_result_sel_csr;
   
-
-output x_result_sel_mc_arith;
-reg    x_result_sel_mc_arith;
  
+    
+
 
       
  
@@ -95561,12 +95226,11 @@ wire   direction;
 
 
   
-
-output divide;
-wire   divide;
-output modulus;
-wire   modulus;
  
+   
+ 
+   
+
 
 output branch;
 wire   branch;
@@ -95632,9 +95296,8 @@ wire op_cmpgeu;
 wire op_cmpgu;
 wire op_cmpne;
   
-
-wire op_divu;
  
+
 
 wire op_lb;
 wire op_lbu;
@@ -95642,9 +95305,8 @@ wire op_lh;
 wire op_lhu;
 wire op_lw;
   
-
-wire op_modu;
  
+
 
   
 
@@ -95784,9 +95446,8 @@ assign op_cmpgeu = instruction[ 30:26] ==  5'b11100;
 assign op_cmpgu  = instruction[ 30:26] ==  5'b11101;
 assign op_cmpne  = instruction[ 30:26] ==  5'b11111;
   
+       
 
-assign op_divu   = instruction[ 31:26] ==  6'b100011;
- 
 
 assign op_lb     = instruction[ 31:26] ==  6'b000100;
 assign op_lbu    = instruction[ 31:26] ==  6'b010000;
@@ -95794,9 +95455,8 @@ assign op_lh     = instruction[ 31:26] ==  6'b000111;
 assign op_lhu    = instruction[ 31:26] ==  6'b001011;
 assign op_lw     = instruction[ 31:26] ==  6'b001010;
   
+       
 
-assign op_modu   = instruction[ 31:26] ==  6'b110001;
- 
 
   
 
@@ -95865,10 +95525,9 @@ assign sext = op_sextb | op_sexth;
 
 
   
+    
+   
 
-assign divide = op_divu; 
-assign modulus = op_modu;
- 
 
 assign load = op_lb | op_lbu | op_lh | op_lhu | op_lw;
 assign store = op_sb | op_sh | op_sw;
@@ -95890,9 +95549,8 @@ begin
     
     x_result_sel_csr =  1'b0;
   
+      
 
-    x_result_sel_mc_arith =  1'b0;
- 
 
   
       
@@ -95911,25 +95569,20 @@ begin
     x_result_sel_add =  1'b0;
     if (op_rcsr)
         x_result_sel_csr =  1'b1;
-  
-    
-  
+      
+ 
          
           
 
-
-  
-
-    else if (divide | modulus)
-        x_result_sel_mc_arith =  1'b1;        
  
+        
+                  
 
-  
+ 
       
                       
 
 
- 
 
   
       
@@ -95983,10 +95636,9 @@ assign x_bypass_enable =  arith
 
 
   
+                         
+                         
 
-                        | divide
-                        | modulus
- 
 
   
                          

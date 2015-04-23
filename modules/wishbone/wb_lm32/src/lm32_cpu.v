@@ -73,7 +73,7 @@ module lm32_cpu (
     clk_i,
 `ifdef CFG_EBR_NEGEDGE_REGISTER_FILE
     clk_n_i,
-`endif    
+`endif
     rst_i,
     // From external devices
 `ifdef CFG_INTERRUPTS_ENABLED
