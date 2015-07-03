@@ -240,41 +240,41 @@ begin
       end if;
       
       if wb_bar = "001" then
-	wb_ack <= int_slave_o.ack;
+        wb_ack <= int_slave_o.ack;
         wb_dat <= int_slave_o.dat;
       else -- The control BAR is targetted
         -- Feedback acks one cycle after strobe
         wb_ack <= wb_stb;
-	
-	-- Always output read result (even w/o stb or we)
+        
+        -- Always output read result (even w/o stb or we)
         case wb_adr(6 downto 2) is
-	  when "00000" => -- Control register high
-	    wb_dat(31) <= r_cyc;
-	    wb_dat(30) <= '0';
-	    wb_dat(29) <= r_int;
-	    wb_dat(28 downto 0) <= (others => '0');
-	  when "00010" => -- Error flag high
-	    wb_dat <= r_error(63 downto 32);
-	  when "00011" => -- Error flag low
-	    wb_dat <= r_error(31 downto 0);
-	  when "00101" => -- Window offset low
+          when "00000" => -- Control register high
+            wb_dat(31) <= r_cyc;
+            wb_dat(30) <= '0';
+            wb_dat(29) <= r_int;
+            wb_dat(28 downto 0) <= (others => '0');
+          when "00010" => -- Error flag high
+            wb_dat <= r_error(63 downto 32);
+          when "00011" => -- Error flag low
+            wb_dat <= r_error(31 downto 0);
+          when "00101" => -- Window offset low
             wb_dat(r_addr'range) <= r_addr;
-	    wb_dat(r_addr'right-1 downto 0) <= (others => '0');
-	  when "00111" => -- SDWB address low
-	    wb_dat <= sdb_addr;
-	  when "10000" => -- Master FIFO status & flags
-	    wb_dat(31) <= fifo_full;
-	    wb_dat(30) <= int_master_o.we;
-	    wb_dat(29 downto 4) <= (others => '0');
-	    wb_dat(3 downto 0) <= int_master_o.sel;
-	  when "10011" => -- Master FIFO adr low
-	    wb_dat <= int_master_o.adr;
-	  when "10101" => -- Master FIFO dat low
-	    wb_dat <= int_master_o.dat;
-	  when others =>
-	    wb_dat <= (others => '0');
-	end case;
-	
+            wb_dat(r_addr'right-1 downto 0) <= (others => '0');
+          when "00111" => -- SDWB address low
+            wb_dat <= sdb_addr;
+          when "10000" => -- Master FIFO status & flags
+            wb_dat(31) <= fifo_full;
+            wb_dat(30) <= int_master_o.we;
+            wb_dat(29 downto 4) <= (others => '0');
+            wb_dat(3 downto 0) <= int_master_o.sel;
+          when "10011" => -- Master FIFO adr low
+            wb_dat <= int_master_o.adr;
+          when "10101" => -- Master FIFO dat low
+            wb_dat <= int_master_o.dat;
+          when others =>
+            wb_dat <= (others => '0');
+        end case;
+        
         -- Unless requested to by the PC, don't deque the FPGA->PC FIFO
         int_master_i.stall <= '1';
         int_master_i.ack <= '0';
@@ -285,12 +285,12 @@ begin
           case wb_adr(6 downto 2) is
             when "00000" => -- Control register high
               if int_slave_i.sel(3) = '1' then
-	        if int_slave_i.dat(30) = '1' then
+                if int_slave_i.dat(30) = '1' then
                   r_cyc <= int_slave_i.dat(31);
-		end if;
-		if int_slave_i.dat(28) = '1' then
-		  r_int <= int_slave_i.dat(29);
-		end if;
+        	end if;
+        	if int_slave_i.dat(28) = '1' then
+        	  r_int <= int_slave_i.dat(29);
+        	end if;
               end if;
             when "00101" => -- Window offset low
               if int_slave_i.sel(3) = '1' then
