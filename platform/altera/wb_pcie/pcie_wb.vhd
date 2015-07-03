@@ -8,8 +8,9 @@ use work.wishbone_pkg.all;
 
 entity pcie_wb is
   generic(
-    g_family : string := "Arria II";
-    sdb_addr : t_wishbone_address);
+    g_family   : string  := "Arria II";
+    g_fast_ack : boolean := true;
+    sdb_addr   : t_wishbone_address);
   port(
     clk125_i      : in  std_logic; -- 125 MHz, free running
     cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs
@@ -64,6 +65,7 @@ architecture rtl of pcie_wb is
   -- Internal WB clock: FPGA->PC
   signal int_master_o : t_wishbone_master_out;
   signal int_master_i : t_wishbone_master_in;
+  signal ext_slave_o  : t_wishbone_slave_out;
   
   -- control registers
   signal r_cyc   : std_logic;
@@ -171,7 +173,8 @@ begin
     end if;
   end process;
   
-  PC_to_FPGA_clock_crossing : xwb_clock_crossing port map(
+  PC_to_FPGA_clock_crossing : xwb_clock_crossing 
+    generic map(g_size => 256) port map(
     slave_clk_i    => internal_wb_clk,
     slave_rst_n_i  => internal_wb_rstn,
     slave_i        => int_slave_i,
@@ -188,15 +191,36 @@ begin
   int_slave_i.adr(r_addr'range) <= r_addr;
   int_slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
   
-  FPGA_to_PC_clock_crossing : xwb_clock_crossing port map(
+  FPGA_to_PC_clock_crossing : xwb_clock_crossing
+    generic map(g_size => 256) port map(
     slave_clk_i    => slave_clk_i,
     slave_rst_n_i  => slave_rstn_i,
     slave_i        => slave_i,
-    slave_o        => slave_o,
+    slave_o        => ext_slave_o,
     master_clk_i   => internal_wb_clk, 
     master_rst_n_i => internal_wb_rstn,
     master_i       => int_master_i,
     master_o       => int_master_o);
+  
+  -- Do not wait for software acknowledgement
+  fask_ack : if g_fast_ack generate
+    slave_o.stall <= ext_slave_o.stall;
+    slave_o.rty <= '0';
+    slave_o.err <= '0';
+    slave_o.dat <= (others => '0');
+    
+    fast_ack : process(slave_clk_i)
+    begin
+      if rising_edge(slave_clk_i) then
+        slave_o.ack <= slave_i.cyc and slave_i.stb and not ext_slave_o.stall;
+      end if;
+    end process;
+  end generate;
+  
+  -- Uses ack/err and dat from software
+  slow_ack : if not g_fast_ack generate
+    slave_o <= ext_slave_o;
+  end generate;
 
   -- Notify the system when the FIFO is non-empty
   fifo_full <= int_master_o.cyc and int_master_o.stb;
@@ -251,7 +275,7 @@ begin
 	    wb_dat <= (others => '0');
 	end case;
 	
-	-- Unless requested to by the PC, don't deque the FPGA->PC FIFO
+        -- Unless requested to by the PC, don't deque the FPGA->PC FIFO
         int_master_i.stall <= '1';
         int_master_i.ack <= '0';
         int_master_i.err <= '0';
