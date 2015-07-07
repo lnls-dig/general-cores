@@ -188,7 +188,7 @@ begin
    end process;
 
    -- Master clock domain: master -> sFIFO
-   sw_en <= mrecv.CYC and (master_i.ACK or master_i.ERR or master_i.RTY);
+   sw_en <= master_i.ACK or master_i.ERR or master_i.RTY;
    ssend.ACK <= master_i.ACK;
    ssend.ERR <= master_i.ERR;
    ssend.RTY <= master_i.RTY;
