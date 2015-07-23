@@ -1107,6 +1107,23 @@ package wishbone_pkg is
         date      => x"20140313",
         name      => "WB-Xilinx-MultiBoot")));
 
+  constant cc_dummy_sdb_device : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"01",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"00000000000000ff",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"ffffffff",
+        version   => x"00000001",
+        date      => x"20150722",
+        name      => "Unused-Device      ")));
+
+  
 end wishbone_pkg;
 
 package body wishbone_pkg is
