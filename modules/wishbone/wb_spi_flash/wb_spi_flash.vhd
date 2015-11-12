@@ -163,6 +163,8 @@ architecture rtl of wb_spi_flash is
   signal r_oe      : t_status        := (others => '0');
   signal r_shift_o : t_word          := (others => '-');
   signal r_shift_i : t_word          := (others => '-');
+  signal r_data_i  : std_logic_vector(g_port_width-1 downto 0);
+  signal r_data_neg: std_logic_vector(g_port_width-1 downto 0);
   
   -- Clock crossing signals
   signal master_i     : t_wishbone_master_in;
@@ -236,7 +238,13 @@ begin
   input : process(clk_in_i) is
   begin
     if clk_in_i'event and clk_in_i = g_input_latch_edge then
-      r_shift_i <= r_shift_i(31-g_port_width downto 0) & data_i;
+      r_data_i <= data_i;
+    end if;
+  end process;
+  neg : process(clk_out_i) is
+  begin
+    if falling_edge(clk_out_i) then
+      r_data_neg <= r_data_i;
     end if;
   end process;
       
@@ -388,6 +396,7 @@ begin
       r_err     <= '0';
       r_dat     <= (others => '-');
       r_adr     <= (others => '-');
+      r_shift_i <= (others => '-');
       
       external_granted_o  <= '0';
       
@@ -402,6 +411,7 @@ begin
       r_stall  <= '1';
       r_ack(0) <= '0';
       r_err    <= '0';
+      r_shift_i<= r_shift_i(31-g_port_width downto 0) & r_data_neg;
       r_fifo_wen <= '0';
       
       if g_input_to_output_cycles > 1 then
