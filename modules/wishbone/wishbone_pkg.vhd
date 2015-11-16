@@ -1078,8 +1078,8 @@ package body wishbone_pkg is
       variable result 	 : std_logic_vector(pval'range);   
    begin
      for i in pval'range loop 
-      n_sel(i) := sel(i / 8);
-      n_val(i) := ival(i);
+      n_sel(i) := sel((i-pval'low) / 8); -- subtract the low index for when register width > wishbone data width
+      n_val(i) := ival(i-pval'low);
      end loop;
 
      if(mode = "set") then  
