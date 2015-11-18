@@ -60,7 +60,7 @@ package wishbone_pkg is
 
   constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
-  constant cc_dummy_data : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
+  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) :=
     (others => 'X');
