@@ -170,11 +170,11 @@ begin  -- rtl
         else
           case fsm_state is
             when IDLE => 
-              if slave_in.stb ='1' and master_in.stall='0' and master_in.ack='0' then
+              if slave_in.stb ='1' and slave_in.cyc = '1' and master_in.stall='0' and master_in.ack='0' then
                 fsm_state <= WAIT4ACK;
               end if;
             when WAIT4ACK => 
-              if master_in.ack='1' then 
+              if (slave_in.stb = '0' and slave_in.cyc = '0') or master_in.ack='1' then 
                 fsm_state <= IDLE;
               end if;
           end case;
