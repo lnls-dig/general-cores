@@ -174,7 +174,7 @@ begin  -- rtl
                 fsm_state <= WAIT4ACK;
               end if;
             when WAIT4ACK => 
-              if (slave_in.stb = '0' and slave_in.cyc = '0') or master_in.ack='1' then 
+              if (slave_in.stb = '0' and slave_in.cyc = '0') or master_in.ack='1' or master_in.err='1' then 
                 fsm_state <= IDLE;
               end if;
           end case;
