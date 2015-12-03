@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2013-04-16
+-- Last update: 2015-11-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -45,7 +45,9 @@ entity wb_vic is
     -- number of IRQ inputs.
     g_num_interrupts : natural                  := 32;
     -- initial values for the vector addresses. 
-    g_init_vectors   : t_wishbone_address_array := cc_dummy_address_array
+    g_init_vectors   : t_wishbone_address_array := cc_dummy_address_array;
+
+    g_retry_timeout : integer := 0
     );
 
   port (
@@ -131,7 +133,7 @@ architecture syn of wb_vic is
 
 
 
-  type t_state is (WAIT_IRQ, PROCESS_IRQ, WAIT_ACK, WAIT_MEM, WAIT_IDLE);
+  type t_state is (WAIT_IRQ, PROCESS_IRQ, WAIT_ACK, WAIT_MEM, WAIT_IDLE, RETRY);
 
   signal irqs_i_reg : std_logic_vector(32 downto 0);
 
@@ -364,6 +366,7 @@ begin  -- syn
               vic_var      <= vic_ivt_ram_data_int;
               state        <= WAIT_ACK;
               irq_master_o <= vic_ctl_pol;
+              timeout_count <= (others => '0');
 
             when WAIT_ACK =>
 -- got write operation to VIC_EOIR register? if yes, advance to next interrupt.
@@ -371,9 +374,25 @@ begin  -- syn
               if(vic_eoir_wr = '1') then
                 state    <= WAIT_IDLE;
                 swi_mask <= (others => '0');
+                timeout_count <= (others => '0');
+              elsif (g_retry_timeout /= 0 and timeout_count = g_retry_timeout) then
+                timeout_count <= (others => '0');
+                state <= RETRY;
+                irq_master_o <= not vic_ctl_pol;
+              else
+                timeout_count <= timeout_count + 1;
               end if;
 
-              timeout_count <= (others => '0');
+            when RETRY =>
+                if(timeout_count = 100) then
+                  irq_master_o <= vic_ctl_pol;
+                  state <= WAIT_ACK;
+                  timeout_count <= (others => '0');
+                  else
+                timeout_count <= timeout_count + 1;
+                    
+                end if;
+                  
 
             when WAIT_IDLE =>
               if(vic_ctl_emu_edge = '0') then
