@@ -8,7 +8,7 @@
 --              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-07-31
+-- Last update: 2016-01-28
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -43,6 +43,7 @@
 -- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
 -- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
 -- 2014-03-20  1.3      mcattin         Added bicolor led controller
+-- 2016-01-28  1.3      vfinotti        Added dynamic pulse extender
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -69,6 +70,20 @@ package gencores_pkg is
       pulse_i    : in  std_logic;
       extended_o : out std_logic);
   end component;
+
+  ------------------------------------------------------------------------------
+  -- Dynamic Pulse extender
+  ------------------------------------------------------------------------------
+  component gc_dyn_extend_pulse is
+    generic (
+      g_len_width : natural);
+    port (
+      clk_i      : in  std_logic;
+      rst_n_i    : in  std_logic;
+      pulse_i    : in  std_logic;
+      len_i      : in  unsigned(g_len_width-1 downto 0);
+      extended_o : out std_logic := '0');
+  end component gc_dyn_extend_pulse;
 
   ------------------------------------------------------------------------------
   -- CRC generator
