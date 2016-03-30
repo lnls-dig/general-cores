@@ -1362,6 +1362,7 @@ package body wishbone_pkg is
     variable v_map       : std_logic_vector(c_records'length downto 0) := (others => '0');
     variable v_cursor    : unsigned(63 downto 0) := (others => '0');
     variable v_increment : unsigned(63 downto 0) := (others => '0');
+    variable v_type      : std_logic_vector(7 downto 0);
   begin
     -- First, extract the length of the devices, ignoring those not to be mapped
     for i in c_records'range loop
@@ -1376,7 +1377,8 @@ package body wishbone_pkg is
       
       -- Only map devices/bridges at address zero
       if v_address(i) = c_zero then
-        case c_records(i)(7 downto 0) is
+        v_type := c_records(i)(7 downto 0);
+        case v_type is
           when x"01" => v_map(i) := '1';
           when x"02" => v_map(i) := '1';
           when others => null;
