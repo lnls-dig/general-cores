@@ -1362,6 +1362,7 @@ package body wishbone_pkg is
     variable v_map       : std_logic_vector(c_records'length downto 0) := (others => '0');
     variable v_cursor    : unsigned(63 downto 0) := (others => '0');
     variable v_increment : unsigned(63 downto 0) := (others => '0');
+    variable v_type      : std_logic_vector(7 downto 0);
   begin
     -- First, extract the length of the devices, ignoring those not to be mapped
     for i in c_records'range loop
@@ -1376,7 +1377,8 @@ package body wishbone_pkg is
       
       -- Only map devices/bridges at address zero
       if v_address(i) = c_zero then
-        case c_records(i)(7 downto 0) is
+        v_type := c_records(i)(7 downto 0);
+        case v_type is
           when x"01" => v_map(i) := '1';
           when x"02" => v_map(i) := '1';
           when others => null;
@@ -1560,6 +1562,7 @@ package body wishbone_pkg is
  -- generates aligned address map for an sdb_record_array, accepts optional start offset 
    function f_sdb_automap_array(sdb_array : t_sdb_record_array; start_offset : t_wishbone_address := (others => '0'))
    return t_sdb_record_array is
+      constant len         : natural := sdb_array'length;
       variable this_rng    : unsigned(63 downto 0) := (others => '0');   
       variable prev_rng    : unsigned(63 downto 0) := (others => '0');   
       variable prev_offs   : unsigned(63 downto 0) := (others => '0');   
@@ -1573,7 +1576,7 @@ package body wishbone_pkg is
    
       prev_offs(start_offset'left downto 0) := unsigned(start_offset);
       --traverse the array   
-      for i in 0 to sdb_array'length-1 loop
+      for i in 0 to len-1 loop
          -- find the fitting extraction function by evaling the type byte. 
          -- could also use the component, but it's safer to use Wes' embed and extract functions.      
          sdb_type := sdb_array(i)(7 downto 0);
@@ -1602,6 +1605,7 @@ package body wishbone_pkg is
 
   -- find place for sdb rom on crossbar and return address. try to put it in an address gap.
    function f_sdb_create_rom_addr(sdb_array : t_sdb_record_array) return t_wishbone_address is
+      constant len                  : natural := sdb_array'length;
       constant rom_bytes            : natural := (2**f_ceil_log2(sdb_array'length + 1)) * (c_sdb_device_length / 8);
       variable result               : t_wishbone_address  := (others => '0');
       variable this_base, this_end  : unsigned(63 downto 0)          := (others => '0');    
@@ -1610,7 +1614,7 @@ package body wishbone_pkg is
       variable sdb_type             : std_logic_vector(7 downto 0);     
    begin
       --traverse the array   
-      for i in 0 to sdb_array'length-1 loop     
+      for i in 0 to len-1 loop     
          sdb_type := sdb_array(i)(7 downto 0);
          if(sdb_type = x"01" or sdb_type = x"02") then
             -- get         
@@ -1729,9 +1733,10 @@ package body wishbone_pkg is
     variable s_norm : std_logic_vector(result'length*4-1 downto 0) := (others=>'0');
     variable cut : natural;
     variable nibble: std_logic_vector(3 downto 0);
+    constant len : natural := result'length;
   begin
     s_norm(s'length-1 downto 0) := s;
-    for i in result'length-1 downto 0 loop
+    for i in len-1 downto 0 loop
       nibble := s_norm(i*4+3 downto i*4);
       case nibble is
         when "0000" => result(i+1) := '0';
@@ -1765,10 +1770,11 @@ package body wishbone_pkg is
 
   -- Converts string (hex number, without leading 0x) to std_logic_vector
   function f_string2bits(s : string) return std_logic_vector is
+    constant len : natural := s'length;
     variable slv : std_logic_vector(s'length*4-1 downto 0);
     variable nibble : std_logic_vector(3 downto 0);
   begin
-    for i in 0 to s'length-1 loop
+    for i in 0 to len-1 loop
       case s(i+1) is
         when '0' => nibble := X"0";
         when '1' => nibble := X"1";
@@ -1801,9 +1807,10 @@ package body wishbone_pkg is
 
   -- Converts string to ascii (std_logic_vector)
   function f_string2svl (s : string) return std_logic_vector is
+    constant len : natural := s'length;
     variable slv : std_logic_vector((s'length * 8) - 1 downto 0);
   begin
-    for i in 0 to s'length-1 loop
+    for i in 0 to len-1 loop
       slv(slv'high-i*8 downto (slv'high-7)-i*8) :=
         std_logic_vector(to_unsigned(character'pos(s(i+1)), 8));
     end loop;
@@ -1812,9 +1819,10 @@ package body wishbone_pkg is
 
   -- Converts ascii (std_logic_vector) to string
   function f_slv2string (slv : std_logic_vector) return string is
+    constant len : natural := slv'length;
     variable s : string(1 to slv'length/8);
   begin
-    for i in 0 to (slv'length/8)-1 loop
+    for i in 0 to (len/8)-1 loop
       s(i+1) := character'val(to_integer(unsigned(slv(slv'high-i*8 downto (slv'high-7)-i*8))));
     end loop;
     return s;
