@@ -32,60 +32,46 @@ end wb_skidpad;
 
 architecture rtl of wb_skidpad is
 
-  signal s_push0, s_push1, s_pop  : std_logic := '0';
-  signal r_cnt                    : unsigned(1 downto 0) := "11";
-  signal s_inc, s_dec             : unsigned(1 downto 0) := "00";
-  signal s_full, s_empty          : std_logic := '0';
-  signal s_stall                  : std_logic := '0';
-  signal r_buff0, r_buff1, s_buff : std_logic_vector(g_adrbits + 32 + 4 + 1 -1 downto 0) := (others => '0');  
+  signal s_full,  s_valid : std_logic;
+  signal r_full0, r_full1 : std_logic := '0';
+  signal r_buff0, r_buff1 : std_logic_vector(g_adrbits + 32 + 4 + 1 -1 downto 0);
+  signal s_mux            : std_logic_vector(g_adrbits + 32 + 4 + 1 -1 downto 0);
    
 begin
 
-  s_inc <= "0" & s_push0;
-  s_dec <= (others => (s_pop and not s_empty));   
+  s_valid <= r_full1 or  r_full0;
+  s_full  <= r_full1 and r_full0;
 
-  s_push0 <= push_i;
-  s_push1 <= s_push0 and not pop_i;
-  s_pop   <= pop_i; 
-
-  s_full <= '1' when r_cnt = "01" 
-        else '0';
-  s_empty <= '1' when r_cnt = "11"
-       else '0';
-
-  mux: with (s_full) select
-  s_buff <= r_buff1 when '1',
-            r_buff0 when others;
-
-  adr_o <= s_buff(37+g_adrbits-1 downto 37);    
-  dat_o <= s_buff(36 downto 5);
-  sel_o <= s_buff(4 downto 1);
-  we_o  <= s_buff(0);  
-
-  full_o <= s_full;
-  empty_o <= s_empty; 
-
-  slave : process(clk_i)
+  control : process(clk_i, rst_n_i) is
+  begin
+    if rst_n_i = '0' then
+      r_full0 <= '0';
+      r_full1 <= '0';
+    elsif rising_edge(clk_i) then
+      r_full0 <= push_i or s_full;
+      r_full1 <= not pop_i and s_valid;
+    end if;
+  end process;
+  
+  bulk : process(clk_i) is
   begin
     if rising_edge(clk_i) then
-       if(rst_n_i = '0') then
-          r_buff0    <= (others => '0');
-          r_buff1    <= (others => '0');
-          r_cnt      <= (others => '1');
-       else
-          
-          if (s_push0 = '1') then
-            r_buff0 <= adr_i & dat_i & sel_i & we_i;
-          end if;
-
-          if (s_push1 = '1') then
-            r_buff1  <= r_buff0;
-          end if;
-          
-          r_cnt <= r_cnt + s_inc + s_dec;
-                          
-       end if; -- rst
-    end if; -- clk edge
+      if s_full = '0' then
+        r_buff0 <= adr_i & dat_i & sel_i & we_i;
+      end if;
+      if r_full1 = '0' then      
+        r_buff1 <= r_buff0;
+      end if;
+    end if;
   end process;
-
+  
+  s_mux <= r_buff1 when r_full1='1' else r_buff0;
+  adr_o <= s_mux(37+g_adrbits-1 downto 37);
+  dat_o <= s_mux(36 downto 5);
+  sel_o <= s_mux(4 downto 1);
+  we_o  <= s_mux(0);
+  
+  full_o  <= s_full;
+  empty_o <= not s_valid;
+  
 end rtl;
