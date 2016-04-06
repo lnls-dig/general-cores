@@ -20,7 +20,8 @@ modules =  { "local" : [
   "wb_spi_flash",
 	"wb_simple_pwm",
   "wb_i2c_bridge",
-  "wbgen2"
+  "wbgen2",
+  "wbgenplus", 	
   ]}
 
 files = [
