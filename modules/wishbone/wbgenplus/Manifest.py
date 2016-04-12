@@ -1,5 +1,4 @@
-files = ["wb_skidpad.vhd",
-         "wbgenplus_pkg.vhd",
+files = ["wbgenplus_pkg.vhd",
 
 ]
 

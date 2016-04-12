@@ -384,6 +384,32 @@ package wishbone_pkg is
       master_o  : out t_wishbone_master_out);
   end component;
 
+  -- skidpad. acts like a fifo in wb flow control, but costs less
+  component wb_skidpad is
+  generic(
+     g_adrbits   : natural   := 32
+  );
+  Port(
+     clk_i        : std_logic;
+     rst_n_i      : std_logic;
+
+     push_i       : in  std_logic;
+     pop_i        : in  std_logic;
+     full_o       : out std_logic;
+     empty_o      : out std_logic;
+
+     adr_i        : in  std_logic_vector(g_adrbits-1 downto 0);
+     dat_i        : in  std_logic_vector(32-1 downto 0);
+     sel_i        : in  std_logic_vector(4-1 downto 0);
+     we_i         : in  std_logic;
+
+     adr_o        : out std_logic_vector(g_adrbits-1 downto 0);
+     dat_o        : out std_logic_vector(32-1 downto 0);
+     sel_o        : out std_logic_vector(4-1 downto 0);
+     we_o         : out std_logic
+  );
+  end component;
+
   component sdb_rom is
     generic(
       g_layout  : t_sdb_record_array;
