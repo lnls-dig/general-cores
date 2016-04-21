@@ -154,10 +154,10 @@ architecture rtl of xwb_sdb_crossbar is
   constant c_sdb_mask : t_wishbone_address := 
     std_logic_vector(c_rom_mask(c_wishbone_address_width-1 downto 0));
   constant c_address : t_wishbone_address_array(g_num_slaves downto 0) :=
-  
     g_sdb_addr & f_addresses;
   constant c_mask : t_wishbone_address_array(g_num_slaves downto 0) :=
     c_sdb_mask & f_masks;
+  constant c_null : t_sdb_record_array(0 downto 1) := (others => (others => '0'));
   
   signal master_i_1 :  t_wishbone_master_in_array(g_num_slaves downto 0);
   signal master_o_1 : t_wishbone_master_out_array(g_num_slaves downto 0);
@@ -167,10 +167,12 @@ begin
   
   rom : sdb_rom
     generic map(
-      g_layout   => c_layout,
+      g_slaves   => c_layout,
+      g_masters  => c_null,
       g_bus_end  => c_bus_end)
     port map(
       clk_sys_i => clk_sys_i,
+      master_i  => (others => '0'),
       slave_i   => master_o_1(g_num_slaves),
       slave_o   => master_i_1(g_num_slaves));
   

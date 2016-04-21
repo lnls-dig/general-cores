@@ -124,6 +124,12 @@ package wishbone_pkg is
     sdb_component : t_sdb_component;
   end record t_sdb_device;
 
+  type t_sdb_msi is record
+    wbd_endian    : std_logic;          -- 0 = big, 1 = little
+    wbd_width     : std_logic_vector(3 downto 0);  -- 3=64-bit, 2=32-bit, 1=16-bit, 0=8-bit
+    sdb_component : t_sdb_component;
+  end record t_sdb_msi;
+
   type t_sdb_bridge is record
     sdb_child     : std_logic_vector(63 downto 0);
     sdb_component : t_sdb_component;
@@ -165,12 +171,14 @@ package wishbone_pkg is
   -- Used to configure a device at a certain address
   function f_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address) return t_sdb_record;
+  function f_sdb_embed_msi(msi : t_sdb_msi; address : t_wishbone_address) return t_sdb_record;
   function f_sdb_embed_integration(integr : t_sdb_integration) return t_sdb_record;
   function f_sdb_embed_repo_url(url : t_sdb_repo_url) return t_sdb_record;
   function f_sdb_embed_synthesis(syn : t_sdb_synthesis) return t_sdb_record;
 
   function f_sdb_extract_device(sdb_record : t_sdb_record) return t_sdb_device;
   function f_sdb_extract_bridge(sdb_record : t_sdb_record) return t_sdb_bridge;
+  function f_sdb_extract_msi(sdb_record : t_sdb_record) return t_sdb_msi;
   function f_sdb_extract_integration(sdb_record : t_sdb_record) return t_sdb_integration;
   function f_sdb_extract_repo_url(sdb_record : t_sdb_record) return t_sdb_repo_url;
   function f_sdb_extract_synthesis(sdb_record : t_sdb_record) return t_sdb_synthesis;
@@ -178,6 +186,7 @@ package wishbone_pkg is
   -- Automatic crossbar mapping functions
   function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true) return t_sdb_record;
   function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true) return t_sdb_record;
+  function f_sdb_auto_msi   (msi    : t_sdb_msi;    enable : boolean := true) return t_sdb_record;
   function f_sdb_auto_layout(records : t_sdb_record_array) return t_sdb_record_array;
   function f_sdb_auto_sdb   (records : t_sdb_record_array) return t_wishbone_address;
   
@@ -349,10 +358,12 @@ package wishbone_pkg is
 
   component sdb_rom is
     generic(
-      g_layout      : t_sdb_record_array;
+      g_slaves      : t_sdb_record_array;
+      g_masters     : t_sdb_record_array;
       g_bus_end     : unsigned(63 downto 0));
     port(
       clk_sys_i : in  std_logic;
+      master_i  : in  std_logic_vector(g_masters'length-1 downto 0);
       slave_i   : in  t_wishbone_slave_in;
       slave_o   : out t_wishbone_slave_out);
   end component;
@@ -1196,6 +1207,36 @@ package body wishbone_pkg is
     return result;
   end;
 
+  function f_sdb_embed_msi(msi : t_sdb_msi; address : t_wishbone_address)
+    return t_sdb_record
+  is
+    variable result : t_sdb_record;
+  begin
+    result(511 downto 456) := (others => '0');
+    result(455)            := msi.wbd_endian;
+    result(454 downto 452) := (others => '0');
+    result(451 downto 448) := msi.wbd_width;
+    result(447 downto 8)   := f_sdb_embed_component(msi.sdb_component, address);
+    result(7 downto 0)     := x"03";    -- msi
+    return result;
+  end;
+
+  function f_sdb_extract_msi(sdb_record : t_sdb_record)
+    return t_sdb_msi
+  is
+    variable result : t_sdb_msi;
+  begin
+    result.wbd_endian    := sdb_record(452);
+    result.wbd_width     := sdb_record(451 downto 448);
+    result.sdb_component := f_sdb_extract_component(sdb_record(447 downto 8));
+
+    assert sdb_record(7 downto 0) = x"03"
+      report "Cannot extract t_sdb_msi from record of type " & integer'image(to_integer(unsigned(sdb_record(7 downto 0)))) & "."
+      severity failure;
+    
+    return result;
+  end;
+
   function f_sdb_embed_integration(integr : t_sdb_integration)
     return t_sdb_record
   is
@@ -1338,6 +1379,20 @@ package body wishbone_pkg is
       return v_empty;
     end if;
   end f_sdb_auto_bridge;
+  
+  function f_sdb_auto_msi(msi : t_sdb_msi; enable : boolean := true)
+    return t_sdb_record
+  is
+    constant c_zero  : t_wishbone_address := (others => '0');
+    variable v_empty : t_sdb_record := (others => '0');
+  begin
+    v_empty(7 downto 0) := (others => '1');
+    if enable then
+      return f_sdb_embed_msi(msi, c_zero);
+    else
+      return v_empty;
+    end if;
+  end f_sdb_auto_msi;
   
   subtype t_usdb_address is unsigned(63 downto 0);
   type t_usdb_address_array is array(natural range <>) of t_usdb_address;
@@ -1843,6 +1898,7 @@ package body wishbone_pkg is
       return ret_v;
    end f_string_fix_len;
 
+   -- do not synthesize
    function f_hot_to_bin(x : std_logic_vector) return natural is
       variable rv : natural;
    begin
