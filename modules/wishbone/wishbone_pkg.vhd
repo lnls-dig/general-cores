@@ -1361,7 +1361,7 @@ package body wishbone_pkg is
     constant c_zero  : t_wishbone_address := (others => '0');
     variable v_empty : t_sdb_record := (others => '0');
   begin
-    v_empty(7 downto 0) := (others => '1');
+    v_empty(7 downto 0) := x"f1";
     if enable then
       return f_sdb_embed_device(device, c_zero);
     else
@@ -1375,7 +1375,7 @@ package body wishbone_pkg is
     constant c_zero  : t_wishbone_address := (others => '0');
     variable v_empty : t_sdb_record := (others => '0');
   begin
-    v_empty(7 downto 0) := (others => '1');
+    v_empty(7 downto 0) := x"f2";
     if enable then
       return f_sdb_embed_bridge(bridge, c_zero);
     else
@@ -1389,7 +1389,7 @@ package body wishbone_pkg is
     constant c_zero  : t_wishbone_address := (others => '0');
     variable v_empty : t_sdb_record := (others => '0');
   begin
-    v_empty(7 downto 0) := (others => '1'); -- !!! fuck
+    v_empty(7 downto 0) := x"f3";
     if enable then
       return f_sdb_embed_msi(msi, c_zero);
     else

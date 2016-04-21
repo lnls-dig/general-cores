@@ -77,14 +77,14 @@ architecture rtl of sdb_rom is
     return t_rom 
   is
     variable res : t_rom := (others => (others => '0'));
-    variable sdb_device : std_logic_vector(c_sdb_device_length-1 downto 0) := (others => '0');
+    variable sdb_record : t_sdb_record;
     variable sdb_component : t_sdb_component;
   begin
-    sdb_device(511 downto 480) := x"5344422D"  ;                                     -- sdb_magic
-    sdb_device(479 downto 464) := std_logic_vector(to_unsigned(c_used_entries, 16)); -- sdb_records
-    sdb_device(463 downto 456) := x"01";                                             -- sdb_version
-    sdb_device(455 downto 448) := x"00";                                             -- sdb_bus_type = sdb_wishbone
-    sdb_device(  7 downto   0) := x"00";                                             -- record_type  = sdb_interconnect
+    sdb_record(511 downto 480) := x"5344422D"  ;                                     -- sdb_magic
+    sdb_record(479 downto 464) := std_logic_vector(to_unsigned(c_used_entries, 16)); -- sdb_records
+    sdb_record(463 downto 456) := x"01";                                             -- sdb_version
+    sdb_record(455 downto 448) := x"00";                                             -- sdb_bus_type = sdb_wishbone
+    sdb_record(  7 downto   0) := x"00";                                             -- record_type  = sdb_interconnect
     
     sdb_component.addr_first := (others => '0');
     sdb_component.addr_last  := std_logic_vector(g_bus_end);
@@ -93,19 +93,24 @@ architecture rtl of sdb_rom is
     sdb_component.product.version   := x"00000003";
     sdb_component.product.date      := x"20120511";
     sdb_component.product.name      := "WB4-Crossbar-GSI   ";
-    sdb_device(447 downto   8) := f_sdb_embed_component(sdb_component, (others => '0'));
+    sdb_record(447 downto   8) := f_sdb_embed_component(sdb_component, (others => '0'));
     
     for i in 0 to c_sdb_words-1 loop
       res(c_sdb_words-1-i) := 
-        sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
+        sdb_record((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
     end loop;
     
     for idx in c_layout'range loop
-      sdb_device(511 downto 0) := c_layout(idx);
+      sdb_record := c_layout(idx);
+      
+      -- All local/temporary types => empty record
+      if sdb_record(7 downto 4) = x"f" then
+        sdb_record(3 downto 0) := x"f";
+      end if;
       
       for i in 0 to c_sdb_words-1 loop
         res((idx+1)*c_sdb_words-1-i) := 
-          sdb_device((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
+          sdb_record((i+1)*c_wishbone_data_width-1 downto i*c_wishbone_data_width);
       end loop;
     end loop;
     

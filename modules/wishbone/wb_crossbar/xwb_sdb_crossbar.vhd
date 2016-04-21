@@ -173,10 +173,15 @@ architecture rtl of xwb_sdb_crossbar is
           result.msi_mask   (msi_index) := std_logic_vector(size(address'range));
           msi_index := msi_index + 1;
         
-        when x"ff" =>
+        when x"f1" | x"f2" =>
           result.bus_address(bus_index) := (others => '1');
           result.bus_mask   (bus_index) := (others => '0');
           bus_index := bus_index + 1;
+        
+        when x"f3" =>
+          result.msi_address(msi_index) := (others => '1');
+          result.msi_mask   (msi_index) := (others => '0');
+          msi_index := msi_index + 1;
         
         when others => null;
       end case;
