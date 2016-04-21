@@ -81,6 +81,7 @@ architecture rtl of xwb_crossbar is
   is
     constant zero : t_wishbone_address := (others => '0');
   begin
+    -- all (i,j) with 0 <= i < j < n
     for i in 0 to g_num_slaves-2 loop
       for j in i+1 to g_num_slaves-1 loop
         assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero) or
