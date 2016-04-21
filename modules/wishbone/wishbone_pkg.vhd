@@ -361,12 +361,12 @@ package wishbone_pkg is
 
   component sdb_rom is
     generic(
-      g_slaves      : t_sdb_record_array;
-      g_masters     : t_sdb_record_array;
-      g_bus_end     : unsigned(63 downto 0));
+      g_layout  : t_sdb_record_array;
+      g_masters : natural;
+      g_bus_end : unsigned(63 downto 0));
     port(
       clk_sys_i : in  std_logic;
-      master_i  : in  std_logic_vector(g_masters'length-1 downto 0);
+      master_i  : in  std_logic_vector(g_masters-1 downto 0);
       slave_i   : in  t_wishbone_slave_in;
       slave_o   : out t_wishbone_slave_out);
   end component;
@@ -1389,7 +1389,7 @@ package body wishbone_pkg is
     constant c_zero  : t_wishbone_address := (others => '0');
     variable v_empty : t_sdb_record := (others => '0');
   begin
-    v_empty(7 downto 0) := (others => '1');
+    v_empty(7 downto 0) := (others => '1'); -- !!! fuck
     if enable then
       return f_sdb_embed_msi(msi, c_zero);
     else
