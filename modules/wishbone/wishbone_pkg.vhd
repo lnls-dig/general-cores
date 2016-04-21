@@ -332,6 +332,9 @@ package wishbone_pkg is
     g_layout     : t_sdb_record_array;
     g_sdb_addr   : t_wishbone_address) return t_sdb_bridge;
 
+  function f_xwb_msi_layout_sdb(     -- determine MSI size from layout
+    g_layout     : t_sdb_record_array) return t_sdb_bridge;
+
   component xwb_sdb_crossbar
     generic (
       g_num_masters : integer;
@@ -1749,10 +1752,11 @@ package body wishbone_pkg is
     return result;
   end f_xwb_bridge_manual_sdb;
   
-  function f_xwb_bridge_layout_sdb(
+  function f_xwb_bridge_layout_sdb_helper(
     g_wraparound : boolean := true;
     g_layout     : t_sdb_record_array;
-    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
+    g_sdb_addr   : t_wishbone_address;
+    msi          : boolean) return t_sdb_bridge
   is
     alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
 
@@ -1762,35 +1766,59 @@ package body wishbone_pkg is
     constant c_sdb_bytes    : natural := c_sdb_device_length / 8;
     constant c_rom_bytes    : natural := c_rom_entries * c_sdb_bytes;
     
-    variable result : unsigned(63 downto 0);
-    variable sdb_component : t_sdb_component;
+    variable result : unsigned(63 downto 0) := (others => '0');
+    variable typ    : std_logic_vector(7 downto 0);
+    variable last   : unsigned(63 downto 0);
   begin
+    if not msi then
+      -- The ROM will be an addressed slave as well
+      result := (others => '0');
+      result(g_sdb_addr'range) := unsigned(g_sdb_addr);
+      result := result + to_unsigned(c_rom_bytes, 64) - 1;
+    end if;
+    
+    for i in c_layout'range loop
+      typ  := c_layout(i)(7 downto 0);
+      last := unsigned(f_sdb_extract_component(c_layout(i)(447 downto 8)).addr_last);
+      case typ is
+        when x"01" => if not msi and last > result then result := last; end if;
+        when x"02" => if not msi and last > result then result := last; end if;
+        when x"03" => if     msi and last > result then result := last; end if;
+        when others => null;
+      end case;
+    end loop;
+    
+    -- round result up to a power of two -1
+    for i in 62 downto 0 loop
+      result(i) := result(i) or result(i+1);
+    end loop;
+    
     if not g_wraparound then
       result := (others => '0');
       for i in 0 to c_wishbone_address_width-1 loop
         result(i) := '1';
       end loop;
-    else
-      -- The ROM will be an addressed slave as well
-      result := (others => '0');
-      result(c_wishbone_address_width-1 downto 0) := unsigned(g_sdb_addr);
-      result := result + to_unsigned(c_rom_bytes, 64) - 1;
-      
-      for i in c_layout'range loop
-        sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
-        if unsigned(sdb_component.addr_last) > result then
-          result := unsigned(sdb_component.addr_last);
-        end if;
-      end loop;
-      -- round result up to a power of two -1
-      for i in 62 downto 0 loop
-        result(i) := result(i) or result(i+1);
-      end loop;
     end if;
     
     return f_xwb_bridge_manual_sdb(std_logic_vector(result(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
+  end f_xwb_bridge_layout_sdb_helper;
+
+  function f_xwb_bridge_layout_sdb(     -- determine bus size from layout
+    g_wraparound : boolean := true;
+    g_layout     : t_sdb_record_array;
+    g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
+  is begin
+    return f_xwb_bridge_layout_sdb_helper(g_wraparound, g_layout, g_sdb_addr, false);
   end f_xwb_bridge_layout_sdb;
 
+  function f_xwb_msi_layout_sdb(     -- determine MSI size from layout
+    g_layout     : t_sdb_record_array) return t_sdb_bridge
+  is
+    constant zero : t_wishbone_address := (others => '0');
+  begin
+    return f_xwb_bridge_layout_sdb_helper(false, g_layout, zero, true);
+  end f_xwb_msi_layout_sdb;
+  
   function f_xwb_dpram(g_size : natural) return t_sdb_device
   is
     variable result : t_sdb_device;
