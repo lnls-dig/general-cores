@@ -66,7 +66,9 @@ entity xwb_crossbar is
     slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
     -- Slave connections (INTERCON is a master)
     master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0);
+    -- Master granted access to SDB for use by MSI crossbar (please ignore it)
+    sdb_sel_o     : out std_logic_vector(g_num_masters-1 downto 0));
 end xwb_crossbar;
 
 architecture rtl of xwb_crossbar is
@@ -398,4 +400,10 @@ begin
   master_matrixs : for master in g_num_masters-1 downto 0 generate
     slave_o(master) <= master_logic(master, granted, master_ie);
   end generate;
+  
+  -- Tell SDB which master is accessing it (SDB is last slave)
+  sdb_masters : for master in g_num_masters-1 downto 0 generate
+    sdb_sel_o(master) <= granted(master, g_num_slaves);
+  end generate;
+
 end rtl;

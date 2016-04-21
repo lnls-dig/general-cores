@@ -316,7 +316,8 @@ package wishbone_pkg is
       slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
       slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
       master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0);
+      sdb_sel_o : out std_logic_vector(g_num_masters-1 downto 0)); -- leave open!
   end component;
 
   -- Use the f_xwb_bridge_*_sdb to bridge a crossbar to another
