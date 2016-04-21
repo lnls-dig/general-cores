@@ -15,11 +15,15 @@ entity xwb_sdb_crossbar is
     clk_sys_i     : in  std_logic;
     rst_n_i       : in  std_logic;
     -- Master connections (INTERCON is a slave)
-    slave_i       : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-    slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
+    slave_i       : in  t_wishbone_slave_in_array  (g_num_masters-1 downto 0);
+    slave_o       : out t_wishbone_slave_out_array (g_num_masters-1 downto 0);
+    msi_master_i  : in  t_wishbone_master_in_array (g_num_masters-1 downto 0) := (others => cc_dummy_master_in);
+    msi_master_o  : out t_wishbone_master_out_array(g_num_masters-1 downto 0);
     -- Slave connections (INTERCON is a master)
-    master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+    master_i      : in  t_wishbone_master_in_array (g_num_slaves -1 downto 0);
+    master_o      : out t_wishbone_master_out_array(g_num_slaves -1 downto 0);
+    msi_slave_i   : in  t_wishbone_slave_in_array  (g_num_slaves -1 downto 0) := (others => cc_dummy_slave_in);
+    msi_slave_o   : out t_wishbone_slave_out_array (g_num_slaves -1 downto 0));
 end xwb_sdb_crossbar;
 
 architecture rtl of xwb_sdb_crossbar is
@@ -255,5 +259,21 @@ begin
       master_i      => master_i_1, 
       master_o      => master_o_1,
       sdb_sel_o     => sdb_sel);
+
+  msi : xwb_crossbar
+    generic map(
+      g_num_masters => g_num_slaves,
+      g_num_slaves  => g_num_masters,
+      g_registered  => g_registered,
+      g_address     => c_addresses.msi_address,
+      g_mask        => c_addresses.msi_mask)
+    port map(
+      clk_sys_i     => clk_sys_i,
+      rst_n_i       => rst_n_i,
+      slave_i       => msi_slave_i,
+      slave_o       => msi_slave_o,
+      master_i      => msi_master_i,
+      master_o      => msi_master_o,
+      sdb_sel_o     => open);
 
 end rtl;

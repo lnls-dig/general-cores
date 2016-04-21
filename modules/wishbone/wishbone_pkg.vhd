@@ -341,12 +341,16 @@ package wishbone_pkg is
       g_layout      : t_sdb_record_array;
       g_sdb_addr    : t_wishbone_address);
     port (
-      clk_sys_i : in  std_logic;
-      rst_n_i   : in  std_logic;
-      slave_i   : in  t_wishbone_slave_in_array(g_num_masters-1 downto 0);
-      slave_o   : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
-      master_i  : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-      master_o  : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+      clk_sys_i     : in  std_logic;
+      rst_n_i       : in  std_logic;
+      slave_i       : in  t_wishbone_slave_in_array  (g_num_masters-1 downto 0);
+      slave_o       : out t_wishbone_slave_out_array (g_num_masters-1 downto 0);
+      msi_master_i  : in  t_wishbone_master_in_array (g_num_masters-1 downto 0) := (others => cc_dummy_master_in);
+      msi_master_o  : out t_wishbone_master_out_array(g_num_masters-1 downto 0);
+      master_i      : in  t_wishbone_master_in_array (g_num_slaves -1 downto 0);
+      master_o      : out t_wishbone_master_out_array(g_num_slaves -1 downto 0);
+      msi_slave_i   : in  t_wishbone_slave_in_array  (g_num_slaves -1 downto 0) := (others => cc_dummy_slave_in);
+      msi_slave_o   : out t_wishbone_slave_out_array (g_num_slaves -1 downto 0));
   end component;
   
   component xwb_register_link -- puts a register of delay between crossbars
