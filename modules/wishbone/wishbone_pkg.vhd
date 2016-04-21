@@ -187,8 +187,10 @@ package wishbone_pkg is
   function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true) return t_sdb_record;
   function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true) return t_sdb_record;
   function f_sdb_auto_msi   (msi    : t_sdb_msi;    enable : boolean := true) return t_sdb_record;
-  function f_sdb_auto_layout(records : t_sdb_record_array) return t_sdb_record_array;
-  function f_sdb_auto_sdb   (records : t_sdb_record_array) return t_wishbone_address;
+  function f_sdb_auto_layout(records: t_sdb_record_array)                               return t_sdb_record_array;
+  function f_sdb_auto_layout(slaves : t_sdb_record_array; masters : t_sdb_record_array) return t_sdb_record_array;
+  function f_sdb_auto_sdb   (records: t_sdb_record_array)                               return t_wishbone_address;
+  function f_sdb_auto_sdb   (slaves : t_sdb_record_array; masters : t_sdb_record_array) return t_wishbone_address;
   
   -- For internal use by the crossbar
   function f_sdb_embed_product(product         : t_sdb_product) return std_logic_vector;  -- (319 downto 8)
@@ -1415,8 +1417,10 @@ package body wishbone_pkg is
     variable v_component : t_sdb_component;
     variable v_sizes     : t_usdb_address_array(c_records'length downto 0);
     variable v_address   : t_usdb_address_array(c_records'length downto 0);
-    variable v_map       : std_logic_vector(c_records'length downto 0) := (others => '0');
-    variable v_cursor    : unsigned(63 downto 0) := (others => '0');
+    variable v_bus_map   : std_logic_vector(c_records'length downto 0) := (others => '0');
+    variable v_bus_cursor: unsigned(63 downto 0) := (others => '0');
+    variable v_msi_map   : std_logic_vector(c_records'length downto 0) := (others => '0');
+    variable v_msi_cursor: unsigned(63 downto 0) := (others => '0');
     variable v_increment : unsigned(63 downto 0) := (others => '0');
     variable v_type      : std_logic_vector(7 downto 0);
   begin
@@ -1435,8 +1439,9 @@ package body wishbone_pkg is
       if v_address(i) = c_zero then
         v_type := c_records(i)(7 downto 0);
         case v_type is
-          when x"01" => v_map(i) := '1';
-          when x"02" => v_map(i) := '1';
+          when x"01" => v_bus_map(i) := '1';
+          when x"02" => v_bus_map(i) := '1';
+          when x"03" => v_msi_map(i) := '1';
           when others => null;
         end case;
       end if;
@@ -1445,7 +1450,7 @@ package body wishbone_pkg is
     -- Assign the SDB record a spot as well
     v_address(c_records'length) := (others => '0');
     v_sizes(c_records'length) := to_unsigned(c_rom_bytes-1, 64);
-    v_map(c_records'length) := '1';
+    v_bus_map(c_records'length) := '1';
     
     -- Start assigning addresses
     for j in 0 to 63 loop
@@ -1453,16 +1458,24 @@ package body wishbone_pkg is
       v_increment(j) := '1';
       
       for i in 0 to c_records'length loop
-        if v_map(i) = '1' and v_sizes(i)(j) = '0' then
-          v_map(i) := '0';
-          v_address(i) := v_cursor;
-          v_cursor := v_cursor + v_increment;
+        if v_bus_map(i) = '1' and v_sizes(i)(j) = '0' then
+          v_bus_map(i) := '0';
+          v_address(i) := v_bus_cursor;
+          v_bus_cursor := v_bus_cursor + v_increment;
+        end if;
+        if v_msi_map(i) = '1' and v_sizes(i)(j) = '0' then
+          v_msi_map(i) := '0';
+          v_address(i) := v_msi_cursor;
+          v_msi_cursor := v_msi_cursor + v_increment;
         end if;
       end loop;
       
       -- Round up to the next required alignment
-      if v_cursor(j) = '1' then
-        v_cursor := v_cursor + v_increment;
+      if v_bus_cursor(j) = '1' then
+        v_bus_cursor := v_bus_cursor + v_increment;
+      end if;
+      if v_msi_cursor(j) = '1' then
+        v_msi_cursor := v_msi_cursor + v_increment;
       end if;
     end loop;
     
@@ -1473,23 +1486,31 @@ package body wishbone_pkg is
     return t_sdb_record_array
   is
     alias    c_records : t_sdb_record_array(records'length-1 downto 0) is records;
+    variable v_typ     : std_logic_vector(7 downto 0);
     variable v_result  : t_sdb_record_array(c_records'range) := c_records;
     constant c_address : t_usdb_address_array := f_sdb_auto_layout_helper(c_records);
     variable v_address : t_wishbone_address;
   begin
     -- Put the addresses into the mapping
     for i in v_result'range loop
-      v_address :=  std_logic_vector(c_address(i)(t_wishbone_address'range));
+      v_typ     := c_records(i)(7 downto 0);
+      v_address := std_logic_vector(c_address(i)(t_wishbone_address'range));
 
-      if c_records(i)(7 downto 0) = x"01" then
-        v_result(i) := f_sdb_embed_device(f_sdb_extract_device(v_result(i)), v_address);
-      end if;
-      if c_records(i)(7 downto 0) = x"02" then
-        v_result(i) := f_sdb_embed_bridge(f_sdb_extract_bridge(v_result(i)), v_address);
-      end if;
+      case v_typ is
+        when x"01" => v_result(i) := f_sdb_embed_device(f_sdb_extract_device(v_result(i)), v_address);
+        when x"02" => v_result(i) := f_sdb_embed_bridge(f_sdb_extract_bridge(v_result(i)), v_address);
+        when x"03" => v_result(i) := f_sdb_embed_msi   (f_sdb_extract_msi   (v_result(i)), v_address);
+        when others => null;
+      end case;
     end loop;
     
     return v_result;
+  end f_sdb_auto_layout;
+  
+  function f_sdb_auto_layout(slaves : t_sdb_record_array; masters : t_sdb_record_array)
+    return t_sdb_record_array
+  is begin
+    return f_sdb_auto_layout(masters & slaves);
   end f_sdb_auto_layout;
   
   function f_sdb_auto_sdb(records : t_sdb_record_array)
@@ -1500,7 +1521,12 @@ package body wishbone_pkg is
   begin
     return std_logic_vector(c_address(c_records'length)(t_wishbone_address'range));
   end f_sdb_auto_sdb;
-
+  
+  function f_sdb_auto_sdb(slaves : t_sdb_record_array; masters : t_sdb_record_array)
+    return t_wishbone_address
+  is begin
+    return f_sdb_auto_sdb(masters & slaves);
+  end f_sdb_auto_sdb;
 
 --**************************************************************************************************************************--
 -- START MAT's NEW FUNCTIONS FROM 18th Oct 2013
