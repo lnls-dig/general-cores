@@ -117,31 +117,36 @@ architecture rtl of sdb_rom is
     return res;
   end f_build_rom;
   
-  constant rom : t_rom := f_build_rom;
-  signal adr_reg : unsigned(c_rom_depth-1 downto 0);
-  signal sel_reg : unsigned(c_rom_depth-1 downto 0);
+  signal rom : t_rom := f_build_rom;
+
+  signal s_adr : unsigned(c_rom_depth-1 downto 0);
+  signal s_sel : unsigned(c_rom_depth-1 downto 0);
   
-  signal s_rom  : t_wishbone_data;
-  signal s_flag : t_wishbone_data := (others => '0');
+  signal r_rom  : t_wishbone_data;
+  signal r_flag : t_wishbone_data;
+  signal r_ack  : std_logic;
 
 begin
 
-  -- Simple ROM; ignore we/sel/dat
+  slave_o.dat <= r_rom or r_flag;
+  slave_o.ack <= r_ack;
   slave_o.err   <= '0';
   slave_o.rty   <= '0';
   slave_o.stall <= '0';
   slave_o.int   <= '0'; -- Tom sucks! This should not be here.
 
-  s_rom <= rom(to_integer(adr_reg));
-  s_flag(s_flag'high) <= '1' when adr_reg = sel_reg and c_msi else '0';
-  slave_o.dat <= s_rom or s_flag;
+  s_adr <= unsigned(slave_i.adr(c_rom_depth+c_rom_lowbits-1 downto c_rom_lowbits));
+  s_sel <= unsigned(f_msi_flag_index(master_i));
   
   slave_clk : process(clk_sys_i)
   begin
     if (rising_edge(clk_sys_i)) then
-      adr_reg <= unsigned(slave_i.adr(c_rom_depth+c_rom_lowbits-1 downto c_rom_lowbits));
-      sel_reg <= unsigned(f_msi_flag_index(master_i));
-      slave_o.ack <= slave_i.cyc and slave_i.stb;
+      r_ack <= slave_i.cyc and slave_i.stb;
+      r_rom  <= rom(to_integer(s_adr));
+      r_flag <= (others => '0');
+      if s_adr = s_sel and c_msi then
+        r_flag(r_flag'high) <= '1';
+      end if;
     end if;
   end process;
   
