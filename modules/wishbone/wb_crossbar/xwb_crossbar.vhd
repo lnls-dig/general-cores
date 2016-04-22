@@ -421,7 +421,7 @@ begin
   
   -- Tell SDB which master is accessing it (SDB is last slave)
   sdb_masters : for master in g_num_masters-1 downto 0 generate
-    sdb_sel_o(master) <= granted(master, g_num_slaves);
+    sdb_sel_o(master) <= granted(master, g_num_slaves-1);
   end generate;
 
 end rtl;
