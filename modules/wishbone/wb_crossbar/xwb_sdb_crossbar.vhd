@@ -47,60 +47,8 @@ architecture rtl of xwb_sdb_crossbar is
   constant c_sdb_bytes      : natural := c_sdb_device_length / 8;
   constant c_rom_bytes      : natural := c_rom_entries * c_sdb_bytes;
   
-  type t_sizes is record
-    bus_last : unsigned(63 downto 0);
-    msi_last : unsigned(63 downto 0);
-  end record t_sizes;
-
-  -- Step 2. Find the size of the bus
-  function f_sizes return t_sizes is
-    variable result : t_sizes;
-    variable typ    : std_logic_vector(7 downto 0);
-    variable last   : unsigned(63 downto 0);
-    constant zero : t_wishbone_address := (others => '0');
-  begin
-    -- The SDB block must be aligned
-    assert (g_sdb_addr and std_logic_vector(to_unsigned(c_rom_bytes - 1, c_wishbone_address_width))) = zero
-    report "SDB address is not aligned (" & f_bits2string(g_sdb_addr) & "). This is not supported by the crossbar."
-    severity Failure;
-
-    -- The ROM will be an addressed slave as well
-    result.bus_last := (others => '0');
-    result.bus_last(g_sdb_addr'range) := unsigned(g_sdb_addr);
-    result.bus_last := result.bus_last + to_unsigned(c_rom_bytes, 64) - 1;
-    
-    -- There are no MSI targets by default
-    result.msi_last := (others => '0');
-
-    for i in c_layout'range loop
-      typ := c_layout(i)(7 downto 0);
-      last := unsigned(f_sdb_extract_component(c_layout(i)(447 downto 8)).addr_last);
-      case typ is
-        when x"01" => if last > result.bus_last then result.bus_last := last; end if;
-        when x"02" => if last > result.bus_last then result.bus_last := last; end if;
-        when x"03" => if last > result.msi_last then result.msi_last := last; end if;
-        when others => null;
-      end case;
-    end loop;
-    
-    -- round result up to a power of two -1
-    for i in 62 downto 0 loop
-      result.bus_last(i) := result.bus_last(i) or result.bus_last(i+1);
-      result.msi_last(i) := result.msi_last(i) or result.msi_last(i+1);
-    end loop;
-
-    -- Not a wraparound bus? Ignore all that hard work.
-    if not g_wraparound then
-      result.bus_last := (others => '0');
-      for i in 0 to c_wishbone_address_width-1 loop
-        result.bus_last(i) := '1';
-      end loop;
-    end if;
-    
-    return result;
-  end f_sizes;
-
-  constant c_sizes : t_sizes := f_sizes;
+  constant c_bus_last : unsigned := f_sdb_bus_end(g_wraparound, g_layout, g_sdb_addr, false);
+  constant c_msi_last : unsigned := f_sdb_bus_end(g_wraparound, g_layout, g_sdb_addr, true);
 
   type t_addresses is record
     bus_address : t_wishbone_address_array(g_num_slaves -1 downto 0);
@@ -162,7 +110,7 @@ architecture rtl of xwb_sdb_crossbar is
           report "Too many device and bridge records found in g_layout"
           severity Failure;
           
-          size := c_sizes.bus_last - size;
+          size := c_bus_last - size;
           result.bus_address(bus_index) := address;
           result.bus_mask   (bus_index) := std_logic_vector(size(address'range));
           bus_index := bus_index + 1;
@@ -172,7 +120,7 @@ architecture rtl of xwb_sdb_crossbar is
           report "Too many msi records found in g_layout"
           severity Failure;
           
-          size := c_sizes.msi_last - size;
+          size := c_msi_last - size;
           result.msi_address(msi_index) := address;
           result.msi_mask   (msi_index) := std_logic_vector(size(address'range));
           msi_index := msi_index + 1;
@@ -213,7 +161,7 @@ architecture rtl of xwb_sdb_crossbar is
 
   -- Figure out the mask for the SDB slave
   constant c_rom_mask : unsigned(63 downto 0) := 
-    c_sizes.bus_last - to_unsigned(c_rom_bytes-1, 64);
+    c_bus_last - to_unsigned(c_rom_bytes-1, 64);
   constant c_sdb_mask : t_wishbone_address := 
     std_logic_vector(c_rom_mask(c_wishbone_address_width-1 downto 0));
   
@@ -237,7 +185,7 @@ begin
     generic map(
       g_layout   => c_layout,
       g_masters  => g_num_masters,
-      g_bus_end  => c_sizes.bus_last)
+      g_bus_end  => c_bus_last)
     port map(
       clk_sys_i => clk_sys_i,
       master_i  => sdb_sel,

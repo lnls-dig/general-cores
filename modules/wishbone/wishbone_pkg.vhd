@@ -207,6 +207,7 @@ package wishbone_pkg is
   function f_sdb_auto_sdb   (slaves : t_sdb_record_array; masters : t_sdb_record_array) return t_wishbone_address;
   
   -- For internal use by the crossbar
+  function f_sdb_bus_end(g_wraparound : boolean; g_layout : t_sdb_record_array; g_sdb_addr : t_wishbone_address; msi : boolean) return unsigned;
   function f_sdb_embed_product(product         : t_sdb_product) return std_logic_vector;  -- (319 downto 8)
   function f_sdb_embed_component(sdb_component : t_sdb_component; address : t_wishbone_address) return std_logic_vector;  -- (447 downto 8)
   function f_sdb_extract_product(sdb_record    : std_logic_vector(319 downto 8)) return t_sdb_product;
@@ -346,8 +347,11 @@ package wishbone_pkg is
     g_layout     : t_sdb_record_array;
     g_sdb_addr   : t_wishbone_address) return t_sdb_bridge;
 
+  function f_xwb_msi_manual_sdb(        -- take a manual bus size
+    g_size     : t_wishbone_address) return t_sdb_msi;
+
   function f_xwb_msi_layout_sdb(     -- determine MSI size from layout
-    g_layout     : t_sdb_record_array) return t_sdb_bridge;
+    g_layout     : t_sdb_record_array) return t_sdb_msi;
 
   component xwb_sdb_crossbar
     generic (
@@ -1744,33 +1748,11 @@ package body wishbone_pkg is
 -- END MAT's NEW FUNCTIONS FROM  18th Oct 2013
 ------------------------------------------------------------------------------------------------------------------------------
 
-  function f_xwb_bridge_manual_sdb(
-    g_size     : t_wishbone_address;
-    g_sdb_addr : t_wishbone_address) return t_sdb_bridge
-  is
-    variable result : t_sdb_bridge;
-  begin
-    result.sdb_child                                      := (others => '0');
-    result.sdb_child(c_wishbone_address_width-1 downto 0) := g_sdb_addr;
-
-    result.sdb_component.addr_first                                     := (others => '0');
-    result.sdb_component.addr_last                                      := (others => '0');
-    result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
-
-    result.sdb_component.product.vendor_id := x"0000000000000651";  -- GSI
-    result.sdb_component.product.device_id := x"eef0b198";
-    result.sdb_component.product.version   := x"00000001";
-    result.sdb_component.product.date      := x"20120511";
-    result.sdb_component.product.name      := "WB4-Bridge-GSI     ";
-
-    return result;
-  end f_xwb_bridge_manual_sdb;
-  
-  function f_xwb_bridge_layout_sdb_helper(
-    g_wraparound : boolean := true;
+  function f_sdb_bus_end(
+    g_wraparound : boolean;
     g_layout     : t_sdb_record_array;
     g_sdb_addr   : t_wishbone_address;
-    msi          : boolean) return t_sdb_bridge
+    msi          : boolean) return unsigned
   is
     alias c_layout : t_sdb_record_array(g_layout'length-1 downto 0) is g_layout;
 
@@ -1814,23 +1796,71 @@ package body wishbone_pkg is
       end loop;
     end if;
     
-    return f_xwb_bridge_manual_sdb(std_logic_vector(result(c_wishbone_address_width-1 downto 0)), g_sdb_addr);
-  end f_xwb_bridge_layout_sdb_helper;
+    return result;
+  end f_sdb_bus_end;
 
+  function f_xwb_bridge_manual_sdb(
+    g_size     : t_wishbone_address;
+    g_sdb_addr : t_wishbone_address) return t_sdb_bridge
+  is
+    variable result : t_sdb_bridge;
+  begin
+    result.sdb_child                                      := (others => '0');
+    result.sdb_child(c_wishbone_address_width-1 downto 0) := g_sdb_addr;
+
+    result.sdb_component.addr_first                                     := (others => '0');
+    result.sdb_component.addr_last                                      := (others => '0');
+    result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
+
+    result.sdb_component.product.vendor_id := x"0000000000000651";  -- GSI
+    result.sdb_component.product.device_id := x"eef0b198";
+    result.sdb_component.product.version   := x"00000001";
+    result.sdb_component.product.date      := x"20120511";
+    result.sdb_component.product.name      := "WB4-Bridge-GSI     ";
+
+    return result;
+  end f_xwb_bridge_manual_sdb;
+  
   function f_xwb_bridge_layout_sdb(     -- determine bus size from layout
     g_wraparound : boolean := true;
     g_layout     : t_sdb_record_array;
     g_sdb_addr   : t_wishbone_address) return t_sdb_bridge
-  is begin
-    return f_xwb_bridge_layout_sdb_helper(g_wraparound, g_layout, g_sdb_addr, false);
+  is
+    variable address : t_wishbone_address;
+  begin
+    address := std_logic_vector(f_sdb_bus_end(g_wraparound, g_layout, g_sdb_addr, false)(address'range));
+    return f_xwb_bridge_manual_sdb(address, g_sdb_addr);
   end f_xwb_bridge_layout_sdb;
 
+  function f_xwb_msi_manual_sdb(
+    g_size     : t_wishbone_address) return t_sdb_msi
+  is
+    variable result : t_sdb_msi;
+  begin
+    result.wbd_endian := '0';
+    result.wbd_width  := x"7";
+
+    result.sdb_component.addr_first                                     := (others => '0');
+    result.sdb_component.addr_last                                      := (others => '0');
+    result.sdb_component.addr_last(c_wishbone_address_width-1 downto 0) := g_size;
+
+    result.sdb_component.product.vendor_id := x"0000000000000651";  -- GSI
+    result.sdb_component.product.device_id := x"aa7bfb3c";
+    result.sdb_component.product.version   := x"00000001";
+    result.sdb_component.product.date      := x"20160422";
+    result.sdb_component.product.name      := "WB4-MSI-Bridge-GSI ";
+
+    return result;
+  end f_xwb_msi_manual_sdb;
+  
   function f_xwb_msi_layout_sdb(     -- determine MSI size from layout
-    g_layout     : t_sdb_record_array) return t_sdb_bridge
+    g_layout     : t_sdb_record_array) return t_sdb_msi
   is
     constant zero : t_wishbone_address := (others => '0');
+    variable address : t_wishbone_address;
   begin
-    return f_xwb_bridge_layout_sdb_helper(false, g_layout, zero, true);
+    address := std_logic_vector(f_sdb_bus_end(true, g_layout, zero, true)(address'range));
+    return f_xwb_msi_manual_sdb(address);
   end f_xwb_msi_layout_sdb;
   
   function f_xwb_dpram(g_size : natural) return t_sdb_device
