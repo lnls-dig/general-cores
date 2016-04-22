@@ -152,6 +152,20 @@ package wishbone_pkg is
     syn_username     : string(1 to 15);
   end record t_sdb_synthesis;
   
+  -- If you have a Wishbone master that does not receive MSI,
+  -- list it in the layout as 'f_sdb_auto_msi(c_null_msi, false)'
+  constant c_null_msi : t_sdb_msi := (
+   wbd_endian    => c_sdb_endian_big,
+   wbd_width     => x"0",
+   sdb_component => (
+   addr_first    => x"0000000000000000",
+   addr_last     => x"0000000000000000",
+   product => (
+   vendor_id     => x"0000000000000000",
+   device_id     => x"00000000",
+   version       => x"00000000",
+   date          => x"00000000",
+   name          => "                   ")));  
 
   -- general crossbar building functions
   function f_sdb_create_array(g_enum_dev_id  : boolean := false;
