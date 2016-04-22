@@ -79,7 +79,8 @@ architecture rtl of xwb_crossbar is
   function f_ranges_ok
     return boolean
   is
-    constant zero : t_wishbone_address := (others => '0');
+    constant zero  : t_wishbone_address := (others => '0');
+    constant align : std_logic_vector(f_ceil_log2(c_wishbone_data_width)-4 downto 0) := (others => '0');
   begin
     -- all (i,j) with 0 <= i < j < n
     if g_num_slaves > 1 then
@@ -98,6 +99,20 @@ architecture rtl of xwb_crossbar is
       end loop;
     end if;
     for i in 0 to g_num_slaves-1 loop
+      assert (c_address(i) and not c_mask(i)) = zero or -- at least 1 bit outside mask
+             (not c_address(i) or c_mask(i))  = zero    -- all bits outside mask (= disconnected)
+      report "Address bits not in mask; slave #" & 
+             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                      f_bits2string(c_mask(i)) & "]"
+      severity Failure;
+      
+      assert c_mask(i)(align'range) = align
+      report "Address space smaller than a wishbone register; slave #" & 
+             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                      f_bits2string(c_mask(i)) & "]"
+      severity Failure;
+      
+      -- Working case
       report "Mapping slave #" & 
              Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
                                       f_bits2string(c_mask(i)) & "]"
