@@ -49,7 +49,7 @@ architecture rtl of sdb_rom is
     end loop;
     
     if master = 0 then
-      result := (others => g_masters);
+      result := (others => 0);
     else
       assert master = g_masters
       report "Insufficient msi records found (" & Integer'image(master) & "/" & Integer'image(g_masters) & ")"
@@ -59,7 +59,7 @@ architecture rtl of sdb_rom is
   end f_master_positions;
   
   constant c_master_positions : t_nat_array := f_master_positions;
-  constant c_msi              : boolean     := c_master_positions(0) /= g_masters;
+  constant c_msi              : boolean     := c_master_positions(0) /= 0;
   
   function f_msi_flag_index(y : std_logic_vector) return std_logic_vector is
     variable offset : unsigned(c_rom_depth-1 downto 0) := (others => '0');
