@@ -91,7 +91,7 @@ begin  -- syn
       g_data_width               => g_data_width,
       g_size                     => g_size,
       g_with_byte_enable         => false,
-      g_addr_conflict_resolution => "read_first",
+      g_addr_conflict_resolution => "dont_care",
       g_dual_clock               => false)
     port map (
       rst_n_i => rst_n_i,

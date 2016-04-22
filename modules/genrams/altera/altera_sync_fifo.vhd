@@ -32,7 +32,7 @@ use altera_mf.all;
 
 use work.genram_pkg.all;
 
-entity generic_sync_fifo is
+entity altera_sync_fifo is
 
   generic (
     g_data_width : natural;
@@ -67,9 +67,9 @@ entity generic_sync_fifo is
     count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
-end generic_sync_fifo;
+end altera_sync_fifo;
 
-architecture syn of generic_sync_fifo is
+architecture syn of altera_sync_fifo is
 
   component scfifo
     generic (

@@ -66,7 +66,9 @@ entity xwb_crossbar is
     slave_o       : out t_wishbone_slave_out_array(g_num_masters-1 downto 0);
     -- Slave connections (INTERCON is a master)
     master_i      : in  t_wishbone_master_in_array(g_num_slaves-1 downto 0);
-    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0));
+    master_o      : out t_wishbone_master_out_array(g_num_slaves-1 downto 0);
+    -- Master granted access to SDB for use by MSI crossbar (please ignore it)
+    sdb_sel_o     : out std_logic_vector(g_num_masters-1 downto 0));
 end xwb_crossbar;
 
 architecture rtl of xwb_crossbar is
@@ -77,22 +79,40 @@ architecture rtl of xwb_crossbar is
   function f_ranges_ok
     return boolean
   is
-    constant zero : t_wishbone_address := (others => '0');
+    constant zero  : t_wishbone_address := (others => '0');
+    constant align : std_logic_vector(f_ceil_log2(c_wishbone_data_width)-4 downto 0) := (others => '0');
   begin
-    for i in 0 to g_num_slaves-2 loop
-      for j in i+1 to g_num_slaves-1 loop
-        assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero) or
-               ((c_mask(i) or not c_address(i)) = zero) or -- disconnected slave?
-               ((c_mask(j) or not c_address(j)) = zero)    -- disconnected slave?
-        report "Address ranges must be distinct (slaves " & 
-	       Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
-	                                f_bits2string(c_mask(i)) & "] & " & 
-	       Integer'image(j) & "[" & f_bits2string(c_address(j)) & "/" &
-	                                f_bits2string(c_mask(j)) & "])"
-        severity Failure;
+    -- all (i,j) with 0 <= i < j < n
+    if g_num_slaves > 1 then
+      for i in 0 to g_num_slaves-2 loop
+        for j in i+1 to g_num_slaves-1 loop
+          assert not (((c_mask(i) and c_mask(j)) and (c_address(i) xor c_address(j))) = zero) or
+                 ((c_mask(i) or not c_address(i)) = zero) or -- disconnected slave?
+                 ((c_mask(j) or not c_address(j)) = zero)    -- disconnected slave?
+          report "Address ranges must be distinct (slaves " & 
+                 Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                          f_bits2string(c_mask(i)) & "] & " & 
+                 Integer'image(j) & "[" & f_bits2string(c_address(j)) & "/" &
+                                          f_bits2string(c_mask(j)) & "])"
+          severity Failure;
+        end loop;
       end loop;
-    end loop;
+    end if;
     for i in 0 to g_num_slaves-1 loop
+      assert (c_address(i) and not c_mask(i)) = zero or -- at least 1 bit outside mask
+             (not c_address(i) or c_mask(i))  = zero    -- all bits outside mask (= disconnected)
+      report "Address bits not in mask; slave #" & 
+             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                      f_bits2string(c_mask(i)) & "]"
+      severity Failure;
+      
+      assert c_mask(i)(align'range) = align
+      report "Address space smaller than a wishbone register; slave #" & 
+             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+                                      f_bits2string(c_mask(i)) & "]"
+      severity Failure;
+      
+      -- Working case
       report "Mapping slave #" & 
              Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
                                       f_bits2string(c_mask(i)) & "]"
@@ -398,4 +418,10 @@ begin
   master_matrixs : for master in g_num_masters-1 downto 0 generate
     slave_o(master) <= master_logic(master, granted, master_ie);
   end generate;
+  
+  -- Tell SDB which master is accessing it (SDB is last slave)
+  sdb_masters : for master in g_num_masters-1 downto 0 generate
+    sdb_sel_o(master) <= granted(master, g_num_slaves-1);
+  end generate;
+
 end rtl;
