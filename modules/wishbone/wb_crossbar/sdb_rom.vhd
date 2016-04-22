@@ -29,25 +29,30 @@ architecture rtl of sdb_rom is
   -- Index of the MSI entry in SDB
   type t_nat_array is array(g_masters-1 downto 0) of natural;
   function f_master_positions return t_nat_array is
+    variable typ    : std_logic_vector(7 downto 0);
     variable result : t_nat_array;
     variable master : natural := 0;
   begin
     for rec in c_layout'low to c_layout'high loop
-      if c_layout(rec)(7 downto 0) = x"03" then
-        assert master < g_masters
-        report "Too many msi records found"
-        severity failure;
+      typ := c_layout(rec)(7 downto 0);
+      case typ is
+        when x"03" | x"f3" =>
+          assert master < g_masters
+          report "Too many msi records found"
+          severity failure;
         
-        result(master) := rec;
-        master := master + 1;
-      end if;
+          result(master) := rec;
+          master := master + 1;
+        
+        when others => null;
+      end case;
     end loop;
     
     if master = 0 then
       result := (others => g_masters);
     else
       assert master = g_masters
-      report "Insufficient msi records found"
+      report "Insufficient msi records found (" & Integer'image(master) & "/" & Integer'image(g_masters) & ")"
       severity failure;
     end if;
     return result;
