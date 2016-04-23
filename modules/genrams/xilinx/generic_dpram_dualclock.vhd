@@ -7,7 +7,7 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-03-28
--- Platform   :
+-- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 -- Description: True dual-port synchronous RAM for Xilinx FPGAs with:
@@ -101,12 +101,20 @@ architecture syn of generic_dpram_dualclock is
         for i in 0 to g_data_width-1 loop
           tmp(pos)(i) := arr(pos, i);
         end loop;  -- i
-        n   := n+1;
+        n := n+1;
         pos := pos + 1;
       end loop;
     end loop;
     return tmp;
   end f_memarray_to_ramtype;
+
+  function f_is_synthesis return boolean is
+  begin
+    -- synthesis translate_off
+    return false;
+    -- synthesis translate_on
+    return true;
+  end f_is_synthesis; 
 
   shared variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
 
@@ -135,7 +143,11 @@ begin
     process (clka_i)
     begin
       if rising_edge(clka_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
+        if f_is_synthesis then
+          qa_o <= ram(to_integer(unsigned(aa_i)));
+        else
+          qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
+        end if;
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
             ram(to_integer(unsigned(aa_i)))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
@@ -148,7 +160,11 @@ begin
     process (clkb_i)
     begin
       if rising_edge(clkb_i) then
-        qb_o <= ram(to_integer(unsigned(ab_i)));
+        if f_is_synthesis then
+          qb_o <= ram(to_integer(unsigned(ab_i)));
+        else
+          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
+        end if;
         for i in 0 to c_num_bytes-1 loop
           if s_we_b(i) = '1' then
             ram(to_integer(unsigned(ab_i)))((i+1)*8-1 downto i*8)
@@ -157,7 +173,7 @@ begin
         end loop;
       end if;
     end process;
-
+    
 
 
 
@@ -246,6 +262,6 @@ begin
       end if;
     end process;
   end generate gen_without_byte_enable_nochange;
-
+  
 
 end syn;

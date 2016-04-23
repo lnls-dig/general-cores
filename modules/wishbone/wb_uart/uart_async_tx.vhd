@@ -144,7 +144,7 @@ begin  -- behavioral
   begin
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
-        TxD <= '0';
+        TxD <= '1';
       else
         if(unsigned(state) < to_unsigned(4, state'length) or (state(3) = '1' and muxbit = '1')) then
           TxD <= '1';

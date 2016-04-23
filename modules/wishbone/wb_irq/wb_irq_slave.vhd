@@ -70,12 +70,12 @@ constant c_OFFS_SEL   : natural := c_OFFS_ADDR+4; --ro wb sel,
 -------------------------------------------------------------------------
 function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector is
    variable n_sel     : std_logic_vector(pval'range);
-	variable n_val     : std_logic_vector(pval'range);
-   variable result 	 : std_logic_vector(pval'range);   
+   variable n_val     : std_logic_vector(pval'range);
+   variable result     : std_logic_vector(pval'range);   
 begin
   for i in pval'range loop 
    n_sel(i) := sel(i / 8);
-	n_val(i) := ival(i);
+   n_val(i) := ival(i);
   end loop;
 
   if(mode = "set") then  
@@ -119,7 +119,7 @@ begin
   G1: for I in 0 to g_queues-1 generate
     
     irq_d(I)              <= irq_slave_i(I).sel & irq_slave_i(I).adr & irq_slave_i(I).dat;
-    irq_push(I)           <= irq_slave_i(I).cyc and irq_slave_i(I).stb and not irq_full(I) and r_ena(I); 
+    irq_push(I)           <= irq_slave_i(I).cyc and irq_slave_i(I).stb and irq_slave_i(I).we and not irq_full(I) and r_ena(I); 
     irq_slave_o(I).stall  <= irq_full(I);
     irq_pop(I)            <= r_pop(I) and r_status(I);
     r_status(I)           <= not irq_empty(I);

@@ -1,18 +1,18 @@
 ------------------------------------------------------------------------------
--- Title      : WB Timer Interrupt
+-- Title      : WB Interrupt master with WB ctrl if
 -- Project    : Wishbone
 ------------------------------------------------------------------------------
--- File       : wb_irq_timer.vhd
+-- File       : wb_irq_master.vhd
 -- Author     : Mathias Kreider
 -- Company    : GSI
 -- Created    : 2013-08-10
--- Last update: 2013-08-10
+-- Last update: 2014-06-05
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
--- Description: Programmable Timer interrupt module (MSI) 
+-- Description: WB MSI interrupt generator with WB configuration/control interface 
 -------------------------------------------------------------------------------
--- Copyright (c) 2013 GSI
+-- Copyright (c) 2014 GSI
 -------------------------------------------------------------------------------
 --
 --
@@ -24,10 +24,10 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2013-08-10  1.0      mkreider        Created
+-- 2014-06-05  1.01     mkreider        fixed some wrong/out of date comments
+-- 2014-06-05  1.02     mkreider        removed redundant declaration of f_wb_wr
 -------------------------------------------------------------------------------
-
-
-         
+      
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -61,27 +61,6 @@ port    (clk_i          : std_logic;   -- clock
 end entity;
 
 architecture behavioral of wb_irq_master is
-
-function f_wb_wr(pval : std_logic_vector; ival : std_logic_vector; sel : std_logic_vector; mode : string := "owr") return std_logic_vector is
-   variable n_sel     : std_logic_vector(pval'range);
-   variable n_val     : std_logic_vector(pval'range);
-   variable result     : std_logic_vector(pval'range);   
-begin
-  for i in pval'range loop 
-   n_sel(i) := sel(i / 8);
-   n_val(i) := ival(i);
-  end loop;
-
-  if(mode = "set") then  
-   result := pval or (n_val and n_sel);
-  elsif (mode = "clr") then
-   result := pval and not (n_val and n_sel); 
-  else
-   result := (pval and not n_sel) or (n_val and n_sel);    
-  end if;  
-  
-  return result;
-end f_wb_wr;
 
 function f_oob(a : std_logic_vector; limit : natural) return boolean is
 begin

@@ -1,4 +1,4 @@
-FILE=wb_xil_multiboot
+FILE=xwb_xil_multiboot
 
 all:
 	$(MAKE) -C fig

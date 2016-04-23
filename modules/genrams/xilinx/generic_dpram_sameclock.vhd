@@ -7,7 +7,7 @@
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
 -- Last update: 2012-07-09
--- Platform   :
+-- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
 -- Description: True dual-port synchronous RAM for Xilinx FPGAs with:
@@ -107,6 +107,14 @@ architecture syn of generic_dpram_sameclock is
     return tmp;
   end f_memarray_to_ramtype;
 
+  function f_is_synthesis return boolean is
+  begin
+    -- synthesis translate_off
+    return false;
+    -- synthesis translate_on
+    return true;
+  end f_is_synthesis; 
+
   shared variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
@@ -173,7 +181,12 @@ begin
     process(clk_i)
     begin
       if rising_edge(clk_i) then
-        qa_o <= ram(to_integer(unsigned(aa_i)));
+        if f_is_synthesis then
+          qa_o <= ram(to_integer(unsigned(aa_i)));
+        else 
+          qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
+        end if;
+
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
         end if;
@@ -183,7 +196,11 @@ begin
     process(clk_i)
     begin
       if rising_edge(clk_i) then
-        qb_o <= ram(to_integer(unsigned(ab_i)));
+        if f_is_synthesis then
+          qb_o <= ram(to_integer(unsigned(ab_i)));
+        else 
+          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
+        end if;
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
         end if;
@@ -200,7 +217,11 @@ begin
           ram(to_integer(unsigned(aa_i))) := da_i;
           qa_o                            <= da_i;
         else
-          qa_o <= ram(to_integer(unsigned(aa_i)));
+          if f_is_synthesis then
+            qa_o <= ram(to_integer(unsigned(aa_i)));
+          else 
+            qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
+          end if;
         end if;
       end if;
 
@@ -213,7 +234,11 @@ begin
           ram(to_integer(unsigned(ab_i))) := db_i;
           qb_o                            <= db_i;
         else
-          qb_o <= ram(to_integer(unsigned(ab_i)));
+          if f_is_synthesis then
+            qb_o <= ram(to_integer(unsigned(ab_i)));
+          else
+            qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
+          end if;
         end if;
       end if;
 
@@ -229,7 +254,11 @@ begin
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
         else
-          qa_o <= ram(to_integer(unsigned(aa_i)));
+          if f_is_synthesis then
+            qa_o <= ram(to_integer(unsigned(aa_i)));
+          else
+            qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
+          end if;
         end if;
       end if;
     end process;
@@ -240,7 +269,11 @@ begin
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
         else
-          qb_o <= ram(to_integer(unsigned(ab_i)));
+          if f_is_synthesis then
+            qb_o <= ram(to_integer(unsigned(ab_i)));
+          else
+            qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
+          end if;
         end if;
       end if;
     end process;

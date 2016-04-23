@@ -74,6 +74,7 @@ def gen_customized_version(profile_name, feats):
 			f.write("`define " + feat + "\n");
 
 	f.write("`define CFG_EBA_RESET  32'h00000000\n\
+	`define CFG_SDB  32'h00000000\n\
 	`define CFG_DEBA_RESET 32'h10000000\n\
 	`define CFG_EBR_POSEDGE_REGISTER_FILE\n\
 	`define CFG_ICACHE_ASSOCIATIVITY   1\n\
@@ -123,7 +124,8 @@ def parse_profiles():
 
 def gen_vhdl_component(f, profile_name):
 	f.write("component lm32_top_"+profile_name+" is \n")
-	f.write("generic ( eba_reset: std_logic_vector(31 downto 0) );\n");
+	f.write("generic ( eba_reset: std_logic_vector(31 downto 0);\n");
+	f.write("          sdb_address: std_logic_vector(31 downto 0));\n");
 	f.write("port (\n");
 	f.write(""" 
   clk_i    : in  std_logic;
@@ -177,7 +179,8 @@ use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 entity xwb_lm32 is
 generic(g_profile: string;
-g_reset_vector: std_logic_vector(31 downto 0) := x"00000000");
+g_reset_vector: std_logic_vector(31 downto 0) := x"00000000";
+g_sdb_address: std_logic_vector(31 downto 0) := x"00000000");
 port(
 clk_sys_i : in  std_logic;
 rst_n_i : in  std_logic;
@@ -263,7 +266,8 @@ begin
 		f.write("U_Wrapped_LM32: lm32_top_"+p[0]+"\n");
 		f.write("""
 generic map (
-			eba_reset => g_reset_vector)
+			eba_reset => g_reset_vector,
+                        sdb_address => g_sdb_address)
 port map(
       clk_i	=> clk_sys_i,
       rst_i	=> rst,

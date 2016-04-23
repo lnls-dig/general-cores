@@ -50,9 +50,9 @@ begin
 
   U_Tics : wb_tics
     generic map (
-      g_interface_mode => g_interface_mode,
+      g_interface_mode      => g_interface_mode,
       g_address_granularity => g_address_granularity,
-      g_period => g_period)
+      g_period              => g_period)
     port map (
       rst_n_i    => rst_n_i,
       clk_sys_i  => clk_sys_i,

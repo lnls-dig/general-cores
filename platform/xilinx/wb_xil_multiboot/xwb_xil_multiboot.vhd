@@ -43,7 +43,7 @@ use unisim.vcomponents.all;
 
 use work.wishbone_pkg.all;
 
-entity wb_xil_multiboot is
+entity xwb_xil_multiboot is
   port
   (
     -- Clock and reset input ports
@@ -60,10 +60,10 @@ entity wb_xil_multiboot is
     spi_mosi_o : out std_logic;
     spi_miso_i : in  std_logic
   );
-end entity wb_xil_multiboot;
+end entity xwb_xil_multiboot;
 
 
-architecture struct of wb_xil_multiboot is
+architecture struct of xwb_xil_multiboot is
 
   --============================================================================
   -- Component declarations

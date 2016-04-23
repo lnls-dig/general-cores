@@ -66,6 +66,7 @@
   18-12-2013 & 1.0 & Added WDTO bit to status register and information about the FSM watchdog
                      mechanism \\
   13-02-2014 & 1.1 & Made memory map prettier \\
+  31-07-2014 & 2.0 & Changed component name from \textit{wb\_xil\_multiboot} to \textit{xwb\_xil\_multiboot} \\
   \hline
   \end{tabular}
 }
@@ -112,7 +113,7 @@ PROGRAM\_B) command to the configuration logic of the FPGA. This command trigger
 deletion of the FPGA configuration and rewriting it with the new configuration
 written to the PROM.
 
-This document describes \textit{wb\_xil\_multiboot}, an Open Hardware~\cite{ohwr}
+This document describes \textit{xwb\_xil\_multiboot}, an Open Hardware~\cite{ohwr}
 FPGA design that can be used to remotely reprogram a Xilinx Spartan-6 FPGA using
 MultiBoot technology. The core can be found within the \textit{general-cores}
 library~\cite{gencores-ohwr} on OHWR.
@@ -120,10 +121,10 @@ library~\cite{gencores-ohwr} on OHWR.
 \begin{figure}[h]
   \centerline{\includegraphics[width=\textwidth]{fig/multiboot-bd}}
   \label{fig:multiboot-bd}
-  \caption{Block diagram of \textit{wb\_xil\_multiboot} module}
+  \caption{Block diagram of \textit{xwb\_xil\_multiboot} module}
 \end{figure}
 
-The main features of the \textit{wb\_xil\_multiboot} module are:
+The main features of the \textit{xwb\_xil\_multiboot} module are:
 \begin{itemize}
   \item software controls operation of the module
   \begin{itemize}
@@ -142,20 +143,20 @@ The main features of the \textit{wb\_xil\_multiboot} module are:
   \end{itemize}
 \end{itemize}
 
-A block diagram of the \textit{wb\_xil\_multiboot} module is shown in Figure~\ref{fig:multiboot-bd}.
+A block diagram of the \textit{xwb\_xil\_multiboot} module is shown in Figure~\ref{fig:multiboot-bd}.
 Users can write bitstream data to a flash by writing each byte of the bitstream to a module register
 (in the \textit{multiboot\_regs}) module. Writing to the flash is done via the \textit{spi\_master}
 module under the control of the finite-state machine (FSM) module (\textit{multiboot\_fsm}). After the
 bitstream has been written to the flash module, a remote reprogramming command is sent
 to the configuration logic by setting a bit in one of the control registers. The
-Xilinx \textit{ICAP\_SPARTAN6} primitive is the interface between the \textit{wb\_xil\_multiboot}
+Xilinx \textit{ICAP\_SPARTAN6} primitive is the interface between the \textit{xwb\_xil\_multiboot}
 module and the FPGA configuration logic.
 
 For the rest of the document, the external PROM chip that the FPGA uses to
 program itself will be referred to as flash, since a flash chip was used
 as the external PROM during the design of the module. However, this does not
-mean \textit{wb\_xil\_multiboot} works only with flash chips. Any 8-bit SPI PROM
-should be usable with the \textit{wb\_xil\_multiboot} design.
+mean \textit{xwb\_xil\_multiboot} works only with flash chips. Any 8-bit SPI PROM
+should be usable with the \textit{xwb\_xil\_multiboot} design.
 
 %==============================================================================
 % SEC: Instantiation
@@ -163,7 +164,7 @@ should be usable with the \textit{wb\_xil\_multiboot} design.
 \section{Instantiation}
 \label{sec:instantiation}
 
-Table~\ref{tbl:ports} lists the ports of the \textit{wb\_xil\_multiboot} module.
+Table~\ref{tbl:ports} lists the ports of the \textit{xwb\_xil\_multiboot} module.
 In order to instantiate the MultiBoot module, one needs to connect
 the Wishbone slave ports to a Wishbone master, such as the \textit{xwb\_crossbar}
 Wishbone crossbar module on OHWR \cite{gencores-ohwr}. The SPI ports should be
@@ -199,7 +200,7 @@ are defined.
 
 Further note that the maximum \textit{clk\_i} frequency allowable is 20~MHz, due
 to constraints of the ICAP component from Xilinx. Should a greater system clock
-frequency be used in the design, the user can instantiate the \textit{wb\_xil\_multiboot}
+frequency be used in the design, the user can instantiate the \textit{xwb\_xil\_multiboot}
 module using a \textit{wb\_clock\_crossing} component from the OHWR \textit{general-cores}
 library~\cite{gencores-ohwr}. This is shown in Figure~\ref{fig:inst-clkcross}.
 
@@ -214,7 +215,7 @@ library~\cite{gencores-ohwr}. This is shown in Figure~\ref{fig:inst-clkcross}.
 %==============================================================================
 \pagebreak
 \section{Using the Xilinx MultiBoot module}
-\label{sec:instantiation}
+\label{sec:using}
 
 For an example project of where the Xilinx MultiBoot module is used, see the
 CONV-TTL-BLO project~\cite{ctb-proj}. The firmware of this projectuses the MultiBoot
@@ -381,13 +382,13 @@ bitstreams for a MultiBoot design.
 %------------------------------------------------------------------------------
 \subsection{Important note regarding MultiBoot bitstreams}
 
-Users should be aware that they should include the \textit{wb\_xil\_multiboot} module
+Users should be aware that they should include the \textit{xwb\_xil\_multiboot} module
 when generating a new MultiBoot bitsream. Otherwise, once a bitstream without
-the \textit{wb\_xil\_multiboot} module inside it is loaded into the FPGA, the
+the \textit{xwb\_xil\_multiboot} module inside it is loaded into the FPGA, the
 remote reprogramming capability of the FPGA is lost, and the user will need
 to use JTAG or other means to program the FPGA with a MultiBoot-enabled design.
 
-Thus, always remember to include the \textit{wb\_xil\_multiboot} module in any bitstream
+Thus, always remember to include the \textit{xwb\_xil\_multiboot} module in any bitstream
 generated after the Golden bitstream.
 
 %==============================================================================
@@ -398,7 +399,7 @@ generated after the Golden bitstream.
 
 A block diagram of the design has already been presented in
 Figure~\ref{fig:multiboot-bd}. This section describes the actions of the sub-modules
-in the \textit{wb\_xil\_multiboot} module. The description is rather high-level,
+in the \textit{xwb\_xil\_multiboot} module. The description is rather high-level,
 some details are omitted for ease of understanding. The main purpose of this
 section is for the reader to understand how the MultiBoot module works together with
 the flash chip and the configuration logic to achieve FPGA reprogramming, rather
@@ -534,13 +535,13 @@ The Spartan-6 FPGA contains registers which can be read to get the stauts of the
 configuration logic. In order to read these registers, a special sequence must be
 followed. The sequece (listed in Table 6-1 of~\cite{ug380}) is implemented in the
 \textit{multiboot\_fsm}. Table~\ref{tbl:rdcfgreg-seq} lists the sequence users
-should follow to read out an FPGA configuration register via the \textit{wb\_xil\_multiboot}
+should follow to read out an FPGA configuration register via the \textit{xwb\_xil\_multiboot}
 module.
 
 \setcounter{rownr}{0}
 
 \begin{table}[h]
-  \caption{Configuration register readout via \textit{wb\_xil\_multiboot}}
+  \caption{Configuration register readout via \textit{xwb\_xil\_multiboot}}
   \label{tbl:rdcfgreg-seq}
   \centerline {
     \rowcolors{2}{white}{gray!25}
@@ -563,7 +564,7 @@ module.
   }
 \end{table}
 
-When the user sets the RDCFGREG bit in the \textit{wb\_xil\_multiboot} control register (CR),
+When the user sets the RDCFGREG bit in the \textit{xwb\_xil\_multiboot} control register (CR),
 the \textit{multiboot\_fsm} initiates the configuration register readout sequence.
 It first sends a synchronization word, and then takes the value of CFGREGADR from
 the CR and use it to build a Type 1 configuration frame to read the configuration
@@ -574,14 +575,14 @@ continues to perform the final steps of the configuration register readout seque
 prior to returning to IDLE.
 
 Note that some configuration registers in the Spartan-6 FPGA are more than 16 bits wide.
-The \textit{wb\_xil\_multiboot} module does not support reading the full length of the
+The \textit{xwb\_xil\_multiboot} module does not support reading the full length of the
 registers; it can only return the least significant 16 bits of the registers.
 
 %------------------------------------------------------------------------------
 \subsection{Sending the IPROG command}
 
 Table~\ref{tbl:iprog} lists the actions needed to issue the IPROG command to the
-FPGA using the \textit{wb\_xil\_multiboot} module. When the IPROG bit is set in the CR,
+FPGA using the \textit{xwb\_xil\_multiboot} module. When the IPROG bit is set in the CR,
 the \textit{multiboot\_fsm} handles sending the IPROG sequence (Table 7-1,
 p.130~\cite{ug380}) to the ICAP.
 
@@ -641,7 +642,7 @@ writing a '1' to it.
 \section{Modifying the design}
 \label{sec:modify}
 
-The \textit{wb\_xil\_multiboot} module is purposely modular in case users want to
+The \textit{xwb\_xil\_multiboot} module is purposely modular in case users want to
 interface to different FPGA interconnect standards, or different flash chips.
 In order to make modifications to the design, knowledge of VHDL is required.
 
@@ -659,13 +660,13 @@ the steps to be followed are listed in Table~\ref{tbl:ch-intercon}.
     \hline
     \textbf{Step} & \multicolumn{1}{c}{\textbf{Action}} \\
     \hline
-    \rownumber & Change \textit{wbs\_i} and \textit{wbs\_o} in \textit{wb\_xil\_multiboot}
+    \rownumber & Change \textit{wbs\_i} and \textit{wbs\_o} in \textit{xwb\_xil\_multiboot}
                  ports to the preferred interconnect ports \\
     \rownumber & Implement or change the current \textit{multiboot\_regs}
                  module, keeping the interface to the FSM side (e.g., the
                  \textit{multiboot\_cr\_iprog\_o} port, etc.) \\
     \rownumber & Instantiate the new \textit{multiboot\_regs} module into the
-                 \textit{wb\_xil\_multiboot} module \\
+                 \textit{xwb\_xil\_multiboot} module \\
     \hline
     \end{tabular}
   }
@@ -699,7 +700,7 @@ performed in case these SPI settings need to be changed.
 Another potential addition to the design would be the capability of reading
 the full value of all FPGA configuration registers. As outlined in
 Section~\ref{sec:implem-rdcfgreg}, some configuration registers are more than
-16 bits in length, and the \textit{wb\_xil\_multiboot} module cannot return their full
+16 bits in length, and the \textit{xwb\_xil\_multiboot} module cannot return their full
 value. This can be modified by, implementing an extra COUNT field in the CR;
 the \textit{multiboot\_fsm} can then use this field to build a Type 1 configuration
 package to return the full length of the configuration register. More information
@@ -711,7 +712,7 @@ on this can be found in the Configuration Packets section of~\cite{ug380}.
 \section{Synthesis results}
 \label{sec:synth-res}
 
-The synthesis results for the \textit{wb\_xil\_multiboot} design using \textit{xst}
+The synthesis results for the \textit{xwb\_xil\_multiboot} design using \textit{xst}
 on the Spartan-6 XC6SLX45T are shown in Table~\ref{tbl:synth-res}.
 
 \begin{table}[h]
@@ -801,6 +802,6 @@ Figure~\ref{fig:multiple-spi} shows the effects of each of the writes.
 %==============================================================================
 \pagebreak
 \bibliographystyle{ieeetr}
-\bibliography{wb_xil_multiboot}
+\bibliography{xwb_xil_multiboot}
 
 \end{document}

@@ -34,7 +34,7 @@ use altera_mf.all;
 
 use work.genram_pkg.all;
 
-entity generic_async_fifo is
+entity altera_async_fifo is
 
   generic (
     g_data_width : natural;
@@ -85,9 +85,9 @@ entity generic_async_fifo is
     rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
-end generic_async_fifo;
+end altera_async_fifo;
 
-architecture syn of generic_async_fifo is
+architecture syn of altera_async_fifo is
 
   component dcfifo
     generic (

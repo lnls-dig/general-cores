@@ -7,7 +7,10 @@ entity wb_spi is
   generic (
     g_three_wire_mode     : integer                        := 0;
     g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD
+    g_address_granularity : t_wishbone_address_granularity := WORD;
+    g_divider_len         : integer := 16;
+    g_max_char_len        : integer := 128;
+    g_num_slaves          : integer := 8 
     );
   port(
     clk_sys_i : in std_logic;
@@ -25,11 +28,11 @@ entity wb_spi is
     wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
 
-    pad_cs_o      : out std_logic_vector(7 downto 0);
-    pad_sclk_o    : out std_logic;
-    pad_mosi_o    : out std_logic;
-    pad_miso_i    : in  std_logic;
-    pad_oen_o     : out std_logic
+    pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
+    pad_sclk_o : out std_logic;
+    pad_mosi_o : out std_logic;
+    pad_miso_i : in  std_logic;
+    pad_oen_o  : out std_logic
     );
 
 end wb_spi;
@@ -38,7 +41,11 @@ architecture rtl of wb_spi is
 
   component spi_top
     generic (
-      g_three_wire_mode : integer := 0
+      g_three_wire_mode : integer := 0;
+      SPI_DIVIDER_LEN   : integer := 16;
+      SPI_MAX_CHAR      : integer := 128;
+      SPI_CHAR_LEN_BITS : integer := 7;
+      SPI_SS_NB         : integer := 8
     );
     port (
       wb_clk_i : in  std_logic;
@@ -54,7 +61,7 @@ architecture rtl of wb_spi is
       wb_err_o : out std_logic;
       wb_int_o : out std_logic;
 
-      ss_pad_o      : out std_logic_vector(7 downto 0);
+      ss_pad_o      : out std_logic_vector(SPI_SS_NB-1 downto 0);
       sclk_pad_o    : out std_logic;
       mosi_pad_o    : out std_logic;
       miso_pad_i    : in  std_logic;
@@ -69,7 +76,7 @@ architecture rtl of wb_spi is
   signal resized_addr : std_logic_vector(c_wishbone_address_width-1 downto 0);
 
 begin
-
+  
   resized_addr(4 downto 0)                          <= wb_adr_i;
   resized_addr(c_wishbone_address_width-1 downto 5) <= (others => '0');
 
@@ -102,8 +109,11 @@ begin
 
   Wrapped_SPI : spi_top                 -- byte-aligned
     generic map (
-      g_three_wire_mode => g_three_wire_mode
-    )
+      g_three_wire_mode => g_three_wire_mode,
+      SPI_DIVIDER_LEN   => g_divider_len,
+      SPI_MAX_CHAR      => g_max_char_len,
+      SPI_CHAR_LEN_BITS => f_ceil_log2(g_max_char_len),
+      SPI_SS_NB         => g_num_slaves)
     port map (
       wb_clk_i      => clk_sys_i,
       wb_rst_i      => rst,

@@ -60,12 +60,12 @@ package wishbone_pkg is
 
   constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
     (others => 'X');
-  constant cc_dummy_data : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
+  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) :=
     (others => 'X');
   constant cc_dummy_slave_in : t_wishbone_slave_in :=
-    ('0', 'X', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
+    ('0', '0', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
   constant cc_dummy_master_out : t_wishbone_master_out := cc_dummy_slave_in;
 
   -- Dangerous! Will stall a bus.
@@ -414,7 +414,10 @@ package wishbone_pkg is
       master_clk_i   : in  std_logic;
       master_rst_n_i : in  std_logic;
       master_i       : in  t_wishbone_master_in;
-      master_o       : out t_wishbone_master_out);
+      master_o       : out t_wishbone_master_out;
+      -- Flow control back-channel for acks
+      slave_ready_o : out std_logic;
+      slave_stall_i : in  std_logic := '0');
   end component;
 
   -- g_size is in words
@@ -435,6 +438,29 @@ package wishbone_pkg is
       slave1_o  : out t_wishbone_slave_out;
       slave2_i  : in  t_wishbone_slave_in;
       slave2_o  : out t_wishbone_slave_out);
+  end component;
+
+  component xwb_dpram_mixed
+  generic(
+    g_size                  : natural := 16384;
+    g_init_file             : string  := "";
+    g_must_have_init_file   : boolean := true;
+    g_swap_word_endianness  : boolean := true;
+    g_slave1_interface_mode : t_wishbone_interface_mode;
+    g_slave2_interface_mode : t_wishbone_interface_mode;
+    g_dpram_port_a_width    : integer := 16;
+    g_dpram_port_b_width    : integer := 32;
+    g_slave1_granularity    : t_wishbone_address_granularity;
+    g_slave2_granularity    : t_wishbone_address_granularity);
+  port(
+    clk_slave1_i  : in std_logic;
+    clk_slave2_i  : in std_logic;
+    rst_n_i       : in std_logic;
+
+    slave1_i      : in  t_wishbone_slave_in;
+    slave1_o      : out t_wishbone_slave_out;
+    slave2_i      : in  t_wishbone_slave_in;
+    slave2_o      : out t_wishbone_slave_out);
   end component;
   
   -- Just like the DMA controller, but constantly at address 0
@@ -540,7 +566,8 @@ package wishbone_pkg is
   component wb_i2c_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_num_interfaces      : integer := 1);
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
@@ -554,36 +581,38 @@ package wishbone_pkg is
       wb_ack_o     : out std_logic;
       wb_int_o     : out std_logic;
       wb_stall_o   : out std_logic;
-      scl_pad_i    : in  std_logic;
-      scl_pad_o    : out std_logic;
-      scl_padoen_o : out std_logic;
-      sda_pad_i    : in  std_logic;
-      sda_pad_o    : out std_logic;
-      sda_padoen_o : out std_logic);
+      scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0));
   end component;
 
   component xwb_i2c_master
     generic (
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_num_interfaces      : integer := 1);
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
       slave_i      : in  t_wishbone_slave_in;
       slave_o      : out t_wishbone_slave_out;
       desc_o       : out t_wishbone_device_descriptor;
-      scl_pad_i    : in  std_logic;
-      scl_pad_o    : out std_logic;
-      scl_padoen_o : out std_logic;
-      sda_pad_i    : in  std_logic;
-      sda_pad_o    : out std_logic;
-      sda_padoen_o : out std_logic);
+      scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
+      sda_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0));
   end component;
 
   component xwb_lm32
     generic (
       g_profile : string;
-      g_reset_vector : std_logic_vector(31 downto 0) := x"00000000");
+      g_reset_vector : std_logic_vector(31 downto 0) := x"00000000";
+      g_sdb_address  : std_logic_vector(31 downto 0) := x"00000000");
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
@@ -653,7 +682,7 @@ package wishbone_pkg is
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
   end component;
 
-  constant c_xwb_spi_cern_sdb : t_sdb_device := (
+  constant c_xwb_spi_sdb : t_sdb_device := (
     abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
@@ -673,7 +702,10 @@ package wishbone_pkg is
     generic (
       g_three_wire_mode     : integer                        := 0;
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_divider_len         : integer := 16;
+      g_max_char_len        : integer := 128;
+      g_num_slaves          : integer := 8);
     port (
       clk_sys_i     : in  std_logic;
       rst_n_i       : in  std_logic;
@@ -688,7 +720,7 @@ package wishbone_pkg is
       wb_err_o      : out std_logic;
       wb_int_o      : out std_logic;
       wb_stall_o    : out std_logic;
-      pad_cs_o      : out std_logic_vector(7 downto 0);
+      pad_cs_o      : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o    : out std_logic;
       pad_mosi_o    : out std_logic;
       pad_miso_i    : in  std_logic;
@@ -699,14 +731,17 @@ package wishbone_pkg is
     generic (
       g_three_wire_mode     : integer                        := 0;
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD);
+      g_address_granularity : t_wishbone_address_granularity := WORD;
+      g_divider_len         : integer := 16;
+      g_max_char_len        : integer := 128;
+      g_num_slaves          : integer := 8);
     port (
       clk_sys_i     : in  std_logic;
       rst_n_i       : in  std_logic;
       slave_i       : in  t_wishbone_slave_in;
       slave_o       : out t_wishbone_slave_out;
       desc_o        : out t_wishbone_device_descriptor;
-      pad_cs_o      : out std_logic_vector(7 downto 0);
+      pad_cs_o      : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o    : out std_logic;
       pad_mosi_o    : out std_logic;
       pad_miso_i    : in  std_logic;
@@ -756,6 +791,7 @@ package wishbone_pkg is
   component wb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_regs_size           : integer range 1 to 16 := 16;
       g_default_period      : integer range 0 to 255 := 0;
       g_default_presc       : integer range 0 to 255 := 0;
       g_default_val         : integer range 0 to 255 := 0;
@@ -779,6 +815,7 @@ package wishbone_pkg is
   component xwb_simple_pwm
     generic (
       g_num_channels        : integer range 1 to 8;
+      g_regs_size           : integer range 1 to 16 := 16;
       g_default_period      : integer range 0 to 255 := 0;
       g_default_presc       : integer range 0 to 255 := 0;
       g_default_val         : integer range 0 to 255 := 0;
@@ -867,7 +904,8 @@ package wishbone_pkg is
     generic (
       g_interface_mode      : t_wishbone_interface_mode;
       g_address_granularity : t_wishbone_address_granularity;
-      g_num_interrupts      : natural);
+      g_num_interrupts      : natural;
+      g_init_vectors        : t_wishbone_address_array := cc_dummy_address_array);
     port (
       clk_sys_i    : in  std_logic;
       rst_n_i      : in  std_logic;
@@ -1050,6 +1088,44 @@ package wishbone_pkg is
     );
   end component wb_i2c_bridge;
 
+  ------------------------------------------------------------------------------
+  -- MultiBoot component
+  ------------------------------------------------------------------------------
+  component xwb_xil_multiboot is
+    port
+    (
+      -- Clock and reset input ports
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+
+      -- Wishbone ports
+      wbs_i   : in  t_wishbone_slave_in;
+      wbs_o   : out t_wishbone_slave_out;
+
+      -- SPI ports
+      spi_cs_n_o : out std_logic;
+      spi_sclk_o : out std_logic;
+      spi_mosi_o : out std_logic;
+      spi_miso_i : in  std_logic
+    );
+  end component xwb_xil_multiboot;
+
+  constant c_xwb_xil_multiboot_sdb : t_sdb_device := (
+    abi_class     => x"0000",              -- undocumented device
+    abi_ver_major => x"01",
+    abi_ver_minor => x"00",
+    wbd_endian    => c_sdb_endian_big,
+    wbd_width     => x"7",                 -- 8/16/32-bit port granularity
+    sdb_component => (
+      addr_first  => x"0000000000000000",
+      addr_last   => x"000000000000001f",
+      product     => (
+        vendor_id => x"000000000000CE42",  -- CERN
+        device_id => x"11da333d",          -- echo "WB-Xilinx-MultiBoot" | md5sum | cut -c1-8
+        version   => x"00000001",
+        date      => x"20140313",
+        name      => "WB-Xilinx-MultiBoot")));
+
 end wishbone_pkg;
 
 package body wishbone_pkg is
@@ -1060,8 +1136,8 @@ package body wishbone_pkg is
       variable result 	 : std_logic_vector(pval'range);   
    begin
      for i in pval'range loop 
-      n_sel(i) := sel(i / 8);
-      n_val(i) := ival(i);
+      n_sel(i) := sel((i-pval'low) / 8); -- subtract the low index for when register width > wishbone data width
+      n_val(i) := ival(i-pval'low);
      end loop;
 
      if(mode = "set") then  

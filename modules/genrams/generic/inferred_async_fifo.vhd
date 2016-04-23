@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2013-07-29
+-- Last update: 2014-07-31
 -- Platform   :
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -27,6 +27,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.genram_pkg.all;
+use work.gencores_pkg.all;
 
 entity inferred_async_fifo is
 
@@ -84,13 +85,13 @@ end inferred_async_fifo;
 
 architecture syn of inferred_async_fifo is
 
-  function f_bin2gray(bin : unsigned) return unsigned is
+  function f_bin2gray(bin : std_logic_vector) return std_logic_vector is
   begin
     return bin(bin'left) & (bin(bin'left-1 downto 0) xor bin(bin'left downto 1));
   end f_bin2gray;
 
-  function f_gray2bin(gray : unsigned) return unsigned is
-    variable bin : unsigned(gray'left downto 0);
+  function f_gray2bin(gray : std_logic_vector) return std_logic_vector is
+    variable bin : std_logic_vector(gray'left downto 0);
   begin
     -- gray to binary
     for i in 0 to gray'left loop
@@ -102,7 +103,8 @@ architecture syn of inferred_async_fifo is
     return bin;
   end f_gray2bin;
 
-  subtype t_counter is unsigned(f_log2_size(g_size) downto 0);
+  constant c_counter_bits : integer := f_log2_size(g_size) + 1;
+  subtype t_counter is std_logic_vector(c_counter_bits-1 downto 0);
 
   type t_counter_block is record
     bin, bin_next, gray, gray_next : t_counter;
@@ -114,10 +116,7 @@ architecture syn of inferred_async_fifo is
 
   signal rcb, wcb                          : t_counter_block;
 
-  attribute ASYNC_REG : string;
-  attribute ASYNC_REG of wcb: signal is "TRUE";
-  attribute ASYNC_REG of rcb: signal is "TRUE";
-
+  
   signal full_int, empty_int               : std_logic;
   signal almost_full_int, almost_empty_int : std_logic;
   signal going_full                        : std_logic;
@@ -140,7 +139,7 @@ begin  -- syn
   begin
     if rising_edge(clk_wr_i) then
       if(we_int = '1') then
-        mem(to_integer(wcb.bin(wcb.bin'left-1 downto 0))) <= d_i;
+        mem(to_integer(unsigned(wcb.bin(wcb.bin'left-1 downto 0)))) <= d_i;
       end if;
     end if;
   end process;
@@ -149,12 +148,12 @@ begin  -- syn
   begin
     if rising_edge(clk_rd_i) then
       if(rd_int = '1') then
-        q_o <= mem(to_integer(rcb.bin(rcb.bin'left-1 downto 0)));
+        q_o <= mem(to_integer(unsigned(rcb.bin(rcb.bin'left-1 downto 0))));
       end if;
     end if;
   end process;
 
-  wcb.bin_next  <= wcb.bin + 1;
+  wcb.bin_next  <= std_logic_vector(unsigned(wcb.bin) + 1);
   wcb.gray_next <= f_bin2gray(wcb.bin_next);
 
   p_write_ptr : process(clk_wr_i, rst_n_i)
@@ -170,7 +169,7 @@ begin  -- syn
     end if;
   end process;
 
-  rcb.bin_next  <= rcb.bin + 1;
+  rcb.bin_next  <= std_logic_vector(unsigned(rcb.bin) + 1);
   rcb.gray_next <= f_bin2gray(rcb.bin_next);
 
   p_read_ptr : process(clk_rd_i, rst_n_i)
@@ -186,22 +185,23 @@ begin  -- syn
     end if;
   end process;
 
-  p_sync_read_ptr : process(clk_wr_i)
-  begin
-    if rising_edge(clk_wr_i) then
-      rcb.gray_xm <= rcb.gray;
-      rcb.gray_x  <= rcb.gray_xm;
-    end if;
-  end process;
+    U_Sync1: gc_sync_register
+    generic map (
+      g_width => c_counter_bits)
+    port map (
+      clk_i    => clk_wr_i,
+      rst_n_a_i  => rst_n_i,
+      d_i  => rcb.gray,
+      q_o => rcb.gray_x);
 
-
-  p_sync_write_ptr : process(clk_rd_i)
-  begin
-    if rising_edge(clk_rd_i) then
-      wcb.gray_xm <= wcb.gray;
-      wcb.gray_x  <= wcb.gray_xm;
-    end if;
-  end process;
+    U_Sync2: gc_sync_register
+    generic map (
+      g_width => c_counter_bits)
+    port map (
+      clk_i    => clk_rd_i,
+      rst_n_a_i  => rst_n_i,
+      d_i   => wcb.gray,
+      q_o => wcb.gray_x);
 
   wcb.bin_x <= f_gray2bin(wcb.gray_x);
   rcb.bin_x <= f_gray2bin(rcb.gray_x);
@@ -219,13 +219,25 @@ begin  -- syn
     end if;
   end process;
 
-  p_sync_empty : process(clk_wr_i)
-  begin
-    if rising_edge(clk_wr_i) then
-      wr_empty_xm <= empty_int;
-      wr_empty_x  <= wr_empty_xm;
-    end if;
-  end process;
+  U_Sync_Empty: gc_sync_ffs
+    generic map (
+      g_sync_edge => "positive")
+    port map (
+      clk_i    => clk_wr_i,
+      rst_n_i  => rst_n_i,
+      data_i   => empty_int,
+      synced_o => wr_empty_x);
+
+  U_Sync_Full: gc_sync_ffs
+    generic map (
+      g_sync_edge => "positive")
+    port map (
+      clk_i    => clk_rd_i,
+      rst_n_i  => rst_n_i,
+      data_i   => full_int,
+      synced_o => rd_full_x);
+ 
+  
 
   rd_empty_o <= empty_int;
   wr_empty_o <= wr_empty_x;
@@ -253,14 +265,6 @@ begin  -- syn
     end if;
   end process;
 
-  p_sync_full : process(clk_rd_i)
-  begin
-    if rising_edge(clk_rd_i) then
-      rd_full_xm <= full_int;
-      rd_full_x  <= rd_full_xm;
-    end if;
-  end process p_sync_full;
-
   wr_full_o <= full_int;
   rd_full_o <= rd_full_x;
 
@@ -269,8 +273,8 @@ begin  -- syn
     if rst_n_i = '0' then
       almost_full_int <= '0';
     elsif rising_edge(clk_wr_i) then
-      wr_count <= wcb.bin - rcb.bin_x;
-      if (wr_count >= g_almost_full_threshold) then
+      wr_count <= std_logic_vector(unsigned(wcb.bin) - unsigned(rcb.bin_x));
+      if (unsigned(wr_count) >= g_almost_full_threshold) then
         almost_full_int <= '1';
       else
         almost_full_int <= '0';
@@ -278,13 +282,14 @@ begin  -- syn
     end if;
   end process;
 
-  p_sync_almost_full : process(clk_rd_i)
-  begin
-    if rising_edge(clk_rd_i) then
-      almost_full_xm <= almost_full_int;
-      almost_full_x  <= almost_full_xm;
-    end if;
-  end process p_sync_almost_full;
+  U_Sync_AlmostFull: gc_sync_ffs
+    generic map (
+      g_sync_edge => "positive")
+    port map (
+      clk_i    => clk_rd_i,
+      rst_n_i  => rst_n_i,
+      data_i   => almost_full_int,
+      synced_o => almost_full_x);
 
   wr_almost_full_o  <= almost_full_int;
   rd_almost_full_o  <= almost_full_x;
@@ -294,8 +299,8 @@ begin  -- syn
     if rst_n_i = '0' then
       almost_empty_int <= '1';
     elsif rising_edge(clk_rd_i) then
-      rd_count     <= wcb.bin_x - rcb.bin;
-      if (rd_count <= g_almost_empty_threshold) then
+      rd_count     <= std_logic_vector(unsigned(wcb.bin_x) - unsigned(rcb.bin));
+      if (unsigned(rd_count) <= g_almost_empty_threshold) then
         almost_empty_int <= '1';
       else
         almost_empty_int <= '0';
@@ -303,13 +308,14 @@ begin  -- syn
     end if;
   end process;
 
-  p_sync_almost_empty : process(clk_wr_i)
-  begin
-    if rising_edge(clk_wr_i) then
-      almost_empty_xm <= almost_empty_int;
-      almost_empty_x  <= almost_empty_xm;
-    end if;
-  end process p_sync_almost_empty;
+  U_Sync_AlmostEmpty: gc_sync_ffs
+    generic map (
+      g_sync_edge => "positive")
+    port map (
+      clk_i    => clk_wr_i,
+      rst_n_i  => rst_n_i,
+      data_i   => almost_empty_int,
+      synced_o => almost_empty_x);
 
   rd_almost_empty_o <= almost_empty_int;
   wr_almost_empty_o <= almost_empty_x;

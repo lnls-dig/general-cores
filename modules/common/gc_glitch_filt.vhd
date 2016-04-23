@@ -104,9 +104,9 @@ begin
     if rising_edge(clk_i) then
       if (rst_n_i = '0') then
         dat_o <= '0';
-      elsif (glitch_filt = (glitch_filt'range => '1')) then
+      elsif (unsigned(glitch_filt) = (glitch_filt'range => '1')) then
         dat_o <= '1';
-      elsif (glitch_filt = (glitch_filt'range => '0')) then
+      elsif (unsigned(glitch_filt) = (glitch_filt'range => '0')) then
         dat_o <= '0';
       end if;
     end if;

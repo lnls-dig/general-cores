@@ -23,8 +23,9 @@ package pcie_wb_pkg is
 
   component pcie_wb is
     generic(
-      g_family : string := "Arria II";
-      sdb_addr : t_wishbone_address);
+      g_family   : string := "Arria II";
+      g_fast_ack : boolean := true;
+      sdb_addr   : t_wishbone_address);
     port(
       clk125_i      : in  std_logic; -- 125 MHz, free running (unused by Arria V)
       cal_clk50_i   : in  std_logic; --  50 MHz, shared between all PHYs (100MHz for Arria V)

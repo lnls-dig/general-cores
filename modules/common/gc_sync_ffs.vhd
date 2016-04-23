@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-06-14
--- Last update: 2011-04-29
+-- Last update: 2014-07-31
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -63,6 +63,11 @@ architecture behavioral of gc_sync_ffs is
   attribute shreg_extract of sync0  : signal is "no";
   attribute shreg_extract of sync1  : signal is "no";
   attribute shreg_extract of sync2  : signal is "no";
+
+  attribute keep : string;
+  attribute keep of sync0  : signal is "true";
+  attribute keep of sync1  : signal is "true";
+
 begin
 
 

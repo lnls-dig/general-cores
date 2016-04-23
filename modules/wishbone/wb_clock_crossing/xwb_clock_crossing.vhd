@@ -19,7 +19,10 @@ entity xwb_clock_crossing is
       master_clk_i   : in  std_logic;
       master_rst_n_i : in  std_logic;
       master_i       : in  t_wishbone_master_in;
-      master_o       : out t_wishbone_master_out);
+      master_o       : out t_wishbone_master_out;
+      -- Flow control back-channel for acks
+      slave_ready_o : out std_logic;
+      slave_stall_i : in  std_logic);
 end xwb_clock_crossing;
 
 architecture rtl of xwb_clock_crossing is
@@ -73,19 +76,17 @@ architecture rtl of xwb_clock_crossing is
 begin
 
    full <= '1' when mpushed = mpopped else '0';
-   count : process(slave_clk_i) is
+   count : process(slave_clk_i, slave_rst_n_i) is
    begin
-      if rising_edge(slave_clk_i) then
-         if slave_rst_n_i = '0' then
-            mpushed <= (others => '0');
-            mpopped <= to_unsigned(g_size, t_count'length);
-         else
-            if (not full and slave_i.CYC and slave_i.STB) = '1' then
-               mpushed <= mpushed + 1;
-            end if;
-            if slave_o_PUSH = '1' then
-               mpopped <= mpopped + 1;
-            end if;
+      if slave_rst_n_i = '0' then
+         mpushed <= (others => '0');
+         mpopped <= to_unsigned(g_size, t_count'length);
+      elsif rising_edge(slave_clk_i) then
+         if (not full and slave_i.CYC and slave_i.STB) = '1' then
+            mpushed <= mpushed + 1;
+         end if;
+         if slave_o_PUSH = '1' then
+            mpopped <= mpopped + 1;
          end if;
       end if;
    end process;
@@ -177,41 +178,38 @@ begin
    master_o.SEL <= mrecv.SEL;
    master_o.DAT <= mrecv.DAT;
 
-   drive_master_port : process(master_clk_i)
+   drive_master_port : process(master_clk_i, master_rst_n_i)
    begin
-      if rising_edge(master_clk_i) then
-         if master_rst_n_i = '0' then
-            master_o_STB <= '0';
-         else
-            master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
-         end if;
+      if master_rst_n_i = '0' then
+         master_o_STB <= '0';
+      elsif rising_edge(master_clk_i) then
+         master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
       end if;
    end process;
 
    -- Master clock domain: master -> sFIFO
-   sw_en <= mrecv.CYC and (master_i.ACK or master_i.ERR or master_i.RTY);
+   sw_en <= master_i.ACK or master_i.ERR or master_i.RTY;
    ssend.ACK <= master_i.ACK;
    ssend.ERR <= master_i.ERR;
    ssend.RTY <= master_i.RTY;
    ssend.DAT <= master_i.DAT;
 
    -- Slave clock domain: sFIFO -> slave
-   sr_en <= not sr_empty;
+   slave_ready_o <= not sr_empty;
+   sr_en <= not sr_empty and not slave_stall_i;
    slave_o.DAT <= srecv.DAT;
    slave_o.ACK <= srecv.ACK and slave_o_PUSH;
    slave_o.RTY <= srecv.RTY and slave_o_PUSH;
    slave_o.ERR <= srecv.ERR and slave_o_PUSH;
 
-   drive_slave_port : process(slave_clk_i)
+   drive_slave_port : process(slave_clk_i, slave_rst_n_i)
    begin
-      if rising_edge(slave_clk_i) then
-         if slave_rst_n_i = '0' then
-            slave_o_PUSH <= '0';
-            slave_CYC <= '0';
-         else
-            slave_o_PUSH <= sr_en;
-            slave_CYC <= slave_i.CYC;
-         end if;
+      if slave_rst_n_i = '0' then
+         slave_o_PUSH <= '0';
+         slave_CYC <= '0';
+      elsif rising_edge(slave_clk_i) then
+         slave_o_PUSH <= sr_en;
+         slave_CYC <= slave_i.CYC;
       end if;
    end process;
 
