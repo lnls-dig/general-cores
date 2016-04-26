@@ -5,22 +5,6 @@ use work.wishbone_pkg.all;
 
 package pcie_wb_pkg is
 
-  constant c_msi_pcie_sdb : t_sdb_device := (
-    abi_class     => x"0000", -- undocumented device
-    abi_ver_major => x"01",
-    abi_ver_minor => x"01",
-    wbd_endian    => c_sdb_endian_big,
-    wbd_width     => x"7", -- 8/16/32-bit port granularity
-    sdb_component => (
-    addr_first    => x"0000000000000000",
-    addr_last     => x"000000000000ffff",
-    product => (
-    vendor_id     => x"0000000000000651", -- GSI
-    device_id     => x"8a670e73",
-    version       => x"00000001",
-    date          => x"20131213",
-    name          => "Altera-PCIe-MSI-Tgt")));
-
   constant c_pcie_msi : t_sdb_msi := (
     wbd_endian    => c_sdb_endian_big,
     wbd_width     => x"7", -- 8/16/32-bit port granularity
