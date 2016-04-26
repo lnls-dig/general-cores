@@ -268,7 +268,7 @@ begin
             wb_dat(29 downto 4) <= (others => '0');
             wb_dat(3 downto 0) <= int_master_o.sel;
           when "10011" => -- Master FIFO adr low
-            wb_dat <= int_master_o.adr;
+            wb_dat <= int_master_o.adr and c_pcie_msi.sdb_component.addr_last(31 downto 0);
           when "10101" => -- Master FIFO dat low
             wb_dat <= int_master_o.dat;
           when others =>
