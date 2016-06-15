@@ -1,5 +1,7 @@
--- megafunction wizard: %IP Compiler for PCI Express v13.1%
--- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="13.1"  build="162"  iptb_version="1.3.0 Build 162"  format_version="120" >
+-- megafunction wizard: %IP Compiler for PCI Express v16.0%
+
+-- Retrieval info: <?xml version="1.0"?>
+-- Retrieval info: <MEGACORE title="IP Compiler for PCI Express"  version="16.0"  build="218"  iptb_version="1.3.0 Build 218"  format_version="120" >
 -- Retrieval info:  <NETLIST_SECTION class="altera.ipbu.flowbase.netlist.model.MVCModel"  active_core="altpcie_hip_pipen1b" >
 -- Retrieval info:   <STATIC_SECTION>
 -- Retrieval info:    <PRIVATES>
@@ -40,7 +42,6 @@
 -- Retrieval info:      <PRIVATE name = "actualBAR4Size" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5AvalonAddress" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5Size" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "allowedDeviceFamilies" value="[Arria II GX, Arria II GZ, Arria V, Cyclone III, Cyclone III LS, Cyclone IV E, Cyclone IV GX, Cyclone V]"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "altgx_generated" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "clockSource" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "contextState" value="NativeContext"  type="STRING"  enable="1" />
@@ -148,7 +149,7 @@
 -- Retrieval info:      <PRIVATE name = "p_pcie_L1_exit_latency_separate_clock" value="&gt;64 us"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_advanced_error_int_num" value="0x00000000"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_alt2gxb" value="0"  type="BOOLEAN"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_altgx_keyParameters_used" value="{p_pcie_enable_hip=1, p_pcie_number_of_lanes=x4, p_pcie_phy=Arria II GX, p_pcie_rate=Gen1 (2.5 Gbps), p_pcie_txrx_clock=100 MHz}"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_altgx_keyParameters_used" value="{p_pcie_enable_hip=1, p_pcie_number_of_lanes=x4, p_pcie_rate=Gen1 (2.5 Gbps), p_pcie_phy=Arria II GX, p_pcie_txrx_clock=100 MHz}"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_app_signal_interface" value="AvalonST"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_avalon_mm_lite" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="128 Bytes - 7 bits"  type="STRING"  enable="1" />
@@ -376,8 +377,8 @@
 -- Retrieval info:      <PRIVATE name = "filename" value="arria2_pcie_hip_core.vhd"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "quartus_settings">
--- Retrieval info:      <PRIVATE name = "DEVICE" value="EP2AGX125EF29C5"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "FAMILY" value="Arria II GX"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "WEB_BROWSER" value="/usr/bin/firefox"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "LICENSE_FILE" value="LM_LICENSE_FILE"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "serializer"/>
 -- Retrieval info:    </PRIVATES>
@@ -387,3 +388,4 @@
 -- Retrieval info:   </STATIC_SECTION>
 -- Retrieval info:  </NETLIST_SECTION>
 -- Retrieval info: </MEGACORE>
+-- =========================================================
