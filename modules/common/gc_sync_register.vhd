@@ -28,6 +28,11 @@ architecture rtl of gc_sync_register is
   attribute keep of sync0               : signal is "true";
   attribute keep of sync1               : signal is "true";
   
+  attribute async_reg                        : string;
+  attribute async_reg of gc_sync_register_in : signal is "true";
+  attribute async_reg of sync0               : signal is "true";
+  attribute async_reg of sync1               : signal is "true";
+
 begin
 
   process(clk_i, rst_n_a_i)
