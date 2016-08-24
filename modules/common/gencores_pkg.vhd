@@ -255,6 +255,21 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Power-On reset generator of synchronous single reset from multiple
+  -- asynchronous input reset signals
+  ------------------------------------------------------------------------------
+  component gc_single_reset_gen is
+    generic(
+      g_out_reg_depth     : natural :=2;
+      g_rst_in_num        : natural :=2);
+    port (
+      clk_i               : in std_logic;
+      rst_signals_n_a_i   : in std_logic_vector(g_rst_in_num-1 downto 0);
+      rst_n_o             : out std_logic
+    );
+  end component;
+
+  ------------------------------------------------------------------------------
   -- Round robin arbiter
   ------------------------------------------------------------------------------
   component gc_rr_arbiter
