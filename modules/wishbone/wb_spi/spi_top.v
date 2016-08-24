@@ -86,14 +86,16 @@ module spi_top
   output                           mosi_pad_o;       // master out slave in
   input                            miso_pad_i;       // master in slave out
                                                      
-  reg                     [32-1:0] wb_dat_o;
-  reg                              wb_ack_o;
-  reg                              wb_int_o;
+  reg                     [32-1:0] wb_dat_o = 32'b0;
+  reg                              wb_ack_o = 1'b0;
+  reg                              wb_int_o = 1'b0;
                                                
   // Internal signals
   reg        [SPI_DIVIDER_LEN-1:0] divider;          // Divider register
-  reg       [`SPI_CTRL_BIT_NB-1:0] ctrl;             // Control and status register
-  reg              [SPI_SS_NB-1:0] ss;               // Slave select register
+  reg       [`SPI_CTRL_BIT_NB-1:0] ctrl = {`SPI_CTRL_BIT_NB{1'b0}};
+                                                     // Control and status register
+  reg              [SPI_SS_NB-1:0] ss = {SPI_SS_NB{1'b0}};
+                                                     // Slave select register
   reg                     [32-1:0] wb_dat;           // wb data out
   wire          [SPI_MAX_CHAR-1:0] rx;               // Rx register
   wire                             rx_negedge;       // miso is sampled on negative edge

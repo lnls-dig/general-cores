@@ -154,12 +154,12 @@ entity i2c_master_bit_ctrl is
           clk_cnt : in unsigned(15 downto 0);        -- clock prescale value
 
           cmd     : in std_logic_vector(3 downto 0);
-          cmd_ack : out std_logic;                   -- command completed
+          cmd_ack : out std_logic := '0';            -- command completed
           busy    : out std_logic;                   -- i2c bus busy
           al      : out std_logic;                   -- arbitration lost
 
           din  : in std_logic;
-          dout : out std_logic;
+          dout : out std_logic := '0';
 
           -- i2c lines
           scl_i   : in std_logic;                    -- i2c clock line input
@@ -180,17 +180,19 @@ architecture structural of i2c_master_bit_ctrl is
 
     type states is (idle, start_a, start_b, start_c, start_d, start_e,
                     stop_a, stop_b, stop_c, stop_d, rd_a, rd_b, rd_c, rd_d, wr_a, wr_b, wr_c, wr_d);
-    signal c_state : states;
+    signal c_state : states := idle;
 
-    signal iscl_oen, isda_oen   : std_logic;             -- internal I2C lines
-    signal sda_chk              : std_logic;             -- check SDA status (multi-master arbitration)
-    signal dscl_oen             : std_logic;             -- delayed scl_oen signals
-    signal sSCL, sSDA           : std_logic;             -- synchronized SCL and SDA inputs
-    signal dSCL, dSDA           : std_logic;             -- delayed versions ofsSCL and sSDA
-    signal clk_en               : std_logic;             -- statemachine clock enable
-    signal scl_sync, slave_wait : std_logic;             -- clock generation signals
-    signal ial                  : std_logic;             -- internal arbitration lost signal
-    signal cnt                  : unsigned(15 downto 0); -- clock divider counter (synthesis)
+    signal iscl_oen, isda_oen   : std_logic := '1';      -- internal I2C lines
+    signal sda_chk              : std_logic := '0';      -- check SDA status (multi-master arbitration)
+    signal dscl_oen             : std_logic := '0';      -- delayed scl_oen signals
+    signal sSCL, sSDA           : std_logic := '1';      -- synchronized SCL and SDA inputs
+    signal dSCL, dSDA           : std_logic := '1';      -- delayed versions ofsSCL and sSDA
+    signal clk_en               : std_logic := '1';      -- statemachine clock enable
+    signal scl_sync             : std_logic;             -- clock generation signals
+    signal slave_wait           : std_logic := '0';      -- clock generation signals
+    signal ial                  : std_logic := '0';      -- internal arbitration lost signal
+    signal cnt                  : unsigned(15 downto 0) := (others => '0');
+                                                         -- clock divider counter (synthesis)
 
 begin
     -- whenever the slave is not ready it can delay the cycle by pulling SCL low
@@ -242,13 +244,16 @@ begin
 
     -- generate bus status controller
     bus_status_ctrl: block
-      signal cSCL, cSDA    : std_logic_vector( 1 downto 0); -- capture SDA and SCL
-      signal fSCL, fSDA    : std_logic_vector( 2 downto 0); -- filter inputs for SCL and SDA
-      signal filter_cnt    : unsigned(13 downto 0);         -- clock divider for filter
-      signal sta_condition : std_logic;                     -- start detected
-      signal sto_condition : std_logic;                     -- stop detected
-      signal cmd_stop      : std_logic;                     -- STOP command
-      signal ibusy         : std_logic;                     -- internal busy signal
+      signal cSCL, cSDA    : std_logic_vector( 1 downto 0) := "00";
+                                                            -- capture SDA and SCL
+      signal fSCL, fSDA    : std_logic_vector( 2 downto 0) := (others => '1');
+                                                            -- filter inputs for SCL and SDA
+      signal filter_cnt    : unsigned(13 downto 0) := (others => '0');
+                                                            -- clock divider for filter
+      signal sta_condition : std_logic := '0';              -- start detected
+      signal sto_condition : std_logic := '0';              -- stop detected
+      signal cmd_stop      : std_logic := '0';              -- STOP command
+      signal ibusy         : std_logic := '0';              -- internal busy signal
     begin
         -- capture SCL and SDA
         capture_scl_sda: process(clk, nReset)

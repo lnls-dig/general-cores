@@ -69,8 +69,8 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
   input                          s_in;         // serial in
   output                         s_out;        // serial out
                                                
-  reg                            s_out;        
-  reg                            tip;
+  reg                            s_out = 1'b0;
+  reg                            tip = 1'b0;
                               
   reg      [SPI_CHAR_LEN_BITS:0] cnt;          // data bit count
   reg         [SPI_MAX_CHAR-1:0] data;         // shift register

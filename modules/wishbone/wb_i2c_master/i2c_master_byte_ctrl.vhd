@@ -86,16 +86,16 @@ entity i2c_master_byte_ctrl is
 		clk_cnt : in unsigned(15 downto 0);	-- 4x SCL
 
 		-- input signals
-		start,
-		stop,
-		read,
-		write,
-		ack_in : std_logic;
+		start  : in std_logic;
+		stop   : in std_logic;
+		read   : in std_logic;
+		write  : in std_logic;
+		ack_in : in std_logic;
 		din    : in std_logic_vector(7 downto 0);
 
 		-- output signals
 		cmd_ack  : out std_logic; -- command done
-		ack_out  : out std_logic;
+		ack_out  : out std_logic := '0';
 		i2c_busy : out std_logic; -- arbitration lost
 		i2c_al   : out std_logic; -- i2c bus busy
 		dout     : out std_logic_vector(7 downto 0);
@@ -146,20 +146,22 @@ architecture structural of i2c_master_byte_ctrl is
 	constant I2C_CMD_WRITE	: std_logic_vector(3 downto 0) := "1000";
 
 	-- signals for bit_controller
-	signal core_cmd : std_logic_vector(3 downto 0);
-	signal core_ack, core_txd, core_rxd : std_logic;
+	signal core_cmd : std_logic_vector(3 downto 0) := I2C_CMD_NOP;
+	signal core_ack, core_rxd : std_logic;
+	signal core_txd : std_logic := '0';
 	signal al : std_logic;
 
 	-- signals for shift register
-	signal sr : std_logic_vector(7 downto 0); -- 8bit shift register
-	signal shift, ld : std_logic;
+	signal sr : std_logic_vector(7 downto 0) := (others => '0'); -- 8bit shift register
+	signal shift, ld : std_logic := '0';
 
 	-- signals for state machine
-	signal go, host_ack : std_logic;
-	signal dcnt : unsigned(2 downto 0); -- data counter
+	signal go: std_logic;
+	signal host_ack : std_logic := '0';
+	signal dcnt : unsigned(2 downto 0) := (others => '0'); -- data counter
 	signal cnt_done : std_logic;
-	    type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
-	    signal c_state : states;
+    type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
+    signal c_state : states := st_idle;
 
 begin
 	-- hookup bit_controller

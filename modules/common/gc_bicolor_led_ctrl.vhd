@@ -107,12 +107,12 @@ architecture rtl of gc_bicolor_led_ctrl is
   ------------------------------------------------------------------------------
   -- Signals declaration
   ------------------------------------------------------------------------------
-  signal refresh_rate_cnt   : unsigned(c_refresh_cnt_nb_bits - 1 downto 0);
-  signal refresh_rate       : std_logic;
-  signal line_ctrl          : std_logic;
-  signal intensity_ctrl_cnt : unsigned(c_refresh_cnt_nb_bits - 1 downto 0);
-  signal intensity_ctrl     : std_logic;
-  signal line_oen_cnt       : unsigned(c_line_oen_cnt_nb_bits - 1 downto 0);
+  signal refresh_rate_cnt   : unsigned(c_refresh_cnt_nb_bits - 1 downto 0) := (others => '0');
+  signal refresh_rate       : std_logic := '0';
+  signal line_ctrl          : std_logic := '0';
+  signal intensity_ctrl_cnt : unsigned(c_refresh_cnt_nb_bits - 1 downto 0) := (others => '0');
+  signal intensity_ctrl     : std_logic := '0';
+  signal line_oen_cnt       : unsigned(c_line_oen_cnt_nb_bits - 1 downto 0) := (others => '0');
   signal line_oen           : std_logic_vector(2**c_line_oen_cnt_nb_bits - 1 downto 0);
   signal led_state          : std_logic_vector((g_nb_line * g_nb_column) -1 downto 0);
 
