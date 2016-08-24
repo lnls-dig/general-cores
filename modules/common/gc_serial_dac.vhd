@@ -120,7 +120,7 @@ begin
 
   iValidValue <= load_i;
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -153,7 +153,7 @@ begin
   end process;
 
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -170,7 +170,7 @@ begin
     end if;
   end process;
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
