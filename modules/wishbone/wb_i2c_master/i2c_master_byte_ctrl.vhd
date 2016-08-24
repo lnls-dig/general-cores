@@ -35,6 +35,12 @@
 ----                                                             ----
 ---------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added default values for determined start-up state
+--------------------------------------------------------------------------------
+
 --  CVS Log
 --
 --  $Id: i2c_master_byte_ctrl.vhd,v 1.5 2004-02-18 11:41:48 rherveille Exp $
@@ -160,8 +166,8 @@ architecture structural of i2c_master_byte_ctrl is
 	signal host_ack : std_logic := '0';
 	signal dcnt : unsigned(2 downto 0) := (others => '0'); -- data counter
 	signal cnt_done : std_logic;
-    type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
-    signal c_state : states := st_idle;
+        type states is (st_idle, st_start, st_read, st_write, st_ack, st_stop);
+        signal c_state : states := st_idle;
 
 begin
 	-- hookup bit_controller

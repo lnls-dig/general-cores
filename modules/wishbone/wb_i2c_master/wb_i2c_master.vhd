@@ -23,7 +23,9 @@
 -- Date        Version  Author          Description
 -- 2010-05-18  1.0      twlostow        Created
 -- 2010-10-04  1.1      twlostow        Added WB slave adapter
--- 2013-09-09	 1.2			greg.d					Multiplexing multiple i2c interfaces
+-- 2013-09-09  1.2      greg.d          Multiplexing multiple i2c interfaces
+-- 2016-08-24  1.3      jpospisi        added assignments to (new) unspecified
+--                                        WB signals
 -------------------------------------------------------------------------------
 
 library ieee;

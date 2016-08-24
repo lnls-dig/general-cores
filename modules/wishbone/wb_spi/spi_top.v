@@ -38,14 +38,14 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 
-
 //////////////////////////////////////////////////////////////////////
-//
-// Modified to use parameters (generics) for configuration rather
-// than constants from spi_defines file, G.Daniluk CERN 2013
-//
+//  Modifications:
+//      2013: by G. Daniluk, CERN
+//          * Modified to use parameters (generics) for configuration
+//            rather than constants from spi_defines file.
+//      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+//          * added default values for determined start-up state
 //////////////////////////////////////////////////////////////////////
-
 
 `include "spi_defines.v"
 `include "timescale.v"

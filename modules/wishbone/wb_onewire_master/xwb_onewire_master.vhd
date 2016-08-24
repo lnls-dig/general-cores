@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * propagated CDR_N/O generics up the hierarchy; added assignments
+--            to (new) unspecified WB signals
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 

@@ -35,6 +35,12 @@
 ----                                                             ----
 ---------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added default values for determined start-up state
+--------------------------------------------------------------------------------
+
 --  CVS Log
 --
 --  $Id: i2c_master_top.vhd,v 1.8 2009-01-20 10:38:45 rherveille Exp $
@@ -148,7 +154,7 @@ architecture structural of i2c_master_top is
     signal rxr  : std_logic_vector(7 downto 0);                     -- receive register
     signal cr   : std_logic_vector(7 downto 0) := (others => '0');  -- command register
     signal sr   : std_logic_vector(7 downto 0);                     -- status register
-    
+
     -- internal reset signal
     signal rst_i : std_logic;
 

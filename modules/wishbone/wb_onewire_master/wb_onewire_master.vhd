@@ -22,6 +22,9 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2011-09-18  1.0      twlostow        Created
+-- 2016-08-24  1.1      jpospisi        propagated CDR_N/O generics up the
+--                                        hierarchy; added assignments to (new)
+--                                        unspecified WB signals
 -------------------------------------------------------------------------------
 
 library ieee;

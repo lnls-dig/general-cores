@@ -37,6 +37,8 @@
 -- Date        Version  Author          Description
 -- 2009-01-24  1.0      paas            Created
 -- 2010-02-25  1.1      twlostow        Modified for rev 1.1 switch
+-- 2016-08-24  1.2      jpospisi        removed synchronous reset from
+--                                        sensitivity lists
 -------------------------------------------------------------------------------
 
 library IEEE;
