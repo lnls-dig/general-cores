@@ -149,6 +149,9 @@ begin
   wb_out.dat(7 downto 0)                <= dat_out;
   wb_out.dat(wb_out.dat'left downto 8) <= (others => '0');
 
+  wb_out.err <= '0';
+  wb_out.rty <= '0';
+  wb_out.stall <= '0';
 
 end rtl;
 

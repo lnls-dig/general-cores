@@ -213,4 +213,5 @@ begin
       end if;
    end process;
 
+   slave_o.int <= '0'; -- TODO: not implemented
 end rtl;

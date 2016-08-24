@@ -80,5 +80,8 @@ begin  -- rtl
       sda_pad_i    => sda_pad_i,
       sda_pad_o    => sda_pad_o,
       sda_padoen_o => sda_padoen_o);
+  
+  slave_o.err <= '0';
+  slave_o.rty <= '0';
 end rtl;
 

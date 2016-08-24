@@ -127,4 +127,7 @@ begin
       mosi_pad_o => pad_mosi_o,
       miso_pad_i => pad_miso_i);
 
+    wb_out.rty <= '0';
+    wb_out.stall <= '0';
+
 end rtl;

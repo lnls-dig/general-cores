@@ -85,5 +85,7 @@ begin
       pad_sclk_o => pad_sclk_o,
       pad_mosi_o => pad_mosi_o,
       pad_miso_i => pad_miso_i);
+
+  slave_o.rty <= '0';
   
 end rtl;
