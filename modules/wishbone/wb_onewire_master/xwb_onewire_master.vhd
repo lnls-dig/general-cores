@@ -9,7 +9,9 @@ entity xwb_onewire_master is
     g_address_granularity : t_wishbone_address_granularity := WORD;
     g_num_ports           : integer                        := 1;
     g_ow_btp_normal       : string                         := "5.0";
-    g_ow_btp_overdrive    : string                         := "1.0"
+    g_ow_btp_overdrive    : string                         := "1.0";
+    g_CDR_N               : integer                        := 4; -- normal    mode
+    g_CDR_O               : integer                        := 0  -- overdrive mode
     );
 
   port(
@@ -37,7 +39,9 @@ architecture rtl of xwb_onewire_master is
       g_address_granularity : t_wishbone_address_granularity := WORD;
       g_num_ports           : integer;
       g_ow_btp_normal       : string;
-      g_ow_btp_overdrive    : string);
+      g_ow_btp_overdrive    : string;
+      g_CDR_N               : integer;
+      g_CDR_O               : integer);
     port (
       clk_sys_i   : in  std_logic;
       rst_n_i     : in  std_logic;
@@ -66,7 +70,9 @@ begin  -- rtl
       g_address_granularity => g_address_granularity,
       g_num_ports           => g_num_ports,
       g_ow_btp_normal       => g_ow_btp_normal,
-      g_ow_btp_overdrive    => g_ow_btp_overdrive)
+      g_ow_btp_overdrive    => g_ow_btp_overdrive,
+      g_CDR_N               => g_CDR_N,
+      g_CDR_O               => g_CDR_O)
     port map (
       clk_sys_i   => clk_sys_i,
       rst_n_i     => rst_n_i,
