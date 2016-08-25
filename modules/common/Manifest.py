@@ -21,5 +21,6 @@ files = [	"gencores_pkg.vhd",
                 "gc_fsm_watchdog.vhd",
                 "gc_bicolor_led_ctrl.vhd",
                 "gc_sync_register.vhd",
-                "gc_single_reset_gen.vhd"
+                "gc_single_reset_gen.vhd",
+                "gc_async_signals_input_stage.vhd"
                 ];

@@ -495,6 +495,21 @@ package gencores_pkg is
       q_o       : out std_logic_vector(g_width-1 downto 0));
   end component gc_sync_register;
 
+  component gc_async_signals_input_stage is
+    generic (
+      g_signal_num                 : integer;
+      g_extended_pulse_width       : integer;
+      g_dglitch_filter_len         : integer);
+    port (
+      clk_i                        : in std_logic;
+      rst_n_i                      : in std_logic;
+      signals_a_i                  : in  std_logic_vector(g_signal_num-1 downto 0);
+      config_active_i              : in  std_logic_vector(g_signal_num-1 downto 0);
+      signals_o                    : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_p1_o                 : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_pN_o                 : out std_logic_vector(g_signal_num-1 downto 0));
+  end component;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
