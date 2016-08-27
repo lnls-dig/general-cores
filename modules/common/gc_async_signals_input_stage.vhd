@@ -148,7 +148,7 @@ begin
         if(signals_deglitched(i) =  '1' and signals_deglitched_d1(i) = '0') then
           signals_pulse_p1(i)    <= '1';
         else
-          signals_pulse_p1(i)    <= '1';
+          signals_pulse_p1(i)    <= '0';
         end if;
         signals_deglitched_d1(i) <= signals_deglitched(i);
       end if;
