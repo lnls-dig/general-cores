@@ -6,9 +6,10 @@
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
 --              Matthieu Cattin
+--              Evangelia Gousiou
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-07-31
+-- Last update: 2026-09-26
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -43,6 +44,7 @@
 -- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
 -- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
 -- 2014-03-20  1.3      mcattin         Added bicolor led controller
+-- 2016-09-26  1.4      egousiou        Added one-wire DS182x interface
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -366,7 +368,7 @@ package gencores_pkg is
         -- '1' - read
         op_o : out std_logic
         );
-  end component gc_i2c_slave;
+  end component;
 
   ------------------------------------------------------------------------------
   -- Glitch filter
@@ -392,7 +394,7 @@ package gencores_pkg is
         -- latency: g_len+1 clk_i cycles
         dat_o : out std_logic
         );
-  end component gc_glitch_filt;
+  end component;
 
   ------------------------------------------------------------------------------
   -- Dynamic glitch filter
@@ -418,7 +420,7 @@ package gencores_pkg is
         -- latency: g_len+1 clk_i cycles
         dat_o : out std_logic
         );
-  end component gc_dyn_glitch_filt;
+  end component;
 
   ------------------------------------------------------------------------------
   -- FSM Watchdog Timer
@@ -441,7 +443,7 @@ package gencores_pkg is
         -- Active-high reset output, synchronous to clk_i
         fsm_rst_o : out std_logic
         );
-  end component gc_fsm_watchdog;
+  end component;
 
   ------------------------------------------------------------------------------
   -- Bicolor LED controller
@@ -466,8 +468,7 @@ package gencores_pkg is
         led_state_i     : in  std_logic_vector((g_nb_line * g_nb_column * 2) - 1 downto 0);
         column_o        : out std_logic_vector(g_nb_column - 1 downto 0);
         line_o          : out std_logic_vector(g_nb_line - 1 downto 0);
-        line_oen_o      : out std_logic_vector(g_nb_line - 1 downto 0)
-        );
+        line_oen_o      : out std_logic_vector(g_nb_line - 1 downto 0));
   end component;
 
   component gc_sync_register is
@@ -478,7 +479,49 @@ package gencores_pkg is
       rst_n_a_i : in  std_logic;
       d_i       : in  std_logic_vector(g_width-1 downto 0);
       q_o       : out std_logic_vector(g_width-1 downto 0));
-  end component gc_sync_register;
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- Priority encoder
+  ------------------------------------------------------------------------------  
+  component gc_prio_encoder is
+  generic (
+    g_width : integer);
+  port (
+    d_i     : in  std_logic_vector(g_width-1 downto 0);
+    therm_o : out std_logic_vector(g_width-1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- Delay generator
+  ------------------------------------------------------------------------------
+  component gc_delay_gen is
+  generic(
+    g_delay_cycles : in natural;
+    g_data_width   : in natural);
+
+  port(clk_i   : in  std_logic;  
+       rst_n_i : in  std_logic;  
+       d_i     : in  std_logic_vector(g_data_width - 1 downto 0);
+       q_o     : out std_logic_vector(g_data_width - 1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- One-wire interface to DS1820 and DS1822
+  ------------------------------------------------------------------------------  
+  component gc_ds182x_interface is
+  generic
+    (freq      : integer := 40);
+  port
+    (clk_i     : in    std_logic;
+     rst_n_i   : in    std_logic;
+     pps_p_i   : in    std_logic;
+     onewire_b : inout std_logic;
+     id_o      : out   std_logic_vector(63 downto 0);
+     temper_o  : out   std_logic_vector(15 downto 0);
+     id_read_o : out   std_logic;
+     id_ok_o   : out   std_logic);
+  end component;
 
   --============================================================================
   -- Procedures and functions
