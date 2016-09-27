@@ -572,6 +572,7 @@ end
 `endif
 
 `ifdef CFG_HW_DEBUG_ENABLED
+   `ifndef CFG_IRAM_ENABLED
 assign jtag_access_complete = (i_cyc_o == `TRUE) && ((i_ack_i == `TRUE) || (i_err_i == `TRUE)) && (jtag_access == `TRUE);
 always @(*)
 begin
@@ -580,8 +581,9 @@ begin
     2'b01: jtag_read_data = i_dat_i[`LM32_BYTE_2_RNG];
     2'b10: jtag_read_data = i_dat_i[`LM32_BYTE_1_RNG];
     2'b11: jtag_read_data = i_dat_i[`LM32_BYTE_0_RNG];
-    endcase 
+    endcase // case (jtag_address[1:0])
 end
+   `endif
 `endif
 
 `ifdef CFG_IWB_ENABLED

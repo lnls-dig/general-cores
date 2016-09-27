@@ -75,6 +75,18 @@ module lm32_cpu (
     clk_n_i,
 `endif
     rst_i,
+`ifdef CFG_ENABLE_PIN_ENABLED
+    enable_i,
+`endif
+`ifdef CFG_DEBUG_REGS_ENABLED
+   dbg_exception_o,
+   dbg_csr_write_enable_i,
+   dbg_csr_write_data_i,
+   dbg_csr_addr_i,
+   dbg_break_i,
+   dbg_reset_i,
+`endif
+
     // From external devices
 `ifdef CFG_INTERRUPTS_ENABLED
     interrupt,
@@ -237,7 +249,7 @@ input [`LM32_WORD_RNG] user_result;             // User-defined instruction resu
 input user_complete;                            // User-defined instruction execution is complete
 `endif    
 
-`ifdef CFG_JTAG_ENABLED
+`ifdef CFG_JTAG_ENABLED 
 input jtag_clk;                                 // JTAG clock
 input jtag_update;                              // JTAG state machine is in data register update state
 input [`LM32_BYTE_RNG] jtag_reg_q;              
@@ -260,6 +272,12 @@ input D_RTY_I;                                  // Data Wishbone interface retry
 // Outputs
 /////////////////////////////////////////////////////
 
+`ifdef CFG_ENABLE_PIN_ENABLED
+   input enable_i;
+   wire  enable_i;
+`endif
+   
+   
 `ifdef CFG_TRACE_ENABLED
 output [`LM32_PC_RNG] trace_pc;                 // PC to trace
 reg    [`LM32_PC_RNG] trace_pc;
@@ -728,7 +746,10 @@ wire exception_q_w;
 `endif
 
 `ifdef CFG_DEBUG_ENABLED
-`ifdef CFG_JTAG_ENABLED
+`ifdef CFG_JTAG_ENABLED 
+wire reset_exception;                           // Indicates if a reset exception has occured
+`endif
+`ifdef CFG_DEBUG_REGS_ENABLED
 wire reset_exception;                           // Indicates if a reset exception has occured
 `endif
 `endif
@@ -756,7 +777,24 @@ reg data_bus_error_seen;                        // Indicates if a data bus error
    wire iram_stall_request_x;
 `endif
      
+`ifdef CFG_DEBUG_REGS_ENABLED
+input dbg_csr_write_enable_i;                         // CSR write enable
+wire   dbg_csr_write_enable_i;
+input [`LM32_WORD_RNG] dbg_csr_write_data_i;          // Data to write to specified CSR
+wire  [`LM32_WORD_RNG] dbg_csr_write_data_i;
+input [`LM32_CSR_RNG] dbg_csr_addr_i;                        // CSR to write
+wire  [`LM32_CSR_RNG] dbg_csr_addr_i;
 
+   output 	      dbg_exception_o;
+   wire 	      dbg_exception_o;
+   input 	      dbg_reset_i;
+   wire 	      dbg_reset_i;
+   input 	      dbg_break_i;
+   wire 	      dbg_break_i;
+   
+   
+`endif
+   
 /////////////////////////////////////////////////////
 // Functions
 /////////////////////////////////////////////////////
@@ -1135,6 +1173,14 @@ lm32_interrupt interrupt_unit (
     );
 `endif
 
+`ifdef CFG_DEBUG_REGS_ENABLED
+   assign jtag_break = dbg_break_i;
+   assign reset_exception = dbg_reset_i;
+   assign dbg_exception_o = debug_exception_q_w || non_debug_exception_q_w;
+   
+`endif
+
+
 `ifdef CFG_JTAG_ENABLED
 // JTAG interface
 lm32_jtag jtag (
@@ -1201,10 +1247,17 @@ lm32_debug #(
     .csr_write_enable_x     (csr_write_enable_q_x),
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
-`ifdef CFG_HW_DEBUG_ENABLED
+ `ifdef CFG_HW_DEBUG_ENABLED
+	      `ifdef CFG_JTAG_ENABLED
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
+	      `endif
+	      `ifdef CFG_DEBUG_REGS_ENABLED
+    .dbg_csr_write_enable_i  (dbg_csr_write_enable_i),
+    .dbg_csr_write_data_i    (dbg_csr_write_data_i),
+    .dbg_csr_addr_i               (dbg_csr_addr_i),
+	      `endif
 `endif
 `ifdef LM32_SINGLE_STEP_ENABLED
     .eret_q_x               (eret_q_x),
@@ -1767,6 +1820,14 @@ assign exception_x =           (system_call_exception == `TRUE)
                             ;
 `endif
 
+`ifdef CFG_ENABLE_PIN_ENABLED
+reg user_stall;
+
+always@(posedge clk_i)
+  if(D_CYC_O)
+    user_stall <= ~enable_i;
+`endif
+
 // Exception ID
 always @(*)
 begin
@@ -1919,7 +1980,12 @@ assign stall_m =    (stall_wb_load == `TRUE)
                      && (user_complete == `FALSE)
                     )
 `endif
+`ifdef CFG_ENABLE_PIN_ENABLED
+                 || (user_stall)
+   `endif
                  ;      
+
+
 
 // Qualify state changing control signals
 `ifdef LM32_MC_ARITHMETIC_ENABLED
@@ -2127,8 +2193,14 @@ begin
         if ((csr_write_enable_q_x == `TRUE) && (csr_x == `LM32_CSR_EBA) && (stall_x == `FALSE))
             eba <= operand_1_x[`LM32_PC_WIDTH+2-1:8];
 `ifdef CFG_HW_DEBUG_ENABLED
-        if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_EBA))
-            eba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+ `ifdef CFG_JTAG_ENABLED
+       if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_EBA))
+         eba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+ `endif
+ `ifdef CFG_DEBUG_REGS_ENABLED
+       if ((dbg_csr_write_enable_i == `TRUE) && (dbg_csr_addr_i == `LM32_CSR_EBA))
+         eba <= dbg_csr_write_data_i[`LM32_PC_WIDTH+2-1:8];
+ `endif	 
 `endif
     end
 end
@@ -2143,10 +2215,16 @@ begin
     begin
         if ((csr_write_enable_q_x == `TRUE) && (csr_x == `LM32_CSR_DEBA) && (stall_x == `FALSE))
             deba <= operand_1_x[`LM32_PC_WIDTH+2-1:8];
-`ifdef CFG_HW_DEBUG_ENABLED
-        if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_DEBA))
-            deba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
-`endif
+ `ifdef CFG_HW_DEBUG_ENABLED
+  `ifdef CFG_JTAG_ENABLED
+       if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_DEBA))
+         deba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+  `endif
+  `ifdef CFG_DEBUG_REGS_ENABLED
+       if ((dbg_csr_write_enable_i == `TRUE) && (dbg_csr_addr_i == `LM32_CSR_DEBA))
+         deba <= dbg_csr_write_data_i[`LM32_PC_WIDTH+2-1:8];
+  `endif       
+ `endif
     end
 end
 `endif

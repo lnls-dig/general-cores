@@ -2008,6 +2008,20 @@ module lm32_cpu_full_debug (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -2201,7 +2215,7 @@ input [ (32-1):0] interrupt;
     
 
   
-
+ 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
@@ -2227,6 +2241,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -2770,9 +2791,13 @@ wire non_debug_exception_q_w;
   
 
   
-
+ 
 wire reset_exception;                           
  
+
+  
+                            
+
 
  
 
@@ -2811,7 +2836,25 @@ reg data_bus_error_seen;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -3308,6 +3351,15 @@ lm32_interrupt_full_debug interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
 
 lm32_jtag_full_debug jtag (
@@ -3388,11 +3440,21 @@ lm32_debug_full_debug #(
     .csr_write_enable_x     (csr_write_enable_q_x),
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
-  
+   
+
+	        
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
+	       
+
+	        
+      
+        
+                   
+	      
+
  
 
   
@@ -4030,6 +4092,15 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -4214,7 +4285,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -4481,8 +4558,17 @@ begin
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
-            eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
+         eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+  
+
+   
+              
+           
+ 
+	 
  
 
     end
@@ -4499,11 +4585,20 @@ begin
     begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
-  
+   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
-            deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
- 
+    
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
+         deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+    
+              
+           
+  
+       
+  
 
     end
 end
@@ -9727,11 +9822,23 @@ module lm32_debug_full_debug (
     csr_x,
   
 
+  
+
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
 
+  
+   
+   
+   
+
+
+  
+
+
+		   
   
 
     eret_q_x,
@@ -9745,6 +9852,7 @@ module lm32_debug_full_debug (
  
 
  
+
 
     
   
@@ -9780,10 +9888,22 @@ input [ (32-1):0] csr_write_data;
 input [ (5-1):0] csr_x;                    
   
 
+  
+
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
+
+     
+                          
+            
+                          
+
+
+ 
+
+
 
   
 
@@ -9947,9 +10067,22 @@ endgenerate
   
                 
 
+  
+
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
 assign debug_csr_write_data = jtag_csr_write_enable ==  1'b1 ? jtag_csr_write_data : csr_write_data;
 assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
+ 
+
+   
+  
+         
+         
+         
+
+
+
+   
  
    
    
@@ -11137,6 +11270,8 @@ end
 
   
 
+     
+
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
 begin
@@ -11147,6 +11282,8 @@ begin
     2'b11: jtag_read_data = i_dat_i[ 7:0];
     endcase 
 end
+    
+
  
 
 
@@ -13061,12 +13198,14 @@ endmodule
 	  
 
 	  
-	 
-	 
-	 
-	 
+
 	  
+
 	  
+	 
+	 
+	 
+	 
 	
 
  
@@ -14958,6 +15097,20 @@ module lm32_cpu_full (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -15147,7 +15300,7 @@ input [ (32-1):0] interrupt;
 
     
 
-  
+   
                                   
                                
                 
@@ -15173,6 +15326,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -15700,6 +15860,9 @@ wire exception_q_w;
 
 
   
+  
+                            
+
  
                             
 
@@ -15739,7 +15902,25 @@ reg data_bus_error_seen;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -16231,6 +16412,15 @@ lm32_interrupt_full interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
   
     
@@ -16297,10 +16487,17 @@ lm32_interrupt_full interrupt_unit (
          
              
                       
- 
+  
+	       
       
         
                    
+	      
+	       
+      
+        
+                   
+	      
 
  
                    
@@ -16924,6 +17121,15 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -17100,7 +17306,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -17359,8 +17571,14 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  4 'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-               
+  
               
+           
+ 
+  
+              
+           
+ 	 
 
 
     end
@@ -17376,10 +17594,16 @@ end
     
                    
               
- 
-               
+  
+   
               
-
+           
+  
+   
+              
+           
+         
+ 
     
 
 
@@ -22581,11 +22805,20 @@ endmodule
     
     
  
+ 
     
     
     
 
  
+   
+   
+   
+
+ 
+
+		   
+ 
     
     
     
@@ -22593,6 +22826,7 @@ endmodule
     
  
     
+
 
 
     
@@ -22626,9 +22860,18 @@ endmodule
             
                       
  
+ 
                      
        
                    
+
+    
+                          
+            
+                          
+
+
+
 
  
                                   
@@ -22729,9 +22972,19 @@ endmodule
                 
                  
 
+ 
          
          
          
+
+   
+ 
+         
+         
+         
+
+
+   
 
    
    
@@ -23906,6 +24159,7 @@ end
 
 
   
+    
                  
  
 
@@ -23916,6 +24170,7 @@ end
        
      
 
+   
 
 
 
@@ -27641,6 +27896,20 @@ module lm32_cpu_medium_debug (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -27834,7 +28103,7 @@ input [ (32-1):0] interrupt;
     
 
   
-
+ 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
@@ -27860,6 +28129,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -28397,9 +28673,13 @@ wire non_debug_exception_q_w;
   
 
   
-
+ 
 wire reset_exception;                           
  
+
+  
+                            
+
 
  
 
@@ -28435,7 +28715,25 @@ wire system_call_exception;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -28918,6 +29216,15 @@ lm32_interrupt_medium_debug interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
 
 lm32_jtag_medium_debug jtag (
@@ -28998,11 +29305,21 @@ lm32_debug_medium_debug #(
     .csr_write_enable_x     (csr_write_enable_q_x),
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
-  
+   
+
+	        
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
+	       
+
+	        
+      
+        
+                   
+	      
+
  
 
   
@@ -29624,6 +29941,15 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -29802,7 +30128,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -30064,8 +30396,17 @@ begin
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
-            eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
+         eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+  
+
+   
+              
+           
+ 
+	 
  
 
     end
@@ -30082,11 +30423,20 @@ begin
     begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
-  
+   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
-            deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
- 
+    
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
+         deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+    
+              
+           
+  
+       
+  
 
     end
 end
@@ -35195,11 +35545,23 @@ module lm32_debug_medium_debug (
     csr_x,
   
 
+  
+
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
 
+  
+   
+   
+   
+
+
+  
+
+
+		   
   
 
     eret_q_x,
@@ -35212,6 +35574,7 @@ module lm32_debug_medium_debug (
 
 
  
+
 
     
   
@@ -35247,10 +35610,22 @@ input [ (32-1):0] csr_write_data;
 input [ (5-1):0] csr_x;                    
   
 
+  
+
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
+
+     
+                          
+            
+                          
+
+
+ 
+
+
 
   
 
@@ -35413,9 +35788,22 @@ endgenerate
   
                 
 
+  
+
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
 assign debug_csr_write_data = jtag_csr_write_enable ==  1'b1 ? jtag_csr_write_data : csr_write_data;
 assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
+ 
+
+   
+  
+         
+         
+         
+
+
+
+   
  
    
    
@@ -36591,6 +36979,8 @@ end
 
   
 
+     
+
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
 begin
@@ -36601,6 +36991,8 @@ begin
     2'b11: jtag_read_data = i_dat_i[ 7:0];
     endcase 
 end
+    
+
  
 
 
@@ -40411,6 +40803,20 @@ module lm32_cpu_medium_icache_debug (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -40604,7 +41010,7 @@ input [ (32-1):0] interrupt;
     
 
   
-
+ 
 input jtag_clk;                                 
 input jtag_update;                              
 input [ 7:0] jtag_reg_q;              
@@ -40630,6 +41036,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -41167,9 +41580,13 @@ wire non_debug_exception_q_w;
   
 
   
-
+ 
 wire reset_exception;                           
  
+
+  
+                            
+
 
  
 
@@ -41205,7 +41622,25 @@ wire system_call_exception;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -41688,6 +42123,15 @@ lm32_interrupt_medium_icache_debug interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
 
 lm32_jtag_medium_icache_debug jtag (
@@ -41768,11 +42212,21 @@ lm32_debug_medium_icache_debug #(
     .csr_write_enable_x     (csr_write_enable_q_x),
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
-  
+   
+
+	        
 
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
+	       
+
+	        
+      
+        
+                   
+	      
+
  
 
   
@@ -42394,6 +42848,15 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -42572,7 +43035,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -42834,8 +43303,17 @@ begin
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
-            eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h7))
+         eba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+  
+
+   
+              
+           
+ 
+	 
  
 
     end
@@ -42852,11 +43330,20 @@ begin
     begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
             deba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
-  
+   
 
-        if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
-            deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
- 
+    
+
+       if ((jtag_csr_write_enable ==  1'b1) && (jtag_csr ==  5'h9))
+         deba <= jtag_csr_write_data[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
+   
+
+    
+              
+           
+  
+       
+  
 
     end
 end
@@ -47965,11 +48452,23 @@ module lm32_debug_medium_icache_debug (
     csr_x,
   
 
+  
+
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
  
 
+  
+   
+   
+   
+
+
+  
+
+
+		   
   
 
     eret_q_x,
@@ -47982,6 +48481,7 @@ module lm32_debug_medium_icache_debug (
 
 
  
+
 
     
   
@@ -48017,10 +48517,22 @@ input [ (32-1):0] csr_write_data;
 input [ (5-1):0] csr_x;                    
   
 
+  
+
 input jtag_csr_write_enable;                    
 input [ (32-1):0] jtag_csr_write_data;     
 input [ (5-1):0] jtag_csr;                 
  
+
+     
+                          
+            
+                          
+
+
+ 
+
+
 
   
 
@@ -48183,9 +48695,22 @@ endgenerate
   
                 
 
+  
+
 assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (jtag_csr_write_enable ==  1'b1);
 assign debug_csr_write_data = jtag_csr_write_enable ==  1'b1 ? jtag_csr_write_data : csr_write_data;
 assign debug_csr = jtag_csr_write_enable ==  1'b1 ? jtag_csr : csr_x;
+ 
+
+   
+  
+         
+         
+         
+
+
+
+   
  
    
    
@@ -49361,6 +49886,8 @@ end
 
   
 
+     
+
 assign jtag_access_complete = (i_cyc_o ==  1'b1) && ((i_ack_i ==  1'b1) || (i_err_i ==  1'b1)) && (jtag_access ==  1'b1);
 always @(*)
 begin
@@ -49371,6 +49898,8 @@ begin
     2'b11: jtag_read_data = i_dat_i[ 7:0];
     endcase 
 end
+    
+
  
 
 
@@ -51269,12 +51798,14 @@ endmodule
 	  
 
 	  
-	 
-	 
-	 
-	 
+
 	  
+
 	  
+	 
+	 
+	 
+	 
 	
 
  
@@ -53154,6 +53685,20 @@ module lm32_cpu_medium_icache (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -53343,7 +53888,7 @@ input [ (32-1):0] interrupt;
 
     
 
-  
+   
                                   
                                
                 
@@ -53369,6 +53914,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -53890,6 +54442,9 @@ wire exception_q_w;
 
 
   
+  
+                            
+
  
                             
 
@@ -53926,7 +54481,25 @@ wire system_call_exception;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -54404,6 +54977,15 @@ lm32_interrupt_medium_icache interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
   
     
@@ -54470,10 +55052,17 @@ lm32_interrupt_medium_icache interrupt_unit (
          
              
                       
- 
+  
+	       
       
         
                    
+	      
+	       
+      
+        
+                   
+	      
 
  
                    
@@ -55082,6 +55671,15 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -55253,7 +55851,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -55508,8 +56112,14 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  4 'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (clogb2(32'h7fffffff-32'h0)-2)+2-1:8];
   
-               
+  
               
+           
+ 
+  
+              
+           
+ 	 
 
 
     end
@@ -55525,10 +56135,16 @@ end
     
                    
               
- 
-               
+  
+   
               
-
+           
+  
+   
+              
+           
+         
+ 
     
 
 
@@ -60616,11 +61232,20 @@ endmodule
     
     
  
+ 
     
     
     
 
  
+   
+   
+   
+
+ 
+
+		   
+ 
     
     
     
@@ -60628,6 +61253,7 @@ endmodule
     
  
     
+
 
 
     
@@ -60661,9 +61287,18 @@ endmodule
             
                       
  
+ 
                      
        
                    
+
+    
+                          
+            
+                          
+
+
+
 
  
                                   
@@ -60764,9 +61399,19 @@ endmodule
                 
                  
 
+ 
          
          
          
+
+   
+ 
+         
+         
+         
+
+
+   
 
    
    
@@ -61931,6 +62576,7 @@ end
 
 
   
+    
                  
  
 
@@ -61941,6 +62587,7 @@ end
        
      
 
+   
 
 
 
@@ -63744,12 +64391,14 @@ endmodule
 	  
 
 	  
-	 
-	 
-	 
-	 
+
 	  
+
 	  
+	 
+	 
+	 
+	 
 	
 
  
@@ -65631,6 +66280,20 @@ module lm32_cpu_medium (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -65820,7 +66483,7 @@ input [ (32-1):0] interrupt;
 
     
 
-  
+   
                                   
                                
                 
@@ -65846,6 +66509,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -66365,6 +67035,9 @@ wire exception_q_w;
 
 
   
+  
+                            
+
  
                             
 
@@ -66401,7 +67074,25 @@ wire system_call_exception;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -66877,6 +67568,15 @@ lm32_interrupt_medium interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
   
     
@@ -66943,10 +67643,17 @@ lm32_interrupt_medium interrupt_unit (
          
              
                       
- 
+  
+	       
       
         
                    
+	      
+	       
+      
+        
+                   
+	      
 
  
                    
@@ -67553,6 +68260,15 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -67726,7 +68442,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -67979,8 +68701,14 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  4 'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (32-2)+2-1:8];
   
-               
+  
               
+           
+ 
+  
+              
+           
+ 	 
 
 
     end
@@ -67996,10 +68724,16 @@ end
     
                    
               
- 
-               
+  
+   
               
-
+           
+  
+   
+              
+           
+         
+ 
     
 
 
@@ -73013,11 +73747,20 @@ endmodule
     
     
  
+ 
     
     
     
 
  
+   
+   
+   
+
+ 
+
+		   
+ 
     
     
     
@@ -73025,6 +73768,7 @@ endmodule
     
  
     
+
 
 
     
@@ -73058,9 +73802,18 @@ endmodule
             
                       
  
+ 
                      
        
                    
+
+    
+                          
+            
+                          
+
+
+
 
  
                                   
@@ -73161,9 +73914,19 @@ endmodule
                 
                  
 
+ 
          
          
          
+
+   
+ 
+         
+         
+         
+
+
+   
 
    
    
@@ -74314,6 +75077,7 @@ end
 
 
   
+    
                  
  
 
@@ -74324,6 +75088,7 @@ end
        
      
 
+   
 
 
 
@@ -76120,12 +76885,14 @@ endmodule
 	  
 
 	  
-	 
-	 
-	 
-	 
+
 	  
+
 	  
+	 
+	 
+	 
+	 
 	
 
  
@@ -78009,6 +78776,20 @@ module lm32_cpu_minimal (
 
 
     rst_i,
+  
+    
+
+
+  
+   
+   
+   
+   
+   
+   
+
+
+
     
   
 
@@ -78198,7 +78979,7 @@ input [ (32-1):0] interrupt;
 
     
 
-  
+   
                                   
                                
                 
@@ -78224,6 +79005,13 @@ input D_RTY_I;
 
 
 
+  
+    
+     
+
+
+   
+   
   
                    
      
@@ -78738,6 +79526,9 @@ wire exception_q_w;
 
 
   
+  
+                            
+
  
                             
 
@@ -78774,7 +79565,25 @@ wire system_call_exception;
 
 
      
+  
+                          
+   
+            
+   
+                          
+   
 
+    	      
+    	      
+    	      
+    	      
+    	      
+    	      
+   
+   
+
+
+   
 
 
 
@@ -79245,6 +80054,15 @@ lm32_interrupt_minimal interrupt_unit (
 
 
   
+      
+      
+        
+   
+
+
+
+
+  
 
   
     
@@ -79311,10 +80129,17 @@ lm32_interrupt_minimal interrupt_unit (
          
              
                       
- 
+  
+	       
       
         
                    
+	      
+	       
+      
+        
+                   
+	      
 
  
                    
@@ -79919,6 +80744,15 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
 
 
+  
+ 
+
+ 
+  
+      
+
+
+
 
 always @(*)
 begin
@@ -80092,7 +80926,13 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+                  
+   
+
                  ;      
+
+
 
 
   
@@ -80345,8 +81185,14 @@ begin
         if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  4 'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (32-2)+2-1:8];
   
-               
+  
               
+           
+ 
+  
+              
+           
+ 	 
 
 
     end
@@ -80362,10 +81208,16 @@ end
     
                    
               
- 
-               
+  
+   
               
-
+           
+  
+   
+              
+           
+         
+ 
     
 
 
@@ -85348,11 +86200,20 @@ endmodule
     
     
  
+ 
     
     
     
 
  
+   
+   
+   
+
+ 
+
+		   
+ 
     
     
     
@@ -85360,6 +86221,7 @@ endmodule
     
  
     
+
 
 
     
@@ -85393,9 +86255,18 @@ endmodule
             
                       
  
+ 
                      
        
                    
+
+    
+                          
+            
+                          
+
+
+
 
  
                                   
@@ -85496,9 +86367,19 @@ endmodule
                 
                  
 
+ 
          
          
          
+
+   
+ 
+         
+         
+         
+
+
+   
 
    
    
@@ -86649,6 +87530,7 @@ end
 
 
   
+    
                  
  
 
@@ -86659,6 +87541,7 @@ end
        
      
 
+   
 
 
 
@@ -88434,6 +89317,20 @@ endmodule
 
   
 
+  
+
+  
+
+  
+
+  
+
+  
+
+	  
+
+	  
+
 	  
 
 	  
@@ -88469,8 +89366,6 @@ endmodule
 	 
 	 
 	 
-	  
-	  
 	
 
  
@@ -88616,8 +89511,10 @@ endmodule
 
 
   
- 
 
+  
+
+ 
 
  
 
@@ -88628,10 +89525,11 @@ endmodule
 
 
   
+
+  
+
  
 
-
- 
 
  
 
@@ -88659,22 +89557,6 @@ endmodule
  
  
 
-
-
-
-
-  
-
-  
-
- 
-
-  
- 
-
-
-  
- 
 
 
 
@@ -88689,6 +89571,22 @@ endmodule
  
 
 
+  
+ 
+
+
+
+
+  
+
+  
+
+ 
+
+  
+ 
+
+
 
 
   
@@ -88736,45 +89634,46 @@ endmodule
 
 
   
+
+  
+
+  
+
+ 
+ 
                    
                      
 
-
-  
-                   
-                     
-
-
-  
-
-  
-
- 
-
- 
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-                      
                     
+                     
 
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+ 
 
   
 
@@ -88786,15 +89685,24 @@ endmodule
 
 
   
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
 
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+ 
  
 
 
@@ -89121,15 +90029,18 @@ wire   [ (2-1):0] D_BTE_O;
 
   
 
-                     
-                             
-                            
-                   
-                                 
+
+wire [ ((32-2)+2-1):2] trace_pc;                   
+wire trace_pc_valid;                            
+wire trace_exception;                           
+wire [ (3-1):0] trace_eid;                 
+wire trace_eret;                                
+  
+
+wire trace_bret;                                
  
-                                 
 
-
+ 
 
 
 
@@ -89241,15 +90152,18 @@ lm32_cpu_wr_node
     .D_RTY_I               (D_RTY_I),
     
   
-                  
-            
-           
-                 
-                
+
+    .trace_pc              (trace_pc),
+    .trace_pc_valid        (trace_pc_valid),
+    .trace_exception       (trace_exception),
+    .trace_eid             (trace_eid),
+    .trace_eret            (trace_eret),
+  
+
+    .trace_bret            (trace_bret),
  
-                
 
-
+ 
 
   
                 
@@ -90357,6 +91271,22 @@ module lm32_cpu_wr_node (
 
 
     rst_i,
+  
+
+    enable_i,
+ 
+
+  
+
+   dbg_exception_o,
+   dbg_csr_write_enable_i,
+   dbg_csr_write_data_i,
+   dbg_csr_addr_i,
+   dbg_break_i,
+   dbg_reset_i,
+ 
+
+
     
   
 
@@ -90392,15 +91322,18 @@ module lm32_cpu_wr_node (
     D_RTY_I,
     
   
-    
-    
-    
-    
-    
+
+    trace_pc,
+    trace_pc_valid,
+    trace_exception,
+    trace_eid,
+    trace_eret,
+  
+
+    trace_bret,
  
-    
 
-
+ 
 
   
     
@@ -90462,8 +91395,9 @@ module lm32_cpu_wr_node (
 
 parameter eba_reset =  32'h00000000;                           
   
-                            
 
+parameter deba_reset =  32'h10000000;                         
+ 
 
 parameter sdb_address =   32'h00000000;
 
@@ -90500,11 +91434,11 @@ parameter dcache_limit = 0;
 
 
   
-                          
 
-
-parameter watchpoints = 0;
+parameter watchpoints =  32'h4;                       
  
+   
+
 
   
                           
@@ -90545,7 +91479,7 @@ input [ (32-1):0] interrupt;
 
     
 
-  
+   
                                   
                                
                 
@@ -90571,21 +91505,32 @@ input D_RTY_I;
 
 
   
-                   
-     
-                           
-    
-                          
-    
-                 
-     
-                               
-    
+
+   input enable_i;
+   wire  enable_i;
  
-                               
-    
 
+   
+   
+  
 
+output [ ((32-2)+2-1):2] trace_pc;                 
+reg    [ ((32-2)+2-1):2] trace_pc;
+output trace_pc_valid;                          
+reg    trace_pc_valid;
+output trace_exception;                         
+reg    trace_exception;
+output [ (3-1):0] trace_eid;               
+reg    [ (3-1):0] trace_eid;
+output trace_eret;                              
+reg    trace_eret;
+  
+
+output trace_bret;                              
+reg    trace_bret;
+ 
+
+ 
 
 
   
@@ -90784,14 +91729,15 @@ wire [ (5-1):0] write_idx_d;
 reg [ (5-1):0] write_idx_x;            
 reg [ (5-1):0] write_idx_m;
 reg [ (5-1):0] write_idx_w;
-wire [ (4 -1):0] csr_d;                     
-reg  [ (4 -1):0] csr_x;                  
+wire [ (5-1):0] csr_d;                     
+reg  [ (5-1):0] csr_x;                  
 wire [ (3-1):0] condition_d;         
 reg [ (3-1):0] condition_x;          
   
-                                    
-                                     
 
+wire break_d;                                   
+reg break_x;                                    
+ 
 
 wire scall_d;                                   
 reg scall_x;    
@@ -90799,19 +91745,23 @@ wire eret_d;
 reg eret_x;
 wire eret_q_x;
   
- 
- 
 
+reg eret_m;
+reg eret_w;
+ 
 
   
-                                     
- 
- 
- 
- 
+
+wire bret_d;                                    
+reg bret_x;
+wire bret_q_x;
+  
+
+reg bret_m;
+reg bret_w;
  
 
-
+ 
 
 wire csr_write_enable_d;                        
 reg csr_write_enable_x;
@@ -90970,8 +91920,9 @@ wire [ ((32-2)+2-1):2] pc_x;
 wire [ ((32-2)+2-1):2] pc_m;                       
 wire [ ((32-2)+2-1):2] pc_w;                       
   
-                          
 
+reg [ ((32-2)+2-1):2] pc_c;                        
+ 
 
   
 
@@ -91055,47 +92006,58 @@ wire kill_w;
 
 reg [ (32-2)+2-1:8] eba;                 
   
-                  
 
+reg [ (32-2)+2-1:8] deba;                
+ 
 
 reg [ (3-1):0] eid_x;                      
   
-                        
-                        
 
+reg [ (3-1):0] eid_m;                      
+reg [ (3-1):0] eid_w;                      
+ 
 
 
   
- 
-                                      
 
-                                      
+  
+
+wire dc_ss;                                     
  
+
+wire dc_re;                                     
+wire bp_match;
+wire wp_match;
+wire exception_x;                               
+reg exception_m;                                
+wire debug_exception_x;                         
+reg debug_exception_m;
+reg debug_exception_w;
+wire debug_exception_q_w;
+wire non_debug_exception_x;                     
+reg non_debug_exception_m;
+reg non_debug_exception_w;
+wire non_debug_exception_q_w;
  
                                 
-                                 
-                          
- 
- 
- 
-                      
  
  
  
 
-
-wire exception_x;                               
-reg exception_m;
-reg exception_w;
-wire exception_q_w;
- 
 
 
   
- 
+
+   
                             
 
 
+  
+
+wire reset_exception;                           
+ 
+
+ 
 
   
 
@@ -91103,9 +92065,10 @@ wire interrupt_exception;
  
 
   
-                       
-                       
 
+wire breakpoint_exception;                      
+wire watchpoint_exception;                      
+ 
 
   
             
@@ -91130,7 +92093,26 @@ wire system_call_exception;
  
 
      
+  
 
+input dbg_csr_write_enable_i;                         
+wire   dbg_csr_write_enable_i;
+input [ (32-1):0] dbg_csr_write_data_i;          
+wire  [ (32-1):0] dbg_csr_write_data_i;
+input [ (5-1):0] dbg_csr_addr_i;                        
+wire  [ (5-1):0] dbg_csr_addr_i;
+
+   output 	      dbg_exception_o;
+   wire 	      dbg_exception_o;
+   input 	      dbg_reset_i;
+   wire 	      dbg_reset_i;
+   input 	      dbg_break_i;
+   wire 	      dbg_break_i;
+   
+   
+ 
+
+   
 
 
 
@@ -91244,11 +92226,12 @@ lm32_instruction_unit_wr_node #(
 
 
   
-           
-          
-            
-               
 
+    .jtag_read_enable       (jtag_read_enable),
+    .jtag_write_enable      (jtag_write_enable),
+    .jtag_write_data        (jtag_write_data),
+    .jtag_address           (jtag_address),
+ 
 
     
     
@@ -91287,9 +92270,10 @@ lm32_instruction_unit_wr_node #(
 
 		      	      
   
-             
-       
 
+    .jtag_read_data         (jtag_read_data),
+    .jtag_access_complete   (jtag_access_complete),
+ 
 
   
                 
@@ -91390,14 +92374,16 @@ lm32_decoder_wr_node decoder (
     .branch_reg             (branch_reg_d),
     .condition              (condition_d),
   
-               
 
+    .break_opcode           (break_d),
+ 
 
     .scall                  (scall_d),
     .eret                   (eret_d),
   
-                       
 
+    .bret                   (bret_d),
+ 
 
   
                 
@@ -91591,17 +92577,18 @@ lm32_interrupt_wr_node interrupt_unit (
     
     .stall_x                (stall_x),
   
-         
-            
 
-
-    .exception              (exception_q_w), 
+    .non_debug_exception    (non_debug_exception_q_w), 
+    .debug_exception        (debug_exception_q_w),
  
+                   
+
 
     .eret_q_x               (eret_q_x),
   
-                   
 
+    .bret_q_x               (bret_q_x),
+ 
 
     .csr                    (csr_x),
     .csr_write_data         (operand_1_x),
@@ -91612,6 +92599,16 @@ lm32_interrupt_wr_node interrupt_unit (
     .csr_read_data          (interrupt_csr_read_data_x)
     );
  
+
+
+  
+
+   assign jtag_break = dbg_break_i;
+   assign reset_exception = dbg_reset_i;
+   assign dbg_exception_o = debug_exception_q_w || non_debug_exception_q_w;
+   
+ 
+
 
 
   
@@ -91667,44 +92664,62 @@ lm32_interrupt_wr_node interrupt_unit (
 
   
 
- 
-                
-                
+
+lm32_debug_wr_node #(
+    .breakpoints            (breakpoints),
+    .watchpoints            (watchpoints)
+  ) hw_debug (
     
-    
-                       
-                      
-                       
-                     
-                    
-       
-         
-             
-                      
- 
+    .clk_i                  (clk_i), 
+    .rst_i                  (rst_i),
+    .pc_x                   (pc_x),
+    .load_x                 (load_x),
+    .store_x                (store_x),
+    .load_store_address_x   (adder_result_x),
+    .csr_write_enable_x     (csr_write_enable_q_x),
+    .csr_write_data         (operand_1_x),
+    .csr_x                  (csr_x),
+   
+
+	        
       
         
                    
+	      
+
+	        
+
+    .dbg_csr_write_enable_i  (dbg_csr_write_enable_i),
+    .dbg_csr_write_data_i    (dbg_csr_write_data_i),
+    .dbg_csr_addr_i               (dbg_csr_addr_i),
+	       
 
  
-                   
-                   
-                    
-                
-                        
- 
+
+  
+
+    .eret_q_x               (eret_q_x),
+    .bret_q_x               (bret_q_x),
+    .stall_x                (stall_x),
+    .exception_x            (exception_x),
+    .q_x                    (q_x),
+  
       
 
 
-    
  
-                      
 
-                      
-                   
-                   
     
+  
 
+    .dc_ss                  (dc_ss),
+ 
+
+    .dc_re                  (dc_re),
+    .bp_match               (bp_match),
+    .wp_match               (wp_match)
+    );
+ 
 
 
 
@@ -92194,21 +93209,24 @@ assign kill_w =     1'b0
 
 
   
-              
-				         
-				     
-				     
-				 
- 
+
+assign breakpoint_exception =    (   (   (break_x ==  1'b1)
+				      || (bp_match ==  1'b1)
+				     )
+				  && (valid_x ==  1'b1)
+				 )
+  
                                  
 
-                              
 
+                              ;
+ 
 
 
   
-     
 
+assign watchpoint_exception = wp_match ==  1'b1;
+ 
 
 
   
@@ -92233,14 +93251,47 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 			       );
 
   
-      
-                            
-                         
 
-     
- 
+assign debug_exception_x =  (breakpoint_exception ==  1'b1)
+                         || (watchpoint_exception ==  1'b1)
+                         ;
+
+assign non_debug_exception_x = (system_call_exception ==  1'b1)
+  
                                
 
+
+  
+                               
+                               
+
+
+  
+
+                            || (divide_by_zero_exception ==  1'b1)
+ 
+
+  
+
+                            || (   (interrupt_exception ==  1'b1)
+  
+
+                                && (dc_ss ==  1'b0)
+ 
+                            
+  
+ 				   
+				   
+
+
+                               )
+ 
+
+                            ;
+
+assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  1'b1);
+ 
+               
  
                                
                                
@@ -92261,36 +93312,15 @@ assign system_call_exception = (   (scall_x ==  1'b1)
 
                             
 
-         
-
-
-assign exception_x =           (system_call_exception ==  1'b1)
-  
-                               
-                               
 
 
   
 
-                            || (divide_by_zero_exception ==  1'b1)
- 
+reg user_stall;
 
-  
-
-                            || (   (interrupt_exception ==  1'b1)
-  
-                                   
-
-                            
-  
- 				   
-				   
-
-
-                               )
- 
-
-                            ;
+always@(posedge clk_i)
+  if(D_CYC_O)
+    user_stall <= ~enable_i;
  
 
 
@@ -92298,20 +93328,23 @@ assign exception_x =           (system_call_exception ==  1'b1)
 always @(*)
 begin
   
- 
+
+  
        
           
     
+
      
+  
+            
+          
+    
+
+
+         if (breakpoint_exception ==  1'b1)
+        eid_x =  3'd1;
+    else
  
-            
-          
-    
-
-            
-          
-    
-
 
   
             
@@ -92323,10 +93356,11 @@ begin
 
 
   
-            
-          
-     
 
+         if (watchpoint_exception ==  1'b1)
+        eid_x =  3'd3;
+    else 
+ 
 
   
 
@@ -92339,8 +93373,9 @@ begin
 
          if (   (interrupt_exception ==  1'b1)
   
-                
 
+             && (dc_ss ==  1'b0)
+ 
                             
             )
         eid_x =  3'h6;
@@ -92376,18 +93411,19 @@ assign stall_d =   (stall_x ==  1'b1)
                     && (kill_d ==  1'b0)
 		   )
   
-		         
-			   
-		       
-		          
-			   
-			   
-			   
-			   
-		       
-                       
-		   
 
+		|| (   (   (break_d ==  1'b1)
+			|| (bret_d ==  1'b1)
+		       )
+		    && (   (load_q_x ==  1'b1)
+			|| (store_q_x ==  1'b1)
+			|| (load_q_m ==  1'b1)
+			|| (store_q_m ==  1'b1)
+			|| (D_CYC_O ==  1'b1)
+		       )
+                    && (kill_d ==  1'b0)
+		   )
+ 
                    
                 || (   (csr_write_enable_d ==  1'b1)
                     && (load_q_x ==  1'b1)
@@ -92469,7 +93505,14 @@ assign stall_m =    (stall_wb_load ==  1'b1)
                     
 
 
+  
+
+                 || (user_stall)
+    
+
                  ;      
+
+
 
 
   
@@ -92496,21 +93539,24 @@ assign q_x = (valid_x ==  1'b1) && (kill_x ==  1'b0);
 assign csr_write_enable_q_x = (csr_write_enable_x ==  1'b1) && (q_x ==  1'b1);
 assign eret_q_x = (eret_x ==  1'b1) && (q_x ==  1'b1);
   
-         
 
+assign bret_q_x = (bret_x ==  1'b1) && (q_x ==  1'b1);
+ 
 
 assign load_q_x = (load_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-                  
 
+               && (bp_match ==  1'b0)
+ 
 
                   ;
 assign store_q_x = (store_x ==  1'b1) 
                && (q_x ==  1'b1)
   
-                  
 
+               && (bp_match ==  1'b0)
+ 
 
                   ;
   
@@ -92521,12 +93567,12 @@ assign q_m = (valid_m ==  1'b1) && (kill_m ==  1'b0) && (exception_m ==  1'b0);
 assign load_q_m = (load_m ==  1'b1) && (q_m ==  1'b1);
 assign store_q_m = (store_m ==  1'b1) && (q_m ==  1'b1);
   
-         
+
+assign debug_exception_q_w = ((debug_exception_w ==  1'b1) && (valid_w ==  1'b1));
+assign non_debug_exception_q_w = ((non_debug_exception_w ==  1'b1) && (valid_w ==  1'b1));        
+ 
                  
 
-
-assign exception_q_w = ((exception_w ==  1'b1) && (valid_w ==  1'b1));        
- 
 
 
 assign write_enable_q_x = (write_enable_x ==  1'b1) && (valid_x ==  1'b1) && (branch_flushX_m ==  1'b0);
@@ -92556,18 +93602,18 @@ assign cfg = {
  
 
   
+
+               1'b1,
+ 
               
 
-
-               1'b0,
- 
 
   
+
+               1'b1,
+ 
               
 
-
-               1'b0,
- 
 
   
               
@@ -92675,7 +93721,7 @@ assign cfg2 = {
  
 
 
-assign csr_d = read_idx_0_d[ (4 -1):0];
+assign csr_d = read_idx_0_d[ (5-1):0];
 
 
 always @(*)
@@ -92683,28 +93729,29 @@ begin
     case (csr_x)
   
 
-     4 'h0,
-     4 'h1,
-     4 'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
+     5'h0,
+     5'h1,
+     5'h2:   csr_read_data_x = interrupt_csr_read_data_x;  
  
 
   
          
 
 
-     4 'h6:  csr_read_data_x = cfg;
-     4 'h7:  csr_read_data_x = {eba, 8'h00};
+     5'h6:  csr_read_data_x = cfg;
+     5'h7:  csr_read_data_x = {eba, 8'h00};
   
-        
 
+     5'h9: csr_read_data_x = {deba, 8'h00};
+ 
 
   
           
         
 
 
-     4 'ha: csr_read_data_x = cfg2;
-     4 'hb:  csr_read_data_x = sdb_address;
+     5'ha: csr_read_data_x = cfg2;
+     5'hb:  csr_read_data_x = sdb_address;
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -92721,33 +93768,55 @@ begin
         eba <= eba_reset[ (32-2)+2-1:8];
     else
     begin
-        if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  4 'h7) && (stall_x ==  1'b0))
+        if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h7) && (stall_x ==  1'b0))
             eba <= operand_1_x[ (32-2)+2-1:8];
   
-               
-              
 
+   
+              
+           
+ 
+
+   
+
+       if ((dbg_csr_write_enable_i ==  1'b1) && (dbg_csr_addr_i ==  5'h7))
+         eba <= dbg_csr_write_data_i[ (32-2)+2-1:8];
+  
+	 
+ 
 
     end
 end
 
   
 
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+        deba <= deba_reset[ (32-2)+2-1:8];
+    else
+    begin
+        if ((csr_write_enable_q_x ==  1'b1) && (csr_x ==  5'h9) && (stall_x ==  1'b0))
+            deba <= operand_1_x[ (32-2)+2-1:8];
    
 
+    
+              
+           
+  
+
+    
+
+       if ((dbg_csr_write_enable_i ==  1'b1) && (dbg_csr_addr_i ==  5'h9))
+         deba <= dbg_csr_write_data_i[ (32-2)+2-1:8];
+   
        
-          
-    
-    
-                   
-              
+  
+
+    end
+end
  
-               
-              
-
-    
-
-
 
 
 
@@ -92926,7 +93995,7 @@ begin
         m_bypass_enable_x <=  1'b0;
         write_enable_x <=  1'b0;
         write_idx_x <= { 5{1'b0}};
-        csr_x <= { 4 {1'b0}};
+        csr_x <= { 5{1'b0}};
         load_x <=  1'b0;
         store_x <=  1'b0;
         size_x <= { 2{1'b0}};
@@ -92949,14 +94018,16 @@ begin
         branch_predict_taken_x <=  1'b0;
         condition_x <=  3'b000;
   
-          
 
+        break_x <=  1'b0;
+ 
 
         scall_x <=  1'b0;
         eret_x <=  1'b0;
   
-          
 
+        bret_x <=  1'b0;
+ 
 
   
           
@@ -92993,9 +94064,10 @@ begin
 
 
   
-          
-                  
 
+        debug_exception_m <=  1'b0;
+        non_debug_exception_m <=  1'b0;        
+ 
 
         operand_w <= { 32{1'b0}};        
         w_result_sel_load_w <=  1'b0;
@@ -93007,12 +94079,12 @@ begin
         write_idx_w <= { 5{1'b0}};        
         write_enable_w <=  1'b0;
   
-          
-                  
 
-
-        exception_w <=  1'b0;
+        debug_exception_w <=  1'b0;
+        non_debug_exception_w <=  1'b0;        
  
+          
+
 
   
           
@@ -93091,8 +94163,9 @@ begin
             condition_x <= condition_d;
             csr_write_enable_x <= csr_write_enable_d;
   
-              
 
+            break_x <= break_d;
+ 
 
             scall_x <= scall_d;
   
@@ -93101,8 +94174,9 @@ begin
 
             eret_x <= eret_d;
   
-               
 
+            bret_x <= bret_d; 
+ 
 
             write_enable_x <= write_enable_d;
         end
@@ -93149,61 +94223,66 @@ begin
  
 
   
+
 	   
 	   
 	   
 	   
 	   
-                
-                  
-                
+            if (non_debug_exception_x ==  1'b1) 
+                write_idx_m <=  5'd30;
+            else if (debug_exception_x ==  1'b1)
+                write_idx_m <=  5'd31;
+            else 
+                write_idx_m <= write_idx_x;
+ 
+               
                   
              
                   
 
 
-            if (exception_x ==  1'b1)
-                write_idx_m <=  5'd30;
-            else 
-                write_idx_m <= write_idx_x;
- 
-
             condition_met_m <= condition_met_x;
   
-	      
-	        
-		     
-		        
-	           
-	     
-	           
-	   
-	       
+
+	   if (exception_x ==  1'b1)
+	     if ((dc_re ==  1'b1)
+		 || ((debug_exception_x ==  1'b1) 
+		     && (non_debug_exception_x ==  1'b0)))
+	       branch_target_m <= {deba, eid_x, {3{1'b0}}};
+	     else
+	       branch_target_m <= {eba, eid_x, {3{1'b0}}};
+	   else
+	     branch_target_m <= branch_target_x;
+ 
+                      
 
 
-            branch_target_m <= exception_x ==  1'b1 ? {eba, eid_x, {3{1'b0}}} : branch_target_x;
+  
+
+            eid_m <= eid_x;
+            eret_m <= eret_q_x;
  
 
   
               
-              
 
 
   
-              
-
 
   
+
+            bret_m <= bret_q_x; 
  
-               
 
-
+ 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
-              
-                      
 
+            debug_exception_m <= debug_exception_x;
+            non_debug_exception_m <= non_debug_exception_x;        
+ 
 
         end
         
@@ -93240,21 +94319,24 @@ begin
 
         write_idx_w <= write_idx_m;
   
-          
-          
+
+        eid_w <= eid_m;
+        eret_w <= eret_m;
+  
+
+        bret_w <= bret_m; 
  
-           
 
-
+ 
 
         write_enable_w <= write_enable_m;
   
-          
-          
 
-
-        exception_w <= exception_m;
+        debug_exception_w <= debug_exception_m;
+        non_debug_exception_w <= non_debug_exception_m;
  
+          
+
 
   
               
@@ -93352,65 +94434,74 @@ end
 
   
 
-   
 
-       
-    
-          
-          
-          
-          
-          
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        trace_pc_valid <=  1'b0;
+        trace_pc <= { (32-2){1'b0}};
+        trace_exception <=  1'b0;
+        trace_eid <=  3'h0;
+        trace_eret <=  1'b0;
+  
+
+        trace_bret <=  1'b0;
  
-          
 
-          
-    
-    
-    
-          
+        pc_c <= eba_reset/4;
+    end
+    else
+    begin
+        trace_pc_valid <=  1'b0;
         
- 
-               
+  
 
+        if ((debug_exception_q_w ==  1'b1) || (non_debug_exception_q_w ==  1'b1))
+ 
            
 
+
+        begin        
+            trace_exception <=  1'b1;
+            trace_pc_valid <=  1'b1;
+            trace_pc <= pc_w;
+            trace_eid <= eid_w;
+        end
+        else
+            trace_exception <=  1'b0;
+        
+        if ((valid_w ==  1'b1) && (!kill_w))
+        begin
+            
+            if (pc_c + 1'b1 != pc_w)
+            begin
                 
-              
-              
-              
-              
-        
-        
-              
-        
-             
-        
+                trace_pc_valid <=  1'b1;
+                trace_pc <= pc_w;
+            end
             
-                 
+            pc_c <= pc_w;
             
-                
-                  
-                  
-            
-            
-              
-            
-              
+            trace_eret <= eret_w;
+  
+
+            trace_bret <= bret_w;
  
-              
 
-        
-        
-        
-              
+        end
+        else
+        begin
+            trace_eret <=  1'b0;
+  
+
+            trace_bret <=  1'b0;
  
-              
 
-        
-    
-
-
+        end
+    end
+end
+ 
 
       
 
@@ -95140,14 +96231,16 @@ module lm32_decoder_wr_node (
     bi_conditional,
     bi_unconditional,
   
-    
 
+    break_opcode,
+ 
 
     scall,
     eret,
   
-    
 
+    bret,
+ 
 
   
     
@@ -95283,18 +96376,20 @@ wire bi_conditional;
 output bi_unconditional;
 wire bi_unconditional;
   
- 
-   
 
+output break_opcode;
+wire   break_opcode;
+ 
 
 output scall;
 wire   scall;
 output eret;
 wire   eret;
   
- 
-   
 
+output bret;
+wire   bret;
+ 
 
   
   
@@ -95749,14 +96844,16 @@ assign branch = bra | call;
 assign branch_reg = op_call | op_b;
 assign condition = instruction[28:26];      
   
-     
 
+assign break_opcode = op_raise & ~instruction[2];
+ 
 
 assign scall = op_raise & instruction[2];
 assign eret = op_b & (instruction[25:21] == 5'd30);
   
-       
 
+assign bret = op_b & (instruction[25:21] == 5'd31);
+ 
 
   
 
@@ -97763,318 +98860,439 @@ endmodule
   
 
 
-                  
-                 
-         
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+module lm32_debug_wr_node (
+    
+    clk_i, 
+    rst_i,
+    pc_x,
+    load_x,
+    store_x,
+    load_store_address_x,
+    csr_write_enable_x,
+    csr_write_data,
+    csr_x,
+  
+
+  
+    
+    
+    
+
+
+  
+
+   dbg_csr_write_enable_i,
+   dbg_csr_write_data_i,
+   dbg_csr_addr_i,
+ 
+
+  
+
+
+		   
+  
+
+    eret_q_x,
+    bret_q_x,
+    stall_x,
+    exception_x,
+    q_x,
+  
+    
+
+
+ 
+
+
+    
+  
+
+    dc_ss,
+ 
+
+    dc_re,
+    bp_match,
+    wp_match
+    );
+    
+
+
+
+
+parameter breakpoints = 0;                      
+parameter watchpoints = 0;                      
+
+
+
+
+
+input clk_i;                                    
+input rst_i;                                    
+
+input [ ((32-2)+2-1):2] pc_x;                      
+input load_x;                                   
+input store_x;                                  
+input [ (32-1):0] load_store_address_x;    
+input csr_write_enable_x;                       
+input [ (32-1):0] csr_write_data;          
+input [ (5-1):0] csr_x;                    
+  
+
+  
+                     
+       
+                   
+
+
      
-     
-              
+
+input dbg_csr_write_enable_i;                         
+input [ (32-1):0] dbg_csr_write_data_i;          
+input [ (5-1):0] dbg_csr_addr_i;                        
+ 
+
+ 
+
+
+
+  
+
+input eret_q_x;                                 
+input bret_q_x;                                 
+input stall_x;                                  
+input exception_x;                              
+input q_x;                                      
+  
+                     
+
+
+ 
+
 
 
 
 
 
   
-    
-     
-    
-    
-    
-    
-    
-    
-    
-    
+
+output dc_ss;                                   
+reg    dc_ss;
  
-    
-    
-    
 
- 
-    
-    
-    
-    
-    
- 
-    
-
-
-    
- 
-    
-
-    
-    
-    
-    
-    
-
-
-
-
-                         
-                         
+output dc_re;                                   
+reg    dc_re;
+output bp_match;                                
+wire   bp_match;        
+output wp_match;                                
+wire   wp_match;
 
 
 
 
 
-                                     
-                                     
+genvar i;                                       
 
-                        
-                                    
-                                   
-      
-                        
-            
-                      
- 
-                     
-       
-                   
+
+
+reg [ ((32-2)+2-1):2] bp_a[0:breakpoints-1];       
+reg bp_e[0:breakpoints-1];                      
+wire [0:breakpoints-1]bp_match_n;               
+
+reg [ 1:0] wpc_c[0:watchpoints-1];   
+reg [ (32-1):0] wp[0:watchpoints-1];       
+wire [0:watchpoints-1]wp_match_n;               
+
+wire debug_csr_write_enable;                    
+wire [ (32-1):0] debug_csr_write_data;     
+wire [ (5-1):0] debug_csr;                 
+
+  
+
+
+reg [ 2:0] state;           
 
  
-                                  
-                                  
-                                   
-                               
-                                       
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					  
+function integer clogb2;
+input [31:0] value;
+begin
+   for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+        value = value >> 1;
+end
+endfunction 
+
+function integer clogb2_v1;
+input [31:0] value;
+reg   [31:0] i;
+reg   [31:0] temp;
+begin
+   temp = 0;
+   i    = 0;
+   for (i = 0; temp < value; i = i + 1)  
+	temp = 1<<i;
+   clogb2_v1 = i-1;
+end
+endfunction
+
+
+
+
+
+
+
+
+
+generate
+    for (i = 0; i < breakpoints; i = i + 1)
+    begin : bp_comb
+assign bp_match_n[i] = ((bp_a[i] == pc_x) && (bp_e[i] ==  1'b1));
+    end
+endgenerate
+generate 
+  
+
+    if (breakpoints > 0) 
+assign bp_match = (|bp_match_n) || (state ==  3'b011);
+    else
+assign bp_match = state ==  3'b011;
  
-                     
-
-
-
-
-
-
-
- 
-                                    
+        
+   
     
-
-                                    
-    
-                                 
-           
-                                 
    
 
 
+endgenerate    
+               
 
-
-
-                                        
-
-
-
-         
-                       
+generate 
+    for (i = 0; i < watchpoints; i = i + 1)
+    begin : wp_comb
+assign wp_match_n[i] = (wp[i] == load_store_address_x) && ((load_x & wpc_c[i][0]) | (store_x & wpc_c[i][1]));
+    end               
+endgenerate
+generate
+    if (watchpoints > 0) 
+assign wp_match = |wp_match_n;                
+    else
+assign wp_match =  1'b0;
+endgenerate
+                
+  
                 
 
-     
-         
-                
-
-                     
-       
-                   
-
- 
-
-             
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-               
-      
-         
-    
-
- 
- 
-        
-       
-    
-     
-
-        
-   
-    
-   
-
-    
-               
-
- 
-               
-      
-             
-                   
-
-
-        
-                   
-    
-   
-
-                
-                 
-
+  
          
          
          
 
-   
-   
-   
-
-
-
-
-
-
-
-
-               
-      
-   
-
-       
-    
-          
-          
-    
-    
-    
-                 
-        
-              
-              
-        
-    
-    
-    
-
-
-
-
-               
-      
-   
-
-       
-    
-          
-          
-    
-    
-    
-           
-        
-               
-                  
-                 
-                  
-        
-      
-
-    
-
-
 
    
+  
 
-       
-          
-    
-    
-               
-              
-    
-    
+assign debug_csr_write_enable = (csr_write_enable_x ==  1'b1) || (dbg_csr_write_enable_i ==  1'b1);
+assign debug_csr_write_data = dbg_csr_write_data_i ==  1'b1 ? dbg_csr_write_data_i : csr_write_data;
+assign debug_csr = dbg_csr_write_enable_i ==  1'b1 ? dbg_csr_addr_i : csr_x;
 
  
 
    
+ 
+   
+   
+   
 
-       
-    
-          
-          
-    
-    
-    
-               
-        
-              
-                
-                  
-             
-                  
-        
-         
-        
-        
+
+
+
+
+
+
+
+generate
+    for (i = 0; i < breakpoints; i = i + 1)
+    begin : bp_seq
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        bp_a[i] <= { (32-2){1'bx}};
+        bp_e[i] <=  1'b0;
+    end
+    else
+    begin
+        if ((debug_csr_write_enable ==  1'b1) && (debug_csr ==  5'h10 + i))
+        begin
+            bp_a[i] <= debug_csr_write_data[ ((32-2)+2-1):2];
+            bp_e[i] <= debug_csr_write_data[0];
+        end
+    end
+end    
+    end
+endgenerate
+
+
+generate
+    for (i = 0; i < watchpoints; i = i + 1)
+    begin : wp_seq
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        wp[i] <= { 32{1'bx}};
+        wpc_c[i] <=  2'b00;
+    end
+    else
+    begin
+        if (debug_csr_write_enable ==  1'b1)
+        begin
+            if (debug_csr ==  5'h8)
+                wpc_c[i] <= debug_csr_write_data[3+i*2:2+i*2];
+            if (debug_csr ==  5'h18 + i)
+                wp[i] <= debug_csr_write_data;
+        end
+    end  
+end
+    end
+endgenerate
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+        dc_re <=  1'b0;
+    else
+    begin
+        if ((debug_csr_write_enable ==  1'b1) && (debug_csr ==  5'h8))
+            dc_re <= debug_csr_write_data[1];
+    end
+end    
+
+  
+
+
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        state <=  3'b000;
+        dc_ss <=  1'b0;
+    end
+    else
+    begin
+        if ((debug_csr_write_enable ==  1'b1) && (debug_csr ==  5'h8))
+        begin
+            dc_ss <= debug_csr_write_data[0];
+            if (debug_csr_write_data[0] ==  1'b0) 
+                state <=  3'b000;
+            else 
+                state <=  3'b001;
+        end
+        case (state)
+         3'b001:
+        begin
             
-                     
-                       
-                    
-                   
-               
-                   
-        
-        
-        
+            if (   (   (eret_q_x ==  1'b1)
+                    || (bret_q_x ==  1'b1)
+                    )
+                && (stall_x ==  1'b0)
+               )
+                state <=  3'b010; 
+        end
+         3'b010:
+        begin
             
-                   
-                  
-        
-        
-        
+            if ((q_x ==  1'b1) && (stall_x ==  1'b0))
+                state <=  3'b011;
+        end
+         3'b011:
+        begin
             
- 
+  
                
                   
              
 
-                            
+
+                 if ((exception_x ==  1'b1) && (q_x ==  1'b1) && (stall_x ==  1'b0))
+            begin
+                dc_ss <=  1'b0;
+                state <=  3'b100;
+            end
+        end
+         3'b100:
+        begin
             
-                  
-                  
-            
-        
-        
-        
-            
- 
+  
                
                   
              
 
-                  
-        
-        
-    
+
+                state <=  3'b000;
+        end
+        endcase
+    end
+end
+ 
 
 
+endmodule
 
-
-
-
+ 
 
 
 
@@ -98495,11 +99713,12 @@ module lm32_instruction_unit_wr_node (
 
 
   
-    
-    
-    
-    
 
+    jtag_read_enable,
+    jtag_write_enable,
+    jtag_write_data,
+    jtag_address,
+ 
 
     
     
@@ -98536,9 +99755,10 @@ module lm32_instruction_unit_wr_node (
  
 
   
-    
-    
 
+    jtag_read_data,
+    jtag_access_complete,
+ 
 
   
     
@@ -98627,11 +99847,12 @@ input [ ((32-2)+2-1):2] branch_target_m;
 
 
   
-                                  
-                                 
-                   
-                      
 
+input jtag_read_enable;                                 
+input jtag_write_enable;                                
+input [ 7:0] jtag_write_data;                 
+input [ (32-1):0] jtag_address;                    
+ 
 
 
 
@@ -98696,11 +99917,12 @@ reg    [ ((32-2)+2-1):2] pc_w;
 
 
   
-                   
-     
-                             
-   
 
+output [ 7:0] jtag_read_data;                 
+reg    [ 7:0] jtag_read_data;
+output jtag_access_complete;                            
+wire   jtag_access_complete;
+ 
 
 
   
@@ -98765,8 +99987,9 @@ wire iram_select_a;
 
 
   
-                                         
 
+reg jtag_access;                                        
+ 
 
 
 
@@ -99076,6 +100299,8 @@ end
 
 
   
+
+     
                  
  
 
@@ -99086,7 +100311,9 @@ end
        
      
 
+   
 
+ 
 
 
   
@@ -100469,17 +101696,18 @@ module lm32_interrupt_wr_node (
     
     stall_x,
   
-    
-    
 
-
-    exception,
+    non_debug_exception,
+    debug_exception,
  
+    
+
 
     eret_q_x,
   
-    
 
+    bret_q_x,
+ 
 
     csr,
     csr_write_data,
@@ -100508,20 +101736,21 @@ input [interrupts-1:0] interrupt;
 input stall_x;                                  
 
   
-                       
-                           
 
-
-input exception;                                
+input non_debug_exception;                      
+input debug_exception;                          
  
+                                 
+
 
 input eret_q_x;                                 
   
-                                  
+
+input bret_q_x;                                 
+ 
 
 
-
-input [ (4 -1):0] csr;                      
+input [ (5-1):0] csr;                      
 input [ (32-1):0] csr_write_data;          
 input csr_write_enable;                         
 
@@ -100548,8 +101777,9 @@ wire [interrupts-1:0] interrupt_n_exception;
 reg ie;                                         
 reg eie;                                        
   
-                                         
 
+reg bie;                                        
+ 
 
 reg [interrupts-1:0] ip;                        
 reg [interrupts-1:0] im;                        
@@ -100574,19 +101804,19 @@ generate
 always @(*)
 begin
     case (csr)
-     4 'h0:  csr_read_data = {{ 32-3{1'b0}}, 
+     5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-                                    
 
-
-                                    1'b0,                                     
+                                    bie,
  
+                                                                         
+
 
                                     eie, 
                                     ie
                                    };
-     4 'h2:  csr_read_data = ip;
-     4 'h1:  csr_read_data = im;
+     5'h2:  csr_read_data = ip;
+     5'h1:  csr_read_data = im;
     default:       csr_read_data = { 32{1'bx}};
     endcase
 end
@@ -100597,18 +101827,18 @@ end
 always @(*)
 begin
     case (csr)
-     4 'h0:  csr_read_data = {{ 32-3{1'b0}}, 
+     5'h0:  csr_read_data = {{ 32-3{1'b0}}, 
   
-                                     
 
-
-                                    1'b0,                                    
+                                    bie, 
  
+                                                                        
+
 
                                     eie, 
                                     ie
                                    };
-     4 'h2:  csr_read_data = ip;
+     5'h2:  csr_read_data = ip;
     default:       csr_read_data = { 32{1'bx}};
       endcase
 end
@@ -100637,8 +101867,9 @@ always @(posedge clk_i  )
         ie                   <=  1'b0;
         eie                  <=  1'b0;
   
-                           
 
+        bie                  <=  1'b0;
+ 
 
         im                   <= {interrupts{1'b0}};
         ip                   <= {interrupts{1'b0}};
@@ -100650,27 +101881,27 @@ always @(posedge clk_i  )
         
         ip                   <= asserted;
   
+
+        if (non_debug_exception ==  1'b1)
+        begin
+            
+            eie              <= ie;
+            ie               <=  1'b0;
+        end
+        else if (debug_exception ==  1'b1)
+        begin
+            
+            bie              <= ie;
+            ie               <=  1'b0;
+        end
+ 
            
         
             
                            
                             
         
-            
-        
-            
-                           
-                            
-        
 
-
-        if (exception ==  1'b1)
-        begin
-            
-            eie              <= ie;
-            ie               <=  1'b0;
-        end
- 
 
         else if (stall_x ==  1'b0)
         begin
@@ -100689,26 +101920,28 @@ always @(posedge clk_i  )
                       
            
   
-                
-                
-                       
 
+            else if (bret_q_x ==  1'b1)
+                
+                ie      <= bie;
+ 
 
             else if (csr_write_enable ==  1'b1)
             begin
                 
-                if (csr ==  4 'h0)
+                if (csr ==  5'h0)
                 begin
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-                      
 
+                    bie <= csr_write_data[2];
+ 
 
                 end
-                if (csr ==  4 'h1)
+                if (csr ==  5'h1)
                     im  <= csr_write_data[interrupts-1:0];
-                if (csr ==  4 'h2)
+                if (csr ==  5'h2)
                     ip  <= asserted & ~csr_write_data[interrupts-1:0];
             end
         end
@@ -100725,8 +101958,9 @@ always @(posedge clk_i  )
         ie              <=  1'b0;
         eie             <=  1'b0;
   
-                      
 
+        bie             <=  1'b0;
+ 
 
         ip              <= {interrupts{1'b0}};
        eie_delay        <= 0;
@@ -100736,27 +101970,27 @@ always @(posedge clk_i  )
         
         ip              <= asserted;
   
+
+        if (non_debug_exception ==  1'b1)
+        begin
+            
+            eie         <= ie;
+            ie          <=  1'b0;
+        end
+        else if (debug_exception ==  1'b1)
+        begin
+            
+            bie         <= ie;
+            ie          <=  1'b0;
+        end
+ 
            
         
             
                       
                        
         
-            
-        
-            
-                      
-                       
-        
 
-
-        if (exception ==  1'b1)
-        begin
-            
-            eie         <= ie;
-            ie          <=  1'b0;
-        end
- 
 
         else if (stall_x ==  1'b0)
           begin
@@ -100773,24 +102007,26 @@ always @(posedge clk_i  )
              end
            
   
-                
-                
-                       
 
+            else if (bret_q_x ==  1'b1)
+                
+                ie      <= bie;
+ 
 
             else if (csr_write_enable ==  1'b1)
             begin
                 
-                if (csr ==  4 'h0)
+                if (csr ==  5'h0)
                 begin
                     ie  <= csr_write_data[0];
                     eie <= csr_write_data[1];
   
-                      
 
+                    bie <= csr_write_data[2];
+ 
 
                 end
-                if (csr ==  4 'h2)
+                if (csr ==  5'h2)
                     ip  <= asserted & ~csr_write_data[interrupts-1:0];
             end
         end
