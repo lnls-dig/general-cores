@@ -323,10 +323,17 @@ wire iram_select_a;                                     // Indicates if A stage 
 `else
 wire [`LM32_INSTRUCTION_RNG] instruction_f;             // F stage instruction
 `endif
-`ifdef CFG_BUS_ERRORS_ENABLED
-reg bus_error_f;                                        // Indicates if a bus error occured while fetching the instruction in the F stage
-`endif
 
+`ifdef CFG_BUS_ERRORS_ENABLED 
+ `ifdef CFG_IWB_ENABLED
+   // Indicates if a bus error occured while fetching the instruction in the F stage
+   reg 			     bus_error_f;          
+ `endif
+`endif
+`ifndef CFG_IWB_ENABLED
+   wire 		     bus_error_f = 0;
+`endif
+   
 `ifdef CFG_HW_DEBUG_ENABLED
 reg jtag_access;                                        // Indicates if a JTAG WB access is in progress
 `endif
@@ -645,11 +652,13 @@ end
 			 end
 		    end
   `ifdef CFG_BUS_ERRORS_ENABLED
+		  `ifndef CFG_IRAM_ENABLED
 		  if (i_err_i == `TRUE)
 		    begin
                        bus_error_f <= `TRUE;
                        $display ("Instruction bus error. Address: %x", i_adr_o);
 		    end
+		  `endif
   `endif
                end
              else
@@ -733,11 +742,14 @@ end
                        wb_data_f <= i_dat_i;
 		    end
   `ifdef CFG_BUS_ERRORS_ENABLED
+		  `ifndef CFG_IRAM_ENABLED
 		  if (i_err_i == `TRUE)
 		    begin
                        bus_error_f <= `TRUE;
                        $display ("Instruction bus error. Address: %x", i_adr_o);
+		       
 		    end
+		  `endif
   `endif
                end
              else

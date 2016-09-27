@@ -415,6 +415,8 @@
 
   
 
+  
+
  
 
   
@@ -1196,6 +1198,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -1882,6 +1885,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -2814,6 +2818,8 @@ wire watchpoint_exception;
 
   
 
+   reg [ (32-1):0] data_bus_error_addr;
+   
 wire instruction_bus_error_exception;           
 wire data_bus_error_exception;                  
  
@@ -4098,6 +4104,8 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
  
   
       
+   
+      
 
 
 
@@ -4538,6 +4546,12 @@ begin
 
      5'ha: csr_read_data_x = cfg2;
      5'hb:  csr_read_data_x = sdb_address;
+  
+
+     5'hc:  csr_read_data_x = data_bus_error_addr;
+ 
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -4627,8 +4641,10 @@ begin
     else
     begin
         
-        if ((D_ERR_I ==  1'b1) && (D_CYC_O ==  1'b1))
-            data_bus_error_seen <=  1'b1;
+        if ((D_ERR_I ==  1'b1) && (D_CYC_O ==  1'b1)) begin
+           data_bus_error_seen <=  1'b1;
+	   data_bus_error_addr <= D_ADR_O;
+	end
         
         if ((exception_m ==  1'b1) && (kill_m ==  1'b0))
             data_bus_error_seen <=  1'b0;
@@ -5558,6 +5574,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -6468,9 +6485,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -6723,6 +6740,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -7920,6 +7938,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -8773,6 +8792,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -9674,6 +9694,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -10487,6 +10508,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -10933,12 +10955,22 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                
 
 
+
+  
+ 
+   
+
+   
+   reg 			     bus_error_f;          
   
 
-reg bus_error_f;                                        
  
 
+  
+    		       
 
+
+   
   
 
 reg jtag_access;                                        
@@ -11355,11 +11387,15 @@ end
 		    end
     
 
+		    
+
 		  if (i_err_i ==  1'b1)
 		    begin
                        bus_error_f <=  1'b1;
                        $display ("Instruction bus error. Address: %x", i_adr_o);
 		    end
+		   
+
    
 
                end
@@ -11454,11 +11490,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -11769,6 +11808,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -12643,6 +12683,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -13515,6 +13556,8 @@ endmodule
   
 
   
+
+  
                      
                      
 
@@ -14285,6 +14328,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -14971,6 +15015,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -15880,6 +15925,8 @@ wire interrupt_exception;
 
   
 
+   reg [ (32-1):0] data_bus_error_addr;
+   
 wire instruction_bus_error_exception;           
 wire data_bus_error_exception;                  
  
@@ -17127,6 +17174,8 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
   
       
+   
+      
 
 
 
@@ -17552,6 +17601,12 @@ begin
 
      4 'ha: csr_read_data_x = cfg2;
      4 'hb:  csr_read_data_x = sdb_address;
+  
+
+     4 'hc:  csr_read_data_x = data_bus_error_addr;
+ 
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -17631,8 +17686,10 @@ begin
     else
     begin
         
-        if ((D_ERR_I ==  1'b1) && (D_CYC_O ==  1'b1))
-            data_bus_error_seen <=  1'b1;
+        if ((D_ERR_I ==  1'b1) && (D_CYC_O ==  1'b1)) begin
+           data_bus_error_seen <=  1'b1;
+	   data_bus_error_addr <= D_ADR_O;
+	end
         
         if ((exception_m ==  1'b1) && (kill_m ==  1'b0))
             data_bus_error_seen <=  1'b0;
@@ -18555,6 +18612,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -19465,9 +19523,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -19720,6 +19778,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -20911,6 +20970,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -21764,6 +21824,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -22665,6 +22726,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -23382,6 +23444,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -23824,12 +23887,22 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                
 
 
+
+  
+ 
+   
+
+   
+   reg 			     bus_error_f;          
   
 
-reg bus_error_f;                                        
  
 
+  
+    		       
 
+
+   
   
                                          
 
@@ -24240,11 +24313,15 @@ end
 		    end
     
 
+		    
+
 		  if (i_err_i ==  1'b1)
 		    begin
                        bus_error_f <=  1'b1;
                        $display ("Instruction bus error. Address: %x", i_adr_o);
 		    end
+		   
+
    
 
                end
@@ -24337,11 +24414,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -24652,6 +24732,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -25446,6 +25527,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -26313,6 +26395,8 @@ endmodule
 
   
 
+  
+
  
 
   
@@ -27094,6 +27178,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -27770,6 +27855,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -28695,6 +28781,8 @@ wire watchpoint_exception;
  
 
   
+     
+   
             
                    
 
@@ -29947,6 +30035,8 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
  
   
       
+   
+      
 
 
 
@@ -30376,6 +30466,11 @@ begin
 
      5'ha: csr_read_data_x = cfg2;
      5'hb:  csr_read_data_x = sdb_address;
+  
+        
+
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -30464,8 +30559,10 @@ end
     
     
         
-               
-              
+                
+             
+	     
+	
         
                
               
@@ -31384,6 +31481,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -32276,9 +32374,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -32531,6 +32629,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -33712,6 +33811,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -34565,6 +34665,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -35397,6 +35498,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -36206,6 +36308,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -36646,11 +36749,19 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                
 
 
+
+   
   
-                                         
+   
+    			               
+ 
 
 
+  
+    		       
 
+
+   
   
 
 reg jtag_access;                                        
@@ -37062,11 +37173,13 @@ end
 			 end
 		    end
     
+		   
 		     
 		    
                          
                          
 		    
+		  
   
 
                end
@@ -37157,11 +37270,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -37470,6 +37586,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -38344,6 +38461,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -39220,6 +39338,8 @@ endmodule
 
   
 
+  
+
  
 
   
@@ -40001,6 +40121,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -40677,6 +40798,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -41602,6 +41724,8 @@ wire watchpoint_exception;
  
 
   
+     
+   
             
                    
 
@@ -42854,6 +42978,8 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
  
   
       
+   
+      
 
 
 
@@ -43283,6 +43409,11 @@ begin
 
      5'ha: csr_read_data_x = cfg2;
      5'hb:  csr_read_data_x = sdb_address;
+  
+        
+
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -43371,8 +43502,10 @@ end
     
     
         
-               
-              
+                
+             
+	     
+	
         
                
               
@@ -44291,6 +44424,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -45183,9 +45317,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -45438,6 +45572,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -46619,6 +46754,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -47472,6 +47608,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -48304,6 +48441,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -49113,6 +49251,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -49553,11 +49692,19 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                
 
 
+
+   
   
-                                         
+   
+    			               
+ 
 
 
+  
+    		       
 
+
+   
   
 
 reg jtag_access;                                        
@@ -49969,11 +50116,13 @@ end
 			 end
 		    end
     
+		   
 		     
 		    
                          
                          
 		    
+		  
   
 
                end
@@ -50064,11 +50213,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -50377,6 +50529,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -51251,6 +51404,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -52113,6 +52267,8 @@ endmodule
   
 
   
+
+  
                      
                      
 
@@ -52883,6 +53039,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -53559,6 +53716,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -54461,6 +54619,8 @@ wire interrupt_exception;
 
 
   
+     
+   
             
                    
 
@@ -55677,6 +55837,8 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
   
       
+   
+      
 
 
 
@@ -56093,6 +56255,11 @@ begin
 
      4 'ha: csr_read_data_x = cfg2;
      4 'hb:  csr_read_data_x = sdb_address;
+  
+        
+
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -56171,8 +56338,10 @@ end
     
     
         
-               
-              
+                
+             
+	     
+	
         
                
               
@@ -57085,6 +57254,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -57977,9 +58147,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -58232,6 +58402,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -59407,6 +59578,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -60260,6 +60432,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -61092,6 +61265,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -61809,6 +61983,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -62245,11 +62420,19 @@ wire [ ((clogb2(32'h7fffffff-32'h0)-2)+2-1):2] first_address;
                
 
 
+
+   
   
-                                         
+   
+    			               
+ 
 
 
+  
+    		       
 
+
+   
   
                                          
 
@@ -62655,11 +62838,13 @@ end
 			 end
 		    end
     
+		   
 		     
 		    
                          
                          
 		    
+		  
   
 
                end
@@ -62748,11 +62933,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -63061,6 +63249,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -63855,6 +64044,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -64708,6 +64898,8 @@ endmodule
   
 
   
+
+  
                      
                      
 
@@ -65478,6 +65670,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -66154,6 +66347,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -67054,6 +67248,8 @@ wire interrupt_exception;
 
 
   
+     
+   
             
                    
 
@@ -68266,6 +68462,8 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
   
       
+   
+      
 
 
 
@@ -68682,6 +68880,11 @@ begin
 
      4 'ha: csr_read_data_x = cfg2;
      4 'hb:  csr_read_data_x = sdb_address;
+  
+        
+
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -68760,8 +68963,10 @@ end
     
     
         
-               
-              
+                
+             
+	     
+	
         
                
               
@@ -69673,6 +69878,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -70565,9 +70771,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -70820,6 +71026,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -71995,6 +72202,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -72775,6 +72983,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -73607,6 +73816,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -74324,6 +74534,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -74757,11 +74968,19 @@ reg [ (32-1):0] wb_data_f;
                
 
 
+
+   
   
-                                         
+   
+    			               
+ 
 
 
+  
+    		       
 
+
+   
   
                                          
 
@@ -75152,11 +75371,13 @@ end
 			 
 		    
    
+		   
 		     
 		    
                          
                          
 		    
+		  
   
                
              
@@ -75242,11 +75463,14 @@ end
                        wb_data_f <= i_dat_i;
 		    end
     
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
 
                end
@@ -75561,6 +75785,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -76355,6 +76580,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -77204,6 +77430,8 @@ endmodule
   
 
   
+
+  
                      
                      
 
@@ -77974,6 +78202,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -78650,6 +78879,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -79545,6 +79775,8 @@ wire interrupt_exception;
 
 
   
+     
+   
             
                    
 
@@ -80750,6 +80982,8 @@ assign exception_x =           (system_call_exception ==  1'b1)
  
   
       
+   
+      
 
 
 
@@ -81166,6 +81400,11 @@ begin
 
      4 'ha: csr_read_data_x = cfg2;
      4 'hb:  csr_read_data_x = sdb_address;
+  
+        
+
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -81244,8 +81483,10 @@ end
     
     
         
-               
-              
+                
+             
+	     
+	
         
                
               
@@ -82144,6 +82385,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -83036,9 +83278,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -83291,6 +83533,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -84448,6 +84691,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -85228,6 +85472,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -86060,6 +86305,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -86777,6 +87023,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -87210,11 +87457,19 @@ reg [ (32-1):0] wb_data_f;
                
 
 
+
+   
   
-                                         
+   
+    			               
+ 
 
 
+  
+    		       
 
+
+   
   
                                          
 
@@ -87605,11 +87860,13 @@ end
 			 
 		    
    
+		   
 		     
 		    
                          
                          
 		    
+		  
   
                
              
@@ -87695,11 +87952,14 @@ end
                        wb_data_f <= i_dat_i;
 		    end
     
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
 
                end
@@ -88014,6 +88274,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -88808,6 +89069,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -89680,6 +89942,8 @@ endmodule
   
 
   
+
+  
                      
                      
 
@@ -90029,18 +90293,15 @@ wire   [ (2-1):0] D_BTE_O;
 
   
 
-
-wire [ ((32-2)+2-1):2] trace_pc;                   
-wire trace_pc_valid;                            
-wire trace_exception;                           
-wire [ (3-1):0] trace_eid;                 
-wire trace_eret;                                
-  
-
-wire trace_bret;                                
+                     
+                             
+                            
+                   
+                                 
  
+                                 
 
- 
+
 
 
 
@@ -90152,18 +90413,15 @@ lm32_cpu_wr_node
     .D_RTY_I               (D_RTY_I),
     
   
-
-    .trace_pc              (trace_pc),
-    .trace_pc_valid        (trace_pc_valid),
-    .trace_exception       (trace_exception),
-    .trace_eid             (trace_eid),
-    .trace_eret            (trace_eret),
-  
-
-    .trace_bret            (trace_bret),
+                  
+            
+           
+                 
+                
  
+                
 
- 
+
 
   
                 
@@ -90459,6 +90717,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -91145,6 +91404,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -91322,18 +91582,15 @@ module lm32_cpu_wr_node (
     D_RTY_I,
     
   
-
-    trace_pc,
-    trace_pc_valid,
-    trace_exception,
-    trace_eid,
-    trace_eret,
-  
-
-    trace_bret,
+    
+    
+    
+    
+    
  
+    
 
- 
+
 
   
     
@@ -91513,24 +91770,21 @@ input D_RTY_I;
    
    
   
-
-output [ ((32-2)+2-1):2] trace_pc;                 
-reg    [ ((32-2)+2-1):2] trace_pc;
-output trace_pc_valid;                          
-reg    trace_pc_valid;
-output trace_exception;                         
-reg    trace_exception;
-output [ (3-1):0] trace_eid;               
-reg    [ (3-1):0] trace_eid;
-output trace_eret;                              
-reg    trace_eret;
-  
-
-output trace_bret;                              
-reg    trace_bret;
+                   
+     
+                           
+    
+                          
+    
+                 
+     
+                               
+    
  
+                               
+    
 
- 
+
 
 
   
@@ -91745,10 +91999,9 @@ wire eret_d;
 reg eret_x;
 wire eret_q_x;
   
-
-reg eret_m;
-reg eret_w;
  
+ 
+
 
   
 
@@ -91756,10 +92009,9 @@ wire bret_d;
 reg bret_x;
 wire bret_q_x;
   
-
-reg bret_m;
-reg bret_w;
  
+ 
+
 
  
 
@@ -91772,11 +92024,12 @@ wire csr_write_enable_q_x;
 
 
   
-                                
- 
- 
-  
 
+wire bus_error_d;                               
+reg bus_error_x;
+reg data_bus_error_exception_m;
+reg [ ((32-2)+2-1):2] memop_pc_w;
+ 
 
 
 reg [ (32-1):0] d_result_0;                
@@ -91920,9 +92173,8 @@ wire [ ((32-2)+2-1):2] pc_x;
 wire [ ((32-2)+2-1):2] pc_m;                       
 wire [ ((32-2)+2-1):2] pc_w;                       
   
+                          
 
-reg [ ((32-2)+2-1):2] pc_c;                        
- 
 
   
 
@@ -92012,10 +92264,9 @@ reg [ (32-2)+2-1:8] deba;
 
 reg [ (3-1):0] eid_x;                      
   
+                        
+                        
 
-reg [ (3-1):0] eid_m;                      
-reg [ (3-1):0] eid_w;                      
- 
 
 
   
@@ -92071,9 +92322,12 @@ wire watchpoint_exception;
  
 
   
-            
-                   
 
+   reg [ (32-1):0] data_bus_error_addr;
+   
+wire instruction_bus_error_exception;           
+wire data_bus_error_exception;                  
+ 
 
   
 
@@ -92083,8 +92337,9 @@ wire divide_by_zero_exception;
 wire system_call_exception;                     
 
   
-                         
 
+reg data_bus_error_seen;                        
+ 
 
 
    
@@ -92276,8 +92531,9 @@ lm32_instruction_unit_wr_node #(
  
 
   
-                
 
+    .bus_error_d            (bus_error_d),
+ 
 
   
 
@@ -93230,11 +93486,12 @@ assign watchpoint_exception = wp_match ==  1'b1;
 
 
   
-        
-                                             
-                                         
-     
 
+assign instruction_bus_error_exception = (   (bus_error_x ==  1'b1)
+                                          && (valid_x ==  1'b1)
+                                         );
+assign data_bus_error_exception = data_bus_error_seen ==  1'b1;
+ 
 
 
   
@@ -93245,8 +93502,9 @@ assign divide_by_zero_exception = divide_by_zero_x ==  1'b1;
 
 assign system_call_exception = (   (scall_x ==  1'b1)
   
-                                   
 
+                                && (valid_x ==  1'b1)
+ 
 
 			       );
 
@@ -93262,9 +93520,10 @@ assign non_debug_exception_x = (system_call_exception ==  1'b1)
 
 
   
-                               
-                               
 
+                            || (instruction_bus_error_exception ==  1'b1)
+                            || (data_bus_error_exception ==  1'b1)
+ 
 
   
 
@@ -93280,9 +93539,10 @@ assign non_debug_exception_x = (system_call_exception ==  1'b1)
  
                             
   
- 				   
-				   
 
+ 				&& (store_q_m ==  1'b0)
+				&& (D_CYC_O ==  1'b0)
+ 
 
                                )
  
@@ -93319,7 +93579,9 @@ assign exception_x = (debug_exception_x ==  1'b1) || (non_debug_exception_x ==  
 reg user_stall;
 
 always@(posedge clk_i)
-  if(D_CYC_O)
+  if(rst_i)
+    user_stall <= 0;
+  else if(!D_CYC_O)
     user_stall <= ~enable_i;
  
 
@@ -93336,10 +93598,11 @@ begin
 
      
   
-            
-          
-    
 
+         if (data_bus_error_exception ==  1'b1)
+        eid_x =  3'h4;
+    else
+ 
 
          if (breakpoint_exception ==  1'b1)
         eid_x =  3'd1;
@@ -93347,13 +93610,14 @@ begin
  
 
   
-            
-          
-    
-            
-          
-    
 
+         if (data_bus_error_exception ==  1'b1)
+        eid_x =  3'h4;
+    else
+         if (instruction_bus_error_exception ==  1'b1)
+        eid_x =  3'h2;
+    else
+ 
 
   
 
@@ -93398,8 +93662,9 @@ assign stall_d =   (stall_x ==  1'b1)
 		|| (   (   (eret_d ==  1'b1)
 			|| (scall_d ==  1'b1)
   
-			   
 
+			|| (bus_error_d ==  1'b1)
+ 
 
 		       )
 		    && (   (load_q_x ==  1'b1)
@@ -93752,6 +94017,12 @@ begin
 
      5'ha: csr_read_data_x = cfg2;
      5'hb:  csr_read_data_x = sdb_address;
+  
+
+     5'hc:  csr_read_data_x = data_bus_error_addr;
+ 
+
+      
       
     default:        csr_read_data_x = { 32{1'bx}};
     endcase
@@ -93833,21 +94104,24 @@ end
 
   
 
-   
 
-       
-          
-    
-    
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+        data_bus_error_seen <=  1'b0;
+    else
+    begin
         
-               
-              
+        if ((D_ERR_I ==  1'b1) && (D_CYC_O ==  1'b1)) begin
+           data_bus_error_seen <=  1'b1;
+	   data_bus_error_addr <= D_ADR_O;
+	end
         
-               
-              
-    
-
-
+        if ((exception_m ==  1'b1) && (kill_m ==  1'b0))
+            data_bus_error_seen <=  1'b0;
+    end
+end
+ 
 
  
 
@@ -94030,9 +94304,10 @@ begin
  
 
   
-          
-          
 
+        bus_error_x <=  1'b0;
+        data_bus_error_exception_m <=  1'b0;
+ 
 
         csr_write_enable_x <=  1'b0;
         operand_m <= { 32{1'b0}};
@@ -94087,8 +94362,9 @@ begin
 
 
   
-          
 
+        memop_pc_w <= { (32-2){1'b0}};
+ 
 
     end
     else
@@ -94169,8 +94445,9 @@ begin
 
             scall_x <= scall_d;
   
-              
 
+            bus_error_x <= bus_error_d;
+ 
 
             eret_x <= eret_d;
   
@@ -94259,23 +94536,19 @@ begin
 
 
   
+              
+              
 
-            eid_m <= eid_x;
-            eret_m <= eret_q_x;
- 
 
   
               
 
 
   
-
-  
-
-            bret_m <= bret_q_x; 
  
+               
 
- 
+
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
@@ -94294,22 +94567,25 @@ begin
             else 
                 exception_m <=  1'b0;
   
-	           
+
+	   data_bus_error_exception_m <=    (data_bus_error_exception ==  1'b1) 
+  
+
+					 && (reset_exception ==  1'b0)
  
-					    
 
-					 
-
+					 ;
+ 
 
 	end
                 
         
   
-                      
 
-
-        operand_w <= exception_m ==  1'b1 ? {pc_m, 2'b00} : m_result;
+        operand_w <= exception_m ==  1'b1 ? (data_bus_error_exception_m ? {memop_pc_w, 2'b00} : {pc_m, 2'b00}) : m_result;
  
+                 
+
 
         w_result_sel_load_w <= w_result_sel_load_m;
   
@@ -94319,15 +94595,12 @@ begin
 
         write_idx_w <= write_idx_m;
   
-
-        eid_w <= eid_m;
-        eret_w <= eret_m;
-  
-
-        bret_w <= bret_m; 
+          
+          
  
+           
 
- 
+
 
         write_enable_w <= write_enable_m;
   
@@ -94339,13 +94612,14 @@ begin
 
 
   
-              
-                   
-                   
-               
-	   
-            
 
+        if (   (stall_m ==  1'b0)
+            && (   (load_q_m ==  1'b1) 
+                || (store_q_m ==  1'b1)
+               )
+	   )
+          memop_pc_w <= pc_m;
+ 
 
     end
 end
@@ -94434,74 +94708,65 @@ end
 
   
 
+   
 
-always @(posedge clk_i  )
-begin
-    if (rst_i ==  1'b1)
-    begin
-        trace_pc_valid <=  1'b0;
-        trace_pc <= { (32-2){1'b0}};
-        trace_exception <=  1'b0;
-        trace_eid <=  3'h0;
-        trace_eret <=  1'b0;
-  
-
-        trace_bret <=  1'b0;
+       
+    
+          
+          
+          
+          
+          
  
+          
 
-        pc_c <= eba_reset/4;
-    end
-    else
-    begin
-        trace_pc_valid <=  1'b0;
+          
+    
+    
+    
+          
         
-  
-
-        if ((debug_exception_q_w ==  1'b1) || (non_debug_exception_q_w ==  1'b1))
  
+               
+
            
 
-
-        begin        
-            trace_exception <=  1'b1;
-            trace_pc_valid <=  1'b1;
-            trace_pc <= pc_w;
-            trace_eid <= eid_w;
-        end
-        else
-            trace_exception <=  1'b0;
-        
-        if ((valid_w ==  1'b1) && (!kill_w))
-        begin
-            
-            if (pc_c + 1'b1 != pc_w)
-            begin
                 
-                trace_pc_valid <=  1'b1;
-                trace_pc <= pc_w;
-            end
+              
+              
+              
+              
+        
+        
+              
+        
+             
+        
             
-            pc_c <= pc_w;
+                 
             
-            trace_eret <= eret_w;
-  
-
-            trace_bret <= bret_w;
+                
+                  
+                  
+            
+            
+              
+            
+              
  
+              
 
-        end
-        else
-        begin
-            trace_eret <=  1'b0;
-  
-
-            trace_bret <=  1'b0;
+        
+        
+        
+              
  
+              
 
-        end
-    end
-end
- 
+        
+    
+
+
 
       
 
@@ -94777,6 +95042,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -95679,9 +95945,9 @@ begin
     if (((load_q_m ==  1'b1) || (store_q_m ==  1'b1)) && (stall_m ==  1'b0)) 
     begin
         if ((size_m ===  2'b11) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m ===  2'b10) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
@@ -95934,6 +96200,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -97131,6 +97398,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -97911,6 +98179,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -98743,6 +99012,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -99552,6 +99822,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -99761,8 +100032,9 @@ module lm32_instruction_unit_wr_node (
  
 
   
-    
 
+    bus_error_d,
+ 
 
   
 
@@ -99926,9 +100198,10 @@ wire   jtag_access_complete;
 
 
   
-                                      
-    
 
+output bus_error_d;                                     
+reg    bus_error_d;
+ 
 
   
 
@@ -99981,11 +100254,22 @@ wire iram_select_a;
                
 
 
+
   
-                                         
+ 
+   
+   
+    			               
+ 
 
+ 
 
+  
 
+   wire 		     bus_error_f = 0;
+ 
+
+   
   
 
 reg jtag_access;                                        
@@ -100375,11 +100659,13 @@ end
 			 
 		    
    
+		   
 		     
 		    
                          
                          
 		    
+		  
   
                
              
@@ -100463,11 +100749,14 @@ end
                          
 		    
    
+		   
 		     
 		    
                          
                          
+		       
 		    
+		  
   
                
              
@@ -100517,8 +100806,9 @@ end
 	  begin
              instruction_d <= { 32{1'b0}};
   
-               
 
+             bus_error_d <=  1'b0;
+ 
 
 	  end
 	else
@@ -100527,8 +100817,9 @@ end
                begin
 		  instruction_d <= instruction_f;
   
-		    
 
+		  bus_error_d <= bus_error_f;
+ 
 
                end
 	  end
@@ -100775,6 +101066,7 @@ endmodule
 
                     
                      
+                
  
                      
                      
@@ -101569,6 +101861,7 @@ endmodule
 
                     
                      
+                
  
                      
                      

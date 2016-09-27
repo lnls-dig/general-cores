@@ -761,6 +761,8 @@ wire breakpoint_exception;                      // Indicates if a breakpoint exc
 wire watchpoint_exception;                      // Indicates if a watchpoint exception has occured
 `endif
 `ifdef CFG_BUS_ERRORS_ENABLED
+   reg [`LM32_WORD_RNG] data_bus_error_addr;
+   
 wire instruction_bus_error_exception;           // Indicates if an instruction bus error exception has occured
 wire data_bus_error_exception;                  // Indicates if a data bus error exception has occured
 `endif
@@ -1824,7 +1826,9 @@ assign exception_x =           (system_call_exception == `TRUE)
 reg user_stall;
 
 always@(posedge clk_i)
-  if(D_CYC_O)
+  if(rst_i)
+    user_stall <= 0;
+  else if(!D_CYC_O)
     user_stall <= ~enable_i;
 `endif
 
@@ -2174,6 +2178,10 @@ begin
 `endif
     `LM32_CSR_CFG2: csr_read_data_x = cfg2;
     `LM32_CSR_SDB:  csr_read_data_x = sdb_address;
+`ifdef CFG_BUS_ERRORS_ENABLED
+    `LM32_CSR_ERR_ADDR:  csr_read_data_x = data_bus_error_addr;
+`endif
+      
       
     default:        csr_read_data_x = {`LM32_WORD_WIDTH{1'bx}};
     endcase
@@ -2249,8 +2257,10 @@ begin
     else
     begin
         // Set flag when bus error is detected
-        if ((D_ERR_I == `TRUE) && (D_CYC_O == `TRUE))
-            data_bus_error_seen <= `TRUE;
+        if ((D_ERR_I == `TRUE) && (D_CYC_O == `TRUE)) begin
+           data_bus_error_seen <= `TRUE;
+	   data_bus_error_addr <= D_ADR_O;
+	end
         // Clear flag when exception is taken
         if ((exception_m == `TRUE) && (kill_m == `FALSE))
             data_bus_error_seen <= `FALSE;

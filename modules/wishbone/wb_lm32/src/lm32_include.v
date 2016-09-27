@@ -207,6 +207,7 @@
 `endif
 `define LM32_CSR_CFG2                   `LM32_CSR_WIDTH'ha
 `define LM32_CSR_SDB                    `LM32_CSR_WIDTH'hb
+`define LM32_CSR_ERR_ADDR               `LM32_CSR_WIDTH'hc
 `ifdef CFG_JTAG_ENABLED
 `define LM32_CSR_JTX                    `LM32_CSR_WIDTH'he
 `define LM32_CSR_JRX                    `LM32_CSR_WIDTH'hf

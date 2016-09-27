@@ -729,9 +729,9 @@ begin
     if (((load_q_m == `TRUE) || (store_q_m == `TRUE)) && (stall_m == `FALSE)) 
     begin
         if ((size_m === `LM32_SIZE_HWORD) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m === `LM32_SIZE_WORD) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 
