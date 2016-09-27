@@ -372,5 +372,5 @@ module spi_top
                    .tip(tip), .last(last_bit), .dir(dir),
                    .p_in(wb_dat_i), .p_out(rx), 
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
-                   .s_oe_n(miosio_oen_o);
+                   .s_oe_n(miosio_oen_o));
 endmodule
