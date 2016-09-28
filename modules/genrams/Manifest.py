@@ -1,7 +1,10 @@
 
 files = [
 	"genram_pkg.vhd",
-	"memory_loader_pkg.vhd"];
+	"memory_loader_pkg.vhd",
+	"inferred_async_fifo.vhd",
+	"inferred_sync_fifo.vhd",
+	"generic_shiftreg_fifo.vhd"];
 
 if (target == "altera"):
 	modules = {"local" : ["altera", "generic"]}
