@@ -70,6 +70,10 @@ entity gc_word_packer is
     q_o       : out std_logic_vector(g_output_width-1 downto 0);
     -- data output valid
     q_valid_o : out std_logic;
+    -- data input/output ID. Outputs the current word counter for the unpacked word
+    -- if g_input_width > g_output_width (unpacking) or outputs the word counter
+    -- for the input data word.
+    q_id_o    : out unsigned;
     -- synchronous data request: if active, packer can output data in following
     -- clock cycle.
     q_req_i   : in  std_logic
@@ -99,6 +103,7 @@ architecture rtl of gc_word_packer is
 
   constant c_sreg_size    : integer := f_max(g_input_width, g_output_width);
   constant c_sreg_entries : integer := c_sreg_size / f_min(g_input_width, g_output_width);
+  constant count_zero     : unsigned(f_log2_size(c_sreg_entries + 1) - 1 downto 0) := (others => '0');
 
   signal sreg  : std_logic_vector(c_sreg_size-1 downto 0);
   signal count : unsigned(f_log2_size(c_sreg_entries + 1) - 1 downto 0);
@@ -143,6 +148,7 @@ begin  -- rtl
 
     d_req_o <= '1' when q_req_i = '1' and (count /= c_sreg_entries) else '0';
     q_o     <= sreg;
+    q_id_o  <= count;
   end generate gen_grow;
 
   gen_shrink : if(g_output_width < g_input_width) generate
@@ -185,6 +191,8 @@ begin  -- rtl
     d_req_o <= '1' when d_valid_i = '0' and (empty = '1' or (q_req_i = '1' and count = c_sreg_entries-1)) else '0';
     p_gen_output : process(count, sreg, empty, d_i, d_valid_i, q_req_d0)
     begin
+      q_id_o         <= count;
+
       if (q_req_d0 = '1' and empty = '0') then
         q_valid_comb <= '1';
         q_o          <= sreg(to_integer(count) * g_output_width + g_output_width-1 downto to_integer(count) * g_output_width);
@@ -202,6 +210,7 @@ begin  -- rtl
     q_o       <= d_i;
     q_valid_o <= d_valid_i;
     d_req_o   <= q_req_i;
+    q_id_o    <= count_zero;
   end generate gen_equal;
 
 end rtl;

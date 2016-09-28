@@ -302,6 +302,7 @@ package gencores_pkg is
       d_req_o   : out std_logic;
       flush_i   : in  std_logic := '0';
       q_o       : out std_logic_vector(g_output_width-1 downto 0);
+      q_id_o    : out unsigned;
       q_valid_o : out std_logic;
       q_req_i   : in  std_logic);
   end component;
