@@ -44,7 +44,7 @@
 module spi_clgen (clk_in, rst, go, enable, last_clk, divider, clk_out, pos_edge, neg_edge); 
 
   parameter Tp = 1;
-  parameter SPI_DIVIDER_LEN = 8;
+  parameter SPI_DIVIDER_LEN = 16;
   
   input                            clk_in;   // input clock (system clock)
   input                            rst;      // reset
