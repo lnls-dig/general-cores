@@ -690,7 +690,7 @@ package wishbone_pkg is
     wbd_width     => x"7",                 -- 8/16/32-bit port granularity
     sdb_component => (
       addr_first  => x"0000000000000000",
-      addr_last   => x"000000000000001F",
+      addr_last   => x"00000000000000FF",
       product     => (
         vendor_id => x"000000000000CE42",  -- CERN
         device_id => x"e503947e",       -- echo "WB-SPI.Control     " | md5sum | cut -c1-8
