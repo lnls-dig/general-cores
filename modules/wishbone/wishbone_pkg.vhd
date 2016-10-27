@@ -1794,7 +1794,11 @@ package body wishbone_pkg is
         when 'F' => nibble := X"F";
         when others => nibble := "XXXX";
       end case;
-      slv(((i+1)*4)-1 downto i*4) := nibble;
+      if s'ascending then
+        slv(slv'length-(i*4)-1 downto slv'length-(i+1)*4) := nibble;
+      else
+        slv(((i+1)*4)-1 downto i*4) := nibble;
+      end if;
     end loop;
     return slv;
   end f_string2bits;
