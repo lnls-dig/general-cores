@@ -75,33 +75,36 @@ architecture rtl of xwb_sdb_crossbar is
       typ := c_layout(i)(7 downto 0);
       sdb_component := f_sdb_extract_component(c_layout(i)(447 downto 8));
 
-      -- Range must be valid
-      assert unsigned(sdb_component.addr_first) <= unsigned(sdb_component.addr_last)
-      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") must precede sdb_component.addr_last address (" & f_bits2string(sdb_component.addr_last) & ")."
-      severity Failure;
+      if (typ(7) = '0') then --only do address checks on non-meta record types (typ >= 0x80)
+        -- Range must be valid
+        assert unsigned(sdb_component.addr_first) <= unsigned(sdb_component.addr_last)
+        report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") must precede sdb_component.addr_last address (" & f_bits2string(sdb_component.addr_last) & ")."
+        severity Failure;
 
-      -- Address must fit within Wishbone address width
-      address := sdb_component.addr_first(address'range);
-      extend(address'range) := address;
-      assert sdb_component.addr_first = extend
-      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & " does not fit in t_wishbone_address."
-      severity Failure;
-      
-      size := unsigned(sdb_component.addr_last) - unsigned(sdb_component.addr_first);
-      -- size must be of the form 000000...00001111...1
-      assert (size and (size + 1)) = 0
-      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") has an address range that is not a power of 2 minus one (" & f_bits2string(std_logic_vector(size)) & "). This is not supported by the crossbar."
-      severity Warning;
-      
-      -- fix the size up to the form 000...0001111...11
-      for j in c_wishbone_address_width-2 downto 0 loop
-        size(j) := size(j) or size(j+1);
-      end loop;
-      
-      -- the base address must be aligned to the size
-      assert (unsigned(sdb_component.addr_first) and size) = 0
-      report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") is not aligned. This is not supported by the crossbar."
-      severity Failure;
+        -- Address must fit within Wishbone address width
+        address := sdb_component.addr_first(address'range);
+        extend(address'range) := address;
+        assert sdb_component.addr_first = extend
+        report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & " does not fit in t_wishbone_address."
+        severity Failure;
+        
+        size := unsigned(sdb_component.addr_last) - unsigned(sdb_component.addr_first);
+        -- size must be of the form 000000...00001111...1
+        assert (size and (size + 1)) = 0
+        report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") has an address range that is not a power of 2 minus one (" & f_bits2string(std_logic_vector(size)) & "). This is not supported by the crossbar."
+        severity Warning;
+        
+        -- fix the size up to the form 000...0001111...11
+        for j in c_wishbone_address_width-2 downto 0 loop
+          size(j) := size(j) or size(j+1);
+        end loop;
+        
+        -- the base address must be aligned to the size
+        assert (unsigned(sdb_component.addr_first) and size) = 0
+        report "Wishbone slave device #" & Integer'image(i) & " (" & f_trim(sdb_component.product.name) & ") sdb_component.addr_first (" & f_bits2string(sdb_component.addr_first) & ") is not aligned. This is not supported by the crossbar."
+        severity Failure;
+
+      end if;
 
       -- Record the address for posterity
       case typ is
@@ -124,12 +127,12 @@ architecture rtl of xwb_sdb_crossbar is
           result.msi_address(msi_index) := address;
           result.msi_mask   (msi_index) := std_logic_vector(size(address'range));
           msi_index := msi_index + 1;
-        
+
         when x"f1" | x"f2" =>
           result.bus_address(bus_index) := (others => '1');
           result.bus_mask   (bus_index) := (others => '0');
           bus_index := bus_index + 1;
-        
+
         when x"f3" =>
           result.msi_address(msi_index) := (others => '1');
           result.msi_mask   (msi_index) := (others => '0');
@@ -141,7 +144,7 @@ architecture rtl of xwb_sdb_crossbar is
     
     -- There must be exactly the right number of slave SDB records
     assert bus_index = g_num_slaves
-    report "Too few device and bridge records found in g_layout"
+    report "Too few device and bridge records found in g_layout. Did you accidentally include meta records in the supplied number of slaves?"
     severity Failure;
     
     -- It is OK to have no master records (backwards compat)
