@@ -255,6 +255,21 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Power-On reset generator of synchronous single reset from multiple
+  -- asynchronous input reset signals
+  ------------------------------------------------------------------------------
+  component gc_single_reset_gen is
+    generic(
+      g_out_reg_depth     : natural :=2;
+      g_rst_in_num        : natural :=2);
+    port (
+      clk_i               : in std_logic;
+      rst_signals_n_a_i   : in std_logic_vector(g_rst_in_num-1 downto 0);
+      rst_n_o             : out std_logic
+    );
+  end component;
+
+  ------------------------------------------------------------------------------
   -- Round robin arbiter
   ------------------------------------------------------------------------------
   component gc_rr_arbiter
@@ -479,6 +494,21 @@ package gencores_pkg is
       d_i       : in  std_logic_vector(g_width-1 downto 0);
       q_o       : out std_logic_vector(g_width-1 downto 0));
   end component gc_sync_register;
+
+  component gc_async_signals_input_stage is
+    generic (
+      g_signal_num                 : integer;
+      g_extended_pulse_width       : integer;
+      g_dglitch_filter_len         : integer);
+    port (
+      clk_i                        : in std_logic;
+      rst_n_i                      : in std_logic;
+      signals_a_i                  : in  std_logic_vector(g_signal_num-1 downto 0);
+      config_active_i              : in  std_logic_vector(g_signal_num-1 downto 0);
+      signals_o                    : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_p1_o                 : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_pN_o                 : out std_logic_vector(g_signal_num-1 downto 0));
+  end component;
 
   --============================================================================
   -- Procedures and functions
