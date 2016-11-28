@@ -1,31 +1,31 @@
---==============================================================================
--- CERN (BE-CO-HT)
--- I2C slave core
---==============================================================================
+-------------------------------------------------------------------------------
+-- Title      : I2C Slave Core
+-- Project    : OHWR General Cores
+-- URL        : http://www.ohwr.org/projects/general-cores
+-------------------------------------------------------------------------------
+-- File       : gc_i2c_slave.vhd
+-- Author(s)  : Theodor Stana <t.stana@cern.ch>
+--              Dimitrios Lampridis  <dimitrios.lampridis@cern.ch>
+-- Company    : CERN (BE-CO-HT)
+-- Created    : 2013-03-13
+-- Last update: 2016-11-25
+-- Standard   : VHDL'93
+-------------------------------------------------------------------------------
+-- Description: Simple I2C slave interface, providing the basic low-level
+-- functionality of the I2C protocol.
 --
--- author: Theodor Stana (t.stana@cern.ch)
+-- The gc_i2c_slave module waits for a master to initiate a transfer via
+-- a start condition. The address is sent next and if the address matches
+-- the slave address set via the i2c_addr_i input, the addr_good_p_o output
+-- is set. Based on the eighth bit of the first I2C transfer byte, the module
+-- then starts shifting in or out each byte in the transfer, setting the
+-- r/w_done_p_o output after each received/sent byte.
 --
--- date of creation: 2013-03-13
---
--- version: 1.0
---
--- description:
---
---    Simple I2C slave interface, providing the basic low-level functionality
---    of the I2C protocol.
---
---    The gc_i2c_slave module waits for a master to initiate a transfer via
---    a start condition. The address is sent next and if the address matches
---    the slave address set via the i2c_addr_i input, the addr_good_p_o output
---    is set. Based on the eighth bit of the first I2C transfer byte, the module
---    then starts shifting in or out each byte in the transfer, setting the
---    r/w_done_p_o output after each received/sent byte.
---
---    For master write (slave read) transfers, the received byte can be read at
---    the rx_byte_o output when the r_done_p_o pin is high. For master read (slave
---    write) transfers, the slave sends the byte at the tx_byte_i input, which
---    should be set when the w_done_p_o output is high, either after I2C address
---    reception, or a successful send of a previous byte.
+-- For master write (slave read) transfers, the received byte can be read at
+-- the rx_byte_o output when the r_done_p_o pin is high. For master read (slave
+-- write) transfers, the slave sends the byte at the tx_byte_i input, which
+-- should be set when the w_done_p_o output is high, either after I2C address
+-- reception, or a successful send of a previous byte.
 --
 -- dependencies:
 --    OHWR general-cores library
@@ -33,32 +33,34 @@
 -- references:
 --    [1] The I2C bus specification, version 2.1, NXP Semiconductor, Jan. 2000
 --        http://www.nxp.com/documents/other/39340011.pdf
---
---==============================================================================
+-------------------------------------------------------------------------------
+-- Copyright (c) 2013-2016 CERN
+-------------------------------------------------------------------------------
 -- GNU LESSER GENERAL PUBLIC LICENSE
---==============================================================================
--- This source file is free software; you can redistribute it and/or modify it
--- under the terms of the GNU Lesser General Public License as published by the
--- Free Software Foundation; either version 2.1 of the License, or (at your
--- option) any later version. This source is distributed in the hope that it
--- will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
--- of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
--- See the GNU Lesser General Public License for more details. You should have
--- received a copy of the GNU Lesser General Public License along with this
--- source; if not, download it from http://www.gnu.org/licenses/lgpl-2.1.html
---==============================================================================
--- last changes:
---    2013-03-13   Theodor Stana     File created
---    2013-11-22   Theodor Stana     Changed to sampling SDA on SCL rising edge
---==============================================================================
--- TODO:
---    - Stop condition
---==============================================================================
+--
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
+--
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
+--
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
+-- from http://www.gnu.org/licenses/lgpl-2.1.html
+--
+-------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
 use work.gencores_pkg.all;
 
 entity gc_i2c_slave is
@@ -68,7 +70,9 @@ entity gc_i2c_slave is
     -- 0 - SCL and SDA lines are passed only through synchronizer
     -- 1 - one clk_i glitches filtered
     -- 2 - two clk_i glitches filtered
-    g_gf_len : natural := 0
+    g_gf_len        : natural := 0;
+    -- Automatically ACK reception upon address match.
+    g_auto_addr_ack : boolean := FALSE
   );
   port
   (
@@ -385,9 +389,13 @@ begin
 
             -- send ACK from input, check the ACK on falling edge and go to
             -- loading of the TXSR if the OP bit is a write, or read otherwise
-            sda_en_o <= ack_i;
+            if g_auto_addr_ack = TRUE then
+              sda_en_o <= '1';
+            else
+              sda_en_o <= ack_i;
+            end if;
             if (scl_f_edge_p = '1') then
-              if (ack_i = '1') then
+              if (g_auto_addr_ack = TRUE) or (ack_i = '1') then
                 if (rxsr(0) = '0') then
                   state <= RD;
                 else

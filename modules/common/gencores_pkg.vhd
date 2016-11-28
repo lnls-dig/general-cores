@@ -8,7 +8,7 @@
 --              Matthieu Cattin
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-07-31
+-- Last update: 2016-11-25
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -335,7 +335,8 @@ package gencores_pkg is
         -- 0 - SCL and SDA lines are passed only through synchronizer
         -- 1 - one clk_i glitches filtered
         -- 2 - two clk_i glitches filtered
-        g_gf_len : natural := 0
+        g_gf_len        : natural := 0;
+        g_auto_addr_ack : boolean := FALSE
         );
     port
       (
