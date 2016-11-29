@@ -6,18 +6,19 @@
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
 --              Matthieu Cattin
+--              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2016-11-25
+-- Last update: 2016-11-29
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
 -- Description:
--- Package incorporating simple VHDL modules, which are used
+-- Package incorporating simple VHDL modules and functions, which are used
 -- in the WR and other OHWR projects.
 -------------------------------------------------------------------------------
 --
--- Copyright (c) 2009-2012 CERN
+-- Copyright (c) 2009-2016 CERN
 --
 -- This source file is free software; you can redistribute it
 -- and/or modify it under the terms of the GNU Lesser General
@@ -35,14 +36,6 @@
 -- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2009-09-01  0.9      twlostow        Created
--- 2011-04-18  1.0      twlostow        Added comments & header
--- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
--- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
--- 2014-03-20  1.3      mcattin         Added bicolor led controller
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -525,6 +518,9 @@ package gencores_pkg is
   function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
   function log2_ceil(N       : natural) return positive;
 
+  function f_bool2int (b : boolean) return natural;
+  function f_int2bool (n : natural) return boolean;
+
 end package;
 
 package body gencores_pkg is
@@ -634,6 +630,30 @@ package body gencores_pkg is
       return 1 + log2_ceil(N/2);
     else
       return 1 + log2_ceil((N+1)/2);
+    end if;
+  end;
+
+  ------------------------------------------------------------------------------
+  -- Converts a boolean to natural integer (false -> 0, true -> 1)
+  ------------------------------------------------------------------------------
+  function f_bool2int (b : boolean) return natural is
+  begin
+    if b then
+      return 1;
+    else
+      return 0;
+    end if;
+  end;
+
+  ------------------------------------------------------------------------------
+  -- Converts a natural integer to boolean (0 -> false, any positive -> true)
+  ------------------------------------------------------------------------------
+  function f_int2bool (n : natural) return boolean is
+  begin
+    if n = 0 then
+      return false;
+    else
+      return true;
     end if;
   end;
 
