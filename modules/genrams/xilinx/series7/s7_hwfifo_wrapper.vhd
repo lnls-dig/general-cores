@@ -110,7 +110,7 @@ architecture syn of s7_hwfifo_wrapper is
 begin  -- syn
 
   -- We can only make a FWFT FIFO if EN_SYN is false
-  assert g_show_ahead and g_dual_clock
+  assert ((g_show_ahead and g_dual_clock) or (not g_show_ahead))
   report "generic_sync_fifo[xilinx]: if g_show_ahead is true, g_dual clock must be too"
   severity error;
 
