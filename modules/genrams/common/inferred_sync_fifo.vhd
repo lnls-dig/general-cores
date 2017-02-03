@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-CO-HT
 -- Created    : 2011-01-25
--- Last update: 2013-11-14
+-- Last update: 2017-02-03
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 -- - configurable data width and size
 -- - configurable full/empty/almost full/almost empty/word count signals
 -------------------------------------------------------------------------------
--- Copyright (c) 2011 CERN
+-- Copyright (c) 2011-2017 CERN
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author          Description
@@ -77,12 +77,10 @@ architecture syn of inferred_sync_fifo is
   signal   we_int, rd_int                          : std_logic;
   signal   guard_bit                               : std_logic;
 
-  signal q_reg, q_comb : std_logic_vector(g_data_width-1 downto 0);
+  signal q_comb : std_logic_vector(g_data_width-1 downto 0);
   
 begin  -- syn
 
-  --assert g_show_ahead = false report "Show ahead mode not implemented (yet). Sorry" severity failure;
-  
   we_int <= we_i and not full;
   rd_int <= rd_i and not empty;
   
@@ -103,16 +101,6 @@ begin  -- syn
       ab_i    => std_logic_vector(rd_ptr_muxed(c_pointer_width-1 downto 0)),
       qb_o    => q_comb);
 
-  p_output_reg : process(clk_i)
-  begin
-    if rising_edge(clk_i) then
-      if rd_int = '1' then
-        q_reg <= q_comb;
-      end if;
-    end if;
-  end process;
-
-
   process(rd_ptr, rd_i, rd_int)
   begin
     if(rd_int = '1' and g_show_ahead) then
@@ -123,8 +111,6 @@ begin  -- syn
       rd_ptr_muxed <= rd_ptr - 1;
     end if;
   end process;
-
---  q_o <= q_comb when g_show_ahead = true else q_reg;
 
   q_o <= q_comb;
 
@@ -247,6 +233,10 @@ begin  -- syn
     end process;
   end generate gen_with_almost_full;
 
+  gen_without_almost_full : if(not g_with_almost_full) generate
+    almost_full_o <= '0';
+  end generate gen_without_almost_full;
+
   gen_with_almost_empty : if(g_with_almost_empty) generate
     process(clk_i)
     begin
@@ -266,6 +256,10 @@ begin  -- syn
       end if;
     end process;
   end generate gen_with_almost_empty;
+
+  gen_without_almost_empty : if(not g_with_almost_empty) generate
+    almost_empty_o <= '0';
+  end generate gen_without_almost_empty;
 
   full_o  <= full;
   empty_o <= empty;

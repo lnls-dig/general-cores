@@ -18,12 +18,9 @@ end gc_shiftreg;
 
 
 architecture rtl of gc_shiftreg is
-  signal a  : std_logic_vector(4 downto 0);
   signal sr : std_logic_vector(g_size-1 downto 0);
 begin
 
-  a <= std_logic_vector(resize(unsigned(a_i), 5));
-  
   p_srl : process(clk_i)
   begin
     if rising_edge(clk_i) then

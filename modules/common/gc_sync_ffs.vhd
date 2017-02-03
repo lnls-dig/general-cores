@@ -6,14 +6,14 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-06-14
--- Last update: 2014-07-31
+-- Last update: 2017-02-03
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
 -- Description: Synchronizer chain and edge detector.
 -------------------------------------------------------------------------------
 --
--- Copyright (c) 2009 - 2010 CERN
+-- Copyright (c) 2009 - 2017 CERN
 --
 -- This source file is free software; you can redistribute it   
 -- and/or modify it under the terms of the GNU Lesser General   
@@ -55,6 +55,9 @@ entity gc_sync_ffs is
    -- pulse)
     );
 end gc_sync_ffs;
+
+-- make Altera Quartus quiet regarding unknown attributes:
+-- altera message_off 10335
 
 architecture behavioral of gc_sync_ffs is
   signal sync0, sync1, sync2 : std_logic;

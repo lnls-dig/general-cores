@@ -99,5 +99,7 @@ begin  -- rtl
 
   slave_o.err <= '0';
   slave_o.rty <= '0';
+
+  desc_o <= (others => '0');
   
 end rtl;

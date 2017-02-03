@@ -19,6 +19,8 @@ entity gc_sync_register is
 
 end gc_sync_register;
 
+-- make Altera Quartus quiet regarding unknown attributes:
+-- altera message_off 10335
 
 architecture rtl of gc_sync_register is
 

@@ -6,7 +6,7 @@
 -- Author     : Grzegorz Daniluk
 -- Company    : Elproma, CERN
 -- Created    : 2011-02-15
--- Last update: 2013-09-11
+-- Last update: 2017-02-03
 -- Platform   : FPGA-generics
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -205,10 +205,12 @@ begin
 
   slave1_out.stall <= '0';
   slave2_out.stall <= '0';
-  slave1_out.err <= '0';
-  slave2_out.err <= '0';
-  slave1_out.rty <= '0';
-  slave2_out.rty <= '0';
+  slave1_out.err   <= '0';
+  slave2_out.err   <= '0';
+  slave1_out.rty   <= '0';
+  slave2_out.rty   <= '0';
+  slave1_out.int   <= '0';
+  slave2_out.int   <= '0';
   
 end struct;
 
