@@ -72,6 +72,17 @@ package gencores_pkg is
       extended_o : out std_logic);
   end component;
 
+  component gc_dyn_extend_pulse is
+    generic (
+      g_len_width : natural := 10);
+  port (
+    clk_i      : in  std_logic;
+    rst_n_i    : in  std_logic;
+    pulse_i    : in  std_logic;
+    len_i      : in std_logic_vector(g_len_width-1 downto 0);
+    extended_o : out std_logic := '0');
+  end component;
+
   ------------------------------------------------------------------------------
   -- CRC generator
   ------------------------------------------------------------------------------
