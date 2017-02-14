@@ -134,6 +134,9 @@ architecture syn of generic_dpram_split is
 
 begin
 
+  assert (g_addr_conflict_resolution = "read_first" or g_addr_conflict_resolution = "dont_care") 
+  report "generic_dpram_split: only read_first and dont_care supported for now" severity failure;
+
   -- combine byte-write enable with write signals
   wea_rep <= (others => wea_i);
   web_rep <= (others => web_i);

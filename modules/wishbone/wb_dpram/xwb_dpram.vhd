@@ -34,7 +34,6 @@ use work.wishbone_pkg.all;
 
 entity xwb_dpram is
   generic(
-    g_splitram              : boolean := false;
     g_size                  : natural := 16384;
     g_init_file             : string  := "";
     g_must_have_init_file   : boolean := true;
@@ -109,32 +108,8 @@ begin
       master_i  => slave2_out,
       master_o  => slave2_in);
 
-  GEN_SPLITRAM: if g_splitram = true generate
-    U_DPRAM : generic_dpram_split
-      generic map(
-        g_size                     => g_size,
-        g_addr_conflict_resolution => "dont_care",
-        g_init_file                => g_init_file,
-        g_fail_if_file_not_found   => g_must_have_init_file)
-      port map(
-        rst_n_i => rst_n_i,
-        clk_i => clk_sys_i,
-        -- Port A
-        bwea_i  => s_bwea,
-        wea_i   => s_wea,
-        aa_i    => slave1_in.adr(f_log2_size(g_size)-1 downto 0),
-        da_i    => slave1_in.dat,
-        qa_o    => slave1_out.dat,
-        -- Port B
-        bweb_i  => s_bweb,
-        web_i   => s_web,
-        ab_i    => slave2_in.adr(f_log2_size(g_size)-1 downto 0),
-        db_i    => slave2_in.dat,
-        qb_o    => slave2_out.dat
-        );
-  end generate;
 
-  GEN_INITF: if g_splitram = false and g_init_file /= "" and g_init_file /= "none" generate
+  GEN_INITF: if g_init_file /= "" and g_init_file /= "none" generate
     -- Unfortunately stupid ISE has problem with understanding bytesel
     -- description in generic_dpram so it instantiates this using numerous LUTs
     -- for connecting BRAMs and supporting bytesel. When initialization with
@@ -168,7 +143,7 @@ begin
         );
   end generate;
 
-  GEN_NO_INITF: if g_splitram = false and (g_init_file = "" or g_init_file = "none") generate
+  GEN_NO_INITF: if g_init_file = "" or g_init_file = "none" generate
     -- This trick splits ram into four 8-bit blocks of RAM. Now the problem ISE
     -- has with understanding correctly bytesel is bypassed and the
     -- implementation takes almost none LUTs, just BRAMs.

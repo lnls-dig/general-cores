@@ -489,7 +489,6 @@ package wishbone_pkg is
   function f_xwb_dpram(g_size : natural) return t_sdb_device;
   component xwb_dpram
     generic (
-      g_splitram              : boolean                        := false;
       g_size                  : natural;
       g_init_file             : string                         := "";
       g_must_have_init_file   : boolean                        := true;
