@@ -45,6 +45,7 @@ package genram_pkg is
   function f_log2_size (A       : natural) return natural;
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector;
   function f_zeros (size : integer) return std_logic_vector;
+  function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
   
@@ -244,5 +245,15 @@ package body genram_pkg is
     return std_logic_vector(to_unsigned(0, size));
   end f_zeros;
 
+  function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer is
+  begin
+    if(x < minx) then
+      return minx;
+    elsif(x > maxx) then
+      return maxx;
+    else
+      return x;
+    end if;
+  end f_check_bounds;
 
 end genram_pkg;

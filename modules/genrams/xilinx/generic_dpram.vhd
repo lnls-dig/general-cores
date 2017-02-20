@@ -76,6 +76,33 @@ end generic_dpram;
 
 architecture syn of generic_dpram is
 
+  constant c_gen_split :boolean := (g_dual_clock = false and g_data_width=32 and
+      g_with_byte_enable=true and (g_addr_conflict_resolution="dont_care" or
+      g_addr_conflict_resolution="read_first"));
+  constant c_gen_sc    :boolean := (not c_gen_split) and (not g_dual_clock);
+  constant c_gen_dc    :boolean := g_dual_clock;
+
+  component generic_dpram_split
+    generic (
+      g_size                     : natural;
+      g_addr_conflict_resolution : string  := "dont_care";
+      g_init_file                : string  := "none";
+      g_fail_if_file_not_found   : boolean := true);
+    port (
+      rst_n_i : in  std_logic := '1';
+      clk_i   : in  std_logic;
+      bwea_i : in  std_logic_vector(3 downto 0);
+      wea_i  : in  std_logic;
+      aa_i   : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      da_i   : in  std_logic_vector(31 downto 0);
+      qa_o   : out std_logic_vector(31 downto 0);
+      bweb_i : in  std_logic_vector(3 downto 0);
+      web_i  : in  std_logic;
+      ab_i   : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      db_i   : in  std_logic_vector(31 downto 0);
+      qb_o   : out std_logic_vector(31 downto 0));
+  end component;
+
   component generic_dpram_sameclock
     generic (
       g_data_width               : natural;
@@ -125,7 +152,36 @@ architecture syn of generic_dpram is
 
 begin
 
-  gen_single_clk : if(g_dual_clock = false) generate
+  -- generic_dpram_split is like generic_dpram_sameclock, but hardcoded to
+  -- 32-bit data width and split into 4 BRAMs, each of them 8-bit wide. It's
+  -- better for Xilinx ISE, because it's unable to infer DPRAM with byte-write
+  -- enables without using huge number of LUTs.
+  -- Since it's hardcoded to 32-bits data width, we need to keep
+  -- generic_dpram_sameclock as well. For reasons why generic_dpram_split is
+  -- hardcoded to 32-bits please check the Note in generic_dpram_split.vhd.
+  gen_splitram: if c_gen_split generate
+    U_RAM_SPLIT: generic_dpram_split
+      generic map(
+        g_size                     => g_size,
+        g_addr_conflict_resolution => g_addr_conflict_resolution,
+        g_init_file                => g_init_file,
+        g_fail_if_file_not_found   => g_fail_if_file_not_found)
+      port map(
+        rst_n_i => rst_n_i,
+        clk_i   => clka_i,
+        bwea_i  => bwea_i,
+        wea_i   => wea_i,
+        aa_i    => aa_i,
+        da_i    => da_i,
+        qa_o    => qa_o,
+        bweb_i  => bweb_i,
+        web_i   => web_i,
+        ab_i    => ab_i,
+        db_i    => db_i,
+        qb_o    => qb_o);
+  end generate gen_splitram;
+
+  gen_single_clk : if c_gen_sc generate
   U_RAM_SC: generic_dpram_sameclock
     generic map (
       g_data_width               => g_data_width,
@@ -151,7 +207,7 @@ begin
     
   end generate gen_single_clk;
 
-  gen_dual_clk : if(g_dual_clock = true) generate
+  gen_dual_clk : if c_gen_dc generate
     U_RAM_DC: generic_dpram_dualclock
       generic map (
         g_data_width               => g_data_width,

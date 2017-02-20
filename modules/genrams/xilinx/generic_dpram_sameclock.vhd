@@ -117,19 +117,7 @@ architecture syn of generic_dpram_sameclock is
   signal s_we_b     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_b : std_logic_vector(g_data_width-1 downto 0);
 
-
   signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
-
-  function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer is
-  begin
-    if(x < minx) then
-      return minx;
-    elsif(x > maxx) then
-      return maxx;
-    else
-      return x;
-    end if;
-  end f_check_bounds;
 
 begin
 
