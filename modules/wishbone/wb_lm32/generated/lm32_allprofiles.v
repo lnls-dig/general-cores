@@ -5275,7 +5275,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -18313,7 +18313,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -31182,7 +31182,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -44125,7 +44125,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -56955,7 +56955,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -69579,7 +69579,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -82086,7 +82086,7 @@ end
              
         
             
-                 
+
             
                 
                   
@@ -89589,6 +89589,8 @@ endmodule
 
   
 
+  
+
 	  
 
 	  
@@ -90293,15 +90295,18 @@ wire   [ (2-1):0] D_BTE_O;
 
   
 
-                     
-                             
-                            
-                   
-                                 
+
+wire [ ((32-2)+2-1):2] trace_pc;                   
+wire trace_pc_valid;                            
+wire trace_exception;                           
+wire [ (3-1):0] trace_eid;                 
+wire trace_eret;                                
+  
+
+wire trace_bret;                                
  
-                                 
 
-
+ 
 
 
 
@@ -90413,15 +90418,18 @@ lm32_cpu_wr_node
     .D_RTY_I               (D_RTY_I),
     
   
-                  
-            
-           
-                 
-                
+
+    .trace_pc              (trace_pc),
+    .trace_pc_valid        (trace_pc_valid),
+    .trace_exception       (trace_exception),
+    .trace_eid             (trace_eid),
+    .trace_eret            (trace_eret),
+  
+
+    .trace_bret            (trace_bret),
  
-                
 
-
+ 
 
   
                 
@@ -91582,15 +91590,18 @@ module lm32_cpu_wr_node (
     D_RTY_I,
     
   
-    
-    
-    
-    
-    
+
+    trace_pc,
+    trace_pc_valid,
+    trace_exception,
+    trace_eid,
+    trace_eret,
+  
+
+    trace_bret,
  
-    
 
-
+ 
 
   
     
@@ -91770,21 +91781,24 @@ input D_RTY_I;
    
    
   
-                   
-     
-                           
-    
-                          
-    
-                 
-     
-                               
-    
+
+output [ ((32-2)+2-1):2] trace_pc;                 
+reg    [ ((32-2)+2-1):2] trace_pc;
+output trace_pc_valid;                          
+reg    trace_pc_valid;
+output trace_exception;                         
+reg    trace_exception;
+output [ (3-1):0] trace_eid;               
+reg    [ (3-1):0] trace_eid;
+output trace_eret;                              
+reg    trace_eret;
+  
+
+output trace_bret;                              
+reg    trace_bret;
  
-                               
-    
 
-
+ 
 
 
   
@@ -91999,9 +92013,10 @@ wire eret_d;
 reg eret_x;
 wire eret_q_x;
   
- 
- 
 
+reg eret_m;
+reg eret_w;
+ 
 
   
 
@@ -92009,9 +92024,10 @@ wire bret_d;
 reg bret_x;
 wire bret_q_x;
   
- 
- 
 
+reg bret_m;
+reg bret_w;
+ 
 
  
 
@@ -92173,8 +92189,9 @@ wire [ ((32-2)+2-1):2] pc_x;
 wire [ ((32-2)+2-1):2] pc_m;                       
 wire [ ((32-2)+2-1):2] pc_w;                       
   
-                          
 
+reg [ ((32-2)+2-1):2] pc_c;                        
+ 
 
   
 
@@ -92264,9 +92281,10 @@ reg [ (32-2)+2-1:8] deba;
 
 reg [ (3-1):0] eid_x;                      
   
-                        
-                        
 
+reg [ (3-1):0] eid_m;                      
+reg [ (3-1):0] eid_w;                      
+ 
 
 
   
@@ -94536,19 +94554,23 @@ begin
 
 
   
-              
-              
 
-
-  
-              
-
-
-  
+            eid_m <= eid_x;
+            eret_m <= eret_q_x;
  
-               
+
+  
+              
 
 
+  
+
+  
+
+            bret_m <= bret_q_x; 
+ 
+
+ 
 
             write_enable_m <= exception_x ==  1'b1 ?  1'b1 : write_enable_x;            
   
@@ -94595,12 +94617,15 @@ begin
 
         write_idx_w <= write_idx_m;
   
-          
-          
+
+        eid_w <= eid_m;
+        eret_w <= eret_m;
+  
+
+        bret_w <= bret_m; 
  
-           
 
-
+ 
 
         write_enable_w <= write_enable_m;
   
@@ -94708,65 +94733,74 @@ end
 
   
 
-   
 
-       
-    
-          
-          
-          
-          
-          
+always @(posedge clk_i  )
+begin
+    if (rst_i ==  1'b1)
+    begin
+        trace_pc_valid <=  1'b0;
+        trace_pc <= { (32-2){1'b0}};
+        trace_exception <=  1'b0;
+        trace_eid <=  3'h0;
+        trace_eret <=  1'b0;
+  
+
+        trace_bret <=  1'b0;
  
-          
 
-          
-    
-    
-    
-          
+        pc_c <= eba_reset/4;
+    end
+    else
+    begin
+        trace_pc_valid <=  1'b0;
         
- 
-               
+  
 
+        if ((debug_exception_q_w ==  1'b1) || (non_debug_exception_q_w ==  1'b1))
+ 
            
 
+
+        begin        
+            trace_exception <=  1'b1;
+            trace_pc_valid <=  1'b1;
+            trace_pc <= pc_w;
+            trace_eid <= eid_w;
+        end
+        else
+            trace_exception <=  1'b0;
+        
+        if ((valid_w ==  1'b1) && (!kill_w))
+        begin
+            
+
+            begin
                 
-              
-              
-              
-              
-        
-        
-              
-        
-             
-        
+                trace_pc_valid <=  1'b1;
+                trace_pc <= pc_w;
+            end
             
-                 
+            pc_c <= pc_w;
             
-                
-                  
-                  
-            
-            
-              
-            
-              
+            trace_eret <= eret_w;
+  
+
+            trace_bret <= bret_w;
  
-              
 
-        
-        
-        
-              
+        end
+        else
+        begin
+            trace_eret <=  1'b0;
+  
+
+            trace_bret <=  1'b0;
  
-              
 
-        
-    
-
-
+        end
+    end
+end
+ 
 
       
 

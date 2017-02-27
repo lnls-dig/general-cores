@@ -158,7 +158,7 @@ begin
   -- Detect when pointer is zero and maximum
   pointer_zero        <= '1' when pointer = 0                                else '0';
   pointer_full        <= '1' when pointer = g_size - 1                       else '0';
-  pointer_almost_full <= '1' when pointer_full = '1' or pointer = g_size - 2 else '0';
+  pointer_almost_full <= '1' when pointer_full = '1' or pointer = g_size -3 or pointer = g_size - 2 else '0';
 
 
   -- assign internal signals to outputs

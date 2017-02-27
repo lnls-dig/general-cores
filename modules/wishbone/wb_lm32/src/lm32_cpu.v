@@ -2795,7 +2795,7 @@ begin
         if ((valid_w == `TRUE) && (!kill_w))
         begin
             // An instruction is commiting. Determine if it is non-sequential
-            if (pc_c + 1'b1 != pc_w)
+//            if (pc_c + 1'b1 != pc_w)
             begin
                 // Non-sequential instruction
                 trace_pc_valid <= `TRUE;
