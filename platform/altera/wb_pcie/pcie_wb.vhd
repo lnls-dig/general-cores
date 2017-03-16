@@ -174,7 +174,7 @@ begin
   end process;
   
   PC_to_FPGA_clock_crossing : xwb_clock_crossing 
-    generic map(g_size => 8) port map(
+    generic map(g_size => 32) port map(
     slave_clk_i    => internal_wb_clk,
     slave_rst_n_i  => internal_wb_rstn,
     slave_i        => int_slave_i,
@@ -192,7 +192,7 @@ begin
   int_slave_i.adr(r_addr'right-1 downto 0)  <= wb_adr(r_addr'right-1 downto 0);
   
   FPGA_to_PC_clock_crossing : xwb_clock_crossing
-    generic map(g_size => 8) port map(
+    generic map(g_size => 32) port map(
     slave_clk_i    => slave_clk_i,
     slave_rst_n_i  => slave_rstn_i,
     slave_i        => slave_i,
