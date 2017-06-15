@@ -220,13 +220,10 @@ begin  -- syn
         if rst_n_i = '0' then
           almost_full_o <= '0';
         else
-          if(usedw = g_almost_full_threshold-1) then
-            if(we_int = '1' and rd_int = '0') then
-              almost_full_o <= '1';
-            elsif(rd_int = '1' and we_int = '0') then
-              almost_full_o <= '0';
-            end if;
-
+          if(usedw = g_almost_full_threshold-1) and (we_int = '1' and rd_int = '0') then
+            almost_full_o <= '1';
+          elsif (usedw = g_almost_full_threshold) and (rd_int = '1' and we_int = '0') then
+            almost_full_o <= '0';
           end if;
         end if;
       end if;
@@ -244,13 +241,10 @@ begin  -- syn
         if rst_n_i = '0' then
           almost_empty_o <= '1';
         else
-          if(usedw = g_almost_empty_threshold+1) then
-            if(rd_int = '1' and we_int = '0') then
-              almost_empty_o <= '1';
-            elsif(we_int = '1' and rd_int = '0') then
-              almost_empty_o <= '0';
-            end if;
-
+          if(usedw = g_almost_empty_threshold+1) and (rd_int = '1' and we_int = '0') then
+            almost_empty_o <= '1';
+          elsif (usedw = g_almost_empty_threshold) and (we_int = '1' and rd_int = '0') then
+            almost_empty_o <= '0';
           end if;
         end if;
       end if;
