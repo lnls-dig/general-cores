@@ -73,7 +73,7 @@ end generic_dpram_sameclock;
 
 architecture syn of generic_dpram_sameclock is
 
-  constant c_num_bytes : integer := (g_data_width+7)/8;
+  constant c_num_bytes : integer := (g_data_width + 7)/8;
 
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
@@ -110,7 +110,7 @@ architecture syn of generic_dpram_sameclock is
     return true;
   end f_is_synthesis; 
 
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
+  shared variable ram : t_ram_type := (others=>(others=>'0')); --f_memarray_to_ramtype(f_file_contents);
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
@@ -130,15 +130,23 @@ begin
   gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "read_first" or
                                                                      g_addr_conflict_resolution = "dont_care")) generate
 
-    process (clk_i)
+    Port_A: process (clk_i)
     begin
       if rising_edge(clk_i) then
         qa_o <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-        qb_o <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
             ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
           end if;
+        end loop;
+      end if;
+    end process;
+
+    Port_B: process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        qb_o <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
+        for i in 0 to c_num_bytes-1 loop
           if(s_we_b(i) = '1') then
             ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
           end if;
@@ -153,18 +161,27 @@ begin
   gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and (g_addr_conflict_resolution = "read_first" or
                                                                          g_addr_conflict_resolution = "dont_care")) generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if f_is_synthesis then
           qa_o <= ram(to_integer(unsigned(aa_i)));
-          qb_o <= ram(to_integer(unsigned(ab_i)));
         else
           qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
-          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
         end if;
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
+        end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if f_is_synthesis then
+          qb_o <= ram(to_integer(unsigned(ab_i)));
+        else
+          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
         end if;
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
@@ -175,7 +192,7 @@ begin
 
   gen_without_byte_enable_writefirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "write_first") generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if(wea_i = '1') then
@@ -188,6 +205,12 @@ begin
             qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
           end if;
         end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
           qb_o                            <= db_i;
@@ -199,14 +222,14 @@ begin
           end if;
         end if;
       end if;
-
     end process;
+
   end generate gen_without_byte_enable_writefirst;
 
 
   gen_without_byte_enable_nochange : if(g_with_byte_enable = false and g_addr_conflict_resolution = "no_change") generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if(wea_i = '1') then
@@ -218,6 +241,12 @@ begin
             qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
           end if;
         end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
         else
@@ -230,13 +259,12 @@ begin
       end if;
     end process;
 
-
     
   end generate gen_without_byte_enable_nochange;
 
    gen_with_byte_enable_writefirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "write_first")) generate
 
-    process (clk_i)
+    Port_A: process (clk_i)
     begin
       if rising_edge(clk_i) then
         for i in 0 to c_num_bytes-1 loop
@@ -246,13 +274,19 @@ begin
           else
             qa_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
           end if;
+        end loop;
+      end if;
+    end process;
 
+    Port_B: process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        for i in 0 to c_num_bytes-1 loop
           if s_we_b(i) = '1' then
             ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
             qb_o((i+1)*8-1 downto i*8)                                                         <= db_i((i+1)*8-1 downto i*8);
           else
             qb_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
-
           end if;
         end loop;
       end if;
