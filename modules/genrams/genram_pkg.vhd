@@ -48,6 +48,9 @@ package genram_pkg is
   function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer;
 
   type t_generic_ram_init is array (integer range <>, integer range <>) of std_logic;
+  type t_ram8_type  is array (integer range <>) of std_logic_vector(7 downto 0);
+  type t_ram16_type is array (integer range <>) of std_logic_vector(15 downto 0);
+  type t_ram32_type is array (integer range <>) of std_logic_vector(31 downto 0);
   
   -- Single-port synchronous RAM
   component generic_spram
