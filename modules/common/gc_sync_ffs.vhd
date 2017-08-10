@@ -71,6 +71,12 @@ architecture behavioral of gc_sync_ffs is
   attribute keep of sync0  : signal is "true";
   attribute keep of sync1  : signal is "true";
 
+  -- synchronizer attribute for Vivado
+  attribute ASYNC_REG : string;
+  attribute ASYNC_REG of sync0 : signal is "true";
+  attribute ASYNC_REG of sync1 : signal is "true";
+  attribute ASYNC_REG of sync2 : signal is "true";
+
 begin
 
 
