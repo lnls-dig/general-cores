@@ -348,10 +348,10 @@ end component;
     variable tmp : std_logic_vector(x'left downto 0);
   begin
     for i  in 0 to x'left loop
-      if(x(i)='X' or x(i)='U' or x(i)='Z') then
-        tmp(i) := '0';
+      if(x(i)='1') then
+        tmp(i) := '1';
       else
-        tmp(i) := x(i);
+        tmp(i) := '0';
       end if;
     end loop;  -- i
     return tmp;
