@@ -78,7 +78,7 @@ architecture syn of generic_dpram_sameclock is
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
 
-  function f_file_to_ramtype return t_ram_type is
+  impure function f_file_to_ramtype return t_ram_type is
     variable tmp    : t_ram_type;
     variable n, pos : integer;
     variable mem32  : t_ram32_type(0 to g_size-1);
