@@ -98,7 +98,7 @@ architecture syn of generic_dpram_split is
 
   type t_split_ram is array(0 to g_size-1) of std_logic_vector(7 downto 0);
 
-  function f_file_to_ramtype(idx : integer) return t_split_ram is
+  impure function f_file_to_ramtype(idx : integer) return t_split_ram is
     variable tmp    : t_split_ram;
     variable mem8   : t_ram8_type(0 to g_size-1);
   begin
@@ -112,7 +112,7 @@ architecture syn of generic_dpram_split is
     return t_split_ram(mem8);
   end f_file_to_ramtype;
 
-  function f_file_contents return t_meminit_array is
+  impure function f_file_contents return t_meminit_array is
   begin
     return f_load_mem_from_file(g_init_file, g_size, c_data_width, g_fail_if_file_not_found);
   end f_file_contents;

@@ -12,26 +12,26 @@ package memory_loader_pkg is
 
   subtype t_meminit_array is t_generic_ram_init;
 
-  function f_load_mem_from_file
+  impure function f_load_mem_from_file
     (file_name : string;
      mem_size  : integer;
      mem_width : integer;
      fail_if_notfound : boolean)
     return t_meminit_array;
 
-  function f_load_mem32_from_file
+  impure function f_load_mem32_from_file
     (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
     return t_ram32_type;
 
-  function f_load_mem16_from_file
+  impure function f_load_mem16_from_file
     (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
     return t_ram16_type;
 
-  function f_load_mem8_from_file
+  impure function f_load_mem8_from_file
     (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
     return t_ram8_type;
 
-  function f_load_mem32_from_file_split
+  impure function f_load_mem32_from_file_split
     (file_name        : in string; mem_size : in integer;
      fail_if_notfound : boolean; byte_idx : in integer)
     return t_ram8_type;
@@ -40,7 +40,7 @@ end memory_loader_pkg;
 
 package body memory_loader_pkg is
 
-  function f_load_mem_from_file
+  impure function f_load_mem_from_file
     (file_name        : in string;
      mem_size         : in integer;
      mem_width        : in integer;
@@ -87,7 +87,7 @@ package body memory_loader_pkg is
   -- RAM initialization for most common sizes to speed-up synthesis
   -------------------------------------------------------------------
 
-  function f_load_mem32_from_file
+  impure function f_load_mem32_from_file
     (file_name        : in string;
      mem_size         : in integer;
      fail_if_notfound : boolean)
@@ -127,7 +127,7 @@ package body memory_loader_pkg is
 
   -------------------------------------------------------------------
 
-  function f_load_mem16_from_file
+  impure function f_load_mem16_from_file
     (file_name        : in string;
      mem_size         : in integer;
      fail_if_notfound : boolean)
@@ -167,7 +167,7 @@ package body memory_loader_pkg is
 
   -------------------------------------------------------------------
 
-  function f_load_mem8_from_file
+  impure function f_load_mem8_from_file
     (file_name        : in string;
      mem_size         : in integer;
      fail_if_notfound : boolean)
@@ -209,7 +209,7 @@ package body memory_loader_pkg is
   -- initialization for 32-bit RAM split into 4x 8-bit BRAM
   -------------------------------------------------------------------
 
-  function f_load_mem32_from_file_split
+  impure function f_load_mem32_from_file_split
     (file_name        : in string;
      mem_size         : in integer;
      fail_if_notfound : boolean;
