@@ -1,5 +1,4 @@
-files = [	"matrix_pkg.vhd",
-		"gencores_pkg.vhd",
+files = [	"gencores_pkg.vhd",
                 "gc_crc_gen.vhd",
                 "gc_moving_average.vhd",
                 "gc_extend_pulse.vhd",
@@ -23,5 +22,6 @@ files = [	"matrix_pkg.vhd",
                 "gc_bicolor_led_ctrl.vhd",
                 "gc_sync_register.vhd",
                 "gc_single_reset_gen.vhd",
-                "gc_async_signals_input_stage.vhd"
+                "gc_async_signals_input_stage.vhd",
+                "gc_dec_8b10b.vhd"
                 ];
