@@ -3,8 +3,10 @@
 -- VERSION: WM1.0
 -- MODULE: altclkctrl 
 
+
 --altclkctrl CBX_AUTO_BLACKBOX="ALL" CLOCK_TYPE="Global Clock" DEVICE_FAMILY="Arria II GX" USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION="OFF" ena inclk outclk
---VERSION_BEGIN 13.0 cbx_altclkbuf 2013:06:12:18:03:33:SJ cbx_cycloneii 2013:06:12:18:03:33:SJ cbx_lpm_add_sub 2013:06:12:18:03:33:SJ cbx_lpm_compare 2013:06:12:18:03:33:SJ cbx_lpm_decode 2013:06:12:18:03:33:SJ cbx_lpm_mux 2013:06:12:18:03:33:SJ cbx_mgl 2013:06:12:18:33:59:SJ cbx_stratix 2013:06:12:18:03:33:SJ cbx_stratixii 2013:06:12:18:03:33:SJ cbx_stratixiii 2013:06:12:18:03:33:SJ cbx_stratixv 2013:06:12:18:03:33:SJ  VERSION_END
+--VERSION_BEGIN 16.0 cbx_altclkbuf 2016:05:25:18:37:14:SJ cbx_cycloneii 2016:05:25:18:37:14:SJ cbx_lpm_add_sub 2016:05:25:18:37:14:SJ cbx_lpm_compare 2016:05:25:18:37:14:SJ cbx_lpm_decode 2016:05:25:18:37:14:SJ cbx_lpm_mux 2016:05:25:18:37:14:SJ cbx_mgl 2016:05:25:19:47:45:SJ cbx_nadder 2016:05:25:18:37:14:SJ cbx_stratix 2016:05:25:18:37:14:SJ cbx_stratixii 2016:05:25:18:37:14:SJ cbx_stratixiii 2016:05:25:18:37:15:SJ cbx_stratixv 2016:05:25:18:37:15:SJ  VERSION_END
+
 
 -- ============================================================
 -- CNX file retrieval info
@@ -26,4 +28,3 @@
 -- Retrieval info: GEN_FILE: TYPE_NORMAL global_region.cmp TRUE
 -- Retrieval info: GEN_FILE: TYPE_NORMAL global_region.bsf FALSE
 -- Retrieval info: GEN_FILE: TYPE_NORMAL global_region_inst.vhd FALSE
--- Retrieval info: LIB_FILE: arriaii

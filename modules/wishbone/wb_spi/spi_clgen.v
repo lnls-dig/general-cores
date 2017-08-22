@@ -38,6 +38,12 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////
+//  Modifications:
+//      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+//          * added default values for determined start-up state
+//////////////////////////////////////////////////////////////////////
+
 `include "spi_defines.v"
 `include "timescale.v"
 
@@ -56,7 +62,7 @@ module spi_clgen (clk_in, rst, go, enable, last_clk, divider, clk_out, pos_edge,
   output                           pos_edge; // pulse marking positive edge of clk_out
   output                           neg_edge; // pulse marking negative edge of clk_out
                             
-  reg                              clk_out;
+  reg                              clk_out = 1'b0;
   reg                              pos_edge;
   reg                              neg_edge;
                             

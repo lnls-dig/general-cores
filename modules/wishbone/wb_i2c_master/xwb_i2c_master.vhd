@@ -1,3 +1,9 @@
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added assignments to (new) unspecified WB signals
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -52,7 +58,7 @@ architecture rtl of xwb_i2c_master is
       sda_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
       sda_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0));
   end component;
-  
+
 begin  -- rtl
 
 
@@ -80,5 +86,8 @@ begin  -- rtl
       sda_pad_i    => sda_pad_i,
       sda_pad_o    => sda_pad_o,
       sda_padoen_o => sda_padoen_o);
+  
+  slave_o.err <= '0';
+  slave_o.rty <= '0';
 end rtl;
 

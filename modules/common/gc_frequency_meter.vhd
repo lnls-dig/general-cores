@@ -67,14 +67,14 @@ begin
 
   gen_external_timebase : if(g_with_internal_timebase = false) generate
 
-    U_Sync_Gate : gc_sync_ffs
-    generic map (
-      g_sync_edge => "positive")
+    U_Sync_Gate : gc_pulse_synchronizer
     port map (
-      clk_i    => clk_in_i,
-      rst_n_i  => '1',
-      data_i   => pps_p1_i,
-      ppulse_o => gate_pulse_synced);
+      clk_in_i  => clk_sys_i,
+      clk_out_i => clk_in_i,
+      rst_n_i   => rst_n_i,
+      d_ready_o => freq_valid_o,
+      d_p_i     => pps_p1_i,
+      q_p_o     => gate_pulse_synced);
 
   end generate gen_external_timebase;
 

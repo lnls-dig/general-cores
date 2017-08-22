@@ -6,18 +6,19 @@
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
 --              Matthieu Cattin
+--              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2014-07-31
+-- Last update: 2016-11-29
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
 -- Description:
--- Package incorporating simple VHDL modules, which are used
+-- Package incorporating simple VHDL modules and functions, which are used
 -- in the WR and other OHWR projects.
 -------------------------------------------------------------------------------
 --
--- Copyright (c) 2009-2012 CERN
+-- Copyright (c) 2009-2016 CERN
 --
 -- This source file is free software; you can redistribute it
 -- and/or modify it under the terms of the GNU Lesser General
@@ -35,14 +36,6 @@
 -- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2009-09-01  0.9      twlostow        Created
--- 2011-04-18  1.0      twlostow        Added comments & header
--- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
--- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
--- 2014-03-20  1.3      mcattin         Added bicolor led controller
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -274,6 +267,21 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Power-On reset generator of synchronous single reset from multiple
+  -- asynchronous input reset signals
+  ------------------------------------------------------------------------------
+  component gc_single_reset_gen is
+    generic(
+      g_out_reg_depth     : natural :=2;
+      g_rst_in_num        : natural :=2);
+    port (
+      clk_i               : in std_logic;
+      rst_signals_n_a_i   : in std_logic_vector(g_rst_in_num-1 downto 0);
+      rst_n_o             : out std_logic
+    );
+  end component;
+
+  ------------------------------------------------------------------------------
   -- Round robin arbiter
   ------------------------------------------------------------------------------
   component gc_rr_arbiter
@@ -340,7 +348,8 @@ package gencores_pkg is
         -- 0 - SCL and SDA lines are passed only through synchronizer
         -- 1 - one clk_i glitches filtered
         -- 2 - two clk_i glitches filtered
-        g_gf_len : natural := 0
+        g_gf_len        : natural := 0;
+        g_auto_addr_ack : boolean := FALSE
         );
     port
       (
@@ -500,6 +509,21 @@ package gencores_pkg is
       q_o       : out std_logic_vector(g_width-1 downto 0));
   end component gc_sync_register;
 
+  component gc_async_signals_input_stage is
+    generic (
+      g_signal_num                 : integer;
+      g_extended_pulse_width       : integer;
+      g_dglitch_filter_len         : integer);
+    port (
+      clk_i                        : in std_logic;
+      rst_n_i                      : in std_logic;
+      signals_a_i                  : in  std_logic_vector(g_signal_num-1 downto 0);
+      config_active_i              : in  std_logic_vector(g_signal_num-1 downto 0);
+      signals_o                    : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_p1_o                 : out std_logic_vector(g_signal_num-1 downto 0);
+      signals_pN_o                 : out std_logic_vector(g_signal_num-1 downto 0));
+  end component;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
@@ -512,6 +536,9 @@ package gencores_pkg is
   function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
   function log2_ceil(N       : natural) return positive;
+
+  function f_bool2int (b : boolean) return natural;
+  function f_int2bool (n : natural) return boolean;
 
 end package;
 
@@ -622,6 +649,30 @@ package body gencores_pkg is
       return 1 + log2_ceil(N/2);
     else
       return 1 + log2_ceil((N+1)/2);
+    end if;
+  end;
+
+  ------------------------------------------------------------------------------
+  -- Converts a boolean to natural integer (false -> 0, true -> 1)
+  ------------------------------------------------------------------------------
+  function f_bool2int (b : boolean) return natural is
+  begin
+    if b then
+      return 1;
+    else
+      return 0;
+    end if;
+  end;
+
+  ------------------------------------------------------------------------------
+  -- Converts a natural integer to boolean (0 -> false, any positive -> true)
+  ------------------------------------------------------------------------------
+  function f_int2bool (n : natural) return boolean is
+  begin
+    if n = 0 then
+      return false;
+    else
+      return true;
     end if;
   end;
 

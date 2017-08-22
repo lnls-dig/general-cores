@@ -41,6 +41,12 @@
 // Modified by Lucas Russo <lucas.russo@lnls.br> in order to support
 // SPI 3-wire mode (bidirectional data pin)
 
+//////////////////////////////////////////////////////////////////////
+//  Modifications:
+//      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+//          * added default values for determined start-up state
+//////////////////////////////////////////////////////////////////////
+
 `include "spi_defines.v"
 `include "timescale.v"
 
@@ -200,7 +206,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
             data[103:96] <= #Tp p_in[7:0];
         end
       else
-        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_din : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
+        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
     end
   endgenerate
 
@@ -232,7 +238,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
             data[39:32] <= #Tp p_in[7:0];
         end
       else
-        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_din : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
+        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
     end
   endgenerate
 
@@ -272,7 +278,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
             data[SPI_MAX_CHAR-1:16] <= #Tp p_in[SPI_MAX_CHAR-1:16];
         end
       else
-        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_din : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
+        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
     end
   endgenerate
 
@@ -289,7 +295,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
             data[SPI_MAX_CHAR-1:8] <= #Tp p_in[SPI_MAX_CHAR-1:8];
         end
       else
-        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_din : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
+        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
     end
   endgenerate
 
@@ -301,7 +307,7 @@ module spi_shift (clk, rst, latch, byte_sel, len, lsb, go,
       else if (latch[0] && !tip && byte_sel[0])
         data[SPI_MAX_CHAR-1:0] <= #Tp p_in[SPI_MAX_CHAR-1:0];
       else
-        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_din : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
+        data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]] <= #Tp rx_clk ? s_in : data[rx_bit_pos[SPI_CHAR_LEN_BITS-1:0]];
     end
   endgenerate
 

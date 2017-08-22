@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2011-02-21
--- Last update: 2011-10-04
+-- Last update: 2017-02-03
 -- Platform   : FPGA-generics
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -192,6 +192,10 @@ begin  -- syn
       host_rack_o => host_rack,
       regs_o      => regs_out,
       regs_i      => regs_in);
+
+  wb_out.err <= '0';
+  wb_out.rty <= '0';
+  wb_out.int <= '0';
 
   gen_phys_uart : if(g_with_physical_uart) generate
 
