@@ -57,6 +57,20 @@ def mangle_names(string, profile_name):
 	for pattern in LM32_mods:
 		string = string.replace(pattern, pattern + "_"+profile_name)
 	return string;
+
+def remove_unsynthetizable(code):
+  syn_on = True
+  r=""
+  for l in code.split("\n"):
+    if l.lstrip("\t ").startswith("// synthesis translate_off"):
+      syn_on = False
+    elif l.lstrip("\t ").startswith("// synthesis translate_on"):
+      syn_on = True
+
+    if syn_on:
+      r=r+l+"\n"
+
+  return r
                                         
 def gen_customized_version(profile_name, feats):
 	print("GenCfg ", profile_name);
@@ -110,7 +124,8 @@ def gen_customized_version(profile_name, feats):
 		f = open(fname, "r");
 		contents = f.read();
 		mangled = mangle_names(contents, profile_name)
-		ftmp.write(mangled);
+		code = remove_unsynthetizable(mangled)
+		ftmp.write(code);
 		f.close();
 
 	ftmp.close();		
@@ -226,10 +241,10 @@ architecture rtl of xwb_lm32 is \n""");
     variable tmp : std_logic_vector(x'left downto 0);
   begin
     for i  in 0 to x'left loop
-      if(x(i)='X' or x(i)='U' or x(i)='Z') then
-        tmp(i) := '0';
+      if(x(i)='1') then
+        tmp(i) := '1';
       else
-        tmp(i) := x(i);
+        tmp(i) := '0';
       end if;
     end loop;  -- i
     return tmp;

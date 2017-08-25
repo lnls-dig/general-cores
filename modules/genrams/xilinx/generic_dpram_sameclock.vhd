@@ -73,15 +73,44 @@ end generic_dpram_sameclock;
 
 architecture syn of generic_dpram_sameclock is
 
-  constant c_num_bytes : integer := (g_data_width+7)/8;
+  constant c_num_bytes : integer := (g_data_width + 7)/8;
 
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
 
-  function f_memarray_to_ramtype(arr : t_meminit_array) return t_ram_type is
+  impure function f_file_to_ramtype return t_ram_type is
     variable tmp    : t_ram_type;
     variable n, pos : integer;
+    variable mem32  : t_ram32_type(0 to g_size-1);
+    variable mem16  : t_ram16_type(0 to g_size-1);
+    variable mem8   : t_ram8_type(0 to g_size-1);
+    variable arr    : t_meminit_array(0 to g_size-1, g_data_width-1 downto 0);
   begin
+    -- If no file was given, there is nothing to convert, just return
+    if (g_init_file = "" or g_init_file = "none") then
+      tmp := (others=>(others=>'0'));
+      return tmp;
+    end if;
+
+    -- To speed-up most common cases, use dedicated functions
+    -- 32-bit width
+    if (g_data_width = 32) then
+      mem32 := f_load_mem32_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem32);
+    end if;
+    -- 16-bit width
+    if (g_data_width = 16) then
+      mem16 := f_load_mem16_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem16);
+    end if;
+    -- 8-bit width
+    if (g_data_width = 8) then
+      mem8 := f_load_mem8_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem8);
+    end if;
+
+    -- Only for "exotic" sizes do the lengthly (in Vivado 2016.4) copying
+    arr := f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
     pos := 0;
     while(pos < g_size)loop
       n := 0;
@@ -95,12 +124,28 @@ architecture syn of generic_dpram_sameclock is
       end loop;
     end loop;
     return tmp;
-  end f_memarray_to_ramtype;
+  end f_file_to_ramtype;
 
-  function f_file_contents return t_meminit_array is
-  begin
-    return f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
-  end f_file_contents;
+  --impure function InitRamFromFile(fname : in string) return t_ram_type is
+  --  FILE RamFile   : text;
+  --  variable fline : line;
+  --  variable RAM   : t_ram_type;
+  --  variable tmp_bv : bit_vector(g_data_width-1 downto 0);
+  --  variable status   : file_open_status;
+  --begin
+  --  if(fname = "" or fname = "none") then
+  --    RAM := (others=>(others=>'0'));
+  --    return RAM;
+  --  end if;
+
+  --  file_open(status, RamFile, fname, read_mode);
+  --  for I in t_ram_type'range loop
+  --    readline(RamFile, fline);
+  --    read(fline, tmp_bv);
+  --    RAM(I) := to_stdlogicvector(tmp_bv);
+  --  end loop;
+  --  return RAM;
+  --end function;
 
   function f_is_synthesis return boolean is
   begin
@@ -110,7 +155,7 @@ architecture syn of generic_dpram_sameclock is
     return true;
   end f_is_synthesis; 
 
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(f_file_contents);
+  shared variable ram : t_ram_type := f_file_to_ramtype;
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
@@ -130,15 +175,23 @@ begin
   gen_with_byte_enable_readfirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "read_first" or
                                                                      g_addr_conflict_resolution = "dont_care")) generate
 
-    process (clk_i)
+    Port_A: process (clk_i)
     begin
       if rising_edge(clk_i) then
         qa_o <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-        qb_o <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
         for i in 0 to c_num_bytes-1 loop
           if s_we_a(i) = '1' then
             ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := da_i((i+1)*8-1 downto i*8);
           end if;
+        end loop;
+      end if;
+    end process;
+
+    Port_B: process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        qb_o <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
+        for i in 0 to c_num_bytes-1 loop
           if(s_we_b(i) = '1') then
             ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
           end if;
@@ -153,18 +206,27 @@ begin
   gen_without_byte_enable_readfirst : if(g_with_byte_enable = false and (g_addr_conflict_resolution = "read_first" or
                                                                          g_addr_conflict_resolution = "dont_care")) generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if f_is_synthesis then
           qa_o <= ram(to_integer(unsigned(aa_i)));
-          qb_o <= ram(to_integer(unsigned(ab_i)));
         else
           qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
-          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
         end if;
         if(wea_i = '1') then
           ram(to_integer(unsigned(aa_i))) := da_i;
+        end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if f_is_synthesis then
+          qb_o <= ram(to_integer(unsigned(ab_i)));
+        else
+          qb_o <= ram(to_integer(unsigned(ab_i)) mod g_size);
         end if;
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
@@ -175,7 +237,7 @@ begin
 
   gen_without_byte_enable_writefirst : if(g_with_byte_enable = false and g_addr_conflict_resolution = "write_first") generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if(wea_i = '1') then
@@ -188,6 +250,12 @@ begin
             qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
           end if;
         end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
           qb_o                            <= db_i;
@@ -199,14 +267,14 @@ begin
           end if;
         end if;
       end if;
-
     end process;
+
   end generate gen_without_byte_enable_writefirst;
 
 
   gen_without_byte_enable_nochange : if(g_with_byte_enable = false and g_addr_conflict_resolution = "no_change") generate
 
-    process(clk_i)
+    Port_A: process(clk_i)
     begin
       if rising_edge(clk_i) then
         if(wea_i = '1') then
@@ -218,6 +286,12 @@ begin
             qa_o <= ram(to_integer(unsigned(aa_i)) mod g_size);
           end if;
         end if;
+      end if;
+    end process;
+
+    Port_B: process(clk_i)
+    begin
+      if rising_edge(clk_i) then
         if(web_i = '1') then
           ram(to_integer(unsigned(ab_i))) := db_i;
         else
@@ -230,13 +304,12 @@ begin
       end if;
     end process;
 
-
     
   end generate gen_without_byte_enable_nochange;
 
    gen_with_byte_enable_writefirst : if(g_with_byte_enable = true and (g_addr_conflict_resolution = "write_first")) generate
 
-    process (clk_i)
+    Port_A: process (clk_i)
     begin
       if rising_edge(clk_i) then
         for i in 0 to c_num_bytes-1 loop
@@ -246,13 +319,19 @@ begin
           else
             qa_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
           end if;
+        end loop;
+      end if;
+    end process;
 
+    Port_B: process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        for i in 0 to c_num_bytes-1 loop
           if s_we_b(i) = '1' then
             ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8) := db_i((i+1)*8-1 downto i*8);
             qb_o((i+1)*8-1 downto i*8)                                                         <= db_i((i+1)*8-1 downto i*8);
           else
             qb_o((i+1)*8-1 downto i*8) <= ram(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1))((i+1)*8-1 downto i*8);
-
           end if;
         end loop;
       end if;

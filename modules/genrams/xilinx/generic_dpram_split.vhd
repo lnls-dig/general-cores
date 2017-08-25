@@ -23,16 +23,16 @@
 -- However, it looks that ISE is not able to initialize 3-d array that would be
 -- needed in this case.
 -- I.e. this works:
--- shared variable ram0 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 0);
--- shared variable ram1 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 1);
--- shared variable ram2 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 2);
--- shared variable ram3 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 3);
+-- shared variable ram0 : t_split_ram := f_file_to_ramtype(0);
+-- shared variable ram1 : t_split_ram := f_file_to_ramtype(1);
+-- shared variable ram2 : t_split_ram := f_file_to_ramtype(2);
+-- shared variable ram3 : t_split_ram := f_file_to_ramtype(3);
 --
 -- but this doesn't:
 -- type t_split_ram_array is array(0 to 3) of t_split_ram;
--- shared variable ram : t_split_ram_array := (f_memarray_to_ramtype(f_file_contents, 0),
--- f_memarray_to_ramtype(f_file_contents, 1),f_memarray_to_ramtype(f_file_contents, 2),
--- f_memarray_to_ramtype(f_file_contents, 3));
+-- shared variable ram : t_split_ram_array := (f_file_to_ramtype(0),
+-- f_file_to_ramtype(1),f_file_to_ramtype(2),
+-- f_file_to_ramtype(3));
 -- 
 -- By "doesn't work" I mean that ISE does not fail during the synthesis, but RAM
 -- does not get initialized.
@@ -98,34 +98,29 @@ architecture syn of generic_dpram_split is
 
   type t_split_ram is array(0 to g_size-1) of std_logic_vector(7 downto 0);
 
-  function f_memarray_to_ramtype(arr : t_meminit_array; idx : integer) return t_split_ram is
+  impure function f_file_to_ramtype(idx : integer) return t_split_ram is
     variable tmp    : t_split_ram;
-    variable n, pos : integer;
+    variable mem8   : t_ram8_type(0 to g_size-1);
   begin
-    pos := 0;
-    while(pos < g_size)loop
-      n := 0;
-      -- avoid ISE loop iteration limit
-      while (pos < g_size and n<4096) loop
-        for i in 0 to 7 loop
-          tmp(pos)(i) := arr(pos, i+idx*8);
-        end loop;
-        n   := n+1;
-        pos := pos + 1;
-      end loop;
-    end loop;
-    return tmp;
-  end f_memarray_to_ramtype;
+    -- If no file was given, there is nothing to convert, just return
+    if (g_init_file = "" or g_init_file = "none") then
+      tmp := (others=>(others=>'0'));
+      return tmp;
+    end if;
 
-  function f_file_contents return t_meminit_array is
+    mem8 := f_load_mem32_from_file_split(g_init_file, g_size, g_fail_if_file_not_found, idx);
+    return t_split_ram(mem8);
+  end f_file_to_ramtype;
+
+  impure function f_file_contents return t_meminit_array is
   begin
     return f_load_mem_from_file(g_init_file, g_size, c_data_width, g_fail_if_file_not_found);
   end f_file_contents;
 
-  shared variable ram0 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 0);
-  shared variable ram1 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 1);
-  shared variable ram2 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 2);
-  shared variable ram3 : t_split_ram := f_memarray_to_ramtype(f_file_contents, 3);
+  shared variable ram0 : t_split_ram := f_file_to_ramtype(0);
+  shared variable ram1 : t_split_ram := f_file_to_ramtype(1);
+  shared variable ram2 : t_split_ram := f_file_to_ramtype(2);
+  shared variable ram3 : t_split_ram := f_file_to_ramtype(3);
 
   signal s_we_a  : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_we_b  : std_logic_vector(c_num_bytes-1 downto 0);
@@ -147,60 +142,92 @@ begin
   -- yes, I know this is 4 times exactly the same code for ram0,1,2,3,
   -- but ISE fails to initialize BRAM when ram is an array (check Note
   -- in the header of this file).
-  GEN_RAM0: process (clk_i)
+  GEN_RAM0_Port_A: process (clk_i)
   begin
     if rising_edge(clk_i) then
       qa_o(7 downto 0) <= ram0(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-      qb_o(7 downto 0) <= ram0(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_a(0) = '1' then
         ram0(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1)) := da_i(7 downto 0);
       end if;
+    end if;
+  end process;
+
+  GEN_RAM0_Port_B: process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      qb_o(7 downto 0) <= ram0(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_b(0) = '1' then
         ram0(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1)) := db_i(7 downto 0);
       end if;
     end if;
   end process;
 
-  GEN_RAM1: process (clk_i)
+  --------------------------------------------------
+
+  GEN_RAM1_Port_A: process (clk_i)
   begin
     if rising_edge(clk_i) then
       qa_o(15 downto 8) <= ram1(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-      qb_o(15 downto 8) <= ram1(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_a(1) = '1' then
         ram1(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1)) := da_i(15 downto 8);
       end if;
+    end if;
+  end process;
+
+  GEN_RAM1_Port_B: process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      qb_o(15 downto 8) <= ram1(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_b(1) = '1' then
         ram1(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1)) := db_i(15 downto 8);
       end if;
     end if;
   end process;
 
-  GEN_RAM2: process (clk_i)
+  --------------------------------------------------
+
+  GEN_RAM2_Port_A: process (clk_i)
   begin
     if rising_edge(clk_i) then
       qa_o(23 downto 16) <= ram2(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-      qb_o(23 downto 16) <= ram2(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_a(2) = '1' then
         ram2(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1)) := da_i(23 downto 16);
       end if;
+    end if;
+  end process;
+
+  GEN_RAM2_Port_B: process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      qb_o(23 downto 16) <= ram2(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_b(2) = '1' then
         ram2(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1)) := db_i(23 downto 16);
       end if;
     end if;
   end process;
 
-  GEN_RAM3: process (clk_i)
+  --------------------------------------------------
+
+  GEN_RAM3_Port_A: process (clk_i)
   begin
     if rising_edge(clk_i) then
       qa_o(31 downto 24) <= ram3(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1));
-      qb_o(31 downto 24) <= ram3(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_a(3) = '1' then
         ram3(f_check_bounds(to_integer(unsigned(aa_i)), 0, g_size-1)) := da_i(31 downto 24);
       end if;
+    end if;
+  end process;
+
+  GEN_RAM3_Port_B: process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      qb_o(31 downto 24) <= ram3(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1));
       if s_we_b(3) = '1' then
         ram3(f_check_bounds(to_integer(unsigned(ab_i)), 0, g_size-1)) := db_i(31 downto 24);
       end if;
     end if;
   end process;
+
+  --------------------------------------------------
 
 end syn;
