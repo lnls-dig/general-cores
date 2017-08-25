@@ -57,10 +57,19 @@ module lm32_debug (
     csr_write_data,
     csr_x,
 `ifdef CFG_HW_DEBUG_ENABLED
+`ifdef CFG_JTAG_ENABLED
     jtag_csr_write_enable,
     jtag_csr_write_data,
     jtag_csr,
 `endif
+`ifdef CFG_DEBUG_REGS_ENABLED
+   dbg_csr_write_enable_i,
+   dbg_csr_write_data_i,
+   dbg_csr_addr_i,
+`endif
+ `endif
+
+		   
 `ifdef LM32_SINGLE_STEP_ENABLED
     eret_q_x,
     bret_q_x,
@@ -71,6 +80,7 @@ module lm32_debug (
     dcache_refill_request,
 `endif
 `endif
+
     // ----- Outputs -------
 `ifdef LM32_SINGLE_STEP_ENABLED
     dc_ss,
@@ -102,10 +112,19 @@ input csr_write_enable_x;                       // wcsr instruction in X stage
 input [`LM32_WORD_RNG] csr_write_data;          // Data to write to CSR
 input [`LM32_CSR_RNG] csr_x;                    // Which CSR to write
 `ifdef CFG_HW_DEBUG_ENABLED
+`ifdef CFG_JTAG_ENABLED
 input jtag_csr_write_enable;                    // JTAG interface CSR write enable
 input [`LM32_WORD_RNG] jtag_csr_write_data;     // Data to write to CSR
 input [`LM32_CSR_RNG] jtag_csr;                 // Which CSR to write
 `endif
+   `ifdef CFG_DEBUG_REGS_ENABLED
+input dbg_csr_write_enable_i;                         // CSR write enable
+input [`LM32_WORD_RNG] dbg_csr_write_data_i;          // Data to write to specified CSR
+input [`LM32_CSR_RNG] dbg_csr_addr_i;                        // CSR to write
+`endif
+`endif
+
+
 `ifdef LM32_SINGLE_STEP_ENABLED
 input eret_q_x;                                 // eret instruction in X stage
 input bret_q_x;                                 // bret instruction in X stage
@@ -205,9 +224,19 @@ endgenerate
                 
 `ifdef CFG_HW_DEBUG_ENABLED                
 // Multiplex between wcsr instruction writes and debugger writes to the debug CSRs
+`ifdef CFG_JTAG_ENABLED
 assign debug_csr_write_enable = (csr_write_enable_x == `TRUE) || (jtag_csr_write_enable == `TRUE);
 assign debug_csr_write_data = jtag_csr_write_enable == `TRUE ? jtag_csr_write_data : csr_write_data;
 assign debug_csr = jtag_csr_write_enable == `TRUE ? jtag_csr : csr_x;
+`endif
+   
+`ifdef CFG_DEBUG_REGS_ENABLED
+assign debug_csr_write_enable = (csr_write_enable_x == `TRUE) || (dbg_csr_write_enable_i == `TRUE);
+assign debug_csr_write_data = dbg_csr_write_data_i == `TRUE ? dbg_csr_write_data_i : csr_write_data;
+assign debug_csr = dbg_csr_write_enable_i == `TRUE ? dbg_csr_addr_i : csr_x;
+
+`endif
+   
 `else
 assign debug_csr_write_enable = csr_write_enable_x;
 assign debug_csr_write_data = csr_write_data;

@@ -21,6 +21,11 @@
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////////////
+//  Modifications:
+//      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+//          * added default values; typos
+//////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
 //                                                                          //
@@ -81,7 +86,7 @@ module sockit_owm #(
   parameter T_BITS_O = (BTP_O == "1.0") ?   2 :   3,  // bit sample
   parameter T_RCVR_O = (BTP_O == "1.0") ?   2 :   4,  // recovery
   parameter T_IDLE_O = (BTP_O == "1.0") ?  96 : 192,  // idle timer
-  // clock divider ratios (defaults are for a 2MHz clock)
+  // clock divider ratios (defaults are for a 1MHz clock)
   parameter CDR_N = 5-1,  // normal    mode
   parameter CDR_O = 1-1   // overdrive mode
 )(
@@ -143,8 +148,8 @@ wire [PDW-1:0] bus_rdt_pwr_sel;
 
 // clock divider
 reg  [CDW-1:0] div;
-reg  [CDW-1:0] cdr_n;
-reg  [CDW-1:0] cdr_o;
+reg  [CDW-1:0] cdr_n = CDR_N[CDW-1:0];
+reg  [CDW-1:0] cdr_o = CDR_O[CDW-1:0];
 wire           pls;
 
 // cycle control and status
@@ -416,7 +421,7 @@ end
 // IO
 //////////////////////////////////////////////////////////////////////////////
 
-// only one 1-wire line cn be accessed at the same time
+// only one 1-wire line can be accessed at the same time
 assign owr_e   = owr_oen << owr_sel;
 // all 1-wire lines can be powered independently
 assign owr_p   = owr_pwr;

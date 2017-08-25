@@ -1,3 +1,9 @@
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added assignments to (new) unspecified WB signals
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -213,4 +219,5 @@ begin
       end if;
    end process;
 
+   slave_o.int <= '0'; -- TODO: not implemented
 end rtl;

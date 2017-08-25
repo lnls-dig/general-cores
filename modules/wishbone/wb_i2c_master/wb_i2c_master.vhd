@@ -23,7 +23,9 @@
 -- Date        Version  Author          Description
 -- 2010-05-18  1.0      twlostow        Created
 -- 2010-10-04  1.1      twlostow        Added WB slave adapter
--- 2013-09-09	 1.2			greg.d					Multiplexing multiple i2c interfaces
+-- 2013-09-09  1.2      greg.d          Multiplexing multiple i2c interfaces
+-- 2016-08-24  1.3      jpospisi        added assignments to (new) unspecified
+--                                        WB signals
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -149,6 +151,9 @@ begin
   wb_out.dat(7 downto 0)                <= dat_out;
   wb_out.dat(wb_out.dat'left downto 8) <= (others => '0');
 
+  wb_out.err <= '0';
+  wb_out.rty <= '0';
+  wb_out.stall <= '0';
 
 end rtl;
 

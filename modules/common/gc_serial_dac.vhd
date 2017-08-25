@@ -37,6 +37,8 @@
 -- Date        Version  Author          Description
 -- 2009-01-24  1.0      paas            Created
 -- 2010-02-25  1.1      twlostow        Modified for rev 1.1 switch
+-- 2016-08-24  1.2      jpospisi        removed synchronous reset from
+--                                        sensitivity lists
 -------------------------------------------------------------------------------
 
 library IEEE;
@@ -120,7 +122,7 @@ begin
 
   iValidValue <= load_i;
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -153,7 +155,7 @@ begin
   end process;
 
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -170,7 +172,7 @@ begin
     end if;
   end process;
 
-  process(clk_i, rst_n_i)
+  process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then

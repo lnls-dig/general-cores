@@ -22,6 +22,9 @@
 -- Revisions  :
 -- Date        Version  Author          Description
 -- 2011-09-18  1.0      twlostow        Created
+-- 2016-08-24  1.1      jpospisi        propagated CDR_N/O generics up the
+--                                        hierarchy; added assignments to (new)
+--                                        unspecified WB signals
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -37,7 +40,9 @@ entity wb_onewire_master is
     g_address_granularity : t_wishbone_address_granularity := WORD;
     g_num_ports           : integer                        := 1;
     g_ow_btp_normal       : string                         := "5.0";
-    g_ow_btp_overdrive    : string                         := "1.0"
+    g_ow_btp_overdrive    : string                         := "1.0";
+    g_CDR_N               : integer                        := 4; -- normal    mode
+    g_CDR_O               : integer                        := 0  -- overdrive mode
     );  
 
   port (
@@ -69,7 +74,9 @@ architecture rtl of wb_onewire_master is
     generic(
       BTP_N : string;
       BTP_O : string;
-      OWN   : integer);
+      OWN   : integer;
+      CDR_N : integer;
+      CDR_O : integer);
 
     port(
       clk     : in  std_logic;
@@ -153,7 +160,9 @@ begin  -- rtl
     generic map (
       BTP_N => g_ow_btp_normal,
       BTP_O => g_ow_btp_overdrive,
-      OWN   => g_num_ports)
+      OWN   => g_num_ports,
+      CDR_N => g_CDR_N,
+      CDR_O => g_CDR_O)
     port map (
       clk     => clk_sys_i,
       rst     => rst,
@@ -166,5 +175,10 @@ begin  -- rtl
       owr_p   => owr_pwren_o,
       owr_e   => owr_en_o,
       owr_i   => owr_i);
+
+  adp_in.err <= '0';
+  adp_in.rty <= '0';
+  adp_in.stall <= '0';
+
 end rtl;
 

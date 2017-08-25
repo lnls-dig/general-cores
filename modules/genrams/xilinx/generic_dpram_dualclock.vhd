@@ -79,20 +79,39 @@ architecture syn of generic_dpram_dualclock is
 
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
 
-  impure function f_memarray_to_ramtype(mem_size : integer; mem_width : integer) return t_ram_type is
+  impure function f_file_to_ramtype return t_ram_type is
     variable tmp    : t_ram_type;
-    variable arr    : t_meminit_array(0 to mem_size-1, mem_width-1 downto 0);
     variable n, pos : integer;
+    variable mem32  : t_ram32_type(0 to g_size-1);
+    variable mem16  : t_ram16_type(0 to g_size-1);
+    variable mem8   : t_ram8_type(0 to g_size-1);
+    variable arr    : t_meminit_array(0 to g_size-1, g_data_width-1 downto 0);
   begin
-    if(g_init_file = "" or g_init_file = "none") then
-      for i in 0 to g_size-1 loop
-        tmp(i)(g_data_width-1 downto 0) := (others =>'0');
-      end loop;
-    return tmp;
+    -- If no file was given, there is nothing to convert, just return
+    if (g_init_file = "" or g_init_file = "none") then
+      tmp := (others=>(others=>'0'));
+      return tmp;
     end if;
-      
-    arr := f_load_mem_from_file(g_init_file, mem_size, mem_width, g_fail_if_file_not_found);
 
+    -- To speed-up most common cases, use dedicated functions
+    -- 32-bit width
+    if (g_data_width = 32) then
+      mem32 := f_load_mem32_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem32);
+    end if;
+    -- 16-bit width
+    if (g_data_width = 16) then
+      mem16 := f_load_mem16_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem16);
+    end if;
+    -- 8-bit width
+    if (g_data_width = 8) then
+      mem8 := f_load_mem8_from_file(g_init_file, g_size, g_fail_if_file_not_found);
+      return t_ram_type(mem8);
+    end if;
+
+    -- Only for "exotic" sizes do the lengthly (in Vivado 2016.4) copying
+    arr := f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
     pos := 0;
     while(pos < g_size)loop
       n := 0;
@@ -101,12 +120,12 @@ architecture syn of generic_dpram_dualclock is
         for i in 0 to g_data_width-1 loop
           tmp(pos)(i) := arr(pos, i);
         end loop;  -- i
-        n := n+1;
+        n   := n+1;
         pos := pos + 1;
       end loop;
     end loop;
     return tmp;
-  end f_memarray_to_ramtype;
+  end f_file_to_ramtype;
 
   function f_is_synthesis return boolean is
   begin
@@ -116,7 +135,7 @@ architecture syn of generic_dpram_dualclock is
     return true;
   end f_is_synthesis; 
 
-  shared variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
+  shared variable ram : t_ram_type := f_file_to_ramtype;
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);

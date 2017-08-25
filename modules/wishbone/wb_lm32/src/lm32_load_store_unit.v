@@ -45,11 +45,12 @@
 // Module interface
 /////////////////////////////////////////////////////
 
-module lm32_load_store_unit (
+module lm32_load_store_unit 
+(
     // ----- Inputs -------
     clk_i,
     rst_i,
-    // From pipeline
+ // From pipeline
     stall_a,
     stall_x,
     stall_m,
@@ -71,9 +72,6 @@ module lm32_load_store_unit (
 `ifdef CFG_DCACHE_ENABLED
     dflush,
 `endif
-`ifdef CFG_IROM_ENABLED
-    irom_data_m,
-`endif
     // From Wishbone
     d_dat_i,
     d_ack_i,
@@ -87,11 +85,14 @@ module lm32_load_store_unit (
     dcache_stall_request,
     dcache_refilling,
 `endif    
-`ifdef CFG_IROM_ENABLED
-    irom_store_data_m,
-    irom_address_xm,
-    irom_we_xm,
-    irom_stall_request_x,
+`ifdef CFG_IRAM_ENABLED
+    iram_d_adr_o,
+    iram_d_dat_o,
+    iram_d_dat_i,
+    iram_d_sel_o,
+    iram_d_we_o,
+    iram_d_en_o,
+    iram_stall_request_x,
 `endif			     
     load_data_w,
     stall_wb_load,
@@ -126,7 +127,8 @@ localparam addr_offset_msb = (addr_offset_lsb+addr_offset_width-1);
 // Inputs
 /////////////////////////////////////////////////////
 
-input clk_i;                                            // Clock 
+   input clk_i;                                            // Clock 
+   
 input rst_i;                                            // Reset
 
 input stall_a;                                          // A stage stall 
@@ -153,10 +155,23 @@ input [`LM32_SIZE_RNG] size_x;                          // Size of load or store
 input dflush;                                           // Flush the data cache
 `endif
 
-`ifdef CFG_IROM_ENABLED   
-input [`LM32_WORD_RNG] irom_data_m;                     // Data from Instruction-ROM
+`ifdef CFG_IRAM_ENABLED   
+   output [31:0] iram_d_adr_o;
+   output [31:0] iram_d_dat_o;
+   input [31:0]  iram_d_dat_i;
+   output [3:0]  iram_d_sel_o;
+   output        iram_d_en_o, iram_d_we_o;
+   output 	 iram_stall_request_x;
+   
 `endif
 
+   reg 		 [31:0] iram_dat_d0;
+   reg 		 iram_en_d0;
+   wire 	 iram_en;
+   wire [31:0] 	 iram_data;
+   
+   
+   
 input [`LM32_WORD_RNG] d_dat_i;                         // Data Wishbone interface read data
 input d_ack_i;                                          // Data Wishbone interface acknowledgement
 input d_err_i;                                          // Data Wishbone interface error
@@ -177,16 +192,6 @@ output dcache_refilling;
 wire   dcache_refilling;
 `endif
 
-`ifdef CFG_IROM_ENABLED   
-output irom_store_data_m;                               // Store data to Instruction ROM
-wire   [`LM32_WORD_RNG] irom_store_data_m;
-output [`LM32_WORD_RNG] irom_address_xm;                // Load/store address to Instruction ROM
-wire   [`LM32_WORD_RNG] irom_address_xm;
-output irom_we_xm;                                      // Write-enable of 2nd port of Instruction ROM
-wire   irom_we_xm;
-output irom_stall_request_x;                            // Stall instruction in D stage  
-wire   irom_stall_request_x;                            
-`endif
    
 output [`LM32_WORD_RNG] load_data_w;                    // Result of a load instruction
 reg    [`LM32_WORD_RNG] load_data_w;
@@ -228,6 +233,8 @@ reg [`LM32_BYTE_SELECT_RNG] byte_enable_m;
 wire [`LM32_WORD_RNG] data_m;
 reg [`LM32_WORD_RNG] data_w;
 
+   
+
 `ifdef CFG_DCACHE_ENABLED
 wire dcache_select_x;                                   // Select data cache to load from / store to
 reg dcache_select_m;
@@ -249,14 +256,19 @@ wire [`LM32_WORD_RNG] dram_data_m;                      // Data read from data R
 wire [`LM32_WORD_RNG] dram_store_data_m;                // Data to write to RAM
 `endif
 wire wb_select_x;                                       // Select Wishbone to load from / store to
-`ifdef CFG_IROM_ENABLED
-wire irom_select_x;                                     // Select instruction ROM to load from / store to
-reg  irom_select_m;
+`ifdef CFG_IRAM_ENABLED
+wire iram_select_x;                                     // Select instruction ROM to load from / store 
+// to
+reg  iram_enable_m;
+   reg iram_select_m;
+   reg iram_d_en_d0;
+   
+
 `endif
 reg wb_select_m;
 reg [`LM32_WORD_RNG] wb_data_m;                         // Data read from Wishbone
 reg wb_load_complete;                                   // Indicates when a Wishbone load is complete
-
+   
 /////////////////////////////////////////////////////
 // Functions
 /////////////////////////////////////////////////////
@@ -267,89 +279,6 @@ reg wb_load_complete;                                   // Indicates when a Wish
 // Instantiations
 /////////////////////////////////////////////////////
 
-`ifdef CFG_DRAM_ENABLED
-   // Data RAM
-   pmi_ram_dp_true 
-     #(
-       // ----- Parameters -------
-       .pmi_family             (`LATTICE_FAMILY),
-
-       //.pmi_addr_depth_a       (1 << (clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_addr_width_a       ((clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_data_width_a       (`LM32_WORD_WIDTH),
-       //.pmi_addr_depth_b       (1 << (clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_addr_width_b       ((clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)),
-       //.pmi_data_width_b       (`LM32_WORD_WIDTH),
-	
-       .pmi_addr_depth_a       (`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1),
-       .pmi_addr_width_a       (clogb2_v1(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)),
-       .pmi_data_width_a       (`LM32_WORD_WIDTH),
-       .pmi_addr_depth_b       (`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1),
-       .pmi_addr_width_b       (clogb2_v1(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)),
-       .pmi_data_width_b       (`LM32_WORD_WIDTH),
-
-       .pmi_regmode_a          ("noreg"),
-       .pmi_regmode_b          ("noreg"),
-       .pmi_gsr                ("enable"),
-       .pmi_resetmode          ("sync"),
-       .pmi_init_file          (`CFG_DRAM_INIT_FILE),
-       .pmi_init_file_format   (`CFG_DRAM_INIT_FILE_FORMAT),
-       .module_type            ("pmi_ram_dp_true")
-       ) 
-       ram (
-	    // ----- Inputs -------
-	    .ClockA                 (clk_i),
-	    .ClockB                 (clk_i),
-	    .ResetA                 (rst_i),
-	    .ResetB                 (rst_i),
-	    .DataInA                ({32{1'b0}}),
-	    .DataInB                (dram_store_data_m),
-	    .AddressA               (load_store_address_x[(clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)+2-1:2]),
-	    .AddressB               (load_store_address_m[(clogb2(`CFG_DRAM_LIMIT/4-`CFG_DRAM_BASE_ADDRESS/4+1)-1)+2-1:2]),
-	    // .ClockEnA               (!stall_x & (load_x | store_x)),
-	    .ClockEnA               (!stall_x),
-	    .ClockEnB               (!stall_m),
-	    .WrA                    (`FALSE),
-	    .WrB                    (store_q_m & dram_select_m), 
-	    // ----- Outputs -------
-	    .QA                     (dram_data_out),
-	    .QB                     ()
-	    );
-   
-   /*----------------------------------------------------------------------
-    EBRs cannot perform reads from location 'written to' on the same clock
-    edge. Therefore bypass logic is required to latch the store'd value
-    and use it for the load (instead of value from memory).
-    ----------------------------------------------------------------------*/
-   always @(posedge clk_i `CFG_RESET_SENSITIVITY)
-     if (rst_i == `TRUE)
-       begin
-	  dram_bypass_en <= `FALSE;
-	  dram_bypass_data <= 0;
-       end
-     else
-       begin
-	  if (stall_x == `FALSE)
-	    dram_bypass_data <= dram_store_data_m;
-	  
-	  if (   (stall_m == `FALSE) 
-              && (stall_x == `FALSE)
-	      && (store_q_m == `TRUE)
-	      && (   (load_x == `TRUE)
-	          || (store_x == `TRUE)
-		 )
-	      && (load_store_address_x[(`LM32_WORD_WIDTH-1):2] == load_store_address_m[(`LM32_WORD_WIDTH-1):2])
-	     )
-	    dram_bypass_en <= `TRUE;
-	  else
-	    if (   (dram_bypass_en == `TRUE)
-		&& (stall_x == `FALSE)
-	       )
-	      dram_bypass_en <= `FALSE;
-       end
-   
-   assign dram_data_m = dram_bypass_en ? dram_bypass_data : dram_data_out;
-`endif
 
 `ifdef CFG_DCACHE_ENABLED
 // Data cache
@@ -395,9 +324,29 @@ lm32_dcache #(
                           && (load_store_address_x <= `CFG_DRAM_LIMIT);
 `endif
 
-`ifdef CFG_IROM_ENABLED
-   assign irom_select_x =    (load_store_address_x >= `CFG_IROM_BASE_ADDRESS) 
-                          && (load_store_address_x <= `CFG_IROM_LIMIT);
+`ifdef CFG_IRAM_ENABLED
+   assign iram_select_x =    (load_store_address_x >= `CFG_IRAM_BASE_ADDRESS) 
+                          && (load_store_address_x <= `CFG_IRAM_LIMIT);
+
+   assign iram_d_sel_o = byte_enable_m;
+   assign iram_en = !stall_x || !stall_m;
+
+   always@(posedge clk_i)
+     iram_en_d0 <= iram_en;
+
+/* -----\/----- EXCLUDED -----\/-----
+
+   always@(posedge clk_i)
+     begin
+     iram_en_d0 <= iram_en;
+     if(iram_en_d0)
+       iram_dat_d0 <= iram_d_dat_i;
+     end
+
+   assign iram_data = (!iram_en_d0) ? iram_dat_d0 : iram_d_dat_i;
+ -----/\----- EXCLUDED -----/\----- */
+   
+   
 `endif
    
 `ifdef CFG_DCACHE_ENABLED
@@ -406,8 +355,8 @@ lm32_dcache #(
 `ifdef CFG_DRAM_ENABLED
                             && (dram_select_x == `FALSE)
 `endif
-`ifdef CFG_IROM_ENABLED
-                            && (irom_select_x == `FALSE)
+`ifdef CFG_IRAM_ENABLED
+                            && (iram_select_x == `FALSE)
 `endif
                      ;
 `endif
@@ -419,8 +368,8 @@ lm32_dcache #(
 `ifdef CFG_DRAM_ENABLED
                         && !dram_select_x
 `endif
-`ifdef CFG_IROM_ENABLED
-                        && !irom_select_x
+`ifdef CFG_IRAM_ENABLED
+                        && !iram_select_x
 `endif
                      ;
 
@@ -450,53 +399,28 @@ begin
     endcase
 end
 
-`ifdef CFG_DRAM_ENABLED
-// Only replace selected bytes
-assign dram_store_data_m[`LM32_BYTE_0_RNG] = byte_enable_m[0] ? store_data_m[`LM32_BYTE_0_RNG] : dram_data_m[`LM32_BYTE_0_RNG];
-assign dram_store_data_m[`LM32_BYTE_1_RNG] = byte_enable_m[1] ? store_data_m[`LM32_BYTE_1_RNG] : dram_data_m[`LM32_BYTE_1_RNG];
-assign dram_store_data_m[`LM32_BYTE_2_RNG] = byte_enable_m[2] ? store_data_m[`LM32_BYTE_2_RNG] : dram_data_m[`LM32_BYTE_2_RNG];
-assign dram_store_data_m[`LM32_BYTE_3_RNG] = byte_enable_m[3] ? store_data_m[`LM32_BYTE_3_RNG] : dram_data_m[`LM32_BYTE_3_RNG];
-`endif
+`ifdef CFG_IRAM_ENABLED
+   assign iram_d_dat_o = store_data_m;
+   assign iram_d_adr_o = (iram_enable_m && store_q_m) ? load_store_address_m : load_store_address_x;
 
-`ifdef CFG_IROM_ENABLED
-// Only replace selected bytes
-assign irom_store_data_m[`LM32_BYTE_0_RNG] = byte_enable_m[0] ? store_data_m[`LM32_BYTE_0_RNG] : irom_data_m[`LM32_BYTE_0_RNG];
-assign irom_store_data_m[`LM32_BYTE_1_RNG] = byte_enable_m[1] ? store_data_m[`LM32_BYTE_1_RNG] : irom_data_m[`LM32_BYTE_1_RNG];
-assign irom_store_data_m[`LM32_BYTE_2_RNG] = byte_enable_m[2] ? store_data_m[`LM32_BYTE_2_RNG] : irom_data_m[`LM32_BYTE_2_RNG];
-assign irom_store_data_m[`LM32_BYTE_3_RNG] = byte_enable_m[3] ? store_data_m[`LM32_BYTE_3_RNG] : irom_data_m[`LM32_BYTE_3_RNG];
-`endif
-
-`ifdef CFG_IROM_ENABLED
-   // Instead of implementing a byte-addressable instruction ROM (for store byte instruction),
-   // a load-and-store architecture is used wherein a 32-bit value is loaded, the requisite
-   // byte is replaced, and the whole 32-bit value is written back
-   
-   assign irom_address_xm = ((irom_select_m == `TRUE) && (store_q_m == `TRUE))
-	                    ? load_store_address_m
-	                    : load_store_address_x;
+   assign iram_stall_request_x =    (iram_select_x == `TRUE)
+	                         && (store_q_x == `TRUE);
    
    // All store instructions perform a write operation in the M stage
-   assign irom_we_xm =    (irom_select_m == `TRUE)
-	               && (store_q_m == `TRUE);
-   
-   // A single port in instruction ROM is available to load-store unit for doing loads/stores.
-   // Since every store requires a load (in X stage) and then a store (in M stage), we cannot
-   // allow load (or store) instructions sequentially after the store instructions to proceed 
-   // until the store instruction has vacated M stage (i.e., completed the store operation)
-   assign irom_stall_request_x =    (irom_select_x == `TRUE)
-	                         && (store_q_x == `TRUE);
+   assign iram_d_we_o =    (iram_enable_m == `TRUE) && (store_q_m == `TRUE);
+   assign iram_d_en_o = !stall_m || !stall_x;
 `endif
    
 `ifdef CFG_DCACHE_ENABLED
  `ifdef CFG_DRAM_ENABLED
-  `ifdef CFG_IROM_ENABLED
+  `ifdef CFG_IRAM_ENABLED
    // WB + DC + DRAM + IROM
    assign data_m = wb_select_m == `TRUE 
                    ? wb_data_m
                    : dram_select_m == `TRUE 
                      ? dram_data_m
-                     : irom_select_m == `TRUE
-                       ? irom_data_m 
+                     : iram_enable_m == `TRUE
+                   ? iram_d_dat_i 
                        : dcache_data_m;
   `else
    // WB + DC + DRAM
@@ -537,11 +461,12 @@ assign irom_store_data_m[`LM32_BYTE_3_RNG] = byte_enable_m[3] ? store_data_m[`LM
                    : dram_data_m;
   `endif
  `else
-  `ifdef CFG_IROM_ENABLED
-   // WB + IROM
+  `ifdef CFG_IRAM_ENABLED
+   // WB + IRAM
    assign data_m = wb_select_m == `TRUE 
                    ? wb_data_m 
-                   : irom_data_m;
+                   : iram_d_dat_i;
+
   `else
    // WB
    assign data_m = wb_data_m;
@@ -620,7 +545,7 @@ begin
         dcache_refill_ready <= `FALSE;
 `endif                
     end
-    else
+    else 
     begin
 `ifdef CFG_DCACHE_ENABLED 
         // Refill ready should only be asserted for a single cycle               
@@ -661,7 +586,7 @@ begin
                 $display ("Data bus error. Address: %x", d_adr_o);
             // synthesis translate_on
         end
-        else
+        else 
         begin
 `ifdef CFG_DCACHE_ENABLED                
             if (dcache_refill_request == `TRUE)
@@ -682,8 +607,8 @@ begin
 `ifdef CFG_DRAM_ENABLED
                      && (dram_select_m == `FALSE)
 `endif
-`ifdef CFG_IROM_ENABLED
-		     && (irom_select_m == `FALSE)
+`ifdef CFG_IRAM_ENABLED
+		     && (iram_enable_m == `FALSE)
 `endif			
                     )
             begin
@@ -741,8 +666,9 @@ begin
 `ifdef CFG_DRAM_ENABLED
         dram_select_m <= `FALSE;
 `endif
-`ifdef CFG_IROM_ENABLED
-        irom_select_m <= `FALSE;
+`ifdef CFG_IRAM_ENABLED
+        iram_enable_m <= `FALSE;
+			  iram_select_m <= `FALSE;
 `endif
         wb_select_m <= `FALSE;        
     end
@@ -760,8 +686,9 @@ begin
 `ifdef CFG_DRAM_ENABLED
             dram_select_m <= dram_select_x;
 `endif
-`ifdef CFG_IROM_ENABLED
-            irom_select_m <= irom_select_x;
+`ifdef CFG_IRAM_ENABLED
+            iram_enable_m <= iram_select_x;
+			  iram_select_m <= iram_select_x;
 `endif
             wb_select_m <= wb_select_x;
         end
@@ -780,7 +707,12 @@ begin
     else
     begin
         size_w <= size_m;
+
+`ifdef CFG_IRAM_ENABLED
+       if(!iram_select_m || iram_en_d0)
+`endif
         data_w <= data_m;
+
         sign_extend_w <= sign_extend_m;
     end
 end
@@ -797,9 +729,9 @@ begin
     if (((load_q_m == `TRUE) || (store_q_m == `TRUE)) && (stall_m == `FALSE)) 
     begin
         if ((size_m === `LM32_SIZE_HWORD) && (load_store_address_m[0] !== 1'b0))
-            $display ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned halfword access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
         if ((size_m === `LM32_SIZE_WORD) && (load_store_address_m[1:0] !== 2'b00))
-            $display ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
+            $warning ("Warning: Non-aligned word access. Address: 0x%0x Time: %0t.", load_store_address_m, $time);
     end
 end
 

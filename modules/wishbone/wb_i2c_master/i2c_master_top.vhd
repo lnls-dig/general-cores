@@ -35,6 +35,12 @@
 ----                                                             ----
 ---------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added default values for determined start-up state
+--------------------------------------------------------------------------------
+
 --  CVS Log
 --
 --  $Id: i2c_master_top.vhd,v 1.8 2009-01-20 10:38:45 rherveille Exp $
@@ -88,12 +94,13 @@ entity i2c_master_top is
             arst_i        : in  std_logic := not ARST_LVL;    -- asynchronous reset
             wb_adr_i      : in  std_logic_vector(2 downto 0); -- lower address bits
             wb_dat_i      : in  std_logic_vector(7 downto 0); -- Databus input
-            wb_dat_o      : out std_logic_vector(7 downto 0); -- Databus output
+            wb_dat_o      : out std_logic_vector(7 downto 0) := (others => '0');
+                                                              -- Databus output
             wb_we_i       : in  std_logic;                    -- Write enable input
             wb_stb_i      : in  std_logic;                    -- Strobe signals / core select signal
             wb_cyc_i      : in  std_logic;                    -- Valid bus cycle input
             wb_ack_o      : out std_logic;                    -- Bus cycle acknowledge output
-            wb_inta_o     : out std_logic;                    -- interrupt request output signal
+            wb_inta_o     : out std_logic := '0';             -- interrupt request output signal
 
             -- i2c lines
             scl_pad_i     : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line input
@@ -141,12 +148,12 @@ architecture structural of i2c_master_top is
     end component i2c_master_byte_ctrl;
 
     -- registers
-    signal prer : unsigned(15 downto 0);             -- clock prescale register
-    signal ctr  : std_logic_vector(7 downto 0);      -- control register
-    signal txr  : std_logic_vector(7 downto 0);      -- transmit register
-    signal rxr  : std_logic_vector(7 downto 0);      -- receive register
-    signal cr   : std_logic_vector(7 downto 0);      -- command register
-    signal sr   : std_logic_vector(7 downto 0);      -- status register
+    signal prer : unsigned(15 downto 0) := (others => '1');         -- clock prescale register
+    signal ctr  : std_logic_vector(7 downto 0) := (others => '0');  -- control register
+    signal txr  : std_logic_vector(7 downto 0) := (others => '0');  -- transmit register
+    signal rxr  : std_logic_vector(7 downto 0);                     -- receive register
+    signal cr   : std_logic_vector(7 downto 0) := (others => '0');  -- command register
+    signal sr   : std_logic_vector(7 downto 0);                     -- status register
 
     -- internal reset signal
     signal rst_i : std_logic;
@@ -155,7 +162,7 @@ architecture structural of i2c_master_top is
     signal wb_wacc : std_logic;
 
     -- internal acknowledge signal
-    signal iack_o : std_logic;
+    signal iack_o : std_logic := '0';
 
     -- done signal: command completed, clear command register
     signal done : std_logic;
@@ -167,16 +174,18 @@ architecture structural of i2c_master_top is
     signal ien     : std_logic;                      -- interrupt enable signal
 
     -- status register signals
-    signal irxack, rxack : std_logic;                -- received aknowledge from slave
-    signal tip           : std_logic;                -- transfer in progress
-    signal irq_flag      : std_logic;                -- interrupt pending flag
+    signal irxack        : std_logic;                -- received aknowledge from slave
+    signal rxack         : std_logic := '0';         -- received aknowledge from slave
+    signal tip           : std_logic := '0';         -- transfer in progress
+    signal irq_flag      : std_logic := '0';         -- interrupt pending flag
     signal i2c_busy      : std_logic;                -- i2c bus busy (start signal detected)
-    signal i2c_al, al    : std_logic;                -- arbitration lost
+    signal al            : std_logic := '0';         -- arbitration lost
+    signal i2c_al        : std_logic;                -- arbitration lost
 
     signal scl_in, scl_out, scl_oen : std_logic;
     signal sda_in, sda_out, sda_oen : std_logic;
-    signal if_num   : std_logic_vector(3 downto 0);
-    signal if_busy  : std_logic;
+    signal if_num   : std_logic_vector(3 downto 0) := (others => '0');
+    signal if_busy  : std_logic := '0';
 
 begin
     -- generate internal reset signal

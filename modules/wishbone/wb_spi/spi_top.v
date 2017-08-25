@@ -41,11 +41,13 @@
 // Modified by Lucas Russo <lucas.russo@lnls.br> in order to support
 // SPI 3-wire mode (bidirectional data pin)
 //////////////////////////////////////////////////////////////////////
-// Modified to use parameters (generics) for configuration rather
-// than constants from spi_defines file, G.Daniluk CERN 2013
-//
+//  Modifications:
+//      2013: by G. Daniluk, CERN
+//          * Modified to use parameters (generics) for configuration
+//            rather than constants from spi_defines file.
+//      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+//          * added default values for determined start-up state
 //////////////////////////////////////////////////////////////////////
-
 
 `include "spi_defines.v"
 `include "timescale.v"
@@ -95,8 +97,10 @@ module spi_top
                                                
   // Internal signals
   reg        [SPI_DIVIDER_LEN-1:0] divider;          // Divider register
-  reg       [`SPI_CTRL_BIT_NB-1:0] ctrl;             // Control and status register
-  reg              [SPI_SS_NB-1:0] ss;               // Slave select register
+  reg       [`SPI_CTRL_BIT_NB-1:0] ctrl = {`SPI_CTRL_BIT_NB{1'b0}};
+                                                     // Control and status register
+  reg              [SPI_SS_NB-1:0] ss = {SPI_SS_NB{1'b0}};
+                                                     // Slave select register
   reg                     [32-1:0] wb_dat;           // wb data out
   wire          [SPI_MAX_CHAR-1:0] rx;               // Rx register
   wire                             rx_negedge;       // miso is sampled on negative edge
@@ -282,7 +286,7 @@ module spi_top
           if (wb_sel_i[0])
             ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
           if (wb_sel_i[1])
-            ctrl[16-1:8] <= #Tp wb_dat_i[16-1:8];
+            ctrl[`SPI_CTRL_BIT_NB-1:8] <= #Tp wb_dat_i[`SPI_CTRL_BIT_NB-1:8];
         end
         ctrl[`SPI_CTRL_THREE_MODE] <= #Tp g_three_wire_mode;
       end
@@ -369,7 +373,7 @@ module spi_top
                    .divider(divider), .clk_out(sclk_pad_o), .pos_edge(pos_edge), 
                    .neg_edge(neg_edge));
   
-  spi_shift #(.g_three_wire_mode(g_three_wire_mode), .SPI_MAX_CHAR(SPI_MAX_CHAR), .SPI_CHAR_LEN_BITS(SPI_CHAR_LEN_BITS)) shift 
+  spi_shift #(.SPI_MAX_CHAR(SPI_MAX_CHAR), .SPI_CHAR_LEN_BITS(SPI_CHAR_LEN_BITS)) shift 
                   (.clk(wb_clk_i), .rst(wb_rst_i), .len(char_len[SPI_CHAR_LEN_BITS-1:0]),
                    .latch(spi_tx_sel[3:0] & {4{wb_we_i}}), .byte_sel(wb_sel_i), .lsb(lsb), 
                    .go(go), .pos_edge(pos_edge), .neg_edge(neg_edge), 
@@ -379,3 +383,4 @@ module spi_top
                    .s_clk(sclk_pad_o), .s_in(miso_pad_i), .s_out(mosi_pad_o),
                    .s_oe_n(miosio_oen_o));
 endmodule
+  

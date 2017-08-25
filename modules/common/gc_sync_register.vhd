@@ -1,3 +1,10 @@
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added ASYNC_REG attribute for better timing analysis/simulation
+--            in Xilinx tools
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -12,6 +19,8 @@ entity gc_sync_register is
 
 end gc_sync_register;
 
+-- make Altera Quartus quiet regarding unknown attributes:
+-- altera message_off 10335
 
 architecture rtl of gc_sync_register is
 
@@ -28,6 +37,11 @@ architecture rtl of gc_sync_register is
   attribute keep of sync0               : signal is "true";
   attribute keep of sync1               : signal is "true";
   
+  attribute async_reg                        : string;
+  attribute async_reg of gc_sync_register_in : signal is "true";
+  attribute async_reg of sync0               : signal is "true";
+  attribute async_reg of sync1               : signal is "true";
+
 begin
 
   process(clk_i, rst_n_a_i)

@@ -73,8 +73,20 @@ module lm32_cpu (
     clk_i,
 `ifdef CFG_EBR_NEGEDGE_REGISTER_FILE
     clk_n_i,
-`endif    
+`endif
     rst_i,
+`ifdef CFG_ENABLE_PIN_ENABLED
+    enable_i,
+`endif
+`ifdef CFG_DEBUG_REGS_ENABLED
+   dbg_exception_o,
+   dbg_csr_write_enable_i,
+   dbg_csr_write_data_i,
+   dbg_csr_addr_i,
+   dbg_break_i,
+   dbg_reset_i,
+`endif
+
     // From external devices
 `ifdef CFG_INTERRUPTS_ENABLED
     interrupt,
@@ -135,7 +147,20 @@ module lm32_cpu (
     I_CTI_O,
     I_LOCK_O,
     I_BTE_O,
+`endif //  `ifdef CFG_IWB_ENABLED
+`ifdef CFG_IRAM_ENABLED
+    iram_i_adr_o,
+    iram_i_dat_i,
+    iram_i_en_o,
+    iram_d_adr_o,
+    iram_d_dat_o,
+    iram_d_dat_i,
+    iram_d_sel_o,
+    iram_d_we_o,
+    iram_d_en_o,       
 `endif
+		 
+		 
     // Data Wishbone master
     D_DAT_O,
     D_ADR_O,
@@ -146,6 +171,8 @@ module lm32_cpu (
     D_CTI_O,
     D_LOCK_O,
     D_BTE_O
+
+		 
     );
 
 /////////////////////////////////////////////////////
@@ -222,7 +249,7 @@ input [`LM32_WORD_RNG] user_result;             // User-defined instruction resu
 input user_complete;                            // User-defined instruction execution is complete
 `endif    
 
-`ifdef CFG_JTAG_ENABLED
+`ifdef CFG_JTAG_ENABLED 
 input jtag_clk;                                 // JTAG clock
 input jtag_update;                              // JTAG state machine is in data register update state
 input [`LM32_BYTE_RNG] jtag_reg_q;              
@@ -245,6 +272,12 @@ input D_RTY_I;                                  // Data Wishbone interface retry
 // Outputs
 /////////////////////////////////////////////////////
 
+`ifdef CFG_ENABLE_PIN_ENABLED
+   input enable_i;
+   wire  enable_i;
+`endif
+   
+   
 `ifdef CFG_TRACE_ENABLED
 output [`LM32_PC_RNG] trace_pc;                 // PC to trace
 reg    [`LM32_PC_RNG] trace_pc;
@@ -320,6 +353,14 @@ wire   D_LOCK_O;
 output [`LM32_BTYPE_RNG] D_BTE_O;               // Data Wishbone interface burst type 
 wire   [`LM32_BTYPE_RNG] D_BTE_O;
 
+`ifdef CFG_IRAM_ENABLED
+   output [31:0] iram_i_adr_o, iram_d_adr_o;
+   output [31:0] iram_d_dat_o;
+   input [31:0]  iram_i_dat_i, iram_d_dat_i;
+   output [3:0]  iram_d_sel_o;
+   output        iram_d_en_o, iram_i_en_o, iram_d_we_o;
+`endif
+   
 /////////////////////////////////////////////////////
 // Internal nets and registers 
 /////////////////////////////////////////////////////
@@ -609,13 +650,6 @@ wire icache_restart_request;                    // Restart instruction that caus
 wire icache_refill_request;                     // Request to refill instruction cache
 wire icache_refilling;                          // Indicates the instruction cache is being refilled
 `endif
-`ifdef CFG_IROM_ENABLED
-wire [`LM32_WORD_RNG] irom_store_data_m;        // Store data to instruction ROM
-wire [`LM32_WORD_RNG] irom_address_xm;          // Address to instruction ROM from load-store unit
-wire [`LM32_WORD_RNG] irom_data_m;              // Load data from instruction ROM
-wire irom_we_xm;                                // Indicates data needs to be written to instruction ROM
-wire irom_stall_request_x;                      // Indicates D stage needs to be stalled on a store to instruction ROM
-`endif
 
 // To/from load/store unit
 `ifdef CFG_DCACHE_ENABLED
@@ -712,7 +746,10 @@ wire exception_q_w;
 `endif
 
 `ifdef CFG_DEBUG_ENABLED
-`ifdef CFG_JTAG_ENABLED
+`ifdef CFG_JTAG_ENABLED 
+wire reset_exception;                           // Indicates if a reset exception has occured
+`endif
+`ifdef CFG_DEBUG_REGS_ENABLED
 wire reset_exception;                           // Indicates if a reset exception has occured
 `endif
 `endif
@@ -724,6 +761,8 @@ wire breakpoint_exception;                      // Indicates if a breakpoint exc
 wire watchpoint_exception;                      // Indicates if a watchpoint exception has occured
 `endif
 `ifdef CFG_BUS_ERRORS_ENABLED
+   reg [`LM32_WORD_RNG] data_bus_error_addr;
+   
 wire instruction_bus_error_exception;           // Indicates if an instruction bus error exception has occured
 wire data_bus_error_exception;                  // Indicates if a data bus error exception has occured
 `endif
@@ -736,6 +775,28 @@ wire system_call_exception;                     // Indicates if a system call ex
 reg data_bus_error_seen;                        // Indicates if a data bus error was seen
 `endif
 
+`ifdef  CFG_IRAM_ENABLED
+   wire iram_stall_request_x;
+`endif
+     
+`ifdef CFG_DEBUG_REGS_ENABLED
+input dbg_csr_write_enable_i;                         // CSR write enable
+wire   dbg_csr_write_enable_i;
+input [`LM32_WORD_RNG] dbg_csr_write_data_i;          // Data to write to specified CSR
+wire  [`LM32_WORD_RNG] dbg_csr_write_data_i;
+input [`LM32_CSR_RNG] dbg_csr_addr_i;                        // CSR to write
+wire  [`LM32_CSR_RNG] dbg_csr_addr_i;
+
+   output 	      dbg_exception_o;
+   wire 	      dbg_exception_o;
+   input 	      dbg_reset_i;
+   wire 	      dbg_reset_i;
+   input 	      dbg_break_i;
+   wire 	      dbg_break_i;
+   
+   
+`endif
+   
 /////////////////////////////////////////////////////
 // Functions
 /////////////////////////////////////////////////////
@@ -780,11 +841,6 @@ lm32_instruction_unit #(
 `ifdef CFG_ICACHE_ENABLED
     .iflush                 (iflush),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_store_data_m      (irom_store_data_m),
-    .irom_address_xm        (irom_address_xm),
-    .irom_we_xm             (irom_we_xm),
-`endif
 `ifdef CFG_DCACHE_ENABLED
     .dcache_restart_request (dcache_restart_request),
     .dcache_refill_request  (dcache_refill_request),
@@ -816,9 +872,6 @@ lm32_instruction_unit #(
     .icache_refill_request  (icache_refill_request),
     .icache_refilling       (icache_refilling),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_data_m            (irom_data_m),
-`endif
 `ifdef CFG_IWB_ENABLED
     // To Wishbone
     .i_dat_o                (I_DAT_O),
@@ -830,7 +883,14 @@ lm32_instruction_unit #(
     .i_cti_o                (I_CTI_O),
     .i_lock_o               (I_LOCK_O),
     .i_bte_o                (I_BTE_O),
+`endif //  `ifdef CFG_IWB_ENABLED
+
+`ifdef CFG_IRAM_ENABLED
+    .iram_i_adr_o(iram_i_adr_o),
+    .iram_i_dat_i(iram_i_dat_i),
+    .iram_i_en_o(iram_i_en_o),
 `endif
+		      	      
 `ifdef CFG_HW_DEBUG_ENABLED
     .jtag_read_data         (jtag_read_data),
     .jtag_access_complete   (jtag_access_complete),
@@ -841,7 +901,12 @@ lm32_instruction_unit #(
 `ifdef CFG_EBR_POSEDGE_REGISTER_FILE
     .instruction_f          (instruction_f),
 `endif
+
+		      
     .instruction_d          (instruction_d)
+
+
+		      
     );
 
 // Instruction decoder
@@ -956,9 +1021,17 @@ lm32_load_store_unit #(
 `ifdef CFG_DCACHE_ENABLED
     .dflush                 (dflush_m),
 `endif
-`ifdef CFG_IROM_ENABLED
-    .irom_data_m            (irom_data_m),
+
+`ifdef CFG_IRAM_ENABLED
+    .iram_d_adr_o(iram_d_adr_o),
+    .iram_d_dat_o(iram_d_dat_o),
+    .iram_d_dat_i(iram_d_dat_i),
+    .iram_d_sel_o(iram_d_sel_o),
+    .iram_d_we_o(iram_d_we_o),
+    .iram_d_en_o(iram_d_en_o),
+    .iram_stall_request_x(iram_stall_request_x),
 `endif
+		     
     // From Wishbone
     .d_dat_i                (D_DAT_I),
     .d_ack_i                (D_ACK_I),
@@ -972,12 +1045,6 @@ lm32_load_store_unit #(
     .dcache_stall_request   (dcache_stall_request),
     .dcache_refilling       (dcache_refilling),
 `endif    
-`ifdef CFG_IROM_ENABLED
-    .irom_store_data_m      (irom_store_data_m),
-    .irom_address_xm        (irom_address_xm),
-    .irom_we_xm             (irom_we_xm),
-    .irom_stall_request_x   (irom_stall_request_x),
-`endif
     .load_data_w            (load_data_w),
     .stall_wb_load          (stall_wb_load),
     // To Wishbone
@@ -1108,6 +1175,14 @@ lm32_interrupt interrupt_unit (
     );
 `endif
 
+`ifdef CFG_DEBUG_REGS_ENABLED
+   assign jtag_break = dbg_break_i;
+   assign reset_exception = dbg_reset_i;
+   assign dbg_exception_o = debug_exception_q_w || non_debug_exception_q_w;
+   
+`endif
+
+
 `ifdef CFG_JTAG_ENABLED
 // JTAG interface
 lm32_jtag jtag (
@@ -1174,10 +1249,17 @@ lm32_debug #(
     .csr_write_enable_x     (csr_write_enable_q_x),
     .csr_write_data         (operand_1_x),
     .csr_x                  (csr_x),
-`ifdef CFG_HW_DEBUG_ENABLED
+ `ifdef CFG_HW_DEBUG_ENABLED
+	      `ifdef CFG_JTAG_ENABLED
     .jtag_csr_write_enable  (jtag_csr_write_enable),
     .jtag_csr_write_data    (jtag_csr_write_data),
     .jtag_csr               (jtag_csr),
+	      `endif
+	      `ifdef CFG_DEBUG_REGS_ENABLED
+    .dbg_csr_write_enable_i  (dbg_csr_write_enable_i),
+    .dbg_csr_write_data_i    (dbg_csr_write_data_i),
+    .dbg_csr_addr_i               (dbg_csr_addr_i),
+	      `endif
 `endif
 `ifdef LM32_SINGLE_STEP_ENABLED
     .eret_q_x               (eret_q_x),
@@ -1740,6 +1822,16 @@ assign exception_x =           (system_call_exception == `TRUE)
                             ;
 `endif
 
+`ifdef CFG_ENABLE_PIN_ENABLED
+reg user_stall;
+
+always@(posedge clk_i)
+  if(rst_i)
+    user_stall <= 0;
+  else if(!D_CYC_O)
+    user_stall <= ~enable_i;
+`endif
+
 // Exception ID
 always @(*)
 begin
@@ -1828,6 +1920,15 @@ assign stall_d =   (stall_x == `TRUE)
                 || (   (csr_write_enable_d == `TRUE)
                     && (load_q_x == `TRUE)
                    )                      
+`ifdef CFG_IRAM_ENABLED
+                 // Stall load/store instruction in D stage if there is an ongoing store
+                 // operation to instruction ROM in M stage
+                 || (   (iram_stall_request_x == `TRUE)
+		     && (   (load_d == `TRUE)
+			 //|| (store_d == `TRUE)
+			)
+		    )
+`endif	
                 ;
                 
 assign stall_x =    (stall_m == `TRUE)
@@ -1836,15 +1937,8 @@ assign stall_x =    (stall_m == `TRUE)
                      && (kill_x == `FALSE)
                     ) 
 `endif
-`ifdef CFG_IROM_ENABLED
-                 // Stall load/store instruction in D stage if there is an ongoing store
-                 // operation to instruction ROM in M stage
-                 || (   (irom_stall_request_x == `TRUE)
-		     && (   (load_d == `TRUE)
-			 || (store_d == `TRUE)
-			)
-		    )
-`endif
+
+	    
                  ;
 
 assign stall_m =    (stall_wb_load == `TRUE)
@@ -1890,7 +1984,12 @@ assign stall_m =    (stall_wb_load == `TRUE)
                      && (user_complete == `FALSE)
                     )
 `endif
+`ifdef CFG_ENABLE_PIN_ENABLED
+                 || (user_stall)
+   `endif
                  ;      
+
+
 
 // Qualify state changing control signals
 `ifdef LM32_MC_ARITHMETIC_ENABLED
@@ -2014,7 +2113,7 @@ assign cfg = {
 
 assign cfg2 = {
 		     30'b0,
-`ifdef CFG_IROM_ENABLED
+`ifdef CFG_IRAM_ENABLED
 		     `TRUE,
 `else
 		     `FALSE,
@@ -2079,6 +2178,10 @@ begin
 `endif
     `LM32_CSR_CFG2: csr_read_data_x = cfg2;
     `LM32_CSR_SDB:  csr_read_data_x = sdb_address;
+`ifdef CFG_BUS_ERRORS_ENABLED
+    `LM32_CSR_ERR_ADDR:  csr_read_data_x = data_bus_error_addr;
+`endif
+      
       
     default:        csr_read_data_x = {`LM32_WORD_WIDTH{1'bx}};
     endcase
@@ -2098,8 +2201,14 @@ begin
         if ((csr_write_enable_q_x == `TRUE) && (csr_x == `LM32_CSR_EBA) && (stall_x == `FALSE))
             eba <= operand_1_x[`LM32_PC_WIDTH+2-1:8];
 `ifdef CFG_HW_DEBUG_ENABLED
-        if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_EBA))
-            eba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+ `ifdef CFG_JTAG_ENABLED
+       if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_EBA))
+         eba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+ `endif
+ `ifdef CFG_DEBUG_REGS_ENABLED
+       if ((dbg_csr_write_enable_i == `TRUE) && (dbg_csr_addr_i == `LM32_CSR_EBA))
+         eba <= dbg_csr_write_data_i[`LM32_PC_WIDTH+2-1:8];
+ `endif	 
 `endif
     end
 end
@@ -2114,10 +2223,16 @@ begin
     begin
         if ((csr_write_enable_q_x == `TRUE) && (csr_x == `LM32_CSR_DEBA) && (stall_x == `FALSE))
             deba <= operand_1_x[`LM32_PC_WIDTH+2-1:8];
-`ifdef CFG_HW_DEBUG_ENABLED
-        if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_DEBA))
-            deba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
-`endif
+ `ifdef CFG_HW_DEBUG_ENABLED
+  `ifdef CFG_JTAG_ENABLED
+       if ((jtag_csr_write_enable == `TRUE) && (jtag_csr == `LM32_CSR_DEBA))
+         deba <= jtag_csr_write_data[`LM32_PC_WIDTH+2-1:8];
+  `endif
+  `ifdef CFG_DEBUG_REGS_ENABLED
+       if ((dbg_csr_write_enable_i == `TRUE) && (dbg_csr_addr_i == `LM32_CSR_DEBA))
+         deba <= dbg_csr_write_data_i[`LM32_PC_WIDTH+2-1:8];
+  `endif       
+ `endif
     end
 end
 `endif
@@ -2142,8 +2257,10 @@ begin
     else
     begin
         // Set flag when bus error is detected
-        if ((D_ERR_I == `TRUE) && (D_CYC_O == `TRUE))
-            data_bus_error_seen <= `TRUE;
+        if ((D_ERR_I == `TRUE) && (D_CYC_O == `TRUE)) begin
+           data_bus_error_seen <= `TRUE;
+	   data_bus_error_addr <= D_ADR_O;
+	end
         // Clear flag when exception is taken
         if ((exception_m == `TRUE) && (kill_m == `FALSE))
             data_bus_error_seen <= `FALSE;

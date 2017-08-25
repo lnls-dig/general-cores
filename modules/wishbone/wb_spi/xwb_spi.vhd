@@ -1,3 +1,9 @@
+--------------------------------------------------------------------------------
+--  Modifications:
+--      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
+--          * added assignments to (new) unspecified WB signals
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -92,4 +98,6 @@ begin
       pad_miso_i    => pad_miso_i,
       pad_oen_o     => pad_oen_o);
 
+  slave_o.rty <= '0';
+  
 end rtl;
