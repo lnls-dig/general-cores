@@ -93,24 +93,6 @@ architecture syn of generic_dpram_dualclock is
       return tmp;
     end if;
 
-    -- To speed-up most common cases, use dedicated functions
-    -- 32-bit width
-    if (g_data_width = 32) then
-      mem32 := f_load_mem32_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem32);
-    end if;
-    -- 16-bit width
-    if (g_data_width = 16) then
-      mem16 := f_load_mem16_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem16);
-    end if;
-    -- 8-bit width
-    if (g_data_width = 8) then
-      mem8 := f_load_mem8_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem8);
-    end if;
-
-    -- Only for "exotic" sizes do the lengthly (in Vivado 2016.4) copying
     arr := f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
     pos := 0;
     while(pos < g_size)loop
