@@ -130,6 +130,7 @@ begin
               wb_master_o.stb <= '0';
               if(wb_master_i.ack = '1') then
                 state <= RESPONSE_WRITE;
+                axi4_slave_o.BVALID <= '1';
                 axi4_slave_o.BRESP <= c_AXI4_RESP_EXOKAY;
                 wb_master_o.cyc    <= '0';
               else
@@ -142,10 +143,12 @@ begin
           when WAIT_ACK_WRITE =>
             if(wb_master_i.ack = '1') then
               state              <= RESPONSE_WRITE;
+              axi4_slave_o.BVALID <= '1';
               axi4_slave_o.BRESP <= c_AXI4_RESP_EXOKAY;
               wb_master_o.cyc    <= '0';
             elsif count = c_timeout then
               state              <= RESPONSE_WRITE;
+              axi4_slave_o.BVALID <= '1';
               axi4_slave_o.BRESP <= c_AXI4_RESP_SLVERR;
               wb_master_o.cyc    <= '0';
             end if;
@@ -153,14 +156,14 @@ begin
 
           when WAIT_ACK_READ =>
             if(wb_master_i.ack = '1') then
-              state              <= IDLE;
+              state              <= RESPONSE_READ;
               axi4_slave_o.RRESP <= c_AXI4_RESP_EXOKAY;
               axi4_slave_o.RVALID <= '1';
               axi4_slave_o.RLAST <= '1';
               axi4_slave_o.RDATA <= wb_master_i.dat;
               wb_master_o.cyc    <= '0';
             elsif count = c_timeout then
-              state              <= IDLE;
+              state              <= RESPONSE_READ;
               axi4_slave_o.RRESP <= c_AXI4_RESP_SLVERR;
               axi4_slave_o.RVALID <= '1';
               axi4_slave_o.RLAST <= '1';
@@ -172,11 +175,15 @@ begin
             
           when RESPONSE_WRITE =>
             if (axi4_slave_i.BREADY = '1') then
-              axi4_slave_o.BVALID <= '1';
+              axi4_slave_o.BVALID <= '0';
               state               <= IDLE;
             end if;
 
           when RESPONSE_READ => null;
+            if (axi4_slave_i.RREADY = '1') then
+              axi4_slave_o.RVALID <= '0';
+              state               <= IDLE;
+            end if;
             
             
         end case;
