@@ -9,7 +9,7 @@
 --              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2016-11-29
+-- Last update: 2017-10-11
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ package gencores_pkg is
       clk_i      : in  std_logic;
       din_i      : in  std_logic_vector(g_data_width-1 downto 0);
       din_stb_i  : in  std_logic;
-      dout_o     : out std_logic_vector(g_data_width-1 downto 0);
+      dout_o     : out std_logic_vector(g_data_width+g_avg_log2-1 downto 0);
       dout_stb_o : out std_logic);
   end component;
 
