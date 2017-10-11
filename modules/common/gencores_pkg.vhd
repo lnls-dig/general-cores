@@ -105,6 +105,21 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Delay line
+  ------------------------------------------------------------------------------
+  component gc_delay_line
+    generic (
+      g_delay : integer;
+      g_width : integer);
+    port (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+      d_i     : in  std_logic_vector(g_width -1 downto 0);
+      q_o     : out std_logic_vector(g_width -1 downto 0);
+      ready_o : out std_logic);
+  end component;
+
+  ------------------------------------------------------------------------------
   -- PI controller
   ------------------------------------------------------------------------------
   component gc_dual_pi_controller
