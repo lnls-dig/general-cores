@@ -23,8 +23,8 @@ architecture rtl of gc_delay_line is
 
   constant c_counter_width : integer := f_log2_size(g_delay+1);
 
-  signal rd_ptr : unsigned(c_counter_width-1 downto 0);
-  signal wr_ptr : unsigned(c_counter_width-1 downto 0);
+  signal rd_ptr : unsigned(c_counter_width-1 downto 0) := (others => '0');
+  signal wr_ptr : unsigned(c_counter_width-1 downto 0) := (others => '0');
 
   signal init : std_logic;
 
@@ -39,12 +39,15 @@ begin
     port map (
       rst_n_i => rst_n_i,
       clka_i  => clk_i,
+      bwea_i  => (others => '0'),
       wea_i   => '1',
       aa_i    => std_logic_vector(wr_ptr),
       da_i    => wr_data,
       clkb_i  => clk_i,
+      bweb_i  => (others => '0'),
       web_i   => '0',
       ab_i    => std_logic_vector(rd_ptr),
+      db_i    => (others => '0'),
       qb_o    => rd_data);
 
 
