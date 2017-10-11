@@ -99,7 +99,6 @@ package gencores_pkg is
       rst_n_i    : in  std_logic;
       clk_i      : in  std_logic;
       din_i      : in  std_logic_vector(g_data_width-1 downto 0);
-      din_stb_i  : in  std_logic;
       dout_o     : out std_logic_vector(g_data_width+g_avg_log2-1 downto 0);
       dout_stb_o : out std_logic);
   end component;
