@@ -13,22 +13,22 @@ package memory_loader_pkg is
   subtype t_meminit_array is t_generic_ram_init;
 
   impure function f_load_mem_from_file
-    (file_name : string;
-     mem_size  : integer;
-     mem_width : integer;
+    (file_name : in string;
+     mem_size  : in integer;
+     mem_width : in integer;
      fail_if_notfound : boolean)
     return t_meminit_array;
 
   impure function f_load_mem32_from_file
-    (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
+    (file_name : in string; mem_size  : in integer; fail_if_notfound : boolean)
     return t_ram32_type;
 
   impure function f_load_mem16_from_file
-    (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
+    (file_name : in string; mem_size  : in integer; fail_if_notfound : boolean)
     return t_ram16_type;
 
   impure function f_load_mem8_from_file
-    (file_name : string; mem_size  : integer; fail_if_notfound : boolean)
+    (file_name : in string; mem_size  : in integer; fail_if_notfound : boolean)
     return t_ram8_type;
 
   impure function f_load_mem32_from_file_split
