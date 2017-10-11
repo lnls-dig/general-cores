@@ -20,7 +20,7 @@ architecture rtl of gc_reset is
   
   signal shifters : t_shifters(g_clocks-1 downto 0) := (others => (others => '0')); -- start reset
   signal locked_count : unsigned(g_logdelay-1 downto 0) := (others => '0');
-  signal master_rstn : std_logic;
+  signal master_rstn : std_logic := '0';
 begin
   lock : process(free_clk_i, locked_i)
     constant locked_done : unsigned(g_logdelay-1 downto 0) := (others => '1');
