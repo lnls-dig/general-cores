@@ -179,7 +179,11 @@ begin
               state               <= IDLE;
             end if;
 
+<<<<<<< HEAD
           when RESPONSE_READ => null;
+=======
+          when RESPONSE_READ =>
+>>>>>>> 49d9064... axi4: add 512-bit data width AXI4-full record, fixed compilation issue in axi->wb bridge
             if (axi4_slave_i.RREADY = '1') then
               axi4_slave_o.RVALID <= '0';
               state               <= IDLE;
