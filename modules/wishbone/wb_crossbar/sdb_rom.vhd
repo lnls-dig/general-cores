@@ -5,9 +5,10 @@ use work.wishbone_pkg.all;
 
 entity sdb_rom is
   generic(
-    g_layout  : t_sdb_record_array;
-    g_masters : natural;
-    g_bus_end : unsigned(63 downto 0));
+    g_layout   : t_sdb_record_array;
+    g_masters  : natural;
+    g_bus_end  : unsigned(63 downto 0);
+    g_sdb_name : string := "WB4-Crossbar-GSI   ");
   port(
     clk_sys_i  : in  std_logic;
     master_i   : in  std_logic_vector(g_masters-1 downto 0);
@@ -25,6 +26,7 @@ architecture rtl of sdb_rom is
   constant c_rom_words      : natural := c_rom_entries * c_sdb_words;
   constant c_rom_depth      : natural := f_ceil_log2(c_rom_words);
   constant c_rom_lowbits    : natural := f_ceil_log2(c_wishbone_data_width / 8);
+  constant c_sdb_name       : string  := f_string_fix_len(g_sdb_name , 19, ' ', false);
   
   -- Index of the MSI entry in SDB
   type t_nat_array is array(g_masters-1 downto 0) of natural;
@@ -97,7 +99,7 @@ architecture rtl of sdb_rom is
     sdb_component.product.device_id := x"e6a542c9";
     sdb_component.product.version   := x"00000003";
     sdb_component.product.date      := x"20120511";
-    sdb_component.product.name      := "WB4-Crossbar-GSI   ";
+    sdb_component.product.name      := c_sdb_name;
     sdb_record(447 downto   8) := f_sdb_embed_component(sdb_component, (others => '0'));
     
     for i in 0 to c_sdb_words-1 loop

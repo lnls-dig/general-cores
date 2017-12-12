@@ -111,7 +111,7 @@ package wishbone_pkg is
   function f_string2svl (s : string) return std_logic_vector;
   function f_slv2string (slv : std_logic_vector) return string;
 
-  function f_string_fix_len( s : string; ret_len : natural := 10; fill_char : character := '0' ) return string;
+  function f_string_fix_len( s : string; ret_len : natural := 10; fill_char : character := '0'; justify_right : boolean := true ) return string;
   function f_hot_to_bin(x : std_logic_vector) return natural;
   
   -- *** Wishbone slave interface functions ***
@@ -226,8 +226,8 @@ package wishbone_pkg is
   function f_sdb_extract_synthesis(sdb_record : t_sdb_record) return t_sdb_synthesis;
 
   -- Automatic crossbar mapping functions
-  function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true) return t_sdb_record;
-  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true) return t_sdb_record;
+  function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true; name: string := "") return t_sdb_record;
+  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true; name: string := "") return t_sdb_record;
   function f_sdb_auto_msi   (msi    : t_sdb_msi;    enable : boolean := true) return t_sdb_record;
   function f_sdb_auto_layout(records: t_sdb_record_array)                               return t_sdb_record_array;
   function f_sdb_auto_layout(slaves : t_sdb_record_array; masters : t_sdb_record_array) return t_sdb_record_array;
@@ -354,7 +354,8 @@ package wishbone_pkg is
       g_num_slaves  : integer;
       g_registered  : boolean;
       g_address     : t_wishbone_address_array;
-      g_mask        : t_wishbone_address_array);
+      g_mask        : t_wishbone_address_array;
+      g_sdb_name    : string := "WB4-Crossbar-GSI   ");
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
@@ -442,7 +443,8 @@ package wishbone_pkg is
     generic(
       g_layout  : t_sdb_record_array;
       g_masters : natural;
-      g_bus_end : unsigned(63 downto 0));
+      g_bus_end : unsigned(63 downto 0);
+      g_sdb_name    : string := "WB4-Crossbar-GSI   ");
     port(
       clk_sys_i : in  std_logic;
       master_i  : in  std_logic_vector(g_masters-1 downto 0);
@@ -1454,32 +1456,38 @@ package body wishbone_pkg is
     return result;
   end;
   
-  function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true)
+  function f_sdb_auto_device(device : t_sdb_device; enable : boolean := true; name: string := "")
     return t_sdb_record
   is
     constant c_zero  : t_wishbone_address := (others => '0');
+    variable v_device: t_sdb_device := device;
     variable v_empty : t_sdb_record := (others => '0');
   begin
     v_empty(7 downto 0) := x"f1";
-    if enable then
-      return f_sdb_embed_device(device, c_zero);
-    else
-      return v_empty;
+    if name /= "" then
+      v_device.sdb_component.product.name := f_string_fix_len(name , 19, ' ', false);
     end if;
+    if enable then
+      v_empty := f_sdb_embed_device(v_device, c_zero);
+    end if;
+    return v_empty;
   end f_sdb_auto_device;
   
-  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true)
+  function f_sdb_auto_bridge(bridge : t_sdb_bridge; enable : boolean := true; name: string := "")
     return t_sdb_record
   is
     constant c_zero  : t_wishbone_address := (others => '0');
+    variable v_bridge: t_sdb_bridge := bridge;
     variable v_empty : t_sdb_record := (others => '0');
   begin
     v_empty(7 downto 0) := x"f2";
-    if enable then
-      return f_sdb_embed_bridge(bridge, c_zero);
-    else
-      return v_empty;
+    if name /= "" then
+      v_bridge.sdb_component.product.name := f_string_fix_len(name , 19, ' ', false);
     end if;
+    if enable then
+      v_empty := f_sdb_embed_bridge(v_bridge, c_zero);
+    end if;
+    return v_empty;
   end f_sdb_auto_bridge;
   
   function f_sdb_auto_msi(msi : t_sdb_msi; enable : boolean := true)
@@ -2065,16 +2073,20 @@ package body wishbone_pkg is
   end f_slv2string;
 
     -- pads a string of unknown length to a given length (useful for integer'image)
-  function f_string_fix_len ( s : string; ret_len : natural := 10; fill_char : character := '0' ) return string is
+  function f_string_fix_len ( s : string; ret_len : natural := 10; fill_char : character := '0'; justify_right : boolean := true ) return string is
       variable ret_v : string (1 to ret_len);
       constant pad_len : integer := ret_len - s'length ;
       variable pad_v : string (1 to abs(pad_len));
    begin
-         if pad_len < 1 then
+      if pad_len < 1 then
          ret_v := s(ret_v'range);
       else
          pad_v := (others => fill_char);
-         ret_v := pad_v & s;
+         if justify_right then
+           ret_v := pad_v & s;
+         else
+           ret_v := s & pad_v ;
+         end if;
       end if;
       return ret_v;
    end f_string_fix_len;
