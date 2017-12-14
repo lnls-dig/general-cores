@@ -354,8 +354,7 @@ package wishbone_pkg is
       g_num_slaves  : integer;
       g_registered  : boolean;
       g_address     : t_wishbone_address_array;
-      g_mask        : t_wishbone_address_array;
-      g_sdb_name    : string := "WB4-Crossbar-GSI   ");
+      g_mask        : t_wishbone_address_array);
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
@@ -389,7 +388,8 @@ package wishbone_pkg is
       g_registered  : boolean := false;
       g_wraparound  : boolean := true;
       g_layout      : t_sdb_record_array;
-      g_sdb_addr    : t_wishbone_address);
+      g_sdb_addr    : t_wishbone_address;
+      g_sdb_name    : string := "WB4-Crossbar-GSI   ");
     port (
       clk_sys_i     : in  std_logic;
       rst_n_i       : in  std_logic;
