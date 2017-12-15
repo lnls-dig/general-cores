@@ -1,0 +1,4 @@
+*
+!.gitignore
+!Manifest.py
+!*_tb.vhd

@@ -1,0 +1,52 @@
+[*]
+[*] GTKWave Analyzer v3.3.79 (w)1999-2017 BSI
+[*] Fri Dec 15 08:55:54 2017
+[*]
+[dumpfile] "/home/dimitris/repos/ohwr/general-cores/testbench/common/gc_comparator/gc_comparator_tb.ghw"
+[dumpfile_mtime] "Fri Dec 15 08:53:15 2017"
+[dumpfile_size] 4321
+[savefile] "/home/dimitris/repos/ohwr/general-cores/testbench/common/gc_comparator/gc_comparator_tb.gtkwave"
+[timestart] 0
+[size] 1916 1156
+[pos] -1 -1
+*-27.910774 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.gc_comparator_tb.
+[treeopen] top.gc_comparator_tb.uut.
+[sst_width] 229
+[signals_width] 134
+[sst_expanded] 1
+[sst_vpaned_height] 340
+@28
+top.gc_comparator_tb.uut.clk_i
+top.gc_comparator_tb.uut.rst_n_i
+@200
+-
+@28
+top.gc_comparator_tb.uut.pol_inv_i
+top.gc_comparator_tb.uut.enable_i
+@200
+-
+@22
+#{top.gc_comparator_tb.uut.inp_i[15:0]} top.gc_comparator_tb.uut.inp_i[15] top.gc_comparator_tb.uut.inp_i[14] top.gc_comparator_tb.uut.inp_i[13] top.gc_comparator_tb.uut.inp_i[12] top.gc_comparator_tb.uut.inp_i[11] top.gc_comparator_tb.uut.inp_i[10] top.gc_comparator_tb.uut.inp_i[9] top.gc_comparator_tb.uut.inp_i[8] top.gc_comparator_tb.uut.inp_i[7] top.gc_comparator_tb.uut.inp_i[6] top.gc_comparator_tb.uut.inp_i[5] top.gc_comparator_tb.uut.inp_i[4] top.gc_comparator_tb.uut.inp_i[3] top.gc_comparator_tb.uut.inp_i[2] top.gc_comparator_tb.uut.inp_i[1] top.gc_comparator_tb.uut.inp_i[0]
+#{top.gc_comparator_tb.uut.inn_i[15:0]} top.gc_comparator_tb.uut.inn_i[15] top.gc_comparator_tb.uut.inn_i[14] top.gc_comparator_tb.uut.inn_i[13] top.gc_comparator_tb.uut.inn_i[12] top.gc_comparator_tb.uut.inn_i[11] top.gc_comparator_tb.uut.inn_i[10] top.gc_comparator_tb.uut.inn_i[9] top.gc_comparator_tb.uut.inn_i[8] top.gc_comparator_tb.uut.inn_i[7] top.gc_comparator_tb.uut.inn_i[6] top.gc_comparator_tb.uut.inn_i[5] top.gc_comparator_tb.uut.inn_i[4] top.gc_comparator_tb.uut.inn_i[3] top.gc_comparator_tb.uut.inn_i[2] top.gc_comparator_tb.uut.inn_i[1] top.gc_comparator_tb.uut.inn_i[0]
+#{top.gc_comparator_tb.uut.hys_i[15:0]} top.gc_comparator_tb.uut.hys_i[15] top.gc_comparator_tb.uut.hys_i[14] top.gc_comparator_tb.uut.hys_i[13] top.gc_comparator_tb.uut.hys_i[12] top.gc_comparator_tb.uut.hys_i[11] top.gc_comparator_tb.uut.hys_i[10] top.gc_comparator_tb.uut.hys_i[9] top.gc_comparator_tb.uut.hys_i[8] top.gc_comparator_tb.uut.hys_i[7] top.gc_comparator_tb.uut.hys_i[6] top.gc_comparator_tb.uut.hys_i[5] top.gc_comparator_tb.uut.hys_i[4] top.gc_comparator_tb.uut.hys_i[3] top.gc_comparator_tb.uut.hys_i[2] top.gc_comparator_tb.uut.hys_i[1] top.gc_comparator_tb.uut.hys_i[0]
+@200
+-
+@28
+top.gc_comparator_tb.uut.fsm_regout
+@22
+#{top.gc_comparator_tb.uut.u_thres[16:0]} top.gc_comparator_tb.uut.u_thres[16] top.gc_comparator_tb.uut.u_thres[15] top.gc_comparator_tb.uut.u_thres[14] top.gc_comparator_tb.uut.u_thres[13] top.gc_comparator_tb.uut.u_thres[12] top.gc_comparator_tb.uut.u_thres[11] top.gc_comparator_tb.uut.u_thres[10] top.gc_comparator_tb.uut.u_thres[9] top.gc_comparator_tb.uut.u_thres[8] top.gc_comparator_tb.uut.u_thres[7] top.gc_comparator_tb.uut.u_thres[6] top.gc_comparator_tb.uut.u_thres[5] top.gc_comparator_tb.uut.u_thres[4] top.gc_comparator_tb.uut.u_thres[3] top.gc_comparator_tb.uut.u_thres[2] top.gc_comparator_tb.uut.u_thres[1] top.gc_comparator_tb.uut.u_thres[0]
+#{top.gc_comparator_tb.uut.l_thres[16:0]} top.gc_comparator_tb.uut.l_thres[16] top.gc_comparator_tb.uut.l_thres[15] top.gc_comparator_tb.uut.l_thres[14] top.gc_comparator_tb.uut.l_thres[13] top.gc_comparator_tb.uut.l_thres[12] top.gc_comparator_tb.uut.l_thres[11] top.gc_comparator_tb.uut.l_thres[10] top.gc_comparator_tb.uut.l_thres[9] top.gc_comparator_tb.uut.l_thres[8] top.gc_comparator_tb.uut.l_thres[7] top.gc_comparator_tb.uut.l_thres[6] top.gc_comparator_tb.uut.l_thres[5] top.gc_comparator_tb.uut.l_thres[4] top.gc_comparator_tb.uut.l_thres[3] top.gc_comparator_tb.uut.l_thres[2] top.gc_comparator_tb.uut.l_thres[1] top.gc_comparator_tb.uut.l_thres[0]
+@28
+top.gc_comparator_tb.uut.u_above
+top.gc_comparator_tb.uut.l_below
+top.gc_comparator_tb.uut.thr_cross
+top.gc_comparator_tb.uut.hys_cross
+@200
+-
+@28
+top.gc_comparator_tb.uut.out_o
+top.gc_comparator_tb.uut.out_p_o
+[pattern_trace] 1
+[pattern_trace] 0
