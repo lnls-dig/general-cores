@@ -6,6 +6,7 @@
 -- Author     : Tomasz Wlostowski
 --              Theodor-Adrian Stana
 --              Matthieu Cattin
+--              Evangelia Gousiou
 --              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
@@ -37,6 +38,15 @@
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
 -------------------------------------------------------------------------------
+-- Revisions  :
+-- Date        Version  Author          Description
+-- 2009-09-01  0.9      twlostow        Created
+-- 2011-04-18  1.0      twlostow        Added comments & header
+-- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
+-- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
+-- 2014-03-20  1.3      mcattin         Added bicolor led controller
+-- 2016-09-26  1.4      egousiou        Added one-wire DS182x interface
+-------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -61,6 +71,17 @@ package gencores_pkg is
       rst_n_i    : in  std_logic;
       pulse_i    : in  std_logic;
       extended_o : out std_logic);
+  end component;
+
+  component gc_dyn_extend_pulse is
+    generic (
+      g_len_width : natural := 10);
+  port (
+    clk_i      : in  std_logic;
+    rst_n_i    : in  std_logic;
+    pulse_i    : in  std_logic;
+    len_i      : in std_logic_vector(g_len_width-1 downto 0);
+    extended_o : out std_logic := '0');
   end component;
 
   ------------------------------------------------------------------------------
@@ -276,6 +297,7 @@ package gencores_pkg is
     );
   end component;
 
+
   ------------------------------------------------------------------------------
   -- Round robin arbiter
   ------------------------------------------------------------------------------
@@ -342,8 +364,7 @@ package gencores_pkg is
         -- 0 - SCL and SDA lines are passed only through synchronizer
         -- 1 - one clk_i glitches filtered
         -- 2 - two clk_i glitches filtered
-        g_gf_len        : natural := 0;
-        g_auto_addr_ack : boolean := FALSE
+        g_gf_len : natural := 0
         );
     port
       (
@@ -518,6 +539,50 @@ package gencores_pkg is
       signals_pN_o                 : out std_logic_vector(g_signal_num-1 downto 0));
   end component;
 
+
+  ------------------------------------------------------------------------------
+  -- Priority encoder
+  ------------------------------------------------------------------------------  
+  component gc_prio_encoder is
+  generic (
+    g_width : integer);
+  port (
+    d_i     : in  std_logic_vector(g_width-1 downto 0);
+    therm_o : out std_logic_vector(g_width-1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- Delay generator
+  ------------------------------------------------------------------------------
+  component gc_delay_gen is
+  generic(
+    g_delay_cycles : in natural;
+    g_data_width   : in natural);
+
+  port(clk_i   : in  std_logic;  
+       rst_n_i : in  std_logic;  
+       d_i     : in  std_logic_vector(g_data_width - 1 downto 0);
+       q_o     : out std_logic_vector(g_data_width - 1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- One-wire interface to DS1820 and DS1822
+  ------------------------------------------------------------------------------  
+  component gc_ds182x_interface is
+  generic
+    (freq      : integer := 40);
+  port
+    (clk_i     : in    std_logic;
+     rst_n_i   : in    std_logic;
+     pps_p_i   : in    std_logic;
+     onewire_b : inout std_logic;
+     id_o      : out   std_logic_vector(63 downto 0);
+     temper_o  : out   std_logic_vector(15 downto 0);
+     id_read_o : out   std_logic;
+     id_ok_o   : out   std_logic);
+  end component;
+
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
@@ -531,7 +596,6 @@ package gencores_pkg is
   function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
   function log2_ceil(N       : natural) return positive;
-
   function f_bool2int (b : boolean) return natural;
   function f_int2bool (n : natural) return boolean;
 
@@ -647,6 +711,7 @@ package body gencores_pkg is
     end if;
   end;
 
+
   ------------------------------------------------------------------------------
   -- Converts a boolean to natural integer (false -> 0, true -> 1)
   ------------------------------------------------------------------------------
@@ -670,5 +735,6 @@ package body gencores_pkg is
       return true;
     end if;
   end;
+
 
 end gencores_pkg;
