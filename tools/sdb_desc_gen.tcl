@@ -52,7 +52,7 @@ proc str_procrustes {str limit {pad_char " "}} {
 }
 
 #-------------------------------------------------------------------------------
-# STEP /: Check that the synthesis tool is supported
+# STEP 1/7: Check that the synthesis tool is supported
 #-------------------------------------------------------------------------------
 if {[lsearch -exact $supported_tools $syn_tool] == -1} {
     report ERROR "$syn_tool is not (yet) supported, exiting."
@@ -60,7 +60,7 @@ if {[lsearch -exact $supported_tools $syn_tool] == -1} {
 }
 
 #-------------------------------------------------------------------------------
-# STEP /: Check that project file exists
+# STEP 2/7: Check that project file exists
 #-------------------------------------------------------------------------------
 
 if {![file exists $project_file]} {
@@ -69,7 +69,7 @@ if {![file exists $project_file]} {
 }
 
 #-------------------------------------------------------------------------------
-# STEP /: Open project file
+# STEP 3/7: Open project file
 #-------------------------------------------------------------------------------
 
 if {$syn_tool == "ise"} {
@@ -81,7 +81,7 @@ if {$syn_tool == "ise"} {
 report INFO "Opened project $project_file."
 
 #-------------------------------------------------------------------------------
-# STEP /: Get necessary info from ISE project and Git repository
+# STEP 4/7: Get necessary info from synthesis tool and Git
 #-------------------------------------------------------------------------------
 
 if {$syn_tool == "ise"} {
@@ -101,7 +101,7 @@ set inf_user [exec git config user.name]
 set inf_repo_url [exec git remote get-url origin]
 
 #-------------------------------------------------------------------------------
-# STEP /: Generate the output file
+# STEP 5/7: Generate the output file
 #-------------------------------------------------------------------------------
 
 set fp [open $out_file w]
@@ -141,7 +141,7 @@ puts $fp "end package synthesis_descriptor;"
 close $fp
 
 #-------------------------------------------------------------------------------
-# Step /: Add the output file to the project
+# Step 6/7: Add the output file to the project
 #-------------------------------------------------------------------------------
 
 if {$syn_tool == "ise"} {
@@ -150,7 +150,7 @@ if {$syn_tool == "ise"} {
 report "INFO" "Added $out_file to $project_file."
 
 #-------------------------------------------------------------------------------
-# Step /: Close ISE project file
+# Step 7/7: Close project file
 #-------------------------------------------------------------------------------
 
 if {$syn_tool == "ise"} {
