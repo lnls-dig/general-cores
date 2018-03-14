@@ -15,11 +15,19 @@ typedef byte byte_array_t[];
 
 virtual class CBusAccessor;
    static int _null  = 0;
+   int        m_default_xfer_size;
+
+
+   task set_default_xfer_size(int default_size);
+      m_default_xfer_size = default_size;
+   endtask // set_default_xfer_size
+
+
    
    pure virtual task writem(uint64_t addr[], uint64_t data[], input int size, ref int result);
    pure virtual task readm(uint64_t addr[], ref uint64_t data[], input int size, ref int result);
 
-   virtual task read(uint64_t addr, ref uint64_t data, input int size = 4, ref int result = _null);
+   virtual task read(uint64_t addr, ref uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
       int res;
       uint64_t aa[1], da[];
 
@@ -31,7 +39,7 @@ virtual class CBusAccessor;
    endtask
 
 
-   virtual task write(uint64_t addr, uint64_t data, input int size = 4, ref int result = _null);
+   virtual task write(uint64_t addr, uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
       uint64_t aa[1], da[1];
       aa[0]  = addr;
       da[0]  = data;
