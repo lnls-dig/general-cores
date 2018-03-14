@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2011-06-08
--- Last update: 2011-09-22
+-- Last update: 2018-03-14
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -129,9 +129,12 @@ architecture rtl of xwb_crossbar is
   signal master_ie : t_wishbone_master_in_array(g_num_slaves downto 0);
   signal master_oe : t_wishbone_master_out_array(g_num_slaves downto 0);
   signal virtual_ERR : std_logic;
-  
-  signal matrix_old : matrix; -- Registered connection matrix
-  signal matrix_new : matrix; -- The new values of the matrix
+
+   -- Registered connection matrix
+  signal matrix_old : matrix := (others => (others => '0'));
+
+   -- The new values of the matrix
+  signal matrix_new : matrix := (others => (others => '0'));
 
   -- Either matrix_old or matrix_new, depending on g_registered
   signal granted : matrix;

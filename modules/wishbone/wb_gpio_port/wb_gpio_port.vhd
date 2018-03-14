@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2017-10-11
+-- Last update: 2018-03-14
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -325,6 +325,7 @@ begin
     gpio_in(g_num_pins-1 downto 0) <= gpio_in_i;
     gpio_in(gpio_in'LEFT downto g_num_pins) <= (others => '0');
     gpio_oen_o                     <= dir_reg(g_num_pins-1 downto 0);
+    gpio_b                         <= (others => 'Z');
   end generate gen_without_tristates;
 
   wb_out.ack   <= ack_int;
