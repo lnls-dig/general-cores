@@ -10,7 +10,7 @@
 --              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2017-10-11
+-- Last update: 2018-03-15
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -542,7 +542,7 @@ package gencores_pkg is
 
   ------------------------------------------------------------------------------
   -- Priority encoder
-  ------------------------------------------------------------------------------  
+  ------------------------------------------------------------------------------
   component gc_prio_encoder is
   generic (
     g_width : integer);
@@ -559,15 +559,15 @@ package gencores_pkg is
     g_delay_cycles : in natural;
     g_data_width   : in natural);
 
-  port(clk_i   : in  std_logic;  
-       rst_n_i : in  std_logic;  
+  port(clk_i   : in  std_logic;
+       rst_n_i : in  std_logic;
        d_i     : in  std_logic_vector(g_data_width - 1 downto 0);
        q_o     : out std_logic_vector(g_data_width - 1 downto 0));
   end component;
 
   ------------------------------------------------------------------------------
   -- One-wire interface to DS1820 and DS1822
-  ------------------------------------------------------------------------------  
+  ------------------------------------------------------------------------------
   component gc_ds182x_interface is
   generic
     (freq      : integer := 40);
@@ -599,6 +599,8 @@ package gencores_pkg is
   function f_bool2int (b : boolean) return natural;
   function f_int2bool (n : natural) return boolean;
 
+  --  Convert a boolean to std_logic ('1' for True, '0' for False).
+  function f_to_std_logic(b : boolean) return std_logic;
 end package;
 
 package body gencores_pkg is
@@ -736,5 +738,12 @@ package body gencores_pkg is
     end if;
   end;
 
-
+  function f_to_std_logic(b : boolean) return std_logic is
+  begin
+    if b then
+      return '1';
+    else
+      return '0';
+    end if;
+  end f_to_std_logic;
 end gencores_pkg;
