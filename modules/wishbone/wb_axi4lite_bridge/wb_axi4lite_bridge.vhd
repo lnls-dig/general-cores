@@ -114,7 +114,6 @@ begin
   wb_in.err <= wb_err;
   wb_in.rty <= wb_rty;
   wb_in.ack <= wb_ack;
-  wb_in.int <= '0';
   wb_in.stall <= wb_stall;
   wb_in.dat <= wb_dat_s2m;
 

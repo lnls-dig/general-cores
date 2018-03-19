@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2017-10-11
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -113,7 +113,6 @@ begin  -- rtl
       gpio_oen_o => gpio_oen_o);
 
   slave_o.err   <= '0';
-  slave_o.int   <= '0';
   slave_o.rty   <= '0';
   
 end rtl;

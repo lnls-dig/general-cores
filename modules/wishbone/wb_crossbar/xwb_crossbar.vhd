@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2011-06-08
--- Last update: 2018-03-14
+-- Last update: 2018-03-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -374,8 +374,7 @@ architecture rtl of xwb_crossbar is
       ERR => vector_OR(ERR_row),
       RTY => vector_OR(RTY_row),
       STALL => not vector_OR(STALL_row),
-      DAT => master_matrix_OR(DAT_matrix),
-      INT => '0');
+      DAT => master_matrix_OR(DAT_matrix));
   end master_logic;
 begin
   -- The virtual error slave is pretty straight-forward:
@@ -387,8 +386,7 @@ begin
     ERR   => virtual_ERR,
     RTY   => '0', 
     STALL => '0',
-    DAT   => (others => '0'),
-    INT   => '0');
+    DAT   => (others => '0'));
   virtual_error_slave : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then

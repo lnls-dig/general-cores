@@ -68,7 +68,6 @@ entity wb_slave_adapter is
     sl_rty_o   : out std_logic;
     sl_ack_o   : out std_logic;
     sl_stall_o : out std_logic;
-    sl_int_o   : out std_logic;
 
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
@@ -86,7 +85,6 @@ entity wb_slave_adapter is
     ma_rty_i   : in std_logic;
     ma_ack_i   : in std_logic;
     ma_stall_i : in std_logic;
-    ma_int_i   : in std_logic;
 
     master_i : in  t_wishbone_master_in;
     master_o : out t_wishbone_master_out
@@ -146,7 +144,6 @@ begin  -- rtl
   sl_err_o   <= slave_out.err;
   sl_stall_o <= slave_out.stall;
   sl_dat_o   <= slave_out.dat;
-  sl_int_o   <= slave_out.int;
   
 
   gen_master_use_struct : if (g_master_use_struct) generate
@@ -159,8 +156,7 @@ begin  -- rtl
       rty   => ma_rty_i,
       err   => ma_err_i,
       dat   => ma_dat_i,
-      stall => ma_stall_i,
-      int   => ma_int_i);
+      stall => ma_stall_i);
   end generate gen_master_use_slv;
 
   master_o <= master_out;
@@ -228,5 +224,4 @@ begin  -- rtl
   slave_out.err <= master_in.err;
   slave_out.rty <= master_in.rty;
   slave_out.dat <= master_in.dat;
-  slave_out.int <= master_in.int;
 end rtl;

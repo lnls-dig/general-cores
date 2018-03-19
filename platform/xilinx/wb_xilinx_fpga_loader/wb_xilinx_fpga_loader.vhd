@@ -213,7 +213,6 @@ begin  -- behavioral
   wb_out.err   <= '0';
   wb_out.rty   <= '0';
   wb_out.stall <= '0';
-  wb_out.int   <= '0';
 
   xlx_m_o <= "11";                      -- permamently select Passive serial
                                         -- boot mode

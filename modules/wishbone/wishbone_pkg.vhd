@@ -7,7 +7,7 @@
 -- Platform   : FPGA-generics
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
--- Copyright (c) 2011-2017 CERN
+-- Copyright (c) 2011-2018 CERN
 --
 -- This source file is free software; you can redistribute it
 -- and/or modify it under the terms of the GNU Lesser General
@@ -69,7 +69,6 @@ package wishbone_pkg is
     err   : std_logic;
     rty   : std_logic;
     stall : std_logic;
-    int   : std_logic;
     dat   : t_wishbone_data;
   end record t_wishbone_slave_out;
   subtype t_wishbone_master_in is t_wishbone_slave_out;
@@ -98,7 +97,7 @@ package wishbone_pkg is
 
   -- Dangerous! Will stall a bus.
   constant cc_dummy_slave_out : t_wishbone_slave_out :=
-    ('X', 'X', 'X', 'X', 'X', cc_dummy_data);
+    ('X', 'X', 'X', 'X', cc_dummy_data);
   constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
 
   constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := (0 => cc_dummy_address);
@@ -267,7 +266,6 @@ package wishbone_pkg is
       sl_rty_o   : out std_logic;
       sl_ack_o   : out std_logic;
       sl_stall_o : out std_logic;
-      sl_int_o   : out std_logic;
       slave_i    : in  t_wishbone_slave_in                                   := cc_dummy_slave_in;
       slave_o    : out t_wishbone_slave_out;
       ma_adr_o   : out std_logic_vector(c_wishbone_address_width-1 downto 0);
@@ -281,7 +279,6 @@ package wishbone_pkg is
       ma_rty_i   : in  std_logic                                             := '0';
       ma_ack_i   : in  std_logic                                             := '0';
       ma_stall_i : in  std_logic                                             := '0';
-      ma_int_i   : in  std_logic                                             := '0';
       master_i   : in  t_wishbone_master_in                                  := cc_dummy_slave_out;
       master_o   : out t_wishbone_master_out);
   end component;
@@ -674,8 +671,8 @@ package wishbone_pkg is
       wb_cyc_i     : in  std_logic;
       wb_we_i      : in  std_logic;
       wb_ack_o     : out std_logic;
-      wb_int_o     : out std_logic;
       wb_stall_o   : out std_logic;
+      int_o        : out std_logic;
       scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
       scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
       scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
@@ -695,6 +692,7 @@ package wishbone_pkg is
       slave_i      : in  t_wishbone_slave_in;
       slave_o      : out t_wishbone_slave_out;
       desc_o       : out t_wishbone_device_descriptor;
+      int_o        : out std_logic;
       scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
       scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
       scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
@@ -739,8 +737,10 @@ package wishbone_pkg is
       g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
       g_address_granularity : t_wishbone_address_granularity := WORD;
       g_num_ports           : integer;
-      g_ow_btp_normal       : string                         := "1.0";
-      g_ow_btp_overdrive    : string                         := "5.0");
+      g_ow_btp_normal       : string;
+      g_ow_btp_overdrive    : string;
+      g_CDR_N               : integer;
+      g_CDR_O               : integer);
     port (
       clk_sys_i   : in  std_logic;
       rst_n_i     : in  std_logic;
@@ -752,8 +752,8 @@ package wishbone_pkg is
       wb_dat_i    : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
       wb_dat_o    : out std_logic_vector(c_wishbone_data_width-1 downto 0);
       wb_ack_o    : out std_logic;
-      wb_int_o    : out std_logic;
       wb_stall_o  : out std_logic;
+      int_o       : out std_logic;
       owr_pwren_o : out std_logic_vector(g_num_ports -1 downto 0);
       owr_en_o    : out std_logic_vector(g_num_ports -1 downto 0);
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
@@ -772,6 +772,7 @@ package wishbone_pkg is
       slave_i     : in  t_wishbone_slave_in;
       slave_o     : out t_wishbone_slave_out;
       desc_o      : out t_wishbone_device_descriptor;
+      int_o       : out std_logic;
       owr_pwren_o : out std_logic_vector(g_num_ports -1 downto 0);
       owr_en_o    : out std_logic_vector(g_num_ports -1 downto 0);
       owr_i       : in  std_logic_vector(g_num_ports -1 downto 0));
@@ -812,8 +813,8 @@ package wishbone_pkg is
       wb_we_i    : in  std_logic;
       wb_ack_o   : out std_logic;
       wb_err_o   : out std_logic;
-      wb_int_o   : out std_logic;
       wb_stall_o : out std_logic;
+      int_o      : out std_logic;
       pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o : out std_logic;
       pad_mosi_o : out std_logic;
@@ -833,6 +834,7 @@ package wishbone_pkg is
       slave_i    : in  t_wishbone_slave_in;
       slave_o    : out t_wishbone_slave_out;
       desc_o     : out t_wishbone_device_descriptor;
+      int_o      : out std_logic;
       pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
       pad_sclk_o : out std_logic;
       pad_mosi_o : out std_logic;

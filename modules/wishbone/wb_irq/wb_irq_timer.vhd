@@ -6,7 +6,7 @@
 -- Author     : Mathias Kreider
 -- Company    : GSI
 -- Created    : 2013-08-10
--- Last update: 2013-08-10
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -167,7 +167,6 @@ begin
   s_c_dati  <= ctrl_slave_i.dat;
   s_c_sel   <= ctrl_slave_i.sel; 
 
-  ctrl_slave_o.int    <= '0';
   ctrl_slave_o.rty    <= '0';
   ctrl_slave_o.stall  <= '0';    
   ctrl_slave_o.ack <= r_c_ack;

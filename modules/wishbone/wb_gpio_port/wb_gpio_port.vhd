@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2018-03-14
+-- Last update: 2018-03-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -331,7 +331,6 @@ begin
   wb_out.ack   <= ack_int;
   wb_out.stall <= '0';
   wb_out.err <= '0';
-  wb_out.int <= '0';
   wb_out.rty <='0';
   
 end behavioral;

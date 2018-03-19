@@ -6,7 +6,7 @@
 -- Author     : Mathias Kreider
 -- Company    : GSI
 -- Created    : 2013-08-10
--- Last update: 2013-08-10
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -124,7 +124,6 @@ begin
     irq_pop(I)            <= r_pop(I) and r_status(I);
     r_status(I)           <= not irq_empty(I);
     
-    irq_slave_o(I).int    <= '0'; --will be obsolete soon
     irq_slave_o(I).rty    <= '0';
     irq_slave_o(I).err    <= '0';  
     irq_slave_o(I).dat    <= (others => '0');
@@ -168,7 +167,6 @@ begin
   queue_offs  <= to_integer(adr(adr'left downto 4)-1);
   word_offs   <= to_integer(adr(3 downto 0));
 
-  ctrl_slave_o.int    <= '0';
   ctrl_slave_o.rty    <= '0';
   ctrl_slave_o.stall  <= '0';    
 

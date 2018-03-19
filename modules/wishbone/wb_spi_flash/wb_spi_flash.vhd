@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-04-15
--- Last update: 2013-04-15
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -230,7 +230,6 @@ begin
   master_i.ack <= r_ack(r_ack'left);
   master_i.err <= r_err;
   master_i.rty <= '0';
-  master_i.int <= '0';
   master_i.dat <= r_shift_i;
   master_i.stall <= r_stall;
   

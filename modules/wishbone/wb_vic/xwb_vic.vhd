@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2015-11-19
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -105,6 +105,5 @@ begin  -- wrapper
 
   slave_o.err <= '0';
   slave_o.rty <= '0';
-  slave_o.int <= '0';
   
 end wrapper;

@@ -223,8 +223,7 @@ begin
       end if;
     end if;
   end process;
-  gpio_slave_o.int <= '0'; -- In my opinion, this should not be in the structure,
-                           -- but it is in there. Bother Thomasz to remove it.
+
   gpio_slave_o.err <= '0';
   gpio_slave_o.rty <= '0';
   gpio_slave_o.stall <= '0'; -- This simple example is always ready

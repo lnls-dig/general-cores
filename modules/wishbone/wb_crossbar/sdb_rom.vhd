@@ -140,7 +140,6 @@ begin
   slave_o.err   <= '0';
   slave_o.rty   <= '0';
   slave_o.stall <= '0';
-  slave_o.int   <= '0'; -- Tom sucks! This should not be here.
 
   s_adr <= unsigned(slave_i.adr(c_rom_depth+c_rom_lowbits-1 downto c_rom_lowbits));
   s_sel <= unsigned(f_msi_flag_index(master_i));
