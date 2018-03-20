@@ -364,7 +364,9 @@ package gencores_pkg is
         -- 0 - SCL and SDA lines are passed only through synchronizer
         -- 1 - one clk_i glitches filtered
         -- 2 - two clk_i glitches filtered
-        g_gf_len : natural := 0
+        g_gf_len : natural := 0;
+        -- Automatically ACK reception upon address match.
+        g_auto_addr_ack : boolean := FALSE
         );
     port
       (
