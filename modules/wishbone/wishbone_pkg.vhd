@@ -601,6 +601,7 @@ package wishbone_pkg is
       g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
       g_address_granularity    : t_wishbone_address_granularity := WORD;
       g_num_pins               : natural range 1 to 256;
+      g_with_builtin_sync      : boolean                        := true;
       g_with_builtin_tristates : boolean                        := false);
     port (
       clk_sys_i  : in    std_logic;
@@ -625,7 +626,8 @@ package wishbone_pkg is
       g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
       g_address_granularity    : t_wishbone_address_granularity := WORD;
       g_num_pins               : natural range 1 to 256;
-      g_with_builtin_tristates : boolean);
+      g_with_builtin_sync      : boolean                        := true;
+      g_with_builtin_tristates : boolean                        := false);
     port (
       clk_sys_i  : in    std_logic;
       rst_n_i    : in    std_logic;

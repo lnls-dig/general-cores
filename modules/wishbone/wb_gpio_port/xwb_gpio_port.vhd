@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2018-03-08
+-- Last update: 2018-03-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -38,6 +38,7 @@ entity xwb_gpio_port is
     g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity    : t_wishbone_address_granularity := WORD;
     g_num_pins               : natural range 1 to 256         := 32;
+    g_with_builtin_sync      : boolean                        := true;
     g_with_builtin_tristates : boolean                        := false
     );
 
@@ -67,6 +68,7 @@ architecture rtl of xwb_gpio_port is
       g_interface_mode         : t_wishbone_interface_mode;
       g_address_granularity    : t_wishbone_address_granularity;
       g_num_pins               : natural range 1 to 256;
+      g_with_builtin_sync      : boolean;
       g_with_builtin_tristates : boolean);
     port (
       clk_sys_i  : in    std_logic;
@@ -93,6 +95,7 @@ begin  -- rtl
       g_num_pins               => g_num_pins,
       g_with_builtin_tristates => g_with_builtin_tristates,
       g_interface_mode         => g_interface_mode,
+      g_with_builtin_sync      => g_with_builtin_sync,
       g_address_granularity    => g_address_granularity)
     port map (
       clk_sys_i  => clk_sys_i,

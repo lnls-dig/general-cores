@@ -51,6 +51,7 @@ entity wb_gpio_port is
     g_interface_mode         : t_wishbone_interface_mode      := CLASSIC;
     g_address_granularity    : t_wishbone_address_granularity := WORD;
     g_num_pins               : natural range 1 to 256         := 32;
+    g_with_builtin_sync      : boolean                        := true;
     g_with_builtin_tristates : boolean                        := false
     );
   port(
@@ -134,18 +135,24 @@ begin
 
   sel <= '1' when (unsigned(not wb_in.sel) = 0) else '0';
 
-  GEN_SYNC_FFS : for i in 0 to g_num_pins-1 generate
-    INPUT_SYNC : gc_sync_ffs
-      generic map (
-        g_sync_edge => "positive")
-      port map (
-        rst_n_i  => rst_n_i,
-        clk_i    => clk_sys_i,
-        data_i   => gpio_in(i),
-        synced_o => gpio_in_synced(i),
-        npulse_o => open
-        );
-  end generate GEN_SYNC_FFS;
+  gen_with_sync: if g_with_builtin_sync generate
+    GEN_SYNC_FFS : for i in 0 to g_num_pins-1 generate
+      INPUT_SYNC : gc_sync_ffs
+        generic map (
+          g_sync_edge => "positive")
+        port map (
+          rst_n_i  => rst_n_i,
+          clk_i    => clk_sys_i,
+          data_i   => gpio_in(i),
+          synced_o => gpio_in_synced(i),
+          npulse_o => open
+          );
+    end generate GEN_SYNC_FFS;
+  end generate gen_with_sync;
+
+  gen_without_sync: if not g_with_builtin_sync generate
+    gpio_in_synced <= gpio_in;
+  end generate gen_without_sync;
 
   p_gen_write_mask : process(wb_in.adr)
   begin
