@@ -79,28 +79,33 @@ package wishbone_pkg is
   type t_wishbone_data_array is array(natural range <>) of t_wishbone_data; 
   type t_wishbone_address_array is array(natural range <>) of t_wishbone_address;
   type t_wishbone_master_out_array is array (natural range <>) of t_wishbone_master_out;
-  --type t_wishbone_slave_in_array is array (natural range <>) of t_wishbone_slave_in;
   subtype t_wishbone_slave_in_array is t_wishbone_master_out_array;
   type t_wishbone_slave_out_array is array (natural range <>) of t_wishbone_slave_out;
-  --type t_wishbone_master_in_array is array (natural range <>) of t_wishbone_master_in;
   subtype t_wishbone_master_in_array is t_wishbone_slave_out_array;
 
-  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) :=
+  constant c_DUMMY_ADDRESS : std_logic_vector(c_WISHBONE_ADDRESS_WIDTH-1 downto 0) :=
     (others => 'X');
-  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) :=
+  constant c_DUMMY_DATA : std_logic_vector(c_WISHBONE_DATA_WIDTH-1 downto 0) :=
     (others => 'X');
-  constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) :=
+  constant c_DUMMY_SEL : std_logic_vector(c_WISHBONE_DATA_WIDTH/8-1 downto 0) :=
     (others => 'X');
-  constant cc_dummy_slave_in : t_wishbone_slave_in :=
-    ('0', '0', cc_dummy_address, cc_dummy_sel, 'X', cc_dummy_data);
-  constant cc_dummy_master_out : t_wishbone_master_out := cc_dummy_slave_in;
-
+  constant c_DUMMY_SLAVE_IN : t_wishbone_slave_in :=
+    ('0', '0', c_DUMMY_ADDRESS, c_DUMMY_SEL, 'X', c_DUMMY_DATA);
+  constant c_DUMMY_MASTER_OUT : t_wishbone_master_out := c_DUMMY_SLAVE_IN;
   -- Dangerous! Will stall a bus.
-  constant cc_dummy_slave_out : t_wishbone_slave_out :=
-    ('X', 'X', 'X', 'X', cc_dummy_data);
-  constant cc_dummy_master_in : t_wishbone_master_in := cc_dummy_slave_out;
+  constant c_DUMMY_SLAVE_OUT : t_wishbone_slave_out := ('X', 'X', 'X', 'X', c_DUMMY_DATA);
+  constant c_DUMMY_MASTER_IN : t_wishbone_master_in := c_DUMMY_SLAVE_OUT;
+  constant c_DUMMY_ADDRESS_ARRAY : t_wishbone_address_array(0 downto 0) := (0 => c_DUMMY_ADDRESS);
 
-  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := (0 => cc_dummy_address);
+  -- For backward compatibility
+  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) := c_DUMMY_ADDRESS;
+  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) := c_DUMMY_DATA;
+  constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) := c_DUMMY_SEL;
+  constant cc_dummy_slave_in : t_wishbone_slave_in := c_DUMMY_SLAVE_IN;
+  constant cc_dummy_master_out : t_wishbone_master_out := c_DUMMY_MASTER_OUT;
+  constant cc_dummy_slave_out : t_wishbone_slave_out := c_DUMMY_SLAVE_OUT;
+  constant cc_dummy_master_in : t_wishbone_master_in := c_DUMMY_MASTER_IN;
+  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := c_DUMMY_ADDRESS_ARRAY;
 
   -- A generally useful function.
   function f_ceil_log2(x   : natural) return natural;
@@ -1170,7 +1175,7 @@ package wishbone_pkg is
         date      => x"20140313",
         name      => "WB-Xilinx-MultiBoot")));
 
-  constant cc_dummy_sdb_device : t_sdb_device := (
+  constant c_DUMMY_SDB_DEVICE : t_sdb_device := (
     abi_class     => x"0000",              -- undocumented device
     abi_ver_major => x"01",
     abi_ver_minor => x"01",
@@ -1186,7 +1191,9 @@ package wishbone_pkg is
         date      => x"20150722",
         name      => "Unused-Device      ")));
 
-  
+  -- For backward compatibility
+  constant cc_dummy_sdb_device : t_sdb_device := c_DUMMY_SDB_DEVICE;
+
 end wishbone_pkg;
 
 package body wishbone_pkg is
