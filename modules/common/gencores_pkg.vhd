@@ -10,7 +10,7 @@
 --              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2018-03-15
+-- Last update: 2018-03-20
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -601,6 +601,10 @@ package gencores_pkg is
 
   --  Convert a boolean to std_logic ('1' for True, '0' for False).
   function f_to_std_logic(b : boolean) return std_logic;
+
+  -- Reduce-OR an std_logic_vector to std_logic
+  function f_reduce_or (x : std_logic_vector) return std_logic;
+
 end package;
 
 package body gencores_pkg is
@@ -746,4 +750,20 @@ package body gencores_pkg is
       return '0';
     end if;
   end f_to_std_logic;
+
+  ------------------------------------------------------------------------------
+  -- Perform reduction-OR on an std_logic_vector, return std_logic
+  ------------------------------------------------------------------------------
+  function f_reduce_or (x : std_logic_vector) return std_logic is
+    variable rv : std_logic;
+  begin
+    rv := '0';
+    for n in 0 to x'length-1 loop
+      if(x(n) = '1') then
+        rv := '1';
+      end if;
+    end loop;
+    return rv;
+  end f_reduce_or;
+
 end gencores_pkg;
