@@ -10,7 +10,7 @@
 --              Dimitrios Lampridis
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2018-03-20
+-- Last update: 2018-03-23
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -607,6 +607,10 @@ package gencores_pkg is
   -- Reduce-OR an std_logic_vector to std_logic
   function f_reduce_or (x : std_logic_vector) return std_logic;
 
+  -- Character/String to std_logic_vector
+  function f_to_std_logic_vector (c : character) return std_logic_vector;
+  function f_to_std_logic_vector (s : string) return std_logic_vector;
+
 end package;
 
 package body gencores_pkg is
@@ -767,5 +771,35 @@ package body gencores_pkg is
     end loop;
     return rv;
   end f_reduce_or;
+
+  ------------------------------------------------------------------------------
+  -- Convert a character to an 8-bit std_logic_vector
+  ------------------------------------------------------------------------------
+  function f_to_std_logic_vector (c : character) return std_logic_vector
+  is
+    variable rv : std_logic_vector(7 downto 0);
+  begin
+    rv := std_logic_vector(to_unsigned(character'pos(c), 8));
+    return rv;
+  end function f_to_std_logic_vector;
+
+  ------------------------------------------------------------------------------
+  -- Convert a string of characters to a std_logic_vector of bytes.
+  -- NOTE: right-most character is stored at rv(7 downto 0).
+  ------------------------------------------------------------------------------
+  function f_to_std_logic_vector (s : string) return std_logic_vector
+  is
+    variable rv : std_logic_vector(s'length*8-1 downto 0);
+    variable k  : natural;
+  begin
+    for i in s'range loop
+      -- calculate offset within rv
+      k := 8*(4-i);
+
+      -- do the character conversion and write to proper offset
+      rv(k+7 downto k) := f_to_std_logic_vector(s(i));
+    end loop;
+    return rv;
+  end function f_to_std_logic_vector;
 
 end gencores_pkg;
