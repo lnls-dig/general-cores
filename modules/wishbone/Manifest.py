@@ -17,12 +17,13 @@ modules =  { "local" : [
   "wb_slave_adapter",
   "wb_clock_crossing",
   "wb_dma",
+  "wb_remapper",
   "wb_serial_lcd",
   "wb_spi_flash",
   "wb_simple_pwm",
   "wb_i2c_bridge",
   "wbgen2",
-  "wbgenplus", 	
+  "wbgenplus",
   ]}
 
 files = [
