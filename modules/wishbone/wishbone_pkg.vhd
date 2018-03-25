@@ -1081,6 +1081,20 @@ package wishbone_pkg is
       external_granted_o : out std_logic);
   end component;
 
+  component xwb_remapper is
+    generic (
+      g_num_ranges : integer := 1;
+      g_base_in    : t_wishbone_address_array;
+      g_base_out   : t_wishbone_address_array;
+      g_mask_in    : t_wishbone_address_array;
+      g_mask_out   : t_wishbone_address_array);
+    port (
+      slave_i  : in  t_wishbone_slave_in;
+      slave_o  : out t_wishbone_slave_out;
+      master_i : in  t_wishbone_master_in;
+      master_o : out t_wishbone_master_out);
+  end component xwb_remapper;
+
   -----------------------------------------------------------------------------
   -- I2C to Wishbone bridge, following protocol defined with ELMA
   -----------------------------------------------------------------------------
