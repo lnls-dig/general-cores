@@ -83,29 +83,33 @@ package wishbone_pkg is
   type t_wishbone_slave_out_array is array (natural range <>) of t_wishbone_slave_out;
   subtype t_wishbone_master_in_array is t_wishbone_slave_out_array;
 
-  constant c_DUMMY_ADDRESS : std_logic_vector(c_WISHBONE_ADDRESS_WIDTH-1 downto 0) :=
+  constant c_DUMMY_WB_ADDR : std_logic_vector(c_WISHBONE_ADDRESS_WIDTH-1 downto 0) :=
     (others => 'X');
-  constant c_DUMMY_DATA : std_logic_vector(c_WISHBONE_DATA_WIDTH-1 downto 0) :=
+  constant c_DUMMY_WB_DATA : std_logic_vector(c_WISHBONE_DATA_WIDTH-1 downto 0) :=
     (others => 'X');
-  constant c_DUMMY_SEL : std_logic_vector(c_WISHBONE_DATA_WIDTH/8-1 downto 0) :=
+  constant c_DUMMY_WB_SEL : std_logic_vector(c_WISHBONE_DATA_WIDTH/8-1 downto 0) :=
     (others => 'X');
-  constant c_DUMMY_SLAVE_IN : t_wishbone_slave_in :=
-    ('0', '0', c_DUMMY_ADDRESS, c_DUMMY_SEL, 'X', c_DUMMY_DATA);
-  constant c_DUMMY_MASTER_OUT : t_wishbone_master_out := c_DUMMY_SLAVE_IN;
-  -- Dangerous! Will stall a bus.
-  constant c_DUMMY_SLAVE_OUT : t_wishbone_slave_out := ('X', 'X', 'X', 'X', c_DUMMY_DATA);
-  constant c_DUMMY_MASTER_IN : t_wishbone_master_in := c_DUMMY_SLAVE_OUT;
-  constant c_DUMMY_ADDRESS_ARRAY : t_wishbone_address_array(0 downto 0) := (0 => c_DUMMY_ADDRESS);
+  constant c_DUMMY_WB_SLAVE_IN   : t_wishbone_slave_in :=
+    ('0', '0', c_DUMMY_WB_ADDR, c_DUMMY_WB_SEL, 'X', c_DUMMY_WB_DATA);
+  constant c_DUMMY_WB_MASTER_OUT : t_wishbone_master_out := c_DUMMY_WB_SLAVE_IN;
+  constant c_DUMMY_WB_SLAVE_OUT  : t_wishbone_slave_out :=
+    ('1', '0', '0', '0', c_DUMMY_WB_DATA);
+  constant c_DUMMY_WB_MASTER_IN  : t_wishbone_master_in := c_DUMMY_WB_SLAVE_OUT;
+  constant c_DUMMY_WB_ADDR_ARRAY : t_wishbone_address_array(0 downto 0) := (0 => c_DUMMY_WB_ADDR);
+  -- Dangerous! c_STALL_WB_SLAVE_OUT and c_STALL_WB_MASTER_IN will stall the bus.
+  -- Kept here for backward compatibility, if anyone was using cc_dummy_slave_out.
+  constant c_STALL_WB_SLAVE_OUT  : t_wishbone_slave_out := ('X', 'X', 'X', 'X', c_DUMMY_WB_DATA);
+  constant c_STALL_WB_MASTER_IN  : t_wishbone_master_in := c_DUMMY_WB_SLAVE_OUT;
 
   -- For backward compatibility
-  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) := c_DUMMY_ADDRESS;
-  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) := c_DUMMY_DATA;
-  constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) := c_DUMMY_SEL;
-  constant cc_dummy_slave_in : t_wishbone_slave_in := c_DUMMY_SLAVE_IN;
-  constant cc_dummy_master_out : t_wishbone_master_out := c_DUMMY_MASTER_OUT;
-  constant cc_dummy_slave_out : t_wishbone_slave_out := c_DUMMY_SLAVE_OUT;
-  constant cc_dummy_master_in : t_wishbone_master_in := c_DUMMY_MASTER_IN;
-  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := c_DUMMY_ADDRESS_ARRAY;
+  constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) := c_DUMMY_WB_ADDR;
+  constant cc_dummy_data : std_logic_vector(c_wishbone_data_width-1 downto 0) := c_DUMMY_WB_DATA;
+  constant cc_dummy_sel : std_logic_vector(c_wishbone_data_width/8-1 downto 0) := c_DUMMY_WB_SEL;
+  constant cc_dummy_slave_in : t_wishbone_slave_in := c_DUMMY_WB_SLAVE_IN;
+  constant cc_dummy_master_out : t_wishbone_master_out := c_DUMMY_WB_MASTER_OUT;
+  constant cc_dummy_slave_out : t_wishbone_slave_out := c_STALL_WB_SLAVE_OUT;
+  constant cc_dummy_master_in : t_wishbone_master_in := c_STALL_WB_MASTER_IN;
+  constant cc_dummy_address_array : t_wishbone_address_array(0 downto 0) := c_DUMMY_WB_ADDR_ARRAY;
 
   -- A generally useful function.
   function f_ceil_log2(x   : natural) return natural;
