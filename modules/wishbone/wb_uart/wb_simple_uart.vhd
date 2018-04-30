@@ -1,44 +1,33 @@
--------------------------------------------------------------------------------
--- Title      : Simple Wishbone UART
--- Project    : General Cores Collection (gencores) library
--------------------------------------------------------------------------------
--- File       : wb_simple_uart.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-Co-HT
--- Created    : 2011-02-21
--- Last update: 2018-03-08
--- Platform   : FPGA-generics
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: A simple UART controller, providing two modes of operation
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General cores: Simple Wishbone UART
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   wb_simple_uart
+--
+-- description: A simple UART controller, providing two modes of operation
 -- (both can be used simultenously):
 -- - physical UART (encoding fixed to 8 data bits, no parity and one stop bit)
 -- - virtual UART: TXed data is passed via a FIFO to the Wishbone host (and
 --   vice versa).
--------------------------------------------------------------------------------
--- Copyright (c) 2011 CERN
 --
--- This source file is free software; you can redistribute it
--- and/or modify it under the terms of the GNU Lesser General
--- Public License as published by the Free Software Foundation;
--- either version 2.1 of the License, or (at your option) any
--- later version.
+-- This unit does not use VHDL records for entity ports. For a version with
+-- records, see xwb_simple_uart.
 --
--- This source is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the implied
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
--- PURPOSE.  See the GNU Lesser General Public License for more
--- details.
---
--- You should have received a copy of the GNU Lesser General
--- Public License along with this source; if not, download it
--- from http://www.gnu.org/licenses/lgpl-2.1.html
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2011-02-21  1.0      twlostow        Created
--- 2011-10-04  1.1      twlostow        merged with VUART, added adapter
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2010-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -69,6 +58,8 @@ entity wb_simple_uart is
     wb_we_i    : in  std_logic;
     wb_ack_o   : out std_logic;
     wb_stall_o : out std_logic;
+
+    int_o      : out std_logic;
 
     uart_rxd_i : in  std_logic;
     uart_txd_o : out std_logic
@@ -301,15 +292,19 @@ begin  -- syn
     if rising_edge(clk_sys_i) then
       if rst_n_i = '0' then
         regs_in.sr_rx_rdy_i   <= '0';
+        int_o <= '0';
         regs_in.rdr_rx_data_i <= (others => '0');
       else
         if(rdr_rack = '1' and phys_rx_ready = '0' and regs_out.host_tdr_data_wr_o = '0') then
           regs_in.sr_rx_rdy_i <= '0';
+          int_o <= '0';
         elsif(phys_rx_ready = '1' and g_with_physical_uart) then
           regs_in.sr_rx_rdy_i   <= '1';
+          int_o <= '1';
           regs_in.rdr_rx_data_i <= phys_rx_data;
         elsif(regs_out.host_tdr_data_wr_o = '1' and g_with_virtual_uart) then
           regs_in.sr_rx_rdy_i   <= '1';
+          int_o <= '1';
           regs_in.rdr_rx_data_i <= regs_out.host_tdr_data_o;
         end if;
       end if;

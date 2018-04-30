@@ -871,6 +871,7 @@ package wishbone_pkg is
       wb_we_i    : in  std_logic;
       wb_ack_o   : out std_logic;
       wb_stall_o : out std_logic;
+      int_o      : out std_logic;
       uart_rxd_i : in  std_logic := '1';
       uart_txd_o : out std_logic);
   end component;
@@ -888,6 +889,7 @@ package wishbone_pkg is
       slave_i    : in  t_wishbone_slave_in;
       slave_o    : out t_wishbone_slave_out;
       desc_o     : out t_wishbone_device_descriptor;
+      int_o      : out std_logic;
       uart_rxd_i : in  std_logic := '1';
       uart_txd_o : out std_logic);
   end component;
