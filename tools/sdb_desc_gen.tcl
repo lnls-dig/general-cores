@@ -53,16 +53,18 @@ proc report {level message} {
 # procedure to make sure a given string has a certain length,
 # necessary for embedding strings in SDB. If string is longer, it is
 # trimmed, if it is shorter it is padded (by default with spaces).
+# Before returning, we also replace all non-ASCII chars with "?".
 #
 # For the curious: https://en.wikipedia.org/wiki/Procrustes
 proc str_procrustes {str limit {pad_char " "}} {
     set str_len [string length $str]
     if {[expr $str_len < $limit]} {
 	set pad [string repeat $pad_char [expr $limit - $str_len]]
-	return $str$pad
+	set retval $str$pad
     } else {
-	return [string range $str 0 [expr $limit - 1]]
+	set retval [string range $str 0 [expr $limit - 1]]
     }
+    return [regsub -all {[\u0080-\uffff]} $retval "?"]
 }
 
 #-------------------------------------------------------------------------------
