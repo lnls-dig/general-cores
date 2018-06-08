@@ -1,26 +1,29 @@
--------------------------------------------------------------------------------
--- Title      : Parametrizable synchronous FIFO (Generic version)
--- Project    : Generics RAMs and FIFOs collection
--------------------------------------------------------------------------------
--- File       : generic_sync_fifo_std.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-CO-HT
--- Created    : 2011-01-25
--- Last update: 2017-02-03
--- Platform   : 
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: Single-clock FIFO. 
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   inferred_sync_fifo
+--
+-- description: Parametrizable synchronous FIFO (Generic version).
+-- Single-clock FIFO.
 -- - configurable data width and size
 -- - configurable full/empty/almost full/almost empty/word count signals
--------------------------------------------------------------------------------
--- Copyright (c) 2011-2017 CERN
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2011-01-25  1.0      twlostow        Created
--------------------------------------------------------------------------------
-
+--
+--------------------------------------------------------------------------------
+-- Copyright CERN 2011-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

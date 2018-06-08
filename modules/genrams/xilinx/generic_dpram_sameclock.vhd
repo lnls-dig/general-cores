@@ -1,42 +1,33 @@
--------------------------------------------------------------------------------
--- Title      : Parametrizable dual-port synchronous RAM (Xilinx version)
--- Project    : Generics RAMs and FIFOs collection
--------------------------------------------------------------------------------
--- File       : generic_dpram_sameclock.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-CO-HT
--- Created    : 2011-01-25
--- Last update: 2015-03-30
--- Platform   : 
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: True dual-port synchronous RAM for Xilinx FPGAs with:
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   generic_dpram_sameclock
+--
+-- description: True dual-port synchronous RAM for Xilinx FPGAs with:
 -- - configurable address and data bus width
 -- - byte-addressing mode (data bus width restricted to multiple of 8 bits)
--- Todo:
+--
+-- todo:
 -- - loading initial contents from file
 -- - add support for read-first/write-first address conflict resulution (only
 --   supported by Xilinx in VHDL templates)
--------------------------------------------------------------------------------
--- Copyright (c) 2011 CERN
 --
+--------------------------------------------------------------------------------
+-- Copyright CERN 2011-2018
+--------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
--- License, Version 0.51 (the “License”) (which enables you, at your option,
--- to treat this file as licensed under the Apache License 2.0); you may not
--- use this file except in compliance with the License. You may obtain a copy
--- of the License at http://solderpad.org/licenses/SHL-0.51.
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
 -- Unless required by applicable law or agreed to in writing, software,
 -- hardware and materials distributed under this License is distributed on an
--- “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 -- or implied. See the License for the specific language governing permissions
 -- and limitations under the License.
---
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2011-01-25  1.0      twlostow        Created
--------------------------------------------------------------------------------
-
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,15 +1,12 @@
-------------------------------------------------------------------------------
--- Title      : Wishbone Vectored Interrupt Controller
--- Project    : White Rabbit Switch
-------------------------------------------------------------------------------
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-Co-HT
--- Created    : 2010-05-18
--- Last update: 2018-03-08
--- Platform   : FPGA-generic
--- Standard   : VHDL'87
--------------------------------------------------------------------------------
--- Description: Simple interrupt controller/multiplexer:
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   wb_vic
+--
+-- description: Simple interrupt controller/multiplexer:
 -- - designed to cooperate with wbgen2 peripherals Embedded Interrupt
 --   Controllers (EICs)
 -- - accepts 2 to 32 inputs (configurable using g_num_interrupts)
@@ -20,29 +17,20 @@
 --   a configuration bit.
 -- - interrupt is acknowledged by writing to EIC_EOIR register.
 -- - register layout: see wb_vic.wb for details.
--------------------------------------------------------------------------------
--- Copyright (c) 2010 CERN
 --
--- This source file is free software; you can redistribute it
--- and/or modify it under the terms of the GNU Lesser General
--- Public License as published by the Free Software Foundation;
--- either version 2.1 of the License, or (at your option) any
--- later version.
---
--- This source is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the implied
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
--- PURPOSE.  See the GNU Lesser General Public License for more
--- details.
---
--- You should have received a copy of the GNU Lesser General
--- Public License along with this source; if not, download it
--- from http://www.gnu.org/licenses/lgpl-2.1.html
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2010-05-18  1.0      twlostow        Created
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2010-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

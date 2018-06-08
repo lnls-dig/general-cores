@@ -1,52 +1,27 @@
--------------------------------------------------------------------------------
--- Title      : General cores VHDL package
--- Project    : General Cores library
--------------------------------------------------------------------------------
--- File       : gencores_pkg.vhd
--- Author     : Tomasz Wlostowski
---              Theodor-Adrian Stana
---              Matthieu Cattin
---              Evangelia Gousiou
---              Dimitrios Lampridis
--- Company    : CERN
--- Created    : 2009-09-01
--- Last update: 2018-03-23
--- Platform   : FPGA-generic
--- Standard   : VHDL '93
--------------------------------------------------------------------------------
--- Description:
--- Package incorporating simple VHDL modules and functions, which are used
--- in the WR and other OHWR projects.
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- Copyright (c) 2009-2016 CERN
+-- unit name:   gencores_pkg
 --
--- This source file is free software; you can redistribute it
--- and/or modify it under the terms of the GNU Lesser General
--- Public License as published by the Free Software Foundation;
--- either version 2.1 of the License, or (at your option) any
--- later version.
+-- description: Package incorporating simple VHDL modules and functions,
+-- which are used in OHWR projects.
 --
--- This source is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the implied
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
--- PURPOSE.  See the GNU Lesser General Public License for more
--- details.
---
--- You should have received a copy of the GNU Lesser General
--- Public License along with this source; if not, download it
--- from http://www.gnu.org/licenses/lgpl-2.1.html
---
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2009-09-01  0.9      twlostow        Created
--- 2011-04-18  1.0      twlostow        Added comments & header
--- 2013-11-20  1.1      tstana          Added glitch filter and I2C slave
--- 2014-03-14  1.2      mcattin         Added dynamic glitch filter
--- 2014-03-20  1.3      mcattin         Added bicolor led controller
--- 2016-09-26  1.4      egousiou        Added one-wire DS182x interface
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2009-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

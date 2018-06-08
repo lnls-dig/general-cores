@@ -1,19 +1,14 @@
--------------------------------------------------------------------------------
--- Title      : An MxS Wishbone crossbar switch
--- Project    : General Cores Library (gencores)
--------------------------------------------------------------------------------
--- File       : xwb_crossbar.vhd
--- Author     : Wesley W. Terpstra
--- Company    : GSI
--- Created    : 2011-06-08
--- Last update: 2018-03-19
--- Platform   : FPGA-generic
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description:
+--------------------------------------------------------------------------------
+-- GSI
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- An MxS Wishbone crossbar switch
--- 
+-- unit name:   xwb_crossbar
+--
+-- author:      Wesley W. Terpstra
+--
+-- description: An MxS Wishbone crossbar switch
 -- All masters, slaves, and the crossbar itself must share the same WB clock.
 -- All participants must support the same data bus width. 
 -- 
@@ -34,16 +29,19 @@
 -- 
 --   If g_registered = false, arbitration depth is added to M->S and S->M.
 --
--------------------------------------------------------------------------------
--- Copyright (c) 2011 GSI / Wesley W. Terpstra
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2012-03-05  3.0      wterpstra       made address generic and check overlap
--- 2011-11-04  2.0      wterpstra       timing improvements
--- 2011-06-08  1.0      wterpstra       import from SVN
--------------------------------------------------------------------------------
-
+--------------------------------------------------------------------------------
+-- Copyright GSI 2012-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,36 +1,26 @@
--------------------------------------------------------------------------------
--- Title      : Synchronizer chain
--- Project    : White Rabbit 
--------------------------------------------------------------------------------
--- File       : gc_sync_ffs.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-Co-HT
--- Created    : 2010-06-14
--- Last update: 2017-02-03
--- Platform   : FPGA-generic
--- Standard   : VHDL'87
--------------------------------------------------------------------------------
--- Description: Synchronizer chain and edge detector.
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- Copyright (c) 2009 - 2017 CERN
+-- unit name:   gc_sync_ffs
 --
+-- description: Synchronizer chain and edge detector.
+--
+--------------------------------------------------------------------------------
+-- Copyright CERN 2010-2018
+--------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
--- License, Version 0.51 (the “License”) (which enables you, at your option,
--- to treat this file as licensed under the Apache License 2.0); you may not
--- use this file except in compliance with the License. You may obtain a copy
--- of the License at http://solderpad.org/licenses/SHL-0.51.
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
 -- Unless required by applicable law or agreed to in writing, software,
 -- hardware and materials distributed under this License is distributed on an
--- “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 -- or implied. See the License for the specific language governing permissions
 -- and limitations under the License.
---
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2010-06-14  1.0      twlostow        Created
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
