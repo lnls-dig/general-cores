@@ -133,6 +133,8 @@ architecture syn of inferred_async_fifo is
   signal almost_full_x, almost_full_xm   : std_logic;
   signal almost_empty_x, almost_empty_xm : std_logic;
 
+  signal q_int : std_logic_vector(g_data_width-1 downto 0) := (others => '0');
+
 begin  -- syn
 
   rd_int <= rd_i and not empty_int;
@@ -151,10 +153,12 @@ begin  -- syn
   begin
     if rising_edge(clk_rd_i) then
       if(rd_int = '1') then
-        q_o <= mem(to_integer(unsigned(rcb.bin(rcb.bin'left-1 downto 0))));
+        q_int <= mem(to_integer(unsigned(rcb.bin(rcb.bin'left-1 downto 0))));
       end if;
     end if;
   end process;
+
+  q_o <= q_int;
 
   wcb.bin_next  <= std_logic_vector(unsigned(wcb.bin) + 1);
   wcb.gray_next <= f_bin2gray(wcb.bin_next);
