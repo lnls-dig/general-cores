@@ -54,30 +54,6 @@ architecture syn of generic_spram is
   type t_ram_type is array(0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
   type t_string_file_type is file of string;
 
-
-  impure function f_bitstring_2_slv(s : string; num_bits : integer) return std_logic_vector is
-  begin
-  end function f_bitstring_2_slv;
-
-
-  impure function f_load_from_file(file_name : string) return t_ram_type is
-
-    file f           : t_string_file_type;
-    variable fstatus : file_open_status;
-    
-
-    
-  begin
-    file_open(fstatus, f, file_name, read_mode);
-
-    if(fstatus /= open_ok) then
-      report "generic_spram: Cannot open memory initialization file: " & file_name severity failure;
-    end if;
-    
-    
-  end function f_load_from_file;
-
-
   signal ram  : t_ram_type;
   signal s_we : std_logic_vector(c_num_bytes-1 downto 0);
 
