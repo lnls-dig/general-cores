@@ -123,6 +123,9 @@ if { [catch { set inf_commit_id [exec git log -1 --format=%H] }] } {
 if { [catch { set inf_repo_url [exec git config --get remote.origin.url] }] } {
     set inf_repo_url "unknown url"
 }
+if { [catch { set dirty_repo [exec git describe --all --dirty | grep -c dirty] }] } {
+    set dirty_repo "0"
+}
 
 #-------------------------------------------------------------------------------
 # STEP 5/7: Generate the output file
@@ -151,7 +154,11 @@ puts $fp "package synthesis_descriptor is"
 puts $fp ""
 puts $fp "  constant c_sdb_synthesis_info : t_sdb_synthesis := ("
 puts $fp "    syn_module_name  => \"[str_procrustes $inf_project 16]\","
-puts $fp "    syn_commit_id    => \"[str_procrustes $inf_commit_id 32]\","
+if {$dirty_repo == "0"} {
+    puts $fp "    syn_commit_id    => \"[str_procrustes $inf_commit_id 32]\","
+} else {
+    puts $fp "    syn_commit_id    => \"[str_procrustes $inf_commit_id 31]*\","
+}
 puts $fp "    syn_tool_name    => \"[str_procrustes $inf_tool_name 8]\","
 puts $fp "    syn_tool_version => x\"$inf_tool_version\","
 puts $fp "    syn_date         => x\"[str_procrustes $inf_date_ymd 8]\","
