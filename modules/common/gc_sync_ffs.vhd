@@ -47,6 +47,8 @@ end gc_sync_ffs;
 architecture behavioral of gc_sync_ffs is
   signal sync0, sync1, sync2 : std_logic;
 
+  signal gc_sync_ffs_in : std_logic;
+
   attribute shreg_extract : string;
   attribute shreg_extract of sync0  : signal is "no";
   attribute shreg_extract of sync1  : signal is "no";
@@ -56,6 +58,8 @@ architecture behavioral of gc_sync_ffs is
   attribute keep of sync0  : signal is "true";
   attribute keep of sync1  : signal is "true";
 
+  attribute keep of gc_sync_ffs_in : signal is "true";
+
   -- synchronizer attribute for Vivado
   attribute ASYNC_REG : string;
   attribute ASYNC_REG of sync0 : signal is "true";
@@ -64,6 +68,9 @@ architecture behavioral of gc_sync_ffs is
 
 begin
 
+  -- rename data_i to something we can use as wildcard
+  -- in timing constraints
+  gc_sync_ffs_in <= data_i;
 
   sync_posedge : if (g_sync_edge = "positive") generate
     process(clk_i, rst_n_i)
@@ -76,7 +83,7 @@ begin
         npulse_o <= '0';
         ppulse_o <= '0';
       elsif rising_edge(clk_i) then
-        sync0    <= data_i;
+        sync0    <= gc_sync_ffs_in;
         sync1    <= sync0;
         sync2    <= sync1;
         synced_o <= sync1;
@@ -97,7 +104,7 @@ begin
         npulse_o <= '0';
         ppulse_o <= '0';
       elsif falling_edge(clk_i) then
-        sync0    <= data_i;
+        sync0    <= gc_sync_ffs_in;
         sync1    <= sync0;
         sync2    <= sync1;
         synced_o <= sync1;
@@ -106,5 +113,5 @@ begin
       end if;
     end process;
   end generate sync_negedge;
-  
+
 end behavioral;
