@@ -49,51 +49,18 @@ end gc_pulse_synchronizer;
 
 architecture rtl of gc_pulse_synchronizer is
 
-  signal ready, d_p_d0   : std_logic;
-  signal in_ext, out_ext : std_logic;
-  signal out_feedback    : std_logic;
-
 begin  -- rtl
 
-  cmp_in2out_sync : gc_sync_ffs
+  -- Just wrap around gc_pulse_synchronizer2
+  -- using the same reset on both domains
+  cmp_gc_pulse_sync : gc_pulse_synchronizer2
     port map (
-      clk_i    => clk_out_i,
-      rst_n_i  => rst_n_i,
-      data_i   => in_ext,
-      synced_o => out_ext,
-      npulse_o => open,
-      ppulse_o => q_p_o);
-
-  cmp_out2in_sync : gc_sync_ffs
-    port map (
-      clk_i    => clk_in_i,
-      rst_n_i  => rst_n_i,
-      data_i   => out_ext,
-      synced_o => out_feedback,
-      npulse_o => open,
-      ppulse_o => open);
-
-  p_input_ack : process(clk_in_i, rst_n_i)
-  begin
-    if rst_n_i = '0' then
-      ready  <= '1';
-      in_ext <= '0';
-      d_p_d0 <= '0';
-    elsif rising_edge(clk_in_i) then
-
-      d_p_d0 <= d_p_i;
-
-      if ready = '1' and d_p_i = '1' and d_p_d0 = '0'then
-        in_ext <= '1';
-        ready  <= '0';
-      elsif in_ext = '1' and out_feedback = '1' then
-        in_ext <= '0';
-      elsif in_ext = '0' and out_feedback = '0' then
-        ready <= '1';
-      end if;
-    end if;
-  end process p_input_ack;
-
-  d_ready_o <= ready;
+      clk_in_i    => clk_in_i,
+      rst_in_n_i  => rst_n_i,
+      clk_out_i   => clk_out_i,
+      rst_out_n_i => rst_n_i,
+      d_ready_o   => d_ready_o,
+      d_p_i       => d_p_i,
+      q_p_o       => q_p_o);
 
 end rtl;
