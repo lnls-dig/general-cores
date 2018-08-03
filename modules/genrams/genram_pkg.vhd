@@ -124,6 +124,44 @@ package genram_pkg is
       qb_o    : out std_logic_vector(g_data_b_width-1 downto 0));
   end component;
 
+  component generic_async_fifo_dual_rst is
+    generic (
+      g_data_width             : natural;
+      g_size                   : natural;
+      g_show_ahead             : boolean := false;
+      g_with_rd_empty          : boolean := true;
+      g_with_rd_full           : boolean := false;
+      g_with_rd_almost_empty   : boolean := false;
+      g_with_rd_almost_full    : boolean := false;
+      g_with_rd_count          : boolean := false;
+      g_with_wr_empty          : boolean := false;
+      g_with_wr_full           : boolean := true;
+      g_with_wr_almost_empty   : boolean := false;
+      g_with_wr_almost_full    : boolean := false;
+      g_with_wr_count          : boolean := false;
+      g_almost_empty_threshold : integer := 0;
+      g_almost_full_threshold  : integer := 0);
+    port (
+      rst_wr_n_i        : in  std_logic := '1';
+      clk_wr_i          : in  std_logic;
+      d_i               : in  std_logic_vector(g_data_width-1 downto 0);
+      we_i              : in  std_logic;
+      wr_empty_o        : out std_logic;
+      wr_full_o         : out std_logic;
+      wr_almost_empty_o : out std_logic;
+      wr_almost_full_o  : out std_logic;
+      wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      rst_rd_n_i        : in  std_logic := '1';
+      clk_rd_i          : in  std_logic;
+      q_o               : out std_logic_vector(g_data_width-1 downto 0);
+      rd_i              : in  std_logic;
+      rd_empty_o        : out std_logic;
+      rd_full_o         : out std_logic;
+      rd_almost_empty_o : out std_logic;
+      rd_almost_full_o  : out std_logic;
+      rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)); 
+  end component generic_async_fifo_dual_rst;
+
   component generic_async_fifo
     generic (
       g_data_width             : natural;
