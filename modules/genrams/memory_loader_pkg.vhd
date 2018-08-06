@@ -75,11 +75,10 @@ package body memory_loader_pkg is
     variable l : line;
     variable tmp_bv : bit_vector(mem_width-1 downto 0);
     variable tmp_sv : std_logic_vector(mem_width-1 downto 0);
-    variable mem: t_meminit_array(0 to mem_size-1, mem_width-1 downto 0);
+    variable mem: t_meminit_array(0 to mem_size-1, mem_width-1 downto 0) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
     if(file_name = "" or file_name = "none") then
-      mem:= (others => (others => '0'));
       return mem;
     end if;
 
@@ -94,9 +93,13 @@ package body memory_loader_pkg is
     end if;
 
     for I in 0 to mem_size-1 loop
-      readline (f_in, l);
-      -- read function gives us bit_vector
-      read (l, tmp_bv);
+      if not endfile(f_in) then
+        readline (f_in, l);
+        -- read function gives us bit_vector
+        read (l, tmp_bv);
+      else
+        tmp_bv := (others => '0');
+      end if;
       tmp_sv := to_stdlogicvector(tmp_bv);
       for J in 0 to mem_width-1 loop
         mem(i, j) := tmp_sv(j);
@@ -120,11 +123,10 @@ package body memory_loader_pkg is
     FILE f_in  : text;
     variable l : line;
     variable tmp_bv : bit_vector(31 downto 0);
-    variable mem: t_ram32_type(0 to mem_size-1);
+    variable mem: t_ram32_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
     if(file_name = "" or file_name = "none") then
-      mem:= (others => (others => '0'));
       return mem;
     end if;
 
@@ -139,9 +141,13 @@ package body memory_loader_pkg is
     end if;
 
     for I in 0 to mem_size-1 loop
-      readline (f_in, l);
-      -- read function gives us bit_vector
-      read (l, tmp_bv);
+      if not endfile(f_in) then
+        readline (f_in, l);
+        -- read function gives us bit_vector
+        read (l, tmp_bv);
+      else
+        tmp_bv := (others => '0');
+      end if;
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
 
@@ -160,11 +166,10 @@ package body memory_loader_pkg is
     FILE f_in  : text;
     variable l : line;
     variable tmp_bv : bit_vector(15 downto 0);
-    variable mem: t_ram16_type(0 to mem_size-1);
+    variable mem: t_ram16_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
     if(file_name = "" or file_name = "none") then
-      mem:= (others => (others => '0'));
       return mem;
     end if;
 
@@ -179,9 +184,13 @@ package body memory_loader_pkg is
     end if;
 
     for I in 0 to mem_size-1 loop
-      readline (f_in, l);
-      -- read function gives us bit_vector
-      read (l, tmp_bv);
+      if not endfile(f_in) then
+        readline (f_in, l);
+        -- read function gives us bit_vector
+        read (l, tmp_bv);
+      else
+        tmp_bv := (others => '0');
+      end if;
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
 
@@ -200,11 +209,10 @@ package body memory_loader_pkg is
     FILE f_in  : text;
     variable l : line;
     variable tmp_bv : bit_vector(7 downto 0);
-    variable mem: t_ram8_type(0 to mem_size-1);
+    variable mem: t_ram8_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
     if(file_name = "" or file_name = "none") then
-      mem:= (others => (others => '0'));
       return mem;
     end if;
 
@@ -219,9 +227,13 @@ package body memory_loader_pkg is
     end if;
 
     for I in 0 to mem_size-1 loop
-      readline (f_in, l);
-      -- read function gives us bit_vector
-      read (l, tmp_bv);
+      if not endfile(f_in) then
+        readline (f_in, l);
+        -- read function gives us bit_vector
+        read (l, tmp_bv);
+      else
+        tmp_bv := (others => '0');
+      end if;
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
 
@@ -243,11 +255,10 @@ package body memory_loader_pkg is
     FILE f_in  : text;
     variable l : line;
     variable tmp_bv : bit_vector(31 downto 0);
-    variable mem: t_ram8_type(0 to mem_size-1);
+    variable mem: t_ram8_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
     if(file_name = "" or file_name = "none") then
-      mem:= (others => (others => '0'));
       return mem;
     end if;
 
@@ -262,9 +273,13 @@ package body memory_loader_pkg is
     end if;
 
     for I in 0 to mem_size-1 loop
-      readline (f_in, l);
-      -- read function gives us bit_vector
-      read (l, tmp_bv);
+      if not endfile(f_in) then
+        readline (f_in, l);
+        -- read function gives us bit_vector
+        read (l, tmp_bv);
+      else
+        tmp_bv := (others => '0');
+      end if;
       mem(I) := to_stdlogicvector( tmp_bv((byte_idx+1)*8-1 downto byte_idx*8) );
     end loop;
 
