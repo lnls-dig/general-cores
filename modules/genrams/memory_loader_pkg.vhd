@@ -36,6 +36,15 @@ package memory_loader_pkg is
 
   subtype t_meminit_array is t_generic_ram_init;
 
+  function f_empty_file_name (
+    file_name : in string)
+    return boolean;
+
+  procedure f_file_open_check (
+    file_name        : in string;
+    open_status      : in file_open_status;
+    fail_if_notfound : in boolean);
+
   impure function f_load_mem_from_file
     (file_name : in string;
      mem_size  : in integer;
@@ -64,6 +73,31 @@ end memory_loader_pkg;
 
 package body memory_loader_pkg is
 
+  function f_empty_file_name (
+    file_name : in string)
+    return boolean is
+  begin
+    if file_name = "" or file_name = "none" then
+      return TRUE;
+    end if;
+    return FALSE;
+  end function f_empty_file_name;
+
+  procedure f_file_open_check (
+    file_name        : in string;
+    open_status      : in file_open_status;
+    fail_if_notfound : in boolean) is
+  begin
+    if open_status /= OPEN_OK then
+
+      if fail_if_notfound then
+        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity FAILURE;
+      else
+        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity WARNING;
+      end if;
+    end if;
+  end procedure f_file_open_check;
+
   impure function f_load_mem_from_file
     (file_name        : in string;
      mem_size         : in integer;
@@ -78,19 +112,13 @@ package body memory_loader_pkg is
     variable mem: t_meminit_array(0 to mem_size-1, mem_width-1 downto 0) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
-    if(file_name = "" or file_name = "none") then
+    if f_empty_file_name(file_name) then
       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
 
-    if(status /= open_ok) then
-      if(fail_if_notfound) then
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity failure;
-      else
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity warning;
-      end if;
-    end if;
+    f_file_open_check (file_name, status, fail_if_notfound);
 
     for I in 0 to mem_size-1 loop
       if not endfile(f_in) then
@@ -126,19 +154,13 @@ package body memory_loader_pkg is
     variable mem: t_ram32_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
-    if(file_name = "" or file_name = "none") then
+    if f_empty_file_name(file_name) then
       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
 
-    if(status /= open_ok) then
-      if(fail_if_notfound) then
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity failure;
-      else
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity warning;
-      end if;
-    end if;
+    f_file_open_check (file_name, status, fail_if_notfound);
 
     for I in 0 to mem_size-1 loop
       if not endfile(f_in) then
@@ -169,19 +191,13 @@ package body memory_loader_pkg is
     variable mem: t_ram16_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
-    if(file_name = "" or file_name = "none") then
+    if f_empty_file_name(file_name) then
       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
 
-    if(status /= open_ok) then
-      if(fail_if_notfound) then
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity failure;
-      else
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity warning;
-      end if;
-    end if;
+    f_file_open_check (file_name, status, fail_if_notfound);
 
     for I in 0 to mem_size-1 loop
       if not endfile(f_in) then
@@ -212,19 +228,13 @@ package body memory_loader_pkg is
     variable mem: t_ram8_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
-    if(file_name = "" or file_name = "none") then
+    if f_empty_file_name(file_name) then
       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
 
-    if(status /= open_ok) then
-      if(fail_if_notfound) then
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity failure;
-      else
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity warning;
-      end if;
-    end if;
+    f_file_open_check (file_name, status, fail_if_notfound);
 
     for I in 0 to mem_size-1 loop
       if not endfile(f_in) then
@@ -258,19 +268,13 @@ package body memory_loader_pkg is
     variable mem: t_ram8_type(0 to mem_size-1) := (others => (others => '0'));
     variable status   : file_open_status;
   begin
-    if(file_name = "" or file_name = "none") then
+    if f_empty_file_name(file_name) then
       return mem;
     end if;
 
     file_open(status, f_in, file_name, read_mode);
 
-    if(status /= open_ok) then
-      if(fail_if_notfound) then
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity failure;
-      else
-        report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity warning;
-      end if;
-    end if;
+    f_file_open_check (file_name, status, fail_if_notfound);
 
     for I in 0 to mem_size-1 loop
       if not endfile(f_in) then
