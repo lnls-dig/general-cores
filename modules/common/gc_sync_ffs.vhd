@@ -27,41 +27,42 @@ use ieee.std_logic_1164.all;
 
 entity gc_sync_ffs is
   generic(
-    g_sync_edge : string := "positive"
-    );
+    g_sync_edge : string := "positive");
   port(
-    clk_i    : in  std_logic;  -- clock from the destination clock domain
-    rst_n_i  : in  std_logic;           -- reset
-    data_i   : in  std_logic;           -- async input
-    synced_o : out std_logic;           -- synchronized output
-    npulse_o : out std_logic;  -- negative edge detect output (single-clock
-    -- pulse)
-    ppulse_o : out std_logic   -- positive edge detect output (single-clock
-   -- pulse)
-    );
-end gc_sync_ffs;
+    clk_i    : in  std_logic;   -- clock from the destination clock domain
+    rst_n_i  : in  std_logic;   -- reset
+    data_i   : in  std_logic;   -- async input
+    synced_o : out std_logic;   -- synchronized output
+    npulse_o : out std_logic;   -- negative edge detect output
+    ppulse_o : out std_logic);  -- positive edge detect output
+end entity gc_sync_ffs;
 
 -- make Altera Quartus quiet regarding unknown attributes:
 -- altera message_off 10335
 
-architecture behavioral of gc_sync_ffs is
+architecture arch of gc_sync_ffs is
+
   signal sync0, sync1, sync2 : std_logic;
 
   signal gc_sync_ffs_in : std_logic;
 
-  attribute shreg_extract : string;
-  attribute shreg_extract of sync0  : signal is "no";
-  attribute shreg_extract of sync1  : signal is "no";
-  attribute shreg_extract of sync2  : signal is "no";
+  attribute shreg_extract          : string;
+  attribute shreg_extract of sync0 : signal is "no";
+  attribute shreg_extract of sync1 : signal is "no";
+  attribute shreg_extract of sync2 : signal is "no";
 
-  attribute keep : string;
-  attribute keep of sync0  : signal is "true";
-  attribute keep of sync1  : signal is "true";
+  attribute keep          : string;
+  attribute keep of sync0 : signal is "true";
+  attribute keep of sync1 : signal is "true";
+
+  attribute rloc          : string;
+  attribute rloc of sync0 : signal is "X0Y0";
+  attribute rloc of sync1 : signal is "X0Y0";
 
   attribute keep of gc_sync_ffs_in : signal is "true";
 
   -- synchronizer attribute for Vivado
-  attribute ASYNC_REG : string;
+  attribute ASYNC_REG          : string;
   attribute ASYNC_REG of sync0 : signal is "true";
   attribute ASYNC_REG of sync1 : signal is "true";
   attribute ASYNC_REG of sync2 : signal is "true";
@@ -114,4 +115,4 @@ begin
     end process;
   end generate sync_negedge;
 
-end behavioral;
+end architecture arch;
