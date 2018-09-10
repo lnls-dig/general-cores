@@ -99,32 +99,32 @@ else:
 if args.oformat == 'BRAM':
     fwidth = args.width * 8
     for word in words:
-        print ( '{:0{fwidth}b}'.format ( word, fwidth = fwidth ) )
+        print ( '{0:0{fwidth}b}'.format ( word, fwidth = fwidth ) )
 
 # MIF output
 if args.oformat == 'MIF':
-    print ( 'DEPTH = {};'.format ( len ( words ) ) )
-    print ( 'WIDTH = {};'.format ( args.width ) )
+    print ( 'DEPTH = {0};'.format ( len ( words ) ) )
+    print ( 'WIDTH = {0};'.format ( args.width ) )
     print ( 'ADDRESS_RADIX = HEX;' )
     print ( 'DATA_RADIX = HEX;' )
     print ( 'CONTENT' )
     print ( 'BEGIN' )
     fwidth = args.width * 2
     for i, word in enumerate ( words ):
-        print ( '{:x} : {:0{fwidth}x};'.format ( i, word, fwidth = fwidth ) )
+        print ( '{0:x} : {1:0{fwidth}x};'.format ( i, word, fwidth = fwidth ) )
     print ( 'END;' )
 
 # VHD output
 if args.oformat == 'VHD':
     print ( '-' * 80 )
-    print ( '-- Memory initialization file for {}'.format ( args.in_file ) )
+    print ( '-- Memory initialization file for {0}'.format ( args.in_file ) )
     print ( '--' )
-    print ( '-- This file was automatically generated on {}'.format (
+    print ( '-- This file was automatically generated on {0}'.format (
         today.strftime ( '%A, %B %d %Y') ) )
-    print ( '-- by {} using the following arguments:'.format ( parser.prog ) )
-    print ( '--  {}'.format ( vars(args) ) )
+    print ( '-- by {0} using the following arguments:'.format ( parser.prog ) )
+    print ( '--  {0}'.format ( vars(args) ) )
     print ( '--' )
-    print ( '-- {} is part of OHWR general-cores:'.format ( parser.prog ) )
+    print ( '-- {0} is part of OHWR general-cores:'.format ( parser.prog ) )
     print ( '-- https://www.ohwr.org/projects/general-cores/wiki' )
     print ( '-' * 80 )
     print ( )
@@ -135,15 +135,15 @@ if args.oformat == 'VHD':
     print ( 'library work;' )
     print ( 'use work.memory_loader_pkg.all;' )
     print ( )
-    print ( 'package {}_pkg is'.format ( args.name ) )
+    print ( 'package {0}_pkg is'.format ( args.name ) )
     print ( )
-    print ( '  constant {} : t_meminit_array('.format ( args.name ),
-            '{} downto 0, {} downto 0) := ('.format ( len ( words ) - 1, args.width * 8 - 1 ) )
+    print ( '  constant {0} : t_meminit_array('.format ( args.name ),
+            '{0} downto 0, {1} downto 0) := ('.format ( len ( words ) - 1, args.width * 8 - 1 ) )
     iwidth  = len ( str ( len ( words ) ) )
     fwidth  = args.width * 2
     numcol  = 80 / (12 + iwidth + fwidth)
     for i, word in enumerate ( words ):
-        print ( '    {:{iwidth}d} => x"{:0{fwidth}x}"'.format (
+        print ( '    {0:{iwidth}d} => x"{1:0{fwidth}x}"'.format (
             i, word, iwidth = iwidth, fwidth = fwidth ), end = '' )
         if i == len ( words ) - 1:
             print ( ');' );
@@ -152,4 +152,4 @@ if args.oformat == 'VHD':
             if i % numcol == numcol - 1:
                 print ( )
     print ( )
-    print ( 'end package {}_pkg;'.format ( args.name ) )
+    print ( 'end package {0}_pkg;'.format ( args.name ) )
