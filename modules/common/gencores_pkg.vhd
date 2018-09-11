@@ -547,7 +547,8 @@ package gencores_pkg is
   ------------------------------------------------------------------------------
   component gc_ds182x_interface is
   generic
-    (freq      : integer := 40);
+    (freq               : integer := 40;
+     g_USE_INTERNAL_PPS : boolean := false);
   port
     (clk_i     : in    std_logic;
      rst_n_i   : in    std_logic;

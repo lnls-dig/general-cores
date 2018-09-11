@@ -36,7 +36,8 @@ use IEEE.NUMERIC_STD.all;
 --=================================================================================================
 entity gc_ds182x_interface is
   generic
-    (freq      : integer := 40);                      -- clk frequency in MHz
+    (freq               : integer := 40;      -- clk_i frequency in MHz
+     g_USE_INTERNAL_PPS : boolean := false);
   port
     (clk_i     : in    std_logic;
      rst_n_i   : in    std_logic;
@@ -98,10 +99,37 @@ architecture rtl of gc_ds182x_interface is
   signal shifted_header                                    : std_logic_vector(7 downto 0);
   signal pre_init_p                                        : std_logic;
 
+  signal pps_counter : unsigned(31 downto 0);
+  signal pps         : std_logic;
+
 --=================================================================================================
 --                                       architecture begin
 --=================================================================================================
 begin
+
+  gen_external_pps : if not g_USE_INTERNAL_PPS generate
+    pps <= pps_p_i;
+  end generate gen_external_pps;
+
+  gen_internal_pps : if g_USE_INTERNAL_PPS generate
+    p_pps_gen : process(clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if rst_n_i = '0' then
+          pps         <= '0';
+          pps_counter <= (others => '0');
+        else
+          if pps_counter = g_CLOCK_FREQ_KHZ*1000-1 then
+            pps         <= '1';
+            pps_counter <= (others => '0');
+          else
+            pps         <= '0';
+            pps_counter <= pps_counter + 1;
+          end if;
+        end if;
+      end if;
+    end process;
+  end generate gen_internal_pps;
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- Serial data line in tri-state, when not writing data out
@@ -112,7 +140,7 @@ begin
   pps_p_iDelay: process (clk_i)
   begin
     if rising_edge(clk_i) then
-      pps_p_d <= pps_p_i;
+      pps_p_d <= pps;
     end if;
   end process;
 
@@ -133,48 +161,48 @@ begin
   end process;
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  op_fsm_states: process(state_op, pps_p_i, crc_ok)
+  op_fsm_states : process(state_op, pps, crc_ok)
   begin
     nxt_state_op <= READ_ID_OP;
     case state_op is
 
       when READ_ID_OP =>
-        if pps_p_i = '1' and crc_ok = '1' then
+        if pps = '1' and crc_ok = '1' then
           nxt_state_op <= CONV_OP1;
         else
           nxt_state_op <= state_op;
         end if;
 
       when CONV_OP1 =>
-        if pps_p_i = '1' then
+        if pps = '1' then
           nxt_state_op <= SKIP_ROM_OP1;
         else
           nxt_state_op <= state_op;
         end if;
 
       when SKIP_ROM_OP1 =>
-        if pps_p_i = '1' then
+        if pps = '1' then
           nxt_state_op <= READ_TEMP_OP;
         else
           nxt_state_op <= state_op;
         end if;
 
       when READ_TEMP_OP =>
-        if pps_p_i = '1' then
+        if pps = '1' then
           nxt_state_op <= SKIP_ROM_OP2;
         else
           nxt_state_op <= state_op;
         end if;
 
       when SKIP_ROM_OP2 =>
-        if pps_p_i = '1' then
+        if pps = '1' then
           nxt_state_op <= CONV_OP2;
         else
           nxt_state_op <= state_op;
         end if;
 
       when CONV_OP2 =>
-        if pps_p_i = '1' then
+        if pps = '1' then
           nxt_state_op <= SKIP_ROM_OP1;
         else
           nxt_state_op <= state_op;
@@ -184,7 +212,7 @@ begin
   end process;
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  op_fsm_outputs:process(state_op, state_cm, crc_ok, pps_p_i, cm_only)
+  op_fsm_outputs : process(state_op, state_cm, crc_ok, pps, cm_only)
   begin
     header      <= READ_ID_HEADER;
     bit_top      <= ID_LGTH;
