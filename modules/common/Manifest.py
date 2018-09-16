@@ -13,6 +13,7 @@ files = [
     "gc_pulse_synchronizer.vhd",
     "gc_pulse_synchronizer2.vhd",
     "gc_frequency_meter.vhd",
+    "gc_multichannel_frequency_meter.vhd",
     "gc_rr_arbiter.vhd",
     "gc_prio_encoder.vhd",
     "gc_word_packer.vhd",

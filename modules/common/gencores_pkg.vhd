@@ -208,7 +208,7 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
-  -- Frequency meter
+  -- Frequency meters
   ------------------------------------------------------------------------------
   component gc_frequency_meter
     generic (
@@ -224,6 +224,22 @@ package gencores_pkg is
       freq_valid_o : out std_logic);
   end component;
 
+  component gc_multichannel_frequency_meter is
+    generic (
+      g_with_internal_timebase : boolean;
+      g_clk_sys_freq           : integer;
+      g_counter_bits           : integer;
+      g_channels               : integer);
+    port (
+      clk_sys_i     : in  std_logic;
+      clk_in_i      : in  std_logic_vector(g_channels -1 downto 0);
+      rst_n_i       : in  std_logic;
+      pps_p1_i      : in  std_logic;
+      channel_sel_i : in  std_logic_vector(3 downto 0);
+      freq_o        : out std_logic_vector(g_counter_bits-1 downto 0);
+      freq_valid_o  : out std_logic);
+  end component gc_multichannel_frequency_meter;
+  
   ------------------------------------------------------------------------------
   -- Time-division multiplexer with round robin arbitration
   ------------------------------------------------------------------------------
