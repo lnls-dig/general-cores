@@ -35,18 +35,18 @@ use IEEE.NUMERIC_STD.all;
 --                                Entity declaration for fmc_masterFIP_core
 --=================================================================================================
 entity gc_ds182x_interface is
-  generic
-    (freq               : integer := 40;      -- clk_i frequency in MHz
-     g_USE_INTERNAL_PPS : boolean := false);
-  port
-    (clk_i     : in    std_logic;
-     rst_n_i   : in    std_logic;
-     pps_p_i   : in    std_logic;                     -- pulse per second (for temperature read)
-     onewire_b : inout std_logic;                     -- IO to be connected to the chip(DS1820/DS1822)
-     id_o      : out   std_logic_vector(63 downto 0); -- id_o value
-     temper_o  : out   std_logic_vector(15 downto 0); -- temperature value (refreshed every second)
-     id_read_o : out   std_logic;                     -- id_o value is valid_o
-     id_ok_o   : out   std_logic);                    -- Same as id_read_o, but not reset with rst_n_i
+  generic (
+    freq               : integer := 40;      -- clk_i frequency in MHz
+    g_USE_INTERNAL_PPS : boolean := false);
+  port (
+    clk_i     : in    std_logic;
+    rst_n_i   : in    std_logic;
+    pps_p_i   : in    std_logic;                     -- pulse per second (for temperature read)
+    onewire_b : inout std_logic;                     -- IO to be connected to the chip(DS1820/DS1822)
+    id_o      : out   std_logic_vector(63 downto 0); -- id_o value
+    temper_o  : out   std_logic_vector(15 downto 0); -- temperature value (refreshed every second)
+    id_read_o : out   std_logic;                     -- id_o value is valid_o
+    id_ok_o   : out   std_logic);                    -- Same as id_read_o, but not reset with rst_n_i
 end gc_ds182x_interface;
 
 
@@ -68,36 +68,35 @@ architecture rtl of gc_ds182x_interface is
   constant READ_TEMPER_HEADER : std_logic_vector(7 downto 0) := X"BE";
   constant SKIPHEADER         : std_logic_vector(7 downto 0) := X"CC";
 
-  constant ID_LEFT         : integer   :=  71;
-  constant ID_RIGHT        : integer   :=  8;
-  constant TEMPER_LEFT     : integer   :=  15;
-  constant TEMPER_RIGHT    : integer   :=  0;
-  constant TEMPER_DONE_BIT : std_logic := '0'; -- The serial line is asserted to this value by the
-                                               -- DS1820/DS1822 when the temperature conversion is ready
+  constant ID_LEFT         : integer              := 71;
+  constant ID_RIGHT        : integer              := 8;
+  constant TEMPER_LEFT     : integer              := 15;
+  constant TEMPER_RIGHT    : integer              := 0;
+  constant TEMPER_DONE_BIT : std_logic            := '0';  -- The serial line is asserted to this value by the
+                                                           -- DS1820/DS1822 when the temperature conversion is ready
   constant TEMPER_LGTH     : unsigned(7 downto 0) := to_unsigned(72, 8);
   constant ID_LGTH         : unsigned(7 downto 0) := to_unsigned(64, 8);
 
   type op_fsm_t is (READ_ID_OP, SKIP_ROM_OP1, CONV_OP1, CONV_OP2, SKIP_ROM_OP2, READ_TEMP_OP);
   type cm_fsm_t is (RST_CM, PREP_WR_CM, WR_CM, PREP_RD_CM, RD_CM, IDLE_CM);
-  
+
   signal bit_top, bit_cnt                                  : unsigned(7 downto 0);
-  signal do_read_bit, do_write_bit, do_rst                 : std_logic;
   signal slot_cnt                                          : unsigned(15 downto 0);
   signal start_p, end_p, set_value, read_value, init_pulse : std_logic;
   signal state_op, nxt_state_op                            : op_fsm_t;
   signal state_cm, nxt_state_cm                            : cm_fsm_t;
 
-  signal crc_vec, header                                   : std_logic_vector(7 downto 0);
-  signal crc_ok, init, pre_read_p, i_id_read               : std_logic;
-  signal load_temper, load_id, cm_only, pps_p_d            : std_logic;
+  signal crc_vec, header                        : std_logic_vector(7 downto 0);
+  signal crc_ok, init, pre_read_p, i_id_read    : std_logic;
+  signal load_temper, load_id, cm_only, pps_p_d : std_logic;
 
-  signal serial_id_out, nx_serial_id_out, nx_serial_id_oe  : std_logic;
-  signal i_serial_id_oe, serial_idr                        : std_logic;
-  signal end_wr_cm, end_rd_cm, inc_bit_cnt, rst_bit_cnt    : std_logic;
-  signal shift_header, id_cm_reg                           : std_logic;
-  signal cm_reg                                            : std_logic_vector(71 downto 0);
-  signal shifted_header                                    : std_logic_vector(7 downto 0);
-  signal pre_init_p                                        : std_logic;
+  signal serial_id_out, nx_serial_id_out, nx_serial_id_oe : std_logic;
+  signal i_serial_id_oe, serial_idr                       : std_logic;
+  signal end_wr_cm, end_rd_cm, inc_bit_cnt, rst_bit_cnt   : std_logic;
+  signal shift_header, id_cm_reg                          : std_logic;
+  signal cm_reg                                           : std_logic_vector(71 downto 0);
+  signal shifted_header                                   : std_logic_vector(7 downto 0);
+  signal pre_init_p                                       : std_logic;
 
   signal pps_counter : unsigned(31 downto 0);
   signal pps         : std_logic;
@@ -131,13 +130,16 @@ begin
     end process;
   end generate gen_internal_pps;
 
+
+
+
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- Serial data line in tri-state, when not writing data out
   onewire_b <= serial_id_out when i_serial_id_oe = '1' else 'Z';
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- pps_p_i 1 clock tick delay
-  pps_p_iDelay: process (clk_i)
+  pps_p_iDelay : process (clk_i)
   begin
     if rising_edge(clk_i) then
       pps_p_d <= pps;
@@ -149,7 +151,7 @@ begin
 ---------------------------------------------------------------------------------------------------
 --                                         operations FSM                                        --
 ---------------------------------------------------------------------------------------------------
-  op_fsm_transitions: process(clk_i)
+  op_fsm_transitions : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -215,41 +217,41 @@ begin
   op_fsm_outputs : process(state_op, state_cm, crc_ok, pps, cm_only)
   begin
     header      <= READ_ID_HEADER;
-    bit_top      <= ID_LGTH;
-    load_temper    <= '0';
-    load_id      <= '0';
-    cm_only <= '0';
+    bit_top     <= ID_LGTH;
+    load_temper <= '0';
+    load_id     <= '0';
+    cm_only     <= '0';
 
     case state_op is
 
       when READ_ID_OP =>
-        header <= READ_ID_HEADER;
+        header  <= READ_ID_HEADER;
         bit_top <= ID_LGTH;
         if state_cm = IDLE_CM then
           load_id <= crc_ok;
         end if;
 
       when CONV_OP1 =>
-        header      <= CONVERT_HEADER;
+        header  <= CONVERT_HEADER;
         cm_only <= '1';
 
       when SKIP_ROM_OP1 =>
-        header      <= SKIPHEADER;
+        header  <= SKIPHEADER;
         cm_only <= '1';
 
       when READ_TEMP_OP =>
-        header <= READ_TEMPER_HEADER;
+        header  <= READ_TEMPER_HEADER;
         bit_top <= TEMPER_LGTH;
         if state_cm = IDLE_CM then
-          load_temper <= crc_ok and pps_p_i;
+          load_temper <= crc_ok and pps;
         end if;
 
       when SKIP_ROM_OP2 =>
-        header      <= SKIPHEADER;
+        header  <= SKIPHEADER;
         cm_only <= '1';
 
       when CONV_OP2 =>
-        header      <= CONVERT_HEADER;
+        header  <= CONVERT_HEADER;
         cm_only <= '1';
 
       when others => null;
@@ -262,7 +264,7 @@ begin
 ---------------------------------------------------------------------------------------------------
 --                                          commands FSM                                         --
 ---------------------------------------------------------------------------------------------------
-  cm_fsm_transitions: process(clk_i)
+  cm_fsm_transitions : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -274,7 +276,7 @@ begin
   end process;
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  cm_fsm_states: process(state_cm, start_p, end_wr_cm, end_rd_cm, crc_ok, state_op, cm_only, pps_p_d)
+  cm_fsm_states : process(state_cm, start_p, end_wr_cm, end_rd_cm, crc_ok, state_op, cm_only, pps_p_d)
   begin
     nxt_state_cm <= RST_CM;
     case state_cm is
@@ -324,7 +326,7 @@ begin
           else
             nxt_state_cm <= state_cm;
           end if;
-        elsif state_op = READ_TEMP_OP then         -- At this moment I will send a Conv temper_o command
+        elsif state_op = READ_TEMP_OP then  -- At this moment I will send a Conv temper_o command
           if pps_p_d = '1' then
             nxt_state_cm <= PREP_WR_CM;
           else
@@ -349,31 +351,31 @@ begin
   end process;
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  cm_fsm_outputs:process(state_cm, bit_cnt, pre_read_p, crc_vec, start_p,
-                         shifted_header, init_pulse, read_value, pre_init_p)
+  cm_fsm_outputs : process(state_cm, bit_cnt, pre_read_p, crc_vec, start_p,
+                           shifted_header, init_pulse, read_value, pre_init_p)
   begin
-    inc_bit_cnt     <= '0';
+    inc_bit_cnt      <= '0';
     nx_serial_id_out <= '0';
-    shift_header   <= '0';
+    shift_header     <= '0';
     id_cm_reg        <= '0';
     nx_serial_id_oe  <= '0';
-    rst_bit_cnt   <= '0';
-    init          <= '0';
-    crc_ok         <= '0';
+    rst_bit_cnt      <= '0';
+    init             <= '0';
+    crc_ok           <= '0';
     case state_cm is
       when RST_CM =>
-        rst_bit_cnt   <= '1';
+        rst_bit_cnt      <= '1';
         nx_serial_id_out <= '0';
         nx_serial_id_oe  <= '1';
-        init          <= start_p;
+        init             <= start_p;
       when PREP_WR_CM =>
-        rst_bit_cnt   <= start_p;
+        rst_bit_cnt      <= start_p;
         nx_serial_id_oe  <= '0';
         nx_serial_id_out <= '0';
       when WR_CM =>
-        shift_header   <= start_p;
-        inc_bit_cnt     <= start_p;
-        rst_bit_cnt   <= '0';
+        shift_header     <= start_p;
+        inc_bit_cnt      <= start_p;
+        rst_bit_cnt      <= '0';
         nx_serial_id_out <= shifted_header(0) and (not init_pulse);
         if bit_cnt < to_unsigned(7, bit_cnt'length) then
           nx_serial_id_oe <= not pre_init_p;
@@ -381,12 +383,12 @@ begin
           nx_serial_id_oe <= not pre_read_p;
         end if;
       when PREP_RD_CM =>
-        rst_bit_cnt   <= start_p;
+        rst_bit_cnt      <= start_p;
         nx_serial_id_oe  <= '0';
         nx_serial_id_out <= '0';
       when RD_CM =>
-        inc_bit_cnt     <= start_p;
-        rst_bit_cnt   <= '0';
+        inc_bit_cnt      <= start_p;
+        rst_bit_cnt      <= '0';
         nx_serial_id_out <= not init_pulse;
         id_cm_reg        <= read_value;
         nx_serial_id_oe  <= init_pulse;
@@ -426,7 +428,7 @@ begin
 
         -- Slot counter
         if init = '1' then
-          slot_cnt(slot_cnt'left)             <= '1';
+          slot_cnt(slot_cnt'left)              <= '1';
           slot_cnt(slot_cnt'left - 1 downto 0) <= (others => '0');
         elsif slot_cnt = SLOT_CNT_STOP then
           slot_cnt <= (others => '0');
@@ -454,7 +456,7 @@ begin
         end if;
 
         if (((slot_cnt > SLOT_CNT_PRESTOP) and (slot_cnt <= SLOT_CNT_STOP)) or
-            (slot_cnt <= SLOT_CNT_START_PLUSONE)) then
+            (slot_cnt                                    <= SLOT_CNT_START_PLUSONE)) then
           pre_read_p <= '1';
         else
           pre_read_p <= '0';
@@ -490,7 +492,7 @@ begin
 --                                             serdes                                            --
 ---------------------------------------------------------------------------------------------------
   -- Data serializer bit counter
-  BitCnt_p:process(clk_i)
+  BitCnt_p : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -507,7 +509,7 @@ begin
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- Data serializer shift register
-  ShiftReg_p:process(clk_i)
+  ShiftReg_p : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
@@ -535,7 +537,7 @@ begin
 
         -- Computes CRC on read data (include the received CRC itself, if no errror crc_vec = X"00")
         if init = '1' then
-          crc_vec             <= (others => '0');
+          crc_vec <= (others => '0');
         elsif id_cm_reg = '1' then
           crc_vec(0)          <= serial_idr xor crc_vec(7);
           crc_vec(3 downto 1) <= crc_vec(2 downto 0);
@@ -586,8 +588,8 @@ begin
 
 --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- Detects end of read or end of write command
-  end_wr_cm  <= '1' when (bit_cnt = to_unsigned(7, bit_cnt'length)) and (inc_bit_cnt = '1') else '0';
-  end_rd_cm  <= '1' when (bit_cnt = bit_top)                                                else '0';
+  end_wr_cm <= '1' when (bit_cnt = to_unsigned(7, bit_cnt'length)) and (inc_bit_cnt = '1') else '0';
+  end_rd_cm <= '1' when (bit_cnt = bit_top)                                                else '0';
 
 
 end rtl;
