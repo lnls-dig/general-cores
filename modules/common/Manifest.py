@@ -29,4 +29,5 @@ files = [
     "gc_dec_8b10b.vhd",
     "gc_dyn_extend_pulse.vhd",
     "gc_ds182x_interface.vhd",
+    "gc_ds182x_readout.vhd",
 ];

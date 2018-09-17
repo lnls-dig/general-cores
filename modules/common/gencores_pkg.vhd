@@ -545,6 +545,9 @@ package gencores_pkg is
   ------------------------------------------------------------------------------
   -- One-wire interface to DS1820 and DS1822
   ------------------------------------------------------------------------------
+
+  -- Deprecated! Kept only for backward compatibility.
+  -- Please use gc_ds1282x_readout instead
   component gc_ds182x_interface is
     generic (
       freq               : integer := 40;
@@ -560,6 +563,20 @@ package gencores_pkg is
       id_ok_o   : out   std_logic);
   end component gc_ds182x_interface;
 
+  component gc_ds182x_readout is
+    generic (
+      g_CLOCK_FREQ_KHZ   : integer := 40000;
+      g_USE_INTERNAL_PPS : boolean := false);
+    port (
+      clk_i     : in    std_logic;
+      rst_n_i   : in    std_logic;
+      pps_p_i   : in    std_logic;
+      onewire_b : inout std_logic;
+      id_o      : out   std_logic_vector(63 downto 0);
+      temper_o  : out   std_logic_vector(15 downto 0);
+      id_read_o : out   std_logic;
+      id_ok_o   : out   std_logic);
+  end component gc_ds182x_readout;
 
   --============================================================================
   -- Procedures and functions
