@@ -6,6 +6,7 @@ files = [	"generated/xwb_lm32.vhd",
 					"src/lm32_addsub.v",
 					"src/lm32_dp_ram.vhd",
 					"src/lm32_logic_op.v",
+					"src/lm32_include.v",
 					"src/lm32_ram.vhd",
 					"src/lm32_shifter.v"];
 					
