@@ -24,6 +24,7 @@ files = [
     "gc_prio_encoder.vhd",
     "gc_word_packer.vhd",
     "gc_i2c_slave.vhd",
+    "gc_simple_spi_master.vhd",
     "gc_glitch_filt.vhd",
     "gc_dyn_glitch_filt.vhd",
     "gc_comparator.vhd",
