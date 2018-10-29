@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-12-16
--- Last update: 2016-04-12
+-- Last update: 2018-10-29
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -75,6 +75,7 @@ begin
   slave_o.ack   <= r_ack;	
   slave_o.err   <= r_err;
   slave_o.dat   <= r_dat; 
+  slave_o.rty   <= '0';
 
   s_pop         <= not master_i.stall;
   s_push        <= slave_i.cyc and slave_i.stb and not s_full;
