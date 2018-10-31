@@ -68,7 +68,35 @@ package wishbone_pkg is
     stall : std_logic;
     dat   : t_wishbone_data;
   end record t_wishbone_slave_out;
+
   subtype t_wishbone_master_in is t_wishbone_slave_out;
+
+  -- variants for 64-bit data
+  subtype t_wishbone_data64 is
+    std_logic_vector(63 downto 0);
+  subtype t_wishbone_byte_select_data64 is
+    std_logic_vector(7 downto 0);
+
+  type t_wishbone_master_data64_out is record
+    cyc : std_logic;
+    stb : std_logic;
+    adr : t_wishbone_address;
+    sel : t_wishbone_byte_select_data64;
+    we  : std_logic;
+    dat : t_wishbone_data64;
+  end record t_wishbone_master_data64_out;
+
+  subtype t_wishbone_slave_data64_in is t_wishbone_master_data64_out;
+
+  type t_wishbone_slave_data64_out is record
+    ack   : std_logic;
+    err   : std_logic;
+    rty   : std_logic;
+    stall : std_logic;
+    dat   : t_wishbone_data64;
+  end record t_wishbone_slave_data64_out;
+
+  subtype t_wishbone_master_data64_in is t_wishbone_slave_data64_out;
 
   subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
