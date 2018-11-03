@@ -138,6 +138,6 @@ begin
   end process;
 
 
-end behavioral;
+end arch;
 
 
