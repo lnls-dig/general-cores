@@ -274,6 +274,20 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Multiple clock domain reset generator and synchronizer with
+  -- Asynchronous Assert and Syncrhonous Deassert (AASD)
+  ------------------------------------------------------------------------------
+  component gc_reset_multi_aasd is
+    generic (
+      g_CLOCKS  : natural;
+      g_RST_LEN : natural);
+    port (
+      arst_i  : in  std_logic := '1';
+      clks_i  : in  std_logic_vector(g_CLOCKS-1 downto 0);
+      rst_n_o : out std_logic_vector(g_CLOCKS-1 downto 0));
+  end component gc_reset_multi_aasd;
+
+  ------------------------------------------------------------------------------
   -- Power-On reset generator of synchronous single reset from multiple
   -- asynchronous input reset signals
   ------------------------------------------------------------------------------

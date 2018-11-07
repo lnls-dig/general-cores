@@ -7,6 +7,7 @@ files = [
     "gc_delay_gen.vhd",
     "gc_dual_pi_controller.vhd",
     "gc_reset.vhd",
+    "gc_reset_multi_aasd.vhd",
     "gc_serial_dac.vhd",
     "gc_sync_ffs.vhd",
     "gc_arbitrated_mux.vhd",
