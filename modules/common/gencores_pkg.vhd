@@ -626,6 +626,17 @@ package gencores_pkg is
       id_ok_o   : out   std_logic);
   end component gc_ds182x_readout;
 
+  component gc_dec_8b10b is
+    port (
+      clk_i       : in  std_logic;
+      rst_n_i     : in  std_logic;
+      in_10b_i    : in  std_logic_vector(9 downto 0);
+      ctrl_o      : out std_logic;
+      code_err_o  : out std_logic;
+      rdisp_err_o : out std_logic;
+      out_8b_o    : out std_logic_vector(7 downto 0));
+  end component gc_dec_8b10b;
+
   ------------------------------------------------------------------------------
   -- SFP I2C Adapter
   ------------------------------------------------------------------------------
