@@ -239,7 +239,7 @@ package gencores_pkg is
       freq_o        : out std_logic_vector(g_counter_bits-1 downto 0);
       freq_valid_o  : out std_logic);
   end component gc_multichannel_frequency_meter;
-  
+
   ------------------------------------------------------------------------------
   -- Time-division multiplexer with round robin arbitration
   ------------------------------------------------------------------------------
@@ -783,10 +783,8 @@ package body gencores_pkg is
     variable rv : std_logic;
   begin
     rv := '0';
-    for n in 0 to x'length-1 loop
-      if(x(n) = '1') then
-        rv := '1';
-      end if;
+    for n in x'range loop
+      rv := rv or x(n);
     end loop;
     return rv;
   end f_reduce_or;
