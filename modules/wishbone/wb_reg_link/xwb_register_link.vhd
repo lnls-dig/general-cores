@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-12-16
--- Last update: 2018-10-29
+-- Last update: 2018-11-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -46,10 +46,11 @@ architecture rtl of xwb_register_link is
   signal s_push, s_pop   : std_logic;
   signal s_full, s_empty : std_logic;
   signal r_ack,  r_err   : std_logic;
+  signal r_cyc           : std_logic;
   signal r_dat           : t_wishbone_data;
 
 begin
-  
+
   sp : wb_skidpad
   generic map(
     g_adrbits   => c_wishbone_address_width
@@ -72,24 +73,26 @@ begin
   );
 
 
-  slave_o.ack   <= r_ack;	
+  slave_o.ack   <= r_ack;
   slave_o.err   <= r_err;
-  slave_o.dat   <= r_dat; 
+  slave_o.dat   <= r_dat;
   slave_o.rty   <= '0';
 
   s_pop         <= not master_i.stall;
   s_push        <= slave_i.cyc and slave_i.stb and not s_full;
   slave_o.stall <= s_full;
-  master_o.stb  <= not s_empty; 
-  master_o.cyc  <= slave_i.cyc;
+  master_o.stb  <= not s_empty;
+  master_o.cyc  <= r_cyc;
 
   main : process(clk_sys_i, rst_n_i) is
   begin
     if rst_n_i = '0' then
+      r_cyc  <= '0';
       r_ack  <= '0';
       r_err  <= '0';
-      r_dat  <= (others => '0');  
+      r_dat  <= (others => '0');
     elsif rising_edge(clk_sys_i) then
+      r_cyc <= slave_i.cyc;
       -- no flow control on ack/err
       r_ack <= master_i.ack;
       r_err <= master_i.err;
