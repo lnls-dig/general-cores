@@ -98,6 +98,11 @@ package wishbone_pkg is
 
   subtype t_wishbone_master_data64_in is t_wishbone_slave_data64_out;
 
+  type t_wishbone_master_data64_out_array is array (natural range <>) of t_wishbone_master_data64_out;
+  subtype t_wishbone_slave_data64_in_array is t_wishbone_master_data64_out_array;
+  type t_wishbone_slave_data64_out_array is array (natural range <>) of t_wishbone_slave_data64_out;
+  subtype t_wishbone_master_data64_in_array is t_wishbone_slave_data64_out_array;
+
   subtype t_wishbone_device_descriptor is std_logic_vector(255 downto 0);
 
   type t_wishbone_byte_select_array is array(natural range <>) of t_wishbone_byte_select; 
