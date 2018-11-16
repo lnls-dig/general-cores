@@ -49,7 +49,7 @@ end gc_ds182x_interface;
 
 architecture arch of gc_ds182x_interface is
 
-  constant c_CLOCK_FREQ_KHZ = freq * 1000;
+  constant c_CLOCK_FREQ_KHZ : integer := freq * 1000;
 
 begin
 
