@@ -439,8 +439,13 @@ package wishbone_pkg is
       msi_slave_o   : out t_wishbone_slave_out_array (g_num_slaves -1 downto 0));
   end component;
   
-  component xwb_register_link -- puts a register of delay between crossbars
-    port(
+  component xwb_register_link  -- puts a register of delay between crossbars
+    generic (
+      g_WB_IN_MODE         : t_wishbone_interface_mode      := PIPELINED;
+      g_WB_IN_GRANULARITY  : t_wishbone_address_granularity := BYTE;
+      g_WB_OUT_MODE        : t_wishbone_interface_mode      := PIPELINED;
+      g_WB_OUT_GRANULARITY : t_wishbone_address_granularity := BYTE);
+    port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
       slave_i   : in  t_wishbone_slave_in;
