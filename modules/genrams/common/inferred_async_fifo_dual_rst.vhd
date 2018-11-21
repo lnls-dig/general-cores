@@ -223,7 +223,7 @@ begin  -- syn
   p_gen_going_full : process(rcb, wcb, we_int)
   begin
     if ((wcb.bin (wcb.bin'LEFT-1 downto 0) = rcb.bin_x(rcb.bin_x'LEFT-1 downto 0))
-        and (wcb.bin(wcb.bin'LEFT) /= rcb.bin_x(wcb.bin_x'LEFT))) then
+        and (wcb.bin(wcb.bin'LEFT) /= rcb.bin_x(rcb.bin_x'LEFT))) then
       going_full <= '1';
     elsif (we_int = '1'
            and (wcb.bin_next(wcb.bin'LEFT-1 downto 0) = rcb.bin_x(rcb.bin_x'LEFT-1 downto 0))
