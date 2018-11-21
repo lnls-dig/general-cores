@@ -12,7 +12,7 @@ modules =  { "local" : [
   "wb_vic",
   "wb_spi",
   "wb_crossbar",
-  "wb_reg_link",
+  "wb_register",
   "wb_irq",
   "wb_lm32",
   "wb_slave_adapter",

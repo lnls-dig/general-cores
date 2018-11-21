@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-12-16
--- Last update: 2018-11-16
+-- Last update: 2018-11-19
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ begin
       g_slave_use_struct   => TRUE,
       g_slave_mode         => g_WB_IN_MODE,
       g_slave_granularity  => g_WB_IN_GRANULARITY,
-      g_master_mode        => PIPELINED,
+      g_master_mode        => CLASSIC,
       g_master_granularity => BYTE)
     port map (
       clk_sys_i  => clk_sys_i,
@@ -83,7 +83,7 @@ begin
     generic map (
       g_master_use_struct  => TRUE,
       g_slave_use_struct   => TRUE,
-      g_slave_mode         => PIPELINED,
+      g_slave_mode         => CLASSIC,
       g_slave_granularity  => BYTE,
       g_master_mode        => g_WB_OUT_MODE,
       g_master_granularity => g_WB_OUT_GRANULARITY)
