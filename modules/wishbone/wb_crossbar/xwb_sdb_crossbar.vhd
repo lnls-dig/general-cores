@@ -37,6 +37,7 @@ entity xwb_sdb_crossbar is
     g_wraparound  : boolean := true;
     g_layout      : t_sdb_record_array;
     g_sdb_addr    : t_wishbone_address;
+    g_sdb_wb_mode : t_wishbone_interface_mode := CLASSIC;
     g_sdb_name    : string := "WB4-Crossbar-GSI   ");
   port(
     clk_sys_i     : in  std_logic;
@@ -216,9 +217,11 @@ begin
       g_layout   => c_layout,
       g_masters  => g_num_masters,
       g_bus_end  => c_bus_last,
+      g_wb_mode  => g_sdb_wb_mode,
       g_sdb_name => g_sdb_name)
     port map(
       clk_sys_i => clk_sys_i,
+      rst_n_i   => rst_n_i,
       master_i  => sdb_sel,
       slave_i   => master_o_1(g_num_slaves),
       slave_o   => master_i_1(g_num_slaves));

@@ -425,6 +425,7 @@ package wishbone_pkg is
       g_wraparound  : boolean := true;
       g_layout      : t_sdb_record_array;
       g_sdb_addr    : t_wishbone_address;
+      g_sdb_wb_mode : t_wishbone_interface_mode := CLASSIC;
       g_sdb_name    : string := "WB4-Crossbar-GSI   ");
     port (
       clk_sys_i     : in  std_logic;
@@ -482,12 +483,14 @@ package wishbone_pkg is
 
   component sdb_rom is
     generic(
-      g_layout  : t_sdb_record_array;
-      g_masters : natural;
-      g_bus_end : unsigned(63 downto 0);
-      g_sdb_name    : string := "WB4-Crossbar-GSI   ");
+      g_layout   : t_sdb_record_array;
+      g_masters  : natural;
+      g_bus_end  : unsigned(63 downto 0);
+      g_wb_mode  : t_wishbone_interface_mode := CLASSIC;
+      g_sdb_name : string                    := "WB4-Crossbar-GSI   ");
     port(
       clk_sys_i : in  std_logic;
+      rst_n_i   : in  std_logic := '1';
       master_i  : in  std_logic_vector(g_masters-1 downto 0);
       slave_i   : in  t_wishbone_slave_in;
       slave_o   : out t_wishbone_slave_out);
