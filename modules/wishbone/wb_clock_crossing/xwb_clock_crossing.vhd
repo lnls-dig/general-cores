@@ -90,6 +90,10 @@ architecture rtl of xwb_clock_crossing is
    -- The slave pops them immediately from the mfifo and queues them itself.
    -- Suddenly, the slave can do work and answers all pending requests.
    -- The slow master is unable to read the sfifo fast enough and it overflows.
+   --
+   -- Therefore, we monitor the number of sent requests through MFIFO, versus
+   -- the acknowledgements received through SFIFO and we block if there are
+   -- g_SIZE pending requests, even if MFIFO is actually not full (or even empty).
 
    subtype t_count is unsigned(f_ceil_log2(g_size+1)-1 downto 0);
 
@@ -199,6 +203,7 @@ begin
    mr_en <= not mr_empty and (not mrecv.CYC or not master_o_STB or not master_i.STALL);
    master_o.CYC <= mrecv.CYC;
    master_o.STB <= master_o_STB; -- is high outside of CYC. that's ok; it should be ignored.
+                                 -- ** NOTE: violates Wishbone B4 Rule 3.25 **
    master_o.ADR <= mrecv.ADR;
    master_o.WE  <= mrecv.WE;
    master_o.SEL <= mrecv.SEL;
