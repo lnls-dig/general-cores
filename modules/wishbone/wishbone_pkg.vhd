@@ -455,6 +455,19 @@ package wishbone_pkg is
       master_o  : out t_wishbone_master_out);
   end component;
 
+  component xwb_register is
+    generic (
+      g_WB_MODE  : t_wishbone_interface_mode := PIPELINED;
+      g_FULL_REG : boolean                   := TRUE);
+    port (
+      rst_n_i  : in  std_logic;
+      clk_i    : in  std_logic;
+      slave_i  : in  t_wishbone_slave_in;
+      slave_o  : out t_wishbone_slave_out;
+      master_i : in  t_wishbone_master_in;
+      master_o : out t_wishbone_master_out);
+  end component xwb_register;
+
   -- skidpad. acts like a fifo in wb flow control, but costs less
   component wb_skidpad is
   generic(
