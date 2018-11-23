@@ -559,6 +559,22 @@ package wishbone_pkg is
       slave_stall_i : in  std_logic := '0');
   end component;
 
+  component xwb_clock_bridge is
+    generic (
+      g_SLAVE_PORT_WB_MODE  : t_wishbone_interface_mode := PIPELINED;
+      g_MASTER_PORT_WB_MODE : t_wishbone_interface_mode := PIPELINED;
+      g_SIZE                : natural                   := 16);
+    port (
+      slave_clk_i    : in  std_logic;
+      slave_rst_n_i  : in  std_logic;
+      slave_i        : in  t_wishbone_slave_in;
+      slave_o        : out t_wishbone_slave_out;
+      master_clk_i   : in  std_logic;
+      master_rst_n_i : in  std_logic;
+      master_i       : in  t_wishbone_master_in;
+      master_o       : out t_wishbone_master_out);
+  end component xwb_clock_bridge;
+
   -- g_size is in words
   function f_xwb_dpram(g_size : natural) return t_sdb_device;
   component xwb_dpram
