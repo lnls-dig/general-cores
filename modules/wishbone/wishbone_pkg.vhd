@@ -1746,7 +1746,7 @@ package body wishbone_pkg is
                             instances        : natural := 1) 
    return t_sdb_record_array is
       variable result   : t_sdb_record_array(instances-1 downto 0);  
-      variable i,j, pos : natural;
+      variable pos : natural;
       variable dev, newdev      : t_sdb_device;
       variable serial_no : string(1 to 3);
       variable text_possible : boolean := false; 
@@ -1798,7 +1798,6 @@ package body wishbone_pkg is
 
    function f_sdb_join_arrays(a : t_sdb_record_array; b : t_sdb_record_array) return t_sdb_record_array is
       variable result   : t_sdb_record_array(a'length+b'length-1 downto 0);  
-      variable i : natural;
    begin
       for i in 0 to a'left loop
          result(i) := a(i);
@@ -1857,7 +1856,6 @@ package body wishbone_pkg is
       variable device      : t_sdb_device;
       variable bridge      : t_sdb_bridge;  
       variable sdb_type    : std_logic_vector(7 downto 0);
-      variable i           : natural;
       variable result      : t_sdb_record_array(sdb_array'length-1 downto 0); -- last 
    begin
    
