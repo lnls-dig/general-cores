@@ -11,7 +11,7 @@
 --
 -- IMPORTANT: Introducing this module can have unpredictable results in your
 -- WB interface. Always check with a simulation that this module does not brake
--- your interfaces, especially if you set g_FULL_REG to FALSE.
+-- your interfaces.
 --
 --------------------------------------------------------------------------------
 -- Copyright CERN 2014-2018
@@ -35,10 +35,7 @@ use work.wishbone_pkg.all;
 
 entity xwb_register is
   generic (
-    g_WB_MODE  : t_wishbone_interface_mode := PIPELINED;
-    -- When set to false, do not register the slave
-    -- to master signals (ACK, ERR, RTY, STALL).
-    g_FULL_REG : boolean                   := TRUE);
+    g_WB_MODE : t_wishbone_interface_mode := PIPELINED);
   port (
     rst_n_i  : in  std_logic;
     clk_i    : in  std_logic;
@@ -50,36 +47,61 @@ end xwb_register;
 
 architecture arch of xwb_register is
 
-  type t_reg_fsm is (s_PASS, s_STALL, s_FLUSH);
-  signal state : t_reg_fsm;
-
-  signal s2m_reg : t_wishbone_slave_in;
+  signal rst_n : std_logic := '0';
 
 begin
 
-  g_reg_full : if g_FULL_REG = TRUE generate
-    p_m2s : process(clk_i)
-    begin
-      if rising_edge(clk_i) then
-        slave_o <= master_i;
-      end if;
-    end process p_m2s;
-  end generate g_reg_full;
+  rst_n <= rst_n_i and slave_i.cyc;
 
-  g_reg_half : if g_FULL_REG = FALSE generate
-    slave_o <= master_i;
-  end generate g_reg_half;
+  p_m2s : process (clk_i)
+  begin
+    if rising_edge(clk_i) then
+      slave_o <= master_i;
+    end if;
+  end process p_m2s;
 
   g_reg_classic : if g_WB_MODE = CLASSIC generate
-    p_s2m : process(clk_i)
+
+    type t_reg_fsm is (s_IDLE, S_STB, S_ACK);
+    signal state : t_reg_fsm;
+
+  begin
+
+    p_s2m : process (clk_i)
     begin
       if rising_edge(clk_i) then
-        master_o <= slave_i;
+        if rst_n = '0' then
+          state    <= s_IDLE;
+          master_o <= c_DUMMY_WB_MASTER_OUT;
+        else
+          -- default, overriden by the states below
+          master_o <= slave_i;
+
+          case state is
+            when s_IDLE =>
+              if slave_i.stb = '1' then
+                state <= S_STB;
+              end if;
+            when s_STB =>
+              if master_i.ack = '1' then
+                master_o.stb <= '0';
+                state        <= s_ACK;
+              end if;
+            when s_ACK =>
+              master_o.stb <= '0';
+              state        <= s_IDLE;
+          end case;
+        end if;
       end if;
     end process p_s2m;
   end generate g_reg_classic;
 
   g_reg_pipelined : if g_WB_MODE = PIPELINED generate
+
+    type t_reg_fsm is (s_PASS, s_STALL, s_FLUSH);
+    signal state : t_reg_fsm;
+
+    signal s2m_reg : t_wishbone_slave_in;
 
     signal stall_int    : std_logic;
     signal slave_cyc_d1 : std_logic;
@@ -100,32 +122,41 @@ begin
     -- state in all of the above scenarios.
     stall_int <= slave_cyc_d1 and slave_stb_d1 and master_i.stall;
 
-    p_s2m : process(clk_i)
+    p_reg : process (clk_i)
     begin
       if rising_edge(clk_i) then
-        if rst_n_i = '0' or slave_i.cyc = '0' then
-          state        <= s_PASS;
-          master_o     <= c_DUMMY_WB_MASTER_OUT;
+        if rst_n = '0' then
           slave_cyc_d1 <= '0';
           slave_stb_d1 <= '0';
         else
           slave_cyc_d1 <= slave_i.cyc;
           slave_stb_d1 <= slave_i.stb;
+        end if;
+      end if;
+    end process p_reg;
+
+    p_s2m : process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if rst_n = '0' then
+          state    <= s_PASS;
+          master_o <= c_DUMMY_WB_MASTER_OUT;
+        else
           case state is
             when s_PASS =>
-              if (stall_int = '0') then
+              if stall_int = '0' then
                 master_o <= slave_i;
               else
                 s2m_reg <= slave_i;
                 state   <= s_STALL;
               end if;
             when s_STALL =>
-              if (stall_int = '0') then
+              if stall_int = '0' then
                 master_o <= s2m_reg;
                 state    <= s_FLUSH;
               end if;
             when s_FLUSH =>
-              if (stall_int = '0') then
+              if stall_int = '0' then
                 master_o <= slave_i;
                 state    <= s_PASS;
               else

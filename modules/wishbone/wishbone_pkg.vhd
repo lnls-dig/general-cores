@@ -457,8 +457,7 @@ package wishbone_pkg is
 
   component xwb_register is
     generic (
-      g_WB_MODE  : t_wishbone_interface_mode := PIPELINED;
-      g_FULL_REG : boolean                   := TRUE);
+      g_WB_MODE  : t_wishbone_interface_mode := PIPELINED);
     port (
       rst_n_i  : in  std_logic;
       clk_i    : in  std_logic;
