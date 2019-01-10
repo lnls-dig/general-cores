@@ -120,8 +120,17 @@ if { [catch { set inf_user [exec git config --get user.name] }] } {
 if { [catch { set inf_commit_id [exec git log -1 --format=%H] }] } {
     set inf_commit_id "unknown commit"
 }
-if { [catch { set inf_repo_url [exec git config --get remote.origin.url] }] } {
-    set inf_repo_url "unknown url"
+
+if { [catch { set branch_name [exec git rev-parse --abbrev-ref HEAD] }] } {
+    set branch_name "unknown branch"
+}
+
+if { [catch { set remote_name [exec git config --get branch.$branch_name.remote] }] } {
+    set remote_name "unknown remote"
+}
+
+if { [catch { set inf_repo_url [exec git config --get remote.$remote_name.url] }] } {
+    set inf_repo_url "unknown url (possibly built from a local commit/branch)"
 }
 if { [catch { set dirty_repo [exec git describe --all --dirty | grep -c dirty] }] } {
     set dirty_repo "0"
