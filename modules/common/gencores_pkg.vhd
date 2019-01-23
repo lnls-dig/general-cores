@@ -532,6 +532,7 @@ package gencores_pkg is
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
 
+  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
   function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
