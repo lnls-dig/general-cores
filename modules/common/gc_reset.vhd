@@ -1,3 +1,31 @@
+-------------------------------------------------------------------------------
+-- Title      : Reset synchronizer and generator
+-- Project    : General Cores
+-------------------------------------------------------------------------------
+-- File       : gc_reset.vhd
+-- Company    : CERN
+-- Platform   : FPGA-generics
+-- Standard   : VHDL '93
+-------------------------------------------------------------------------------
+-- Copyright (c) 2012-2017 CERN
+--
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
+--
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
+--
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
+-- from http://www.gnu.org/licenses/lgpl-2.1.html
+-------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -20,7 +48,7 @@ architecture rtl of gc_reset is
   
   signal shifters : t_shifters(g_clocks-1 downto 0) := (others => (others => '0')); -- start reset
   signal locked_count : unsigned(g_logdelay-1 downto 0) := (others => '0');
-  signal master_rstn : std_logic;
+  signal master_rstn : std_logic := '0';
 begin
   lock : process(free_clk_i, locked_i)
     constant locked_done : unsigned(g_logdelay-1 downto 0) := (others => '1');

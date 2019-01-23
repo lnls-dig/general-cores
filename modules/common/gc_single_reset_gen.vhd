@@ -34,6 +34,7 @@
 -- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
+-------------------------------------------------------------------------------
 
 library ieee;
 use ieee.STD_LOGIC_1164.all;
