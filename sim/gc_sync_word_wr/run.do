@@ -11,5 +11,5 @@ radix -hexadecimal
 #add wave *
 do wave.do
 
-run 4 us
+run 400ns
 wave zoomfull

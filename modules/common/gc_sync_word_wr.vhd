@@ -10,7 +10,7 @@
 --   Used to transfer a word from the input clock domain to the output clock
 --   domain.  User provides the data and a pulse write signal to transfer the
 --   data.  When the data are transfered, a write pulse is generated on the
---   output side along with the data, and an acknowledge is geenrated on the
+--   output side along with the data, and an acknowledge is generated on the
 --   input side.  Once the user request a transfer, no new data should be
 --   requested for a transfer until the ack was received.
 --
@@ -52,44 +52,46 @@ entity gc_sync_word_wr is
 end entity;
 
 architecture behav of gc_sync_word_wr is
-  signal data : std_logic_vector (width - 1 downto 0);
-  signal in_busy : std_logic;
-  signal in_progress : std_logic;
-
-  signal ack_start, ack_done : std_logic;
+  signal data     : std_logic_vector (width - 1 downto 0);
+  signal in_busy  : std_logic;
+  signal start_wr : std_logic;
 
   --  Synchronized extended wr_i signal.
-  signal wr_out   : std_logic;
-  --  Internal pulse for wr_o, active one cycle before wr_o.
-  signal wr_out_p : std_logic;
+  signal wr_out         : std_logic;
+  signal last_wr_out    : std_logic;
+  signal wr_out_fb      : std_logic;
+  signal last_wr_out_fb : std_logic;
 begin
   --  Handle incoming request.
   process(clk_in_i)
   begin
     if rising_edge(clk_in_i) then
       if rst_in_n_i = '0' then
-        in_progress <= '0';
+        start_wr <= '0';
         in_busy <= '0';
         data <= (others => '0');
         ack_o <= '0';
+        last_wr_out_fb <= '0';
       else
         ack_o <= '0';
         if in_busy = '0' then
           if wr_i = '1' then
-            in_progress <= '1';
+            --  Write requested.
+            --  Toggle start_wr ...
+            start_wr <= not start_wr;
             in_busy <= '1';
             data <= data_i;
           end if;
         else
           assert wr_i = '0' report "request while previous one not completed"
             severity error;
-          if ack_start = '1' then
-            in_progress <= '0';
-          end if;
-          if ack_done = '1' then
-            assert in_progress = '0';
-            in_busy <= '0';
+          --  ... and wait until wr_out_fb has been toggled.
+          if (wr_out_fb xor last_wr_out_fb) = '1' then
+            --  Set ack (for one cycle).
             ack_o <= '1';
+            last_wr_out_fb <= wr_out_fb;
+            --  Ready for a new request.
+            in_busy <= '0';
           end if;
         end if;
       end if;
@@ -100,9 +102,8 @@ begin
     port map (
       clk_i => clk_out_i,
       rst_n_i => rst_out_n_i,
-      data_i => in_progress,
-      synced_o => wr_out,
-      ppulse_o => wr_out_p);
+      data_i => start_wr,
+      synced_o => wr_out);
 
   --  Outputs.
   process (clk_out_i)
@@ -111,11 +112,13 @@ begin
       if rst_out_n_i = '0' then
         data_o <= (others => '0');
         wr_o <= '0';
+        last_wr_out <= '0';
       else
-        if wr_out_p = '1' then
+        if (wr_out xor last_wr_out) = '1' then
           --  Data are stable.
           data_o <= data;
           wr_o <= '1';
+          last_wr_out <= wr_out;
         else
           wr_o <= '0';
         end if;
@@ -129,6 +132,5 @@ begin
       clk_i => clk_in_i,
       rst_n_i => rst_in_n_i,
       data_i => wr_out,
-      ppulse_o => ack_start,
-      npulse_o => ack_done);
+      synced_o => wr_out_fb);
 end behav;

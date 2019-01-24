@@ -10,12 +10,11 @@ add wave -noupdate /tb_gc_sync_word_wr/wri
 add wave -noupdate /tb_gc_sync_word_wr/wro
 add wave -noupdate /tb_gc_sync_word_wr/ack
 add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/in_busy
-add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/in_progress
-add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/ack_start
-add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/ack_done
+add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/wr_out
+add wave -noupdate /tb_gc_sync_word_wr/cmp_tb/last_wr_out
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
-quietly wave cursor active 0
+WaveRestoreCursors {{Cursor 1} {90000 ps} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -30,4 +29,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {262500 ps}
+WaveRestoreZoom {0 ps} {420 ns}
