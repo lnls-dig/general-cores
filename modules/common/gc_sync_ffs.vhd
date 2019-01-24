@@ -7,6 +7,7 @@
 -- unit name:   gc_sync_ffs
 --
 -- description: Synchronizer chain and edge detector.
+--   All the registers in the chain are cleared at reset.
 --
 --------------------------------------------------------------------------------
 -- Copyright CERN 2010-2018
