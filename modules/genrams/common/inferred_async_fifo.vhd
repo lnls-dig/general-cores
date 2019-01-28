@@ -115,11 +115,12 @@ architecture syn of inferred_async_fifo is
   end record;
 
   type   t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-  signal mem : t_mem_type;
+  signal mem : t_mem_type := (others => (others => '0'));
 
   signal rcb, wcb                          : t_counter_block;
 
-  
+  signal rd_ptr_muxed : t_counter;
+
   signal full_int, empty_int               : std_logic;
   signal almost_full_int, almost_empty_int : std_logic;
   signal going_full                        : std_logic;
@@ -140,6 +141,15 @@ begin  -- syn
   rd_int <= rd_i and not empty_int;
   we_int <= we_i and not full_int;
 
+  p_rd_ptr_mux: process(rcb, rd_int)
+  begin
+    if(rd_int = '1' and g_show_ahead) then
+      rd_ptr_muxed <= rcb.bin_next;
+    elsif((rd_int = '1' and not g_show_ahead) or (g_show_ahead)) then
+      rd_ptr_muxed <= rcb.bin;
+    end if;
+  end process p_rd_ptr_mux;
+
   p_mem_write : process(clk_wr_i)
   begin
     if rising_edge(clk_wr_i) then
@@ -152,8 +162,8 @@ begin  -- syn
   p_mem_read : process(clk_rd_i)
   begin
     if rising_edge(clk_rd_i) then
-      if(rd_int = '1') then
-        q_int <= mem(to_integer(unsigned(rcb.bin(rcb.bin'left-1 downto 0))));
+      if(rd_int = '1' or g_show_ahead) then
+        q_int <= mem(to_integer(unsigned(rd_ptr_muxed(rd_ptr_muxed'left-1 downto 0))));
       end if;
     end if;
   end process;
