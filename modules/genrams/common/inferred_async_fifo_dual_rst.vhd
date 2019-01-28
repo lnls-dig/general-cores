@@ -114,7 +114,7 @@ begin  -- syn
   rd_int <= rd_i and not empty_int;
   we_int <= we_i and not full_int;
 
-  p_rd_ptr_mux: process(rcb, rd_int)
+  p_rd_ptr_mux : process(rcb, rd_int)
   begin
     if(rd_int = '1' and g_show_ahead) then
       rd_ptr_muxed <= rcb.bin_next;
@@ -136,7 +136,7 @@ begin  -- syn
   begin
     if rising_edge(clk_rd_i) then
       if(rd_int = '1' or g_show_ahead) then
-        q_int <= mem(to_integer(unsigned(rd_ptr_muxed(rd_ptr_muxed'left-1 downto 0))));
+        q_int <= mem(to_integer(unsigned(rd_ptr_muxed(rd_ptr_muxed'LEFT-1 downto 0))));
       end if;
     end if;
   end process p_mem_read;
