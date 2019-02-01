@@ -390,7 +390,8 @@ package wishbone_pkg is
       g_num_slaves  : integer;
       g_registered  : boolean;
       g_address     : t_wishbone_address_array;
-      g_mask        : t_wishbone_address_array);
+      g_mask        : t_wishbone_address_array;
+      g_verbose     : boolean := true);
     port (
       clk_sys_i : in  std_logic;
       rst_n_i   : in  std_logic;
@@ -419,6 +420,7 @@ package wishbone_pkg is
 
   component xwb_sdb_crossbar
     generic (
+      g_verbose     : boolean := true;
       g_num_masters : integer;
       g_num_slaves  : integer;
       g_registered  : boolean := false;

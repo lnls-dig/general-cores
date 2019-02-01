@@ -31,6 +31,7 @@ use work.wishbone_pkg.all;
 
 entity xwb_sdb_crossbar is
   generic(
+    g_verbose     : boolean := true;
     g_num_masters : natural := 1;
     g_num_slaves  : natural := 1;
     g_registered  : boolean := false;
@@ -232,7 +233,8 @@ begin
       g_num_slaves  => g_num_slaves + 1,
       g_registered  => g_registered,
       g_address     => c_address,
-      g_mask        => c_mask)
+      g_mask        => c_mask,
+      g_verbose     => g_verbose)
     port map(
       clk_sys_i     => clk_sys_i,
       rst_n_i       => rst_n_i,
@@ -248,7 +250,8 @@ begin
       g_num_slaves  => g_num_masters,
       g_registered  => g_registered,
       g_address     => c_addresses.msi_address,
-      g_mask        => c_addresses.msi_mask)
+      g_mask        => c_addresses.msi_mask,
+      g_verbose     => g_verbose)
     port map(
       clk_sys_i     => clk_sys_i,
       rst_n_i       => rst_n_i,
