@@ -67,7 +67,7 @@ entity inferred_async_fifo is
 
     wr_empty_o        : out std_logic;
     wr_full_o         : out std_logic;
-    wr_almost_empty_o : out std_logic;  -- TODO: assign
+    wr_almost_empty_o : out std_logic;
     wr_almost_full_o  : out std_logic;
     wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
 
@@ -79,7 +79,7 @@ entity inferred_async_fifo is
     rd_empty_o        : out std_logic;
     rd_full_o         : out std_logic;
     rd_almost_empty_o : out std_logic;
-    rd_almost_full_o  : out std_logic;  -- TODO: assign
+    rd_almost_full_o  : out std_logic;
     rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
@@ -88,30 +88,28 @@ end inferred_async_fifo;
 
 architecture syn of inferred_async_fifo is
 
-  function f_bin2gray(bin : std_logic_vector) return std_logic_vector is
-  begin
-    return bin(bin'LEFT) & (bin(bin'LEFT-1 downto 0) xor bin(bin'LEFT downto 1));
-  end f_bin2gray;
-
-  function f_gray2bin(gray : std_logic_vector) return std_logic_vector is
-    variable bin : std_logic_vector(gray'LEFT downto 0);
-  begin
-    -- gray to binary
-    for i in 0 to gray'LEFT loop
-      bin(i) := '0';
-      for j in i to gray'LEFT loop
-        bin(i) := bin(i) xor gray(j);
-      end loop;  -- j
-    end loop;  -- i
-    return bin;
-  end f_gray2bin;
-
+  -- We use one more bit to be able to differentiate between an empty FIFO
+  -- (where rcb = wcb) and a full FIFO (where rcb = wcb except from the most
+  -- significant extra bit).
+  -- This extra bit is not used of course for actual addressing of the memory.
   constant c_counter_bits : integer := f_log2_size(g_size) + 1;
+
   subtype t_counter is std_logic_vector(c_counter_bits-1 downto 0);
 
+  -- bin: binary counter
+  -- bin_next: bin + 1
+  -- bin_x: cross-clock domain version of bin
+  -- gray: gray code of bin
+  -- gray_next: gray code of bin_next
+  -- gray_x: gray code of bin_x
+  --
+  -- We use gray codes for safe cross-clock domain crossing of counters. Thus,
+  -- a binary counter is converted to gray before crossing, and then it is
+  -- converted back to binary after crossing.
   type t_counter_block is record
-    bin, bin_next, gray, gray_next : t_counter;
-    bin_x, gray_x, gray_xm         : t_counter;
+    bin, bin_next   : t_counter;
+    gray, gray_next : t_counter;
+    bin_x, gray_x   : t_counter;
   end record;
 
   type t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
@@ -128,11 +126,11 @@ architecture syn of inferred_async_fifo is
   signal wr_count, rd_count : t_counter;
   signal rd_int, we_int     : std_logic;
 
-  signal wr_empty_xm, wr_empty_x : std_logic;
-  signal rd_full_xm, rd_full_x   : std_logic;
+  signal wr_empty_x : std_logic;
+  signal rd_full_x  : std_logic;
 
-  signal almost_full_x, almost_full_xm   : std_logic;
-  signal almost_empty_x, almost_empty_xm : std_logic;
+  signal almost_full_x  : std_logic;
+  signal almost_empty_x : std_logic;
 
   signal q_int : std_logic_vector(g_data_width-1 downto 0) := (others => '0');
 
@@ -171,7 +169,7 @@ begin  -- syn
   q_o <= q_int;
 
   wcb.bin_next  <= std_logic_vector(unsigned(wcb.bin) + 1);
-  wcb.gray_next <= f_bin2gray(wcb.bin_next);
+  wcb.gray_next <= f_gray_encode(wcb.bin_next);
 
   p_write_ptr : process(clk_wr_i, rst_n_i)
   begin
@@ -187,7 +185,7 @@ begin  -- syn
   end process p_write_ptr;
 
   rcb.bin_next  <= std_logic_vector(unsigned(rcb.bin) + 1);
-  rcb.gray_next <= f_bin2gray(rcb.bin_next);
+  rcb.gray_next <= f_gray_encode(rcb.bin_next);
 
   p_read_ptr : process(clk_rd_i, rst_n_i)
   begin
@@ -220,8 +218,8 @@ begin  -- syn
       d_i       => wcb.gray,
       q_o       => wcb.gray_x);
 
-  wcb.bin_x <= f_gray2bin(wcb.gray_x);
-  rcb.bin_x <= f_gray2bin(rcb.gray_x);
+  wcb.bin_x <= f_gray_decode(wcb.gray_x, 1);
+  rcb.bin_x <= f_gray_decode(rcb.gray_x, 1);
 
   p_gen_empty : process(clk_rd_i, rst_n_i)
   begin
@@ -253,8 +251,6 @@ begin  -- syn
       rst_n_i  => rst_n_i,
       data_i   => full_int,
       synced_o => rd_full_x);
-
-
 
   rd_empty_o <= empty_int;
   wr_empty_o <= wr_empty_x;

@@ -77,14 +77,29 @@ entity inferred_async_fifo_dual_rst is
 end inferred_async_fifo_dual_rst;
 
 
-architecture syn of inferred_async_fifo_dual_rst is
+architecture arch of inferred_async_fifo_dual_rst is
 
+  -- We use one more bit to be able to differentiate between an empty FIFO
+  -- (where rcb = wcb) and a full FIFO (where rcb = wcb except from the most
+  -- significant extra bit).
+  -- This extra bit is not used of course for actual addressing of the memory.
   constant c_counter_bits : integer := f_log2_size(g_size) + 1;
   subtype t_counter is std_logic_vector(c_counter_bits-1 downto 0);
 
+  -- bin: binary counter
+  -- bin_next: bin + 1
+  -- bin_x: cross-clock domain version of bin
+  -- gray: gray code of bin
+  -- gray_next: gray code of bin_next
+  -- gray_x: gray code of bin_x
+  --
+  -- We use gray codes for safe cross-clock domain crossing of counters. Thus,
+  -- a binary counter is converted to gray before crossing, and then it is
+  -- converted back to binary after crossing.
   type t_counter_block is record
-    bin, bin_next, gray, gray_next : t_counter;
-    bin_x, gray_x, gray_xm         : t_counter;
+    bin, bin_next   : t_counter;
+    gray, gray_next : t_counter;
+    bin_x, gray_x   : t_counter;
   end record;
 
   type t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
@@ -101,15 +116,15 @@ architecture syn of inferred_async_fifo_dual_rst is
   signal wr_count, rd_count : t_counter;
   signal rd_int, we_int     : std_logic;
 
-  signal wr_empty_xm, wr_empty_x : std_logic;
-  signal rd_full_xm, rd_full_x   : std_logic;
+  signal wr_empty_x : std_logic;
+  signal rd_full_x  : std_logic;
 
-  signal almost_full_x, almost_full_xm   : std_logic;
-  signal almost_empty_x, almost_empty_xm : std_logic;
+  signal almost_full_x  : std_logic;
+  signal almost_empty_x : std_logic;
 
   signal q_int : std_logic_vector(g_data_width-1 downto 0) := (others => '0');
 
-begin  -- syn
+begin  -- arch
 
   rd_int <= rd_i and not empty_int;
   we_int <= we_i and not full_int;
@@ -317,4 +332,4 @@ begin  -- syn
   wr_count_o <= std_logic_vector(wr_count(f_log2_size(g_size)-1 downto 0));
   rd_count_o <= std_logic_vector(rd_count(f_log2_size(g_size)-1 downto 0));
 
-end syn;
+end arch;
