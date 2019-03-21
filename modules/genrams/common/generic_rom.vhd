@@ -90,7 +90,7 @@ architecture syn of generic_rom is
     return true;
   end f_is_synthesis;
 
-  variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
+  shared variable ram : t_ram_type := f_memarray_to_ramtype(g_size, g_data_width);
 begin
 
     process(clk_i)
