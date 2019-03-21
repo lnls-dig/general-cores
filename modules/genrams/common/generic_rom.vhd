@@ -97,9 +97,9 @@ begin
     begin
       if rising_edge(clk_i) then
         if f_is_synthesis then
-          qa_o <= ram(to_integer(unsigned(a_i)));
+          q_o <= ram(to_integer(unsigned(a_i)));
         else
-          qa_o <= ram(to_integer(unsigned(a_i)) mod g_size);
+          q_o <= ram(to_integer(unsigned(a_i)) mod g_size);
         end if;
       end if;
     end process;
