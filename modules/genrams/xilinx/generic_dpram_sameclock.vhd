@@ -92,24 +92,6 @@ architecture syn of generic_dpram_sameclock is
       return tmp;
     end if;
 
-    -- To speed-up most common cases, use dedicated functions
-    -- 32-bit width
-    if (g_data_width = 32) then
-      mem32 := f_load_mem32_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem32);
-    end if;
-    -- 16-bit width
-    if (g_data_width = 16) then
-      mem16 := f_load_mem16_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem16);
-    end if;
-    -- 8-bit width
-    if (g_data_width = 8) then
-      mem8 := f_load_mem8_from_file(g_init_file, g_size, g_fail_if_file_not_found);
-      return t_ram_type(mem8);
-    end if;
-
-    -- Only for "exotic" sizes do the lengthly (in Vivado 2016.4) copying
     arr := f_load_mem_from_file(g_init_file, g_size, g_data_width, g_fail_if_file_not_found);
     pos := 0;
     while(pos < g_size)loop
@@ -126,27 +108,6 @@ architecture syn of generic_dpram_sameclock is
     return tmp;
   end f_file_to_ramtype;
 
-  --impure function InitRamFromFile(fname : in string) return t_ram_type is
-  --  FILE RamFile   : text;
-  --  variable fline : line;
-  --  variable RAM   : t_ram_type;
-  --  variable tmp_bv : bit_vector(g_data_width-1 downto 0);
-  --  variable status   : file_open_status;
-  --begin
-  --  if(fname = "" or fname = "none") then
-  --    RAM := (others=>(others=>'0'));
-  --    return RAM;
-  --  end if;
-
-  --  file_open(status, RamFile, fname, read_mode);
-  --  for I in t_ram_type'range loop
-  --    readline(RamFile, fline);
-  --    read(fline, tmp_bv);
-  --    RAM(I) := to_stdlogicvector(tmp_bv);
-  --  end loop;
-  --  return RAM;
-  --end function;
-
   function f_is_synthesis return boolean is
   begin
     -- synthesis translate_off
@@ -154,6 +115,7 @@ architecture syn of generic_dpram_sameclock is
     -- synthesis translate_on
     return true;
   end f_is_synthesis; 
+
 
   shared variable ram : t_ram_type := f_file_to_ramtype;
 

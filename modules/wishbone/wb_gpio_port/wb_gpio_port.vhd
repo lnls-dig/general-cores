@@ -5,15 +5,29 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2013-09-04
+-- Last update: 2017-10-11
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
 -- Description: Bidirectional GPIO port of configurable width (1 to 256 bits).
 -------------------------------------------------------------------------------
--- Copyright (c) 2010, 2011 CERN
+-- Copyright (c) 2010 - 2017 CERN
 --
--- 
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
+--
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
+--
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
+-- from http://www.gnu.org/licenses/lgpl-2.1.html
 -------------------------------------------------------------------------------
 -- Revisions  :
 -- Date        Version  Author          Description
@@ -301,13 +315,15 @@ begin
       end loop;
     end process gpio_out_tristate;
 
-    gpio_in <= gpio_b;
-    
+    gpio_in(g_num_pins-1 downto 0)          <= gpio_b;
+    gpio_in(gpio_in'LEFT downto g_num_pins) <= (others => '0');
+
   end generate gen_with_tristates;
 
   gen_without_tristates : if (not g_with_builtin_tristates) generate
     gpio_out_o                     <= out_reg(g_num_pins-1 downto 0);
     gpio_in(g_num_pins-1 downto 0) <= gpio_in_i;
+    gpio_in(gpio_in'LEFT downto g_num_pins) <= (others => '0');
     gpio_oen_o                     <= dir_reg(g_num_pins-1 downto 0);
   end generate gen_without_tristates;
 

@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2016-01-27
+-- Last update: 2017-10-11
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -49,19 +49,17 @@ use work.gencores_pkg.all;
 use work.genram_pkg.all;
 
 entity gc_moving_average is
-  
+
   generic (
     -- input/output data width
-    g_data_width : natural              := 24;
+    g_data_width : natural := 24;
     -- averaging window, expressed as 2 ** g_avg_log2
-    g_avg_log2   : natural range 1 to 8 := 4
+    g_avg_log2 : natural range 1 to 8 := 4
     );
   port (
-    rst_n_i : in std_logic;
-    clk_i   : in std_logic;
-
+    rst_n_i    : in  std_logic;
+    clk_i      : in  std_logic;
     din_i      : in  std_logic_vector(g_data_width-1 downto 0);
-    din_stb_i  : in  std_logic;
     dout_o     : out std_logic_vector(g_data_width+g_avg_log2-1 downto 0);
     dout_stb_o : out std_logic
     );
@@ -70,27 +68,11 @@ end gc_moving_average;
 
 architecture rtl of gc_moving_average is
 
-  component gc_delay_line is
-    generic (
-      g_delay : integer;
-      g_width : integer);
-    port (
-      clk_i   : in  std_logic;
-      rst_n_i : in  std_logic;
-      d_i     : in  std_logic_vector(g_width -1 downto 0);
-      q_o     : out std_logic_vector(g_width -1 downto 0);
-      ready_o : out std_logic);
-  end component gc_delay_line;
-
-  
-  
-  constant avg_steps                    : natural := 2**g_avg_log2;
-  signal delay_dout                       : std_logic_vector(g_data_width-1 downto 0);
-  signal acc                            : unsigned(g_data_width+g_avg_log2+1 downto 0);
-  signal dly_ready,delay_ready_d0, delay_ready_d1, delay_ready_d2 : std_logic;
-  
+  constant avg_steps : natural := 2**g_avg_log2;
+  signal delay_dout  : std_logic_vector(g_data_width-1 downto 0);
+  signal acc         : unsigned(g_data_width+g_avg_log2+1 downto 0);
+  signal dly_ready   : std_logic;
 begin  -- rtl
-
 
   U_delay : gc_delay_line
     generic map (
@@ -107,19 +89,18 @@ begin  -- rtl
   avg : process (clk_i)
   begin  -- process avgx
     if rising_edge(clk_i) then
-      delay_ready_d2 <= delay_ready_d1;
-      delay_ready_d1 <= delay_ready_d0;
-      delay_ready_d0 <= dly_ready;
       if rst_n_i = '0' or dly_ready /= '1' then
-        acc <= (others => '0');
+        acc        <= (others => '0');
+        dout_stb_o <= '0';
       else
-        acc <= acc + unsigned(din_i) - unsigned(delay_dout);
+        acc        <= acc + unsigned(din_i) - unsigned(delay_dout);
+        dout_stb_o <= '1';
       end if;
     end if;
   end process;
 
   dout_o <= std_logic_vector(acc(g_data_width+ g_avg_log2-1 downto 0));
-  
-  
+
+
 end rtl;
 
