@@ -58,6 +58,7 @@ package gencores_pkg is
       g_width : natural);
     port (
       clk_i      : in  std_logic;
+      ce_i       : in  std_logic := '1';
       rst_n_i    : in  std_logic;
       pulse_i    : in  std_logic;
       extended_o : out std_logic);

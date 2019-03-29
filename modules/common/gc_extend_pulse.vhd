@@ -56,6 +56,7 @@ entity gc_extend_pulse is
     );
   port (
     clk_i      : in  std_logic;
+    ce_i       : in  std_logic := '1';
     rst_n_i    : in  std_logic;
     -- input pulse (synchronou to clk_i)
     pulse_i    : in  std_logic;
@@ -76,13 +77,15 @@ begin  -- rtl
       extended_int <= '0';
       cntr       <= (others => '0');
     elsif clk_i'event and clk_i = '1' then  -- rising clock edge
-      if(pulse_i = '1') then
-        extended_int <= '1';
-        cntr       <= to_unsigned(g_width - 2, cntr'length);
-      elsif cntr /= to_unsigned(0, cntr'length) then
-        cntr <= cntr - 1;
-      else
-        extended_int <= '0';
+      if (ce_i = '1') then
+        if(pulse_i = '1') then
+          extended_int <= '1';
+          cntr       <= to_unsigned(g_width - 2, cntr'length);
+        elsif cntr /= to_unsigned(0, cntr'length) then
+          cntr <= cntr - 1;
+        else
+          extended_int <= '0';
+        end if;
       end if;
     end if;
   end process extend;
