@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 -- Title      : Pulse synchronizer
--- Project    : General Cores Library 
+-- Project    : General Cores Library
 -------------------------------------------------------------------------------
 -- File       : gc_pulse_synchronizer2.vhd
 -- Author     : Tomasz Wlostowski, Wesley Terpstra
@@ -16,20 +16,20 @@
 --
 -- Copyright (c) 2012 CERN / BE-CO-HT
 --
--- This source file is free software; you can redistribute it   
--- and/or modify it under the terms of the GNU Lesser General   
--- Public License as published by the Free Software Foundation; 
--- either version 2.1 of the License, or (at your option) any   
--- later version.                                               
+-- This source file is free software; you can redistribute it
+-- and/or modify it under the terms of the GNU Lesser General
+-- Public License as published by the Free Software Foundation;
+-- either version 2.1 of the License, or (at your option) any
+-- later version.
 --
--- This source is distributed in the hope that it will be       
--- useful, but WITHOUT ANY WARRANTY; without even the implied   
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
--- PURPOSE.  See the GNU Lesser General Public License for more 
--- details.                                                     
+-- This source is distributed in the hope that it will be
+-- useful, but WITHOUT ANY WARRANTY; without even the implied
+-- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+-- PURPOSE.  See the GNU Lesser General Public License for more
+-- details.
 --
--- You should have received a copy of the GNU Lesser General    
--- Public License along with this source; if not, download it   
+-- You should have received a copy of the GNU Lesser General
+-- Public License along with this source; if not, download it
 -- from http://www.gnu.org/licenses/lgpl-2.1.html
 --
 -------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ entity gc_pulse_synchronizer2 is
     -- pulse output clock
     clk_out_i   : in  std_logic;
     rst_out_n_i : in  std_logic;
-    
+
     -- pulse input ready (clk_in_i domain). When HI, a pulse coming to d_p_i will be
     -- correctly transferred to q_p_o.
     d_ready_o : out std_logic;
@@ -73,6 +73,24 @@ architecture rtl of gc_pulse_synchronizer2 is
 
   signal d_in2out : std_logic_vector(c_sync_stages-1 downto 0);
   signal d_out2in : std_logic_vector(c_sync_stages-1 downto 0);
+
+  attribute shreg_extract             : string;
+  attribute shreg_extract of d_in2out : signal is "no";
+  attribute shreg_extract of d_out2in : signal is "no";
+  attribute shreg_extract of in_ext   : signal is "no";
+  attribute shreg_extract of out_ext  : signal is "no";
+
+  attribute keep             : string;
+  attribute keep of d_in2out : signal is "true";
+  attribute keep of d_out2in : signal is "true";
+  attribute keep of in_ext   : signal is "true";
+  attribute keep of out_ext  : signal is "true";
+
+  attribute async_reg             : string;
+  attribute async_reg of d_in2out : signal is "true";
+  attribute async_reg of d_out2in : signal is "true";
+  attribute async_reg of in_ext   : signal is "true";
+  attribute async_reg of out_ext  : signal is "true";
 
 begin  -- rtl
 
@@ -108,7 +126,7 @@ begin  -- rtl
     elsif rising_edge(clk_in_i) then
 
       d_p_d0 <= d_p_i;
-      
+
       if(ready = '1' and d_p_i = '1' and d_p_d0 = '0') then
         in_ext <= not in_ext;
         ready  <= '0';
