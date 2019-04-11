@@ -81,12 +81,12 @@ architecture syn of inferred_sync_fifo is
   signal   guard_bit                               : std_logic;
 
   signal q_comb : std_logic_vector(g_data_width-1 downto 0);
-  
+
 begin  -- syn
 
   we_int <= we_i and not full;
   rd_int <= rd_i and not empty;
-  
+
   U_FIFO_Ram : generic_dpram
     generic map (
       g_data_width               => g_data_width,
@@ -104,7 +104,7 @@ begin  -- syn
       ab_i    => std_logic_vector(rd_ptr_muxed(c_pointer_width-1 downto 0)),
       qb_o    => q_comb);
 
-  process(rd_ptr, rd_i, rd_int)
+  p_rd_ptr_mux: process(rd_int, rd_ptr)
   begin
     if(rd_int = '1' and g_show_ahead) then
       rd_ptr_muxed <= rd_ptr + 1;
@@ -113,7 +113,7 @@ begin  -- syn
     else
       rd_ptr_muxed <= rd_ptr - 1;
     end if;
-  end process;
+  end process p_rd_ptr_mux;
 
   q_o <= q_comb;
 
@@ -173,7 +173,7 @@ begin  -- syn
     p_reg_flags : process(clk_i)
     begin
       if rising_edge(clk_i) then
-        
+
         if(rst_n_i = '0') then
           full  <= '0';
           empty <= '1';
@@ -190,7 +190,7 @@ begin  -- syn
             full <= '0';
           end if;
         end if;
-        
+
       end if;
     end process;
   end generate gen_registered_flags;

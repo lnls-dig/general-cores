@@ -55,7 +55,9 @@ entity xwb_crossbar is
     g_registered  : boolean := false;
     -- Address of the slaves connected
     g_address     : t_wishbone_address_array;
-    g_mask        : t_wishbone_address_array);
+    g_mask        : t_wishbone_address_array;
+   -- Set to false to skip "Mapping Slave" notes during simulation
+    g_verbose     : boolean := true);
   port(
     clk_sys_i     : in  std_logic;
     rst_n_i       : in  std_logic;
@@ -111,10 +113,12 @@ architecture rtl of xwb_crossbar is
       severity Failure;
       
       -- Working case
-      report "Mapping slave #" & 
-             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
-                                      f_bits2string(c_mask(i)) & "]"
-      severity Note;
+      if g_verbose then
+        report "Mapping slave #" &
+          Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+          f_bits2string(c_mask(i)) & "]"
+          severity Note;
+      end if;
     end loop;
     return true;
   end f_ranges_ok;

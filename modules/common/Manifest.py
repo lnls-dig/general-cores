@@ -32,4 +32,5 @@ files = [
     "gc_dyn_extend_pulse.vhd",
     "gc_ds182x_interface.vhd",
     "gc_ds182x_readout.vhd",
+    "gc_sfp_i2c_adapter.vhd",
 ];
