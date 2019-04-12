@@ -115,7 +115,7 @@ architecture syn of inferred_async_fifo is
   type t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
   signal mem : t_mem_type := (others => (others => '0'));
 
-  signal rcb, wcb : t_counter_block;
+  signal rcb, wcb : t_counter_block := (others =>(others => '0'));
 
   signal rd_ptr_muxed : t_counter;
 
