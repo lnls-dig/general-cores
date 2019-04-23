@@ -45,15 +45,15 @@ architecture behav of axi_gpio_expander is
 
   constant c_GPIOPS_BASE  : unsigned := x"e000a000";
 
-  constant c_GPIOPS_R_OUT_B0 : unsigned := x"e000a040";
-  constant c_GPIOPS_R_IN_B0  : unsigned := x"e000a060";
-  constant c_GPIOPS_R_DIR_B0 : unsigned := x"e000a204";
-  constant c_GPIOPS_R_OEN_B0 : unsigned := x"e000a208";
+  constant c_GPIOPS_R_OUT_B0 : std_logic_vector := x"e000a040";
+  constant c_GPIOPS_R_IN_B0  : std_logic_vector := x"e000a060";
+  constant c_GPIOPS_R_DIR_B0 : std_logic_vector := x"e000a204";
+  constant c_GPIOPS_R_OEN_B0 : std_logic_vector := x"e000a208";
 
-  constant c_GPIOPS_R_OUT_B1 : unsigned := x"e000a044";
-  constant c_GPIOPS_R_IN_B1  : unsigned := x"e000a064";
-  constant c_GPIOPS_R_DIR_B1 : unsigned := x"e000a244";
-  constant c_GPIOPS_R_OEN_B1 : unsigned := x"e000a248";
+  constant c_GPIOPS_R_OUT_B1 : std_logic_vector := x"e000a044";
+  constant c_GPIOPS_R_IN_B1  : std_logic_vector := x"e000a064";
+  constant c_GPIOPS_R_DIR_B1 : std_logic_vector := x"e000a244";
+  constant c_GPIOPS_R_OEN_B1 : std_logic_vector := x"e000a248";
 
   constant c_GPIOPS_BANK0 : integer := 32;
   constant c_GPIOPS_BANK1 : integer := 54;
@@ -86,13 +86,15 @@ architecture behav of axi_gpio_expander is
   -------------------------------------------
 
   --type t_state is (IDLE, READ_IN, WRITE_DIR, WRITE_TRI, WRITE_OUT);
-  type t_state is (IDLE, INIT_READ, READ, INIT_WRITE_TRI, WRITE_TRI, INIT_WRITE_OUT, WRITE_OUT);
+  type t_state is (IDLE, INIT_READ, READ, INIT_WRITE_DIR, WRITE_DIR, INIT_WRITE_TRI, WRITE_TRI, INIT_WRITE_OUT, WRITE_OUT);
   signal state : t_state;
 
   signal gpio_oe_n : std_logic_vector(g_num-1 downto 0);
   signal gpio_oe_prev  : std_logic_vector(g_num-1 downto 0);
+  signal gpio_dir_prev : std_logic_vector(g_num-1 downto 0);
   signal gpio_out_prev : std_logic_vector(g_num-1 downto 0);
   signal gpio_oe_changed  : std_logic;
+  signal gpio_dir_changed : std_logic;
   signal gpio_out_changed : std_logic;
   signal refresh_all : std_logic;
 
@@ -100,13 +102,14 @@ begin
 
   gpio_oe_n <= not gpio_oe;
   gpio_oe_changed  <= or_reduce(gpio_oe  xor gpio_oe_prev);
+  gpio_dir_changed <= or_reduce(gpio_dir xor gpio_dir_prev);
   gpio_out_changed <= or_reduce(gpio_out xor gpio_out_prev);
 
   process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
-        gpio_in        <= (others=>'0');
+        gpio_in <= (others=>'0');
         ARVALID <= '0';
         ARADDR  <= (others=>'X');
         RREADY  <= '0';
@@ -118,6 +121,7 @@ begin
         BREADY  <= '0';
         error_o <= '0';
         gpio_oe_prev  <= (others=>'0');
+        gpio_dir_prev <= (others=>'0');
         gpio_out_prev <= (others=>'0');
         refresh_all <= '1';
 
@@ -139,7 +143,9 @@ begin
 
             -- decide where to go depending what has changed
             if (refresh_all = '1') then
-              state <= INIT_WRITE_TRI;
+              state <= INIT_WRITE_DIR;
+            elsif (gpio_dir_changed = '1') then
+              state <= INIT_WRITE_DIR;
             elsif (gpio_oe_changed = '1') then
               state <= INIT_WRITE_TRI;
             elsif (gpio_out_changed = '1') then
@@ -149,13 +155,49 @@ begin
             end if;
 
           -------------------------------------------
+          when INIT_WRITE_DIR =>
+            -- AXI: set address for write cycle
+            AWVALID <= '1';
+            AWADDR  <= c_GPIOPS_R_DIR_B0;
+            -- AXI: set data for write cycle
+            WVALID  <= '1';
+            WDATA   <= f_split_bank(gpio_dir, 0);
+            WSTRB   <= "1111";
+            BREADY  <= '0';
+            gpio_dir_prev <= gpio_dir;
+
+            state <= WRITE_DIR;
+
+          -------------------------------------------
+          when WRITE_DIR =>
+            BREADY <= '1';
+
+            if (AWREADY = '1') then
+              AWVALID <= '0';
+            end if;
+            if (WREADY = '1') then
+              WVALID <= '0';
+            end if;
+
+            if (BVALID = '1' and BRESP = c_AXI4_RESP_OKAY) then
+              -- write accepted, let's proceed
+              BREADY <= '0';
+              state <= INIT_WRITE_TRI;
+            elsif (BVALID = '1') then
+              -- error on write, let's retry
+              BREADY <= '0';
+              error_o <= '1';
+              state   <= IDLE;
+            end if;
+
+          -------------------------------------------
           when INIT_WRITE_TRI =>
             -- AXI: set address for write cycle
             AWVALID <= '1';
-            AWADDR  <= std_logic_vector(c_GPIO_BASE + c_GPIO_R_TRI);
+            AWADDR  <= c_GPIOPS_R_OEN_B0;
             -- AXI: set data for write cycle
             WVALID  <= '1';
-            WDATA   <= pad_data(gpio_oe_n, '1');
+            WDATA   <= f_split_bank(gpio_oe, 0);
             WSTRB   <= "1111";
             BREADY  <= '0';
             gpio_oe_prev <= gpio_oe;
@@ -192,10 +234,10 @@ begin
           when INIT_WRITE_OUT =>
             -- AXI: set address for write cycle
             AWVALID <= '1';
-            AWADDR  <= std_logic_vector(c_GPIO_BASE);
+            AWADDR  <= c_GPIOPS_R_OUT_B0;
             -- AXI: set data for write cycle
             WVALID  <= '1';
-            WDATA   <= pad_data(gpio_out, '0');
+            WDATA   <= f_split_bank(gpio_out, 0);
             WSTRB   <= "1111";
             BREADY  <= '0';
             gpio_out_prev <= gpio_out;
@@ -235,7 +277,7 @@ begin
 
             -- AXI: set address for read cycle
             ARVALID <= '1';
-            ARADDR  <= std_logic_vector(c_GPIO_BASE);
+            ARADDR  <= c_GPIOPS_R_IN_B0;
             -- AXI: ready to accept data from slave
             RREADY  <= '1';
 
