@@ -25,6 +25,10 @@ In [modules/common](modules/common) there are general purpose cores:
   or the version with resets
   [gc_pulse_synchronizer2](modules/common/gc_pulse_synchronizer2.vhd)
 
+  Module [gc_async_signals_input_stage](modules/common/gc_async_signals_input_stage.vhd)
+  contains a complex handling for asynchronous signals (crossing clock
+  domains, deglitcher, edge detection, pulse extension...)
+
 * For reset generation, you can use [gc_reset](modules/common/gc_reset.vhd)
   which generate synchronous resets once all the PLL lock signals are set.
   The module [gc_reset_multi_aasd](modules/common/gc_reset_multi_aasd.vhd)
@@ -47,4 +51,30 @@ In [modules/common](modules/common) there are general purpose cores:
   interface to a serial DAC.
 
 * The module [gc_rr_arbiter](modules/common/gc_rr_arbiter.vhd) provides a
-  round-robin arbiter amount an arbitrary number of requests.
+  round-robin arbiter amount an arbitrary number of requests.  Similarly
+  [gc_arbitrated_mux](modules/common/gc_arbitrated_mux.vhd) provides
+  a multiple channel tim-division multiplexr with round robin
+  arbitration.
+
+* Module [gc_bicolor_led_ctrl](modules/common/gc_bicolor_led_ctrl.vhd)
+  controls multiple bicolor leds, including the intensity.
+
+* Module [gc_big_adder](modules/common/gc_big_adder.vhd) provides a pipelined
+  adder for wide numbers.
+
+* Module [gc_comparator](modules/common/gc_comparator.vhd) provides a
+  comparator with hysteresis.
+
+* Module [gc_crc_gen](modules/common/gc_crc_gen.vhd) provides a generic
+  parallel implementation of crc generator or checker.
+
+* Module [gc_dec_8b10b](modules/common/gc_dec_8b10b.vhd) is an 8-bit to
+  10-bit decoder.
+
+* Module [gc_delay_gen](modules/common/gc_delay_gen.vhd) is a delay line based
+  on a pipeline, while module [gc_delay_line](modules/common/gc_delay_line.vhd)
+  implementation is based on a dual port RAM and provides a valid signal.
+
+* Module [gc_ds182x_readout](modules/common/gc_ds182x_readout.vhd) provides
+  a one-wire interface for temperature and unique id DS182X chips.  It replaces
+  the deprecated [gc_ds182x_interface](modules/common/gc_ds182x_interface.vhd)
