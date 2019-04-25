@@ -10,6 +10,9 @@ In [modules/common](modules/common) there are general purpose cores:
   directly instantiate the entities) but also some useful subprograms
   like functions for gray encode/decode, boolean conversions...
 
+* The package [matrix_pkg](modules/common/matrix_pkg.vhd) declares a 2d
+  array of std_logic, and some subprograms to handle it.
+
 * For clock-domain crossing or asynchronous signal register, use
   [gc_sync_ffs](modules/common/gc_sync_ffs.vhd).  It also has an edge
   detector.
@@ -56,6 +59,9 @@ In [modules/common](modules/common) there are general purpose cores:
   a multiple channel tim-division multiplexr with round robin
   arbitration.
 
+* The module [gc_prio_encoder](modules/common/gc_prio_encoder.vhd) provides
+  a combinational priority encoder.
+
 * Module [gc_bicolor_led_ctrl](modules/common/gc_bicolor_led_ctrl.vhd)
   controls multiple bicolor leds, including the intensity.
 
@@ -64,6 +70,10 @@ In [modules/common](modules/common) there are general purpose cores:
 
 * Module [gc_comparator](modules/common/gc_comparator.vhd) provides a
   comparator with hysteresis.
+
+* Module [gc_moving_average](modules/common/gc_moving_average.vhd) compute the
+  average of values over a sliding window.  The size of the window is a power
+  of 2.
 
 * Module [gc_crc_gen](modules/common/gc_crc_gen.vhd) provides a generic
   parallel implementation of crc generator or checker.
@@ -78,3 +88,25 @@ In [modules/common](modules/common) there are general purpose cores:
 * Module [gc_ds182x_readout](modules/common/gc_ds182x_readout.vhd) provides
   a one-wire interface for temperature and unique id DS182X chips.  It replaces
   the deprecated [gc_ds182x_interface](modules/common/gc_ds182x_interface.vhd)
+
+* Module [gc_dual_pi_controller](modules/common/gc_dual_pi_controller.vhd) is
+  a two channels, proportional integral (PI) controller.
+
+* To extend a pulse, several modules are provided:
+  - [gc_dyn_extend_pulse](modules/common/gc_dyn_extend_pulse.vhd) has an input
+    for the length.
+  - [gc_extend_pulse](modules/common/gc_extend_pulse.vhd) has a fixed length.
+
+* To deglitch a signal:
+  - [gc_dyn_glitch_filt](modules/common/gc_dyn_glitch_filt.vhd) accepts
+    the minimum length as an input.
+  - [gc_glitch_filt](modules/common/gc_glitch_filt.vhd) is static: the
+    length is provided as a parameter.
+
+* Module [gc_fsm_watchdog](modules/common/gc_fsm_watchdog.vhd) provides a
+  simple watchdog.
+
+* To mesure a frequency:
+  - [gc_frequency_meter](modules/common/gc_frequency_meter.vhd) provides a
+    single channel counter.
+  - [gc_multichannel_frequency_meter](modules/common/gc_multichannel_frequency_meter.vhd) is an optimized version for multiple channels.
