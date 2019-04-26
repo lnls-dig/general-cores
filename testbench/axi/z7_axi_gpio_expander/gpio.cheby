@@ -1,0 +1,53 @@
+memory-map:
+  bus: axi4-lite-32
+  name: axi_gpio
+  description: Simple AXI GPIO with register map compatible with Xilinx Zynq-7 PS GPIO
+  children:
+    - reg:
+        name: out_b0
+        description: Bank0 out register
+        width: 32
+        access: wo
+        address: 0x0000a040
+    - reg:
+        name: out_b1
+        description: Bank1 out register
+        width: 32
+        access: wo
+        address: 0x0000a044
+    - reg:
+        name: in_b0
+        description: Bank0 in register
+        width: 32
+        access: ro
+        address: 0x0000a060
+    - reg:
+        name: in_b1
+        description: Bank1 in register
+        width: 32
+        access: ro
+        address: 0x0000a064
+    - reg:
+        name: dir_b0
+        description: Bank0 dir register
+        width: 32
+        access: wo
+        address: 0x0000a204
+    - reg:
+        name: oen_b0
+        description: Bank0 oen register
+        width: 32
+        access: wo
+        address: 0x0000a208
+    - reg:
+        name: dir_b1
+        description: Bank1 dir register
+        width: 32
+        access: wo
+        address: 0x0000a244
+    - reg:
+        name: oen_b1
+        description: Bank1 oen register
+        width: 32
+        access: wo
+        address: 0x0000a248
