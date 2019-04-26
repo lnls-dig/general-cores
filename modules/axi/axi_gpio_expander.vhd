@@ -139,8 +139,10 @@ architecture behav of axi_gpio_expander is
     variable tmp : std_logic_vector(g_num-1 downto 0);
   begin
     tmp := orig;
-    if (bank = 0) then
-      tmp(31 downto 0) := rdata;
+    if (bank = 0 and g_num >= c_GPIOPS_BANK0) then
+      tmp(c_GPIOPS_BANK0-1 downto 0) := rdata;
+    elsif (bank = 0 and g_num < c_GPIOPS_BANK0) then
+      tmp := rdata(g_num-1 downto 0);
     else
       tmp(g_num-1 downto c_GPIOPS_BANK0) := rdata(g_num-c_GPIOPS_BANK0-1 downto 0);
     end if;
