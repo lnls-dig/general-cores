@@ -4,5 +4,5 @@ modules = { "local" : [
     ]}
 
 files = [
-  "axi_pkg.vhd"
+  "axi4_pkg.vhd"
   ]
