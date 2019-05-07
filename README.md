@@ -114,6 +114,9 @@ In [modules/common](modules/common) there are general purpose cores:
 
 In [modules/genrams](modules/genrams) there are fifo and ram cores:
 
+The convention is to use generic_xxx modules whose implementation may depend
+on the target.
+
 * The package [genram_pkg](modules/genrams/genram_pkg.vhd) declares ram types,
   utility functions and the components.
 
@@ -155,3 +158,47 @@ In [modules/genrams](modules/genrams) there are fifo and ram cores:
 
 * The module [generic_shiftreg_fifo](modules/genrams/common/generic_shiftreg_fifo.vhd)
   is a synchronous fifo based on shift registers.
+
+Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
+
+* The package [wishbone_pkg](modules/wishbone/wishbone_pkg.vhd) declare
+  the records for the wishbone bus and some utilities.
+
+* There are several peripherals:
+  - [wb_dma](modules/wishbone/wb_dma) is a dma controller.
+  - [wb_dpram](modules/wishbone/wb_dpram) is a dual port ram controlled by two
+    wishbone buses.
+  - [wb_gpio_port](modules/wishbone/wb_gpio_port) is a gpio controller.
+  - [wb_i2c_bridge](modules/wishbone/wb_i2c_bridge) is an i2c slave to
+    wishbone master.
+  - [wb_i2c_master]](modules/wishbone/wb_i2c_master) is an i2c master.
+  - [wb_irq](modules/wishbone/wb_irq) contains irq controllers and generators.
+  - [wb_onewire_master](modules/wishbone/wb_onewire_master) is a onewire master.
+  - [wb_serial_lcd](modules/wishbone/wb_serial_lcd) is an lcd controller.
+  - [wb_simple_pwm](modules/wishbone/wb_simple_pwm) is a pwm controller supporting
+    up to 8 channels.
+  - [wb_simple_timer](modules/wishbone/wb_simple_timer) is a simple counter.
+  - [wb_spi](modules/wishbone/wb_spi) is an spi controller
+  - [wb_spi_flash](modules/wishbone/wb_spi_flash) is an spi flash controller
+  - [wb_uart](modules/wishbone/wb_uart) is an uart.
+  - [wb_vic](modules/wishbone/wb_vic) is the vectored interrupt controller.
+
+* There are utilities to handle a wishbone bus:
+  - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
+    crossing.
+  - [wb_register](modules/wishbone/wb_register) add a pipeline register.
+
+* There are modules to convert to a different bus
+  - [wb_async_bridge](modules/wishbone/wb_async_bridge) is a bridge with the
+    AT91SAM9x CPU external bus interface.
+  - [wb_axi4lite_bridge](modules/wishbone/wb_axi4lite_bridge) is an axi4lite
+    to wishbone bridge
+
+* There a modules to build a bus hierarchy:
+  - [wb_bus_fanout](modules/wishbone/wb_bus_fanout) is a simple master to
+    multiple slave decoder.
+  - [wb_crossbar](modules/wishbone/wb_crossbar) is a generic multiple masters
+    and multiple slaves crossbar.
+  - [wb_remapper](modules/wishbone/wb_remapper) allows to remap addresses.
+  - [wb_conmax](modules/wishbone/wb_conmax) is an interconnect matrix,
+    superseeded by the crossbar.
