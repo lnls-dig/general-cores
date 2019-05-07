@@ -110,3 +110,48 @@ In [modules/common](modules/common) there are general purpose cores:
   - [gc_frequency_meter](modules/common/gc_frequency_meter.vhd) provides a
     single channel counter.
   - [gc_multichannel_frequency_meter](modules/common/gc_multichannel_frequency_meter.vhd) is an optimized version for multiple channels.
+
+
+In [modules/genrams](modules/genrams) there are fifo and ram cores:
+
+* The package [genram_pkg](modules/genrams/genram_pkg.vhd) declares ram types,
+  utility functions and the components.
+
+* The package [memory_loader_pkg](modules/genrams/memory_loader_pkg.vhd)
+  declares functions that reads data from a file.  They are useful to
+  initialize the rams (and can be used for synthesis).
+
+* The module generic_spram available for
+  [altera](modules/genrams/altera/generic_spram.vhd) and for
+  [xilinx](modules/genrams/xilinx/generic_spram.vhd) is a simple port synchronous
+  ram.
+
+* The module generic_simple_dpram available for
+  [altera](modules/genrams/altera/generic_simple_dpram.vhd) and for
+  [xilinx](modules/genrams/xilinx/generic_simple_dpram.vhd) is a dual port,
+  dual clock, synchronous ram.  The port A is write-only, the port B is
+  read-only.
+
+* The module generic_dpram available for
+  [altera](modules/genrams/altera/generic_dpram.vhd) and for
+  [xilinx](modules/genrams/xilinx/generic_dpram.vhd) is a dual port,
+  dual clock, synchronous ram.  Both ports are read/write.
+
+* The module generic_dpram_mixed available for
+  [altera](modules/genrams/altera/generic_dpram_mixed.vhd) is a dual port,
+  dual clock, synchronous ram.  Both ports are read/write, and the size of
+  the ports can be different.
+
+* The module [generic_sync_fifo](modules/genrams/generic/generic_sync_fifo.vhd)
+  is a synchronous fifo, with multiple flags available.
+
+* The module [generic_async_fifo](modules/genrams/generic/generic_async_fifo.vhd)
+  is also a fifo with multiple flags available, but with different clocks for
+  inputs and outputs.
+
+* The module [generic_async_fifo_dual_rst](modules/genrams/generic/generic_async_fifo_dual_rst.vhd)
+  is also a fifo with multiple flags available, but with different clocks for
+  inputs and outputs and with a reset input for each clock domain.
+
+* The module [generic_shiftreg_fifo](modules/genrams/common/generic_shiftreg_fifo.vhd)
+  is a synchronous fifo based on shift registers.
