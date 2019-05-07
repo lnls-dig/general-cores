@@ -80,6 +80,7 @@ begin
             --  Toggle start_wr ...
             start_wr <= not start_wr;
             in_busy <= '1';
+            --  Save the data.
             data <= data_i;
           end if;
         else
@@ -98,6 +99,9 @@ begin
     end if;
   end process;
 
+  --  Synchronize the pulse.
+  --  The data are not synchronized because they will be read once the pulse
+  --  has gone the the out clock domain.
   cmp_wr_sync : entity work.gc_sync_ffs
     port map (
       clk_i => clk_out_i,
