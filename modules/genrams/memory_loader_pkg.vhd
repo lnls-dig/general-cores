@@ -134,6 +134,10 @@ package body memory_loader_pkg is
       end loop;
     end loop;
 
+    if not endfile(f_in) then
+      report "f_load_mem_from_file(): file '"&file_name&"' is bigger than available memory" severity FAILURE;
+    end if;
+
     file_close(f_in);
     return mem;
   end f_load_mem_from_file;
@@ -173,6 +177,10 @@ package body memory_loader_pkg is
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
 
+    if not endfile(f_in) then
+      report "f_load_mem_from_file(): file '"&file_name&"' is bigger than available memory" severity FAILURE;
+    end if;
+
     file_close(f_in);
     return mem;
   end f_load_mem32_from_file;
@@ -210,6 +218,10 @@ package body memory_loader_pkg is
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
 
+    if not endfile(f_in) then
+      report "f_load_mem_from_file(): file '"&file_name&"' is bigger than available memory" severity FAILURE;
+    end if;
+
     file_close(f_in);
     return mem;
   end f_load_mem16_from_file;
@@ -246,6 +258,10 @@ package body memory_loader_pkg is
       end if;
       mem(I) := to_stdlogicvector(tmp_bv);
     end loop;
+
+    if not endfile(f_in) then
+      report "f_load_mem_from_file(): file '"&file_name&"' is bigger than available memory" severity FAILURE;
+    end if;
 
     file_close(f_in);
     return mem;
@@ -286,6 +302,10 @@ package body memory_loader_pkg is
       end if;
       mem(I) := to_stdlogicvector( tmp_bv((byte_idx+1)*8-1 downto byte_idx*8) );
     end loop;
+
+    if not endfile(f_in) then
+      report "f_load_mem_from_file(): file '"&file_name&"' is bigger than available memory" severity FAILURE;
+    end if;
 
     file_close(f_in);
     return mem;
