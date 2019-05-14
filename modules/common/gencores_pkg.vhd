@@ -641,6 +641,22 @@ package gencores_pkg is
       sfp_data_i      : in  std_logic_vector (127 downto 0));
   end component gc_sfp_i2c_adapter;
 
+  ------------------------------------------------------------------------------
+  -- Asynchronous counter inc/dec pulses
+  ------------------------------------------------------------------------------
+  component gc_async_counter_diff is
+    generic (
+      g_bits         : integer := 8;
+      g_output_clock : string  := "inc");
+    port (
+      rst_n_i : in std_logic;
+      clk_inc_i : in std_logic;
+      clk_dec_i : in std_logic;
+      inc_i : in std_logic;
+      dec_i : in std_logic;
+      counter_o : out std_logic_vector(g_bits downto 0));
+  end component gc_async_counter_diff;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
