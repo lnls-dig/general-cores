@@ -166,6 +166,24 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Comparator
+  ------------------------------------------------------------------------------
+  component gc_comparator is
+    generic (
+      g_IN_WIDTH : natural := 32);
+    port (
+      clk_i     : in  std_logic;
+      rst_n_i   : in  std_logic                               := '1';
+      pol_inv_i : in  std_logic                               := '0';
+      enable_i  : in  std_logic                               := '1';
+      inp_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0);
+      inn_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0);
+      hys_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0) := (others => '0');
+      out_o     : out std_logic;
+      out_p_o   : out std_logic);
+  end component gc_comparator;
+
+  ------------------------------------------------------------------------------
   -- Synchronisation FF chain
   ------------------------------------------------------------------------------
   component gc_sync_ffs
