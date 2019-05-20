@@ -39,7 +39,7 @@ entity gc_frequency_meter is
   port(
     clk_sys_i    : in  std_logic;
     clk_in_i     : in  std_logic;
-    rst_n_i      : in  std_logic;
+    rst_n_i      : in  std_logic; -- not used, kept for backward compatibility
     pps_p1_i     : in  std_logic;
     freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
     freq_valid_o : out std_logic
@@ -50,11 +50,11 @@ end gc_frequency_meter;
 
 architecture behavioral of gc_frequency_meter is
 
-  signal gate_pulse, gate_pulse_synced : std_logic;
+  signal gate_pulse, gate_pulse_synced : std_logic := '0';
 
-  signal cntr_gate : unsigned(g_counter_bits-1 downto 0);
-  signal cntr_meas : unsigned(g_counter_bits-1 downto 0);
-  signal freq_reg  : std_logic_vector(g_counter_bits-1 downto 0);
+  signal cntr_gate : unsigned(g_counter_bits-1 downto 0) := (others => '0');
+  signal cntr_meas : unsigned(g_counter_bits-1 downto 0) := (others => '0');
+  signal freq_reg  : std_logic_vector(g_counter_bits-1 downto 0) := (others => '0');
 
 begin
 
@@ -63,17 +63,12 @@ begin
     p_gate_counter : process(clk_sys_i)
     begin
       if rising_edge(clk_sys_i) then
-        if rst_n_i = '0' then
+        if(cntr_gate = g_clk_sys_freq-1) then
           cntr_gate  <= (others => '0');
-          gate_pulse <= '0';
+          gate_pulse <= '1';
         else
-          if(cntr_gate = g_clk_sys_freq-1) then
-            cntr_gate  <= (others => '0');
-            gate_pulse <= '1';
-          else
-            cntr_gate  <= cntr_gate + 1;
-            gate_pulse <= '0';
-          end if;
+          cntr_gate  <= cntr_gate + 1;
+          gate_pulse <= '0';
         end if;
       end if;
     end process;
@@ -82,7 +77,7 @@ begin
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_in_i,
-      rst_n_i   => rst_n_i,
+      rst_n_i   => '1',
       d_ready_o => freq_valid_o,
       d_p_i     => gate_pulse,
       q_p_o     => gate_pulse_synced);
@@ -95,7 +90,7 @@ begin
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_in_i,
-      rst_n_i   => rst_n_i,
+      rst_n_i   => '1',
       d_ready_o => freq_valid_o,
       d_p_i     => pps_p1_i,
       q_p_o     => gate_pulse_synced);
@@ -105,10 +100,7 @@ begin
 
   p_freq_counter : process (clk_in_i, rst_n_i)
   begin
-    if rst_n_i = '0' then               -- asynchronous reset (active low)
-      cntr_meas <= (others => '0');
-      freq_reg  <= (others => '0');
-    elsif rising_edge(clk_in_i) then
+    if rising_edge(clk_in_i) then
       
       if(gate_pulse_synced = '1') then
         freq_reg  <= std_logic_vector(cntr_meas);

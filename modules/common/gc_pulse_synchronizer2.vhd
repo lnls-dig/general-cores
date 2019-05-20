@@ -49,9 +49,11 @@ end gc_pulse_synchronizer2;
 
 architecture rtl of gc_pulse_synchronizer2 is
 
-  signal ready, d_p_d0   : std_logic;
-  signal in_ext, out_ext : std_logic;
-  signal out_feedback    : std_logic;
+  signal ready        : std_logic := '1';
+  signal d_p_d0       : std_logic := '0';
+  signal in_ext       : std_logic := '0';
+  signal out_ext      : std_logic := '0';
+  signal out_feedback : std_logic := '0';
 
 begin  -- rtl
 
@@ -73,13 +75,9 @@ begin  -- rtl
       npulse_o => open,
       ppulse_o => open);
 
-  p_input_ack : process(clk_in_i, rst_in_n_i)
+  p_input_ack : process(clk_in_i)
   begin
-    if rst_in_n_i = '0' then
-      ready  <= '1';
-      in_ext <= '0';
-      d_p_d0 <= '0';
-    elsif rising_edge(clk_in_i) then
+    if rising_edge(clk_in_i) then
 
       d_p_d0 <= d_p_i;
 
