@@ -124,11 +124,11 @@ architecture syn of inferred_async_fifo is
   signal wr_count, rd_count : t_counter;
   signal rd_int, we_int     : std_logic;
 
-  signal wr_empty_x : std_logic;
-  signal rd_full_x  : std_logic;
+  signal wr_empty_x : std_logic := '0';
+  signal rd_full_x  : std_logic := '0';
 
-  signal almost_full_x  : std_logic;
-  signal almost_empty_x : std_logic;
+  signal almost_full_x  : std_logic := '0';
+  signal almost_empty_x : std_logic := '0';
 
   signal q_int : std_logic_vector(g_data_width-1 downto 0) := (others => '0');
 
@@ -225,23 +225,27 @@ begin  -- syn
     end if;
   end process p_gen_empty;
 
-  U_Sync_Empty : gc_sync_ffs
-    generic map (
-      g_sync_edge => "positive")
-    port map (
-      clk_i    => clk_wr_i,
-      rst_n_i  => rst_n_i,
-      data_i   => empty_int,
-      synced_o => wr_empty_x);
+  gen_with_wr_empty : if g_with_wr_empty = TRUE generate
+    U_Sync_Empty : gc_sync_ffs
+      generic map (
+        g_sync_edge => "positive")
+      port map (
+        clk_i    => clk_wr_i,
+        rst_n_i  => rst_n_i,
+        data_i   => empty_int,
+        synced_o => wr_empty_x);
+  end generate gen_with_wr_empty;
 
-  U_Sync_Full : gc_sync_ffs
-    generic map (
-      g_sync_edge => "positive")
-    port map (
-      clk_i    => clk_rd_i,
-      rst_n_i  => rst_n_i,
-      data_i   => full_int,
-      synced_o => rd_full_x);
+  gen_with_rd_full : if g_with_rd_full = TRUE generate
+    U_Sync_Full : gc_sync_ffs
+      generic map (
+        g_sync_edge => "positive")
+      port map (
+        clk_i    => clk_rd_i,
+        rst_n_i  => rst_n_i,
+        data_i   => full_int,
+        synced_o => rd_full_x);
+  end generate gen_with_rd_full;
 
   rd_empty_o <= empty_int;
   wr_empty_o <= wr_empty_x;
@@ -286,14 +290,16 @@ begin  -- syn
     end if;
   end process p_reg_almost_full;
 
-  U_Sync_AlmostFull : gc_sync_ffs
-    generic map (
-      g_sync_edge => "positive")
-    port map (
-      clk_i    => clk_rd_i,
-      rst_n_i  => rst_n_i,
-      data_i   => almost_full_int,
-      synced_o => almost_full_x);
+  gen_with_rd_almost_full : if g_with_rd_almost_full = TRUE generate
+    U_Sync_AlmostFull : gc_sync_ffs
+      generic map (
+        g_sync_edge => "positive")
+      port map (
+        clk_i    => clk_rd_i,
+        rst_n_i  => rst_n_i,
+        data_i   => almost_full_int,
+        synced_o => almost_full_x);
+  end generate gen_with_rd_almost_full;
 
   wr_almost_full_o <= almost_full_int;
   rd_almost_full_o <= almost_full_x;
@@ -312,14 +318,16 @@ begin  -- syn
     end if;
   end process p_reg_almost_empty;
 
-  U_Sync_AlmostEmpty : gc_sync_ffs
-    generic map (
-      g_sync_edge => "positive")
-    port map (
-      clk_i    => clk_wr_i,
-      rst_n_i  => rst_n_i,
-      data_i   => almost_empty_int,
-      synced_o => almost_empty_x);
+  gen_with_wr_almost_empty : if g_with_wr_almost_empty = TRUE generate
+    U_Sync_AlmostEmpty : gc_sync_ffs
+      generic map (
+        g_sync_edge => "positive")
+      port map (
+        clk_i    => clk_wr_i,
+        rst_n_i  => rst_n_i,
+        data_i   => almost_empty_int,
+        synced_o => almost_empty_x);
+  end generate gen_with_wr_almost_empty;
 
   rd_almost_empty_o <= almost_empty_int;
   wr_almost_empty_o <= almost_empty_x;
