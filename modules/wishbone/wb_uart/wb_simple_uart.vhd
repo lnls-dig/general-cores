@@ -287,6 +287,12 @@ begin  -- syn
 
   end generate gen_vuart;
 
+  dont_gen_vuart : if (not g_with_virtual_uart) generate
+    regs_in.host_rdr_data_i <= (others => '0');
+    regs_in.host_rdr_count_i <= (others => '0');
+    regs_in.host_rdr_rdy_i <= '0';
+  end generate dont_gen_vuart;
+
   p_drive_rx_ready : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
