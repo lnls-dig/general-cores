@@ -16,7 +16,7 @@
 -- wb_simple_uart.
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2010-2018
+-- Copyright CERN 2010-2019
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -36,15 +36,14 @@ library work;
 use work.wishbone_pkg.all;
 
 entity xwb_simple_uart is
-  generic(
-    g_with_virtual_uart   : boolean := true;
-    g_with_physical_uart  : boolean := true;
-    g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD;
-    g_vuart_fifo_size     : integer := 1024
-    );
+  generic (
+    g_WITH_VIRTUAL_UART   : boolean                        := TRUE;
+    g_WITH_PHYSICAL_UART  : boolean                        := TRUE;
+    g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
+    g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
+    g_VUART_FIFO_SIZE     : integer                        := 1024);
 
-  port(
+  port (
     clk_sys_i : in std_logic;
     rst_n_i   : in std_logic;
 
@@ -54,48 +53,22 @@ entity xwb_simple_uart is
     desc_o  : out t_wishbone_device_descriptor;
     int_o   : out std_logic;
 
-    uart_rxd_i: in std_logic;
-    uart_txd_o: out std_logic
-
-    );
+    uart_rxd_i : in  std_logic;
+    uart_txd_o : out std_logic);
 
 end xwb_simple_uart;
 
-architecture rtl of xwb_simple_uart is
+architecture arch of xwb_simple_uart is
 
-  component wb_simple_uart
-    generic (
-      g_with_virtual_uart   : boolean;
-      g_with_physical_uart  : boolean;
-      g_interface_mode      : t_wishbone_interface_mode;
-      g_address_granularity : t_wishbone_address_granularity;
-      g_vuart_fifo_size     : integer);
-    port (
-      clk_sys_i  : in  std_logic;
-      rst_n_i    : in  std_logic;
-      wb_adr_i   : in  std_logic_vector(4 downto 0);
-      wb_dat_i   : in  std_logic_vector(31 downto 0);
-      wb_dat_o   : out std_logic_vector(31 downto 0);
-      wb_cyc_i   : in  std_logic;
-      wb_sel_i   : in  std_logic_vector(3 downto 0);
-      wb_stb_i   : in  std_logic;
-      wb_we_i    : in  std_logic;
-      wb_ack_o   : out std_logic;
-      wb_stall_o : out std_logic;
-      int_o      : out std_logic;
-      uart_rxd_i : in  std_logic;
-      uart_txd_o : out std_logic);
-  end component;
-  
-begin  -- rtl
+begin  -- arch
 
-  U_Wrapped_UART: wb_simple_uart
+  U_Wrapped_UART : entity work.wb_simple_uart
     generic map (
-      g_with_virtual_uart   => g_with_virtual_uart,
-      g_with_physical_uart  => g_with_physical_uart,
-      g_interface_mode      => g_interface_mode,
-      g_address_granularity => g_address_granularity,
-      g_vuart_fifo_size     => g_vuart_fifo_size)
+      g_WITH_VIRTUAL_UART   => g_WITH_VIRTUAL_UART,
+      g_WITH_PHYSICAL_UART  => g_WITH_PHYSICAL_UART,
+      g_INTERFACE_MODE      => g_INTERFACE_MODE,
+      g_ADDRESS_GRANULARITY => g_ADDRESS_GRANULARITY,
+      g_VUART_FIFO_SIZE     => g_VUART_FIFO_SIZE)
     port map (
       clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
@@ -116,5 +89,5 @@ begin  -- rtl
   slave_o.rty <= '0';
 
   desc_o <= (others => '0');
-  
-end rtl;
+
+end arch;
