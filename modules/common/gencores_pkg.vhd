@@ -78,6 +78,9 @@ package gencores_pkg is
   function to_upper(s : string) return string;
   function to_lower(s : string) return string;
 
+  -- Bit reversal function
+  function f_reverse_vector (a : in std_logic_vector) return std_logic_vector;
+
   --============================================================================
   -- Component instantiations
   --============================================================================
@@ -1011,5 +1014,18 @@ package body gencores_pkg is
     end loop;
     return lowercase;
   end to_lower;
+
+  ------------------------------------------------------------------------------
+  -- Vector bit reversal
+  ------------------------------------------------------------------------------
+
+  function f_reverse_vector (a : in std_logic_vector) return std_logic_vector is
+    variable v_result : std_logic_vector(a'reverse_range);
+  begin
+    for i in a'range loop
+      v_result(i) := a(i);
+    end loop;
+    return v_result;
+  end function f_reverse_vector;
 
 end gencores_pkg;

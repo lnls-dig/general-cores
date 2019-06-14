@@ -33,6 +33,7 @@ files = [
     "gc_single_reset_gen.vhd",
     "gc_async_signals_input_stage.vhd",
     "gc_dec_8b10b.vhd",
+    "gc_enc_8b10b.vhd",
     "gc_dyn_extend_pulse.vhd",
     "gc_ds182x_interface.vhd",
     "gc_ds182x_readout/gc_ds182x_readout.vhd",
