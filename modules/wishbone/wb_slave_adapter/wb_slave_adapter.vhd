@@ -47,12 +47,12 @@ entity wb_slave_adapter is
     rst_n_i   : in std_logic;
 
 -- slave port (i.e. wb_slave_adapter is slave)
-    sl_adr_i : in std_logic_vector(c_wishbone_address_width-1 downto 0);
-    sl_dat_i : in std_logic_vector(c_wishbone_data_width-1 downto 0);
-    sl_sel_i : in std_logic_vector(c_wishbone_data_width/8-1 downto 0);
-    sl_cyc_i : in std_logic;
-    sl_stb_i : in std_logic;
-    sl_we_i  : in std_logic;
+    sl_adr_i   : in  std_logic_vector(c_wishbone_address_width-1 downto 0) := cc_dummy_address;
+    sl_dat_i   : in  std_logic_vector(c_wishbone_data_width-1 downto 0)    := cc_dummy_data;
+    sl_sel_i   : in  std_logic_vector(c_wishbone_data_width/8-1 downto 0)  := cc_dummy_sel;
+    sl_cyc_i   : in  std_logic                                             := '0';
+    sl_stb_i   : in  std_logic                                             := '0';
+    sl_we_i    : in  std_logic                                             := '0';
 
 
     sl_dat_o   : out std_logic_vector(c_wishbone_data_width-1 downto 0);
@@ -61,7 +61,7 @@ entity wb_slave_adapter is
     sl_ack_o   : out std_logic;
     sl_stall_o : out std_logic;
 
-    slave_i : in  t_wishbone_slave_in;
+    slave_i    : in  t_wishbone_slave_in                                   := cc_dummy_slave_in;
     slave_o : out t_wishbone_slave_out;
 
 -- master port (i.e. wb_slave_adapter is master)
@@ -72,13 +72,13 @@ entity wb_slave_adapter is
     ma_stb_o : out std_logic;
     ma_we_o  : out std_logic;
 
-    ma_dat_i   : in std_logic_vector(c_wishbone_data_width-1 downto 0);
-    ma_err_i   : in std_logic;
-    ma_rty_i   : in std_logic;
-    ma_ack_i   : in std_logic;
-    ma_stall_i : in std_logic;
+    ma_dat_i   : in  std_logic_vector(c_wishbone_data_width-1 downto 0)    := cc_dummy_data;
+    ma_err_i   : in  std_logic                                             := '0';
+    ma_rty_i   : in  std_logic                                             := '0';
+    ma_ack_i   : in  std_logic                                             := '0';
+    ma_stall_i : in  std_logic                                             := '0';
 
-    master_i : in  t_wishbone_master_in;
+    master_i   : in  t_wishbone_master_in                                  := cc_dummy_slave_out;
     master_o : out t_wishbone_master_out
     );
 end wb_slave_adapter;
