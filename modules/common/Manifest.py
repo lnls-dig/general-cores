@@ -34,4 +34,5 @@ files = [
     "gc_ds182x_readout.vhd",
     "gc_sfp_i2c_adapter.vhd",
     "gc_async_counter_diff.vhd",
+    "gc_sync_word_wr.vhd",
 ];
