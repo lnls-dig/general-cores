@@ -147,6 +147,13 @@ Note that if ACK is combinational, a transaction requires at least 2 cycles:
   {name: 'ack', wave: '0.10'}
 ]}
 
+  _
+_| |_
+  ____      __
+_^    v____/  \__[]
+ _____ ____
+X_____X____
+
 For block read/write, STB has to be deasserted before starting a transfer:
 
 {signal: [
