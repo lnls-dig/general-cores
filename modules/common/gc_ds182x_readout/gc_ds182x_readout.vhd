@@ -59,8 +59,8 @@ architecture arch of gc_ds182x_readout is
   constant SLOT_CNT_START         : unsigned(15 downto 0) := to_unsigned(0*g_CLOCK_FREQ_KHZ/40000, 16);
   constant SLOT_CNT_START_PLUSONE : unsigned(15 downto 0) := SLOT_CNT_START + 1;
   constant SLOT_CNT_SET           : unsigned(15 downto 0) := to_unsigned(60*g_CLOCK_FREQ_KHZ/40000, 16);
-  constant SLOT_CNT_RD            : unsigned(15 downto 0) := to_unsigned(600*g_CLOCK_FREQ_KHZ/40000, 16);
-  constant SLOT_CNT_STOP          : unsigned(15 downto 0) := to_unsigned(3600*g_CLOCK_FREQ_KHZ/40000, 16);
+  constant SLOT_CNT_RD            : unsigned(15 downto 0) := to_unsigned(600*g_CLOCK_FREQ_KHZ/40000, 16); -- 15us
+  constant SLOT_CNT_STOP          : unsigned(15 downto 0) := to_unsigned(3600*g_CLOCK_FREQ_KHZ/40000, 16); -- 90us
   constant SLOT_CNT_PRESTOP       : unsigned(15 downto 0) := to_unsigned((3600-60)*g_CLOCK_FREQ_KHZ/40000, 16);
 
   constant READ_ID_HEADER     : std_logic_vector(7 downto 0) := X"33";
@@ -225,6 +225,7 @@ begin
     case state_op is
 
       when READ_ID_OP =>
+        --  Read the ROM (unique ID).  This is done once after reset.
         header  <= READ_ID_HEADER;
         bit_top <= ID_LGTH;
         if state_cm = IDLE_CM then
@@ -232,14 +233,17 @@ begin
         end if;
 
       when CONV_OP1 =>
+        --  Start conversion.
         header  <= CONVERT_HEADER;
         cm_only <= '1';
 
       when SKIP_ROM_OP1 =>
+        -- Skip rom to directly reads the registers.
         header  <= SKIPHEADER;
         cm_only <= '1';
 
       when READ_TEMP_OP =>
+        --  Read registers
         header  <= READ_TEMPER_HEADER;
         bit_top <= TEMPER_LGTH;
         if state_cm = IDLE_CM then
@@ -247,10 +251,12 @@ begin
         end if;
 
       when SKIP_ROM_OP2 =>
+        -- Skip rom to directly reads the registers.
         header  <= SKIPHEADER;
         cm_only <= '1';
 
       when CONV_OP2 =>
+        --  Start conversion.
         header  <= CONVERT_HEADER;
         cm_only <= '1';
 
@@ -364,11 +370,13 @@ begin
     crc_ok           <= '0';
     case state_cm is
       when RST_CM =>
+        --  Reset pulse.
         rst_bit_cnt      <= '1';
         nx_serial_id_out <= '0';
         nx_serial_id_oe  <= '1';
         init             <= start_p;
       when PREP_WR_CM =>
+        --  Presence pulse.
         rst_bit_cnt      <= start_p;
         nx_serial_id_oe  <= '0';
         nx_serial_id_out <= '0';

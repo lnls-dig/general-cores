@@ -31,7 +31,7 @@ files = [
     "gc_dec_8b10b.vhd",
     "gc_dyn_extend_pulse.vhd",
     "gc_ds182x_interface.vhd",
-    "gc_ds182x_readout.vhd",
+    "gc_ds182x_readout/gc_ds182x_readout.vhd",
     "gc_sfp_i2c_adapter.vhd",
     "gc_async_counter_diff.vhd",
     "gc_sync_word_wr.vhd",
