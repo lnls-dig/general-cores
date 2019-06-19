@@ -182,6 +182,8 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
   - [wb_spi_flash](modules/wishbone/wb_spi_flash) is an spi flash controller
   - [wb_uart](modules/wishbone/wb_uart) is an uart.
   - [wb_vic](modules/wishbone/wb_vic) is the vectored interrupt controller.
+  - [wb_ds182x_readout](modules/wishbone/wb_ds182x_readout) is a direct
+    interface to the digital thermometer.
 
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain

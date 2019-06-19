@@ -23,6 +23,7 @@ modules =  { "local" : [
   "wb_spi_flash",
   "wb_simple_pwm",
   "wb_i2c_bridge",
+  "wb_ds182x_readout",
   "wbgen2",
   "wbgenplus",
   ]}
