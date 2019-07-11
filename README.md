@@ -204,3 +204,5 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
   - [wb_remapper](modules/wishbone/wb_remapper) allows to remap addresses.
   - [wb_conmax](modules/wishbone/wb_conmax) is an interconnect matrix,
     superseeded by the crossbar.
+  - [wb_metadata](modules/wishbone/wb_metadata) is a little helper to
+    create metadata for the convention.
