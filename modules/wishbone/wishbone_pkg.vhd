@@ -2148,11 +2148,12 @@ package body wishbone_pkg is
   -- Converts string to ascii (std_logic_vector)
   function f_string2svl (s : string) return std_logic_vector is
     constant len : natural := s'length;
-    variable slv : std_logic_vector((s'length * 8) - 1 downto 0);
+    alias as : string(1 to len) is s;
+    variable slv : std_logic_vector((len * 8) - 1 downto 0);
   begin
     for i in 0 to len-1 loop
       slv(slv'high-i*8 downto (slv'high-7)-i*8) :=
-        std_logic_vector(to_unsigned(character'pos(s(i+1)), 8));
+        std_logic_vector(to_unsigned(character'pos(as(i+1)), 8));
     end loop;
     return slv;
   end f_string2svl;
