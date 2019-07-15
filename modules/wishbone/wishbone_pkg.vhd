@@ -1750,7 +1750,6 @@ package body wishbone_pkg is
       variable pos : natural;
       variable dev, newdev      : t_sdb_device;
       variable serial_no : string(1 to 3);
-      variable text_possible : boolean := false; 
    begin
       dev := device;
              
