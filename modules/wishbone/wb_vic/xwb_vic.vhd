@@ -48,6 +48,10 @@ entity xwb_vic is
     g_num_interrupts : natural                  := 32;  -- number of IRQ inputs.
     g_init_vectors   : t_wishbone_address_array := cc_dummy_address_array;
 
+    -- If True, the polarity is fixed and set by g_POLARITY
+    g_FIXED_POLARITY : boolean := False;
+    g_POLARITY       : std_logic := '1';
+    
     g_retry_timeout : integer := 0
     );
 
@@ -75,6 +79,8 @@ begin  -- wrapper
       g_address_granularity => g_address_granularity,
       g_num_interrupts      => g_num_interrupts,
       g_init_vectors        => g_init_vectors,
+      g_FIXED_POLARITY      => g_FIXED_POLARITY,
+      g_POLARITY            => g_POLARITY,
       g_retry_timeout => g_retry_timeout)
     port map (
       clk_sys_i    => clk_sys_i,

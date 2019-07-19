@@ -1041,6 +1041,8 @@ package wishbone_pkg is
       g_address_granularity : t_wishbone_address_granularity;
       g_num_interrupts      : natural;
       g_init_vectors        : t_wishbone_address_array := cc_dummy_address_array;
+      g_FIXED_POLARITY      : boolean := False;
+      g_POLARITY            : std_logic := '1';
       g_retry_timeout : integer := 0
       );
     port (
