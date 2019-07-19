@@ -201,6 +201,8 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     multiple slave decoder.
   - [wb_crossbar](modules/wishbone/wb_crossbar) is a generic multiple masters
     and multiple slaves crossbar.
+  - [wb_split](modules/wishbone/wb_split) is a very simple crossbar for 1
+    master and 2 slaves.
   - [wb_remapper](modules/wishbone/wb_remapper) allows to remap addresses.
   - [wb_conmax](modules/wishbone/wb_conmax) is an interconnect matrix,
     superseeded by the crossbar.
