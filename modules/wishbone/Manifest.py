@@ -25,6 +25,7 @@ modules =  { "local" : [
   "wb_i2c_bridge",
   "wb_ds182x_readout",
   "wb_metadata",
+  "wb_split",
   "wbgen2",
   "wbgenplus",
   ]}
