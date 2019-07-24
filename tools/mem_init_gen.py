@@ -73,7 +73,7 @@ with open ( args.in_file, 'rb' ) as fin:
     contents = fin.read ( )
 
 # byte value to use for padding
-pad_val = chr ( args.pad & 0xff )
+pad_val = chr ( args.pad & 0xff ).encode ( )
 
 # pad/trim if necessary to get to args.depth
 if args.depth:
