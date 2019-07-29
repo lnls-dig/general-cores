@@ -253,6 +253,7 @@ package gencores_pkg is
     generic (
       g_with_internal_timebase : boolean;
       g_clk_sys_freq           : integer;
+      g_SYNC_OUT               : boolean := FALSE;
       g_counter_bits           : integer);
     port (
       clk_sys_i    : in  std_logic;

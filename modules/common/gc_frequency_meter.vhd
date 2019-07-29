@@ -34,6 +34,8 @@ entity gc_frequency_meter is
   generic(
     g_with_internal_timebase : boolean := true;
     g_clk_sys_freq           : integer;
+    -- if true, sync freq_o to the clk_sys domain
+    g_SYNC_OUT               : boolean := false;
     g_counter_bits           : integer := 32);
 
   port(
@@ -41,7 +43,9 @@ entity gc_frequency_meter is
     clk_in_i     : in  std_logic;
     rst_n_i      : in  std_logic; -- not used, kept for backward compatibility
     pps_p1_i     : in  std_logic;
+    -- synced to clk_in_i or clk_sys_i, depending on g_SYNC_OUT value
     freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
+    -- synced to clk_sys_i, always
     freq_valid_o : out std_logic
     );
 
@@ -111,7 +115,22 @@ begin
     end if;
   end process p_freq_counter;
 
-  freq_o <= freq_reg;
+  gen_with_sync_out: if g_SYNC_OUT generate
+    cmp_gc_sync_word_wr: gc_sync_word_wr
+      generic map (
+        g_AUTO_WR => TRUE,
+        g_WIDTH   => g_COUNTER_BITS)
+      port map (
+        clk_in_i    => clk_in_i,
+        rst_in_n_i  => '1',
+        clk_out_i   => clk_sys_i,
+        rst_out_n_i => '1',
+        data_i      => freq_reg,
+        data_o      => freq_o);
+  end generate gen_with_sync_out;
+
+  gen_without_sync_out: if not g_SYNC_OUT generate
+    freq_o <= freq_reg;
+  end generate gen_without_sync_out;
+
 end behavioral;
-
-
