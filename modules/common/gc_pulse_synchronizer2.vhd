@@ -40,6 +40,10 @@ entity gc_pulse_synchronizer2 is
     -- pulse input ready (clk_in_i domain). When HI, a pulse
     -- coming to d_p_i will be correctly transferred to q_p_o.
     d_ready_o   : out std_logic;
+    -- last pulse input acknowledged. This is an alternative
+    -- status flag to d_ready_o for applications that work better
+    -- with a pulsed ACK instead of a "ready" flag.
+    d_ack_p_o   : out std_logic;
     -- pulse input (clk_in_i domain)
     d_p_i       : in  std_logic;
     -- pulse output (clk_out_i domain)
@@ -50,6 +54,8 @@ end gc_pulse_synchronizer2;
 architecture rtl of gc_pulse_synchronizer2 is
 
   signal ready        : std_logic := '1';
+  signal d_ack        : std_logic := '1';
+  signal d_ack_d0     : std_logic := '0';
   signal d_p_d0       : std_logic := '0';
   signal in_ext       : std_logic := '0';
   signal out_ext      : std_logic := '0';
@@ -79,19 +85,23 @@ begin  -- rtl
   begin
     if rising_edge(clk_in_i) then
 
-      d_p_d0 <= d_p_i;
+      d_p_d0   <= d_p_i;
+      d_ack_d0 <= d_ack;
 
       if ready = '1' and d_p_i = '1' and d_p_d0 = '0'then
         in_ext <= '1';
+        d_ack  <= '0';
         ready  <= '0';
       elsif in_ext = '1' and out_feedback = '1' then
         in_ext <= '0';
       elsif in_ext = '0' and out_feedback = '0' then
+        d_ack <= '1';
         ready <= '1';
       end if;
     end if;
   end process p_input_ack;
 
+  d_ack_p_o <= d_ack and not d_ack_d0;
   d_ready_o <= ready;
 
 end rtl;

@@ -221,6 +221,7 @@ package gencores_pkg is
       clk_out_i   : in  std_logic;
       rst_out_n_i : in  std_logic;
       d_ready_o   : out std_logic;
+      d_ack_p_o   : out std_logic;
       d_p_i       : in  std_logic;
       q_p_o       : out std_logic);
   end component;
