@@ -94,14 +94,9 @@ begin
   p_writer : process(clk_in_i)
   begin
     if rising_edge(clk_in_i) then
-      if d_ready = '1' then
-        if wr_in = '1' then
-          --  Write requested, save the input data
-          gc_sync_word_wr_data <= data_i;
-        end if;
-      else
-        assert wr_in = '0' report "request while previous one not completed"
-          severity ERROR;
+      if d_ready = '1' and wr_in = '1' then
+        --  Write requested, save the input data
+        gc_sync_word_wr_data <= data_i;
       end if;
     end if;
   end process p_writer;
@@ -110,7 +105,7 @@ begin
   begin
     if rising_edge(clk_out_i) then
       if wr_out = '1' then
-          --  Data is stable.
+        --  Data is stable.
         dat_out <= gc_sync_word_wr_data;
         wr_o    <= '1';
       else

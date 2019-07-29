@@ -98,6 +98,12 @@ begin  -- rtl
         d_ack <= '1';
         ready <= '1';
       end if;
+
+      if ready = '0' then
+        assert d_p_i = '0' or (d_p_i = '1' and d_p_d0 = '1')
+          report "request while previous one not completed"
+          severity ERROR;
+      end if;
     end if;
   end process p_input_ack;
 
