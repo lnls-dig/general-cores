@@ -227,6 +227,26 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Word synchroniser
+  ------------------------------------------------------------------------------
+  component gc_sync_word_wr is
+    generic (
+      g_AUTO_WR : boolean  := FALSE;
+      g_WIDTH   : positive := 8);
+    port (
+      clk_in_i    : in  std_logic;
+      rst_in_n_i  : in  std_logic;
+      clk_out_i   : in  std_logic;
+      rst_out_n_i : in  std_logic;
+      data_i      : in  std_logic_vector (g_WIDTH - 1 downto 0);
+      wr_i        : in  std_logic := '0';
+      busy_o      : out std_logic;
+      ack_o       : out std_logic;
+      data_o      : out std_logic_vector (g_WIDTH - 1 downto 0);
+      wr_o        : out std_logic);
+  end component gc_sync_word_wr;
+
+  ------------------------------------------------------------------------------
   -- Frequency meters
   ------------------------------------------------------------------------------
   component gc_frequency_meter

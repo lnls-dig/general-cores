@@ -7,12 +7,14 @@
 -- unit name:   gc_sync_word_wr
 --
 -- description: Synchronizer for writing a word with an ack.
+--
 --   Used to transfer a word from the input clock domain to the output clock
 --   domain.  User provides the data and a pulse write signal to transfer the
 --   data.  When the data are transfered, a write pulse is generated on the
 --   output side along with the data, and an acknowledge is generated on the
---   input side.  Once the user request a transfer, no new data should be
---   requested for a transfer until the ack was received.
+--   input side.  Once the user requests a transfer, no new data should be
+--   requested for a transfer until the ack is received. A busy flag is also
+--   available for this purpose (user should not push new data if busy).
 --
 --------------------------------------------------------------------------------
 -- Copyright CERN 2019
@@ -31,110 +33,92 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.gencores_pkg.all;
+
 entity gc_sync_word_wr is
   generic (
-    width : positive := 8);
+    -- automatically write next word when not busy
+    g_AUTO_WR : boolean  := FALSE;
+    g_WIDTH   : positive := 8);
   port (
     --  Input clock and reset
     clk_in_i    : in  std_logic;
     rst_in_n_i  : in  std_logic;
-    --  Output clock.
+    --  Output clock and reset
     clk_out_i   : in  std_logic;
-    rst_out_n_i : in std_logic;
+    rst_out_n_i : in  std_logic;
     --  Input data
-    data_i      : in  std_logic_vector (width - 1 downto 0);
-    --  Input wr
-    wr_i        : in  std_logic;
+    data_i      : in  std_logic_vector (g_WIDTH - 1 downto 0);
+    --  Input control and status
+    --  wr_i is ignored if g_AUTO_WR is set
+    wr_i        : in  std_logic := '0';
+    busy_o      : out std_logic;
     ack_o       : out std_logic;
     --  Output data
-    data_o      : out std_logic_vector (width - 1 downto 0);
+    data_o      : out std_logic_vector (g_WIDTH - 1 downto 0);
+    --  Output status
     wr_o        : out std_logic);
 end entity;
 
-architecture behav of gc_sync_word_wr is
-  signal data     : std_logic_vector (width - 1 downto 0);
-  signal in_busy  : std_logic;
-  signal start_wr : std_logic;
+architecture arch of gc_sync_word_wr is
 
-  --  Synchronized extended wr_i signal.
-  signal wr_out         : std_logic;
-  signal last_wr_out    : std_logic;
-  signal wr_out_fb      : std_logic;
-  signal last_wr_out_fb : std_logic;
+  signal gc_sync_word_wr_data :
+    std_logic_vector (g_WIDTH - 1 downto 0) := (others => '0');
+
+  attribute keep : string;
+
+  attribute keep of gc_sync_word_wr_data : signal is "true";
+
+  signal d_ready : std_logic;
+  signal wr_in   : std_logic;
+  signal wr_out  : std_logic;
+  signal dat_out : std_logic_vector(g_WIDTH -1 downto 0) := (others => '0');
+
 begin
-  --  Handle incoming request.
-  process(clk_in_i)
+
+  wr_in <= d_ready when g_AUTO_WR else wr_i;
+
+  cmp_pulse_sync : gc_pulse_synchronizer2
+    port map (
+      clk_in_i    => clk_in_i,
+      rst_in_n_i  => rst_in_n_i,
+      clk_out_i   => clk_out_i,
+      rst_out_n_i => rst_out_n_i,
+      d_ready_o   => d_ready,
+      d_ack_p_o   => ack_o,
+      d_p_i       => wr_in,
+      q_p_o       => wr_out);
+
+  busy_o <= not d_ready;
+
+  p_writer : process(clk_in_i)
   begin
     if rising_edge(clk_in_i) then
-      if rst_in_n_i = '0' then
-        start_wr <= '0';
-        in_busy <= '0';
-        data <= (others => '0');
-        ack_o <= '0';
-        last_wr_out_fb <= '0';
-      else
-        ack_o <= '0';
-        if in_busy = '0' then
-          if wr_i = '1' then
-            --  Write requested.
-            --  Toggle start_wr ...
-            start_wr <= not start_wr;
-            in_busy <= '1';
-            --  Save the data.
-            data <= data_i;
-          end if;
-        else
-          assert wr_i = '0' report "request while previous one not completed"
-            severity error;
-          --  ... and wait until wr_out_fb has been toggled.
-          if (wr_out_fb xor last_wr_out_fb) = '1' then
-            --  Set ack (for one cycle).
-            ack_o <= '1';
-            last_wr_out_fb <= wr_out_fb;
-            --  Ready for a new request.
-            in_busy <= '0';
-          end if;
+      if d_ready = '1' then
+        if wr_in = '1' then
+          --  Write requested, save the input data
+          gc_sync_word_wr_data <= data_i;
         end if;
+      else
+        assert wr_in = '0' report "request while previous one not completed"
+          severity ERROR;
       end if;
     end if;
-  end process;
+  end process p_writer;
 
-  --  Synchronize the pulse.
-  --  The data are not synchronized because they will be read once the pulse
-  --  has gone the the out clock domain.
-  cmp_wr_sync : entity work.gc_sync_ffs
-    port map (
-      clk_i => clk_out_i,
-      rst_n_i => rst_out_n_i,
-      data_i => start_wr,
-      synced_o => wr_out);
-
-  --  Outputs.
-  process (clk_out_i)
+  p_reader : process (clk_out_i)
   begin
     if rising_edge(clk_out_i) then
-      if rst_out_n_i = '0' then
-        data_o <= (others => '0');
-        wr_o <= '0';
-        last_wr_out <= '0';
+      if wr_out = '1' then
+          --  Data is stable.
+        dat_out <= gc_sync_word_wr_data;
+        wr_o    <= '1';
       else
-        if (wr_out xor last_wr_out) = '1' then
-          --  Data are stable.
-          data_o <= data;
-          wr_o <= '1';
-          last_wr_out <= wr_out;
-        else
-          wr_o <= '0';
-        end if;
+        wr_o <= '0';
       end if;
     end if;
-  end process;
+  end process p_reader;
 
-  --  Ack.
-  cmp_ack_sync : entity work.gc_sync_ffs
-    port map (
-      clk_i => clk_in_i,
-      rst_n_i => rst_in_n_i,
-      data_i => wr_out,
-      synced_o => wr_out_fb);
-end behav;
+  data_o <= dat_out;
+
+end arch;
