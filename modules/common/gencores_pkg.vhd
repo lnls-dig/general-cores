@@ -251,16 +251,16 @@ package gencores_pkg is
   ------------------------------------------------------------------------------
   component gc_frequency_meter
     generic (
-      g_with_internal_timebase : boolean;
-      g_clk_sys_freq           : integer;
+      g_WITH_INTERNAL_TIMEBASE : boolean := TRUE;
+      g_CLK_SYS_FREQ           : integer;
       g_SYNC_OUT               : boolean := FALSE;
-      g_counter_bits           : integer);
+      g_COUNTER_BITS           : integer);
     port (
       clk_sys_i    : in  std_logic;
       clk_in_i     : in  std_logic;
       rst_n_i      : in  std_logic;
       pps_p1_i     : in  std_logic;
-      freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
+      freq_o       : out std_logic_vector(g_COUNTER_BITS-1 downto 0);
       freq_valid_o : out std_logic);
   end component;
 
