@@ -35,4 +35,5 @@ files = [
     "gc_sfp_i2c_adapter.vhd",
     "gc_async_counter_diff.vhd",
     "gc_sync_word_wr.vhd",
+    "gc_sync_word_rd.vhd",
 ];

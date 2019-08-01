@@ -21,7 +21,9 @@ In [modules/common](modules/common) there are general purpose cores:
   doesn't ensure coherency between these signals.
 
   To pass words from one clock domain to another, you can use the module
-  [gc_sync_word_wr](modules/common/gc_sync_word_wr.vhd)
+  [gc_sync_word_wr](modules/common/gc_sync_word_wr.vhd) for writing data,
+  and [gc_sync_word_rd](modules/common/gc_sync_word_rd.vhd) for reading
+  data.
 
   To pass one pulse from one domain to another, use module
   [gc_pulse_synchronizer](modules/common/gc_pulse_synchronizer.vhd)
