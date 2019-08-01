@@ -62,12 +62,12 @@ end entity;
 
 architecture arch of gc_sync_word_wr is
 
-  signal gc_sync_word_wr_data :
+  signal gc_sync_word_data :
     std_logic_vector (g_WIDTH - 1 downto 0) := (others => '0');
 
   attribute keep : string;
 
-  attribute keep of gc_sync_word_wr_data : signal is "true";
+  attribute keep of gc_sync_word_data : signal is "true";
 
   signal d_ready : std_logic;
   signal wr_in   : std_logic;
@@ -96,7 +96,7 @@ begin
     if rising_edge(clk_in_i) then
       if d_ready = '1' and wr_in = '1' then
         --  Write requested, save the input data
-        gc_sync_word_wr_data <= data_i;
+        gc_sync_word_data <= data_i;
       end if;
     end if;
   end process p_writer;
@@ -106,7 +106,7 @@ begin
     if rising_edge(clk_out_i) then
       if wr_out = '1' then
         --  Data is stable.
-        dat_out <= gc_sync_word_wr_data;
+        dat_out <= gc_sync_word_data;
         wr_o    <= '1';
       else
         wr_o <= '0';

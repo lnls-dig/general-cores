@@ -57,12 +57,12 @@ entity gc_sync_word_rd is
 end entity;
 
 architecture arch of gc_sync_word_rd is
-  signal gc_sync_word_rd_data :
+  signal gc_sync_word_data :
     std_logic_vector (g_WIDTH - 1 downto 0) := (others => '0');
 
   attribute keep : string;
 
-  attribute keep of gc_sync_word_rd_data : signal is "true";
+  attribute keep of gc_sync_word_data : signal is "true";
 
   signal d_ready : std_logic;
   signal wr_in   : std_logic;
@@ -84,7 +84,7 @@ begin
     if rising_edge(clk_in_i) then
       if d_ready = '1' then
         --  Constantly update the data if ready
-        gc_sync_word_rd_data <= data_in_i;
+        gc_sync_word_data <= data_in_i;
       end if;
     end if;
   end process;
@@ -96,7 +96,7 @@ begin
         ack_out_o <= '0';
       elsif wr_in = '1' then
         --  Data is stable.
-        data_out_o <= gc_sync_word_rd_data;
+        data_out_o <= gc_sync_word_data;
         ack_out_o    <= '1';
       else
         ack_out_o <= '0';
