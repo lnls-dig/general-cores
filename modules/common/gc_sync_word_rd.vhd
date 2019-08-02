@@ -82,8 +82,7 @@ begin
   p_reader : process(clk_in_i)
   begin
     if rising_edge(clk_in_i) then
-      if d_ready = '1' then
-        --  Constantly update the data if ready
+      if rd_out = '1' then
         gc_sync_word_data <= data_in_i;
       end if;
     end if;
