@@ -33,7 +33,7 @@ Software Interrupt Register
 REG @tab
 @code{EOIR} @tab
 End Of Interrupt Acknowledge Register
-@item @code{0x20 - 0x3f}
+@item @code{0x80 - 0xff}
 @tab MEM @tab @code{IVT_RAM} @tab Interrupt Vector Table
 @end multitable 
 @regsection @code{CTL} - VIC Control Register
