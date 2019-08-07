@@ -24,6 +24,6 @@ with open("buildinfo_pkg.vhd", "w") as f:
   f.write('     & "commit:{}" & LF\n'.format(commitid))
   f.write('     & "syntool:{}" & LF\n'.format(tool))
   f.write('     & "syndate:{}" & LF\n'.format(
-      time.strftime("%A, %B %d %Y", time.localtime())))
+      time.strftime("%F, %H:%M %Z", time.localtime())))
   f.write('     & "synauth:{}" & LF;\n'.format(userid))
   f.write('end buildinfo_pkg;\n')
