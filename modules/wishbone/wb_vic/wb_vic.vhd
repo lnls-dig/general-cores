@@ -173,7 +173,7 @@ begin  -- syn
     end if;
   end process;
 
-  vic_risr <= (31 downto g_NUM_INTERRUPTS => '0') & irqs_i_reg;
+  vic_risr <= (31 downto g_NUM_INTERRUPTS => '0') & (irqs_i or swi_mask(g_NUM_INTERRUPTS-1 downto 0));
 
   U_Slave_adapter : entity work.wb_slave_adapter
     generic map (

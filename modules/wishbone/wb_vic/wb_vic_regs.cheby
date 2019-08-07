@@ -76,7 +76,7 @@ memory-map:
       access: ro
       description: Raw Interrupt Status Register
       comment: |
-        Each bit reflects the current state of corresponding IRQ input line.
+        Each bit reflects the current state of corresponding IRQ input line, irrespective of the state of the IMR register.
         - read 1: interrupt line is currently active
         - read 0: interrupt line is inactive
   - reg:
