@@ -3,7 +3,7 @@
 -- Project      : General Cores Library
 -------------------------------------------------------------------------------
 -- File         : xwb_xilinx_fpga_loader.vhd
--- Author       : Tomasz Włostowski
+-- Author       : Tomasz Wlostowski
 -- Company      : CERN BE-CO-HT
 -- Created      : 2012-01-30
 -- Last update  : 2012-01-30
