@@ -1,0 +1,6 @@
+ccflags-y += -I$(src)/../../../include
+
+# priority to our local headers
+LINUXINCLUDE :=  -I$(src)/../../../include -I$(src)/../../../include/linux $(LINUXINCLUDE)
+
+obj-$(CONFIG_I2C_OCORES) += i2c-ocores.o
