@@ -1,0 +1,3 @@
+ccflags-y += -I$(src)/../../include
+
+obj-$(CONFIG_SPI_OCORES) += spi-ocores.o
