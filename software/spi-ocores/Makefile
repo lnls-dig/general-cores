@@ -6,7 +6,7 @@ REPO_PARENT ?= $(shell /bin/pwd)/../..
 
 all: modules
 
-modules help install modules_install clean:
+modules clean:
 	make -C $(shell pwd)/drivers/spi $@
 
-.PHONY: all modules clean help install modules_install
+.PHONY: all modules clean
