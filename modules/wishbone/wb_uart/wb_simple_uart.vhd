@@ -42,7 +42,8 @@ entity wb_simple_uart is
     g_WITH_PHYSICAL_UART  : boolean;
     g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
     g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
-    g_VUART_FIFO_SIZE     : integer                        := 1024
+    g_VUART_FIFO_SIZE     : integer                        := 1024;
+    g_PRESET_BCR          : integer := 0
     );
   port (
 
@@ -161,8 +162,8 @@ begin  -- arch
     begin
       if rising_edge(clk_sys_i) then
         if rst_n_i = '0' then
-          uart_bcr <= (others => '0');
-        elsif regs_out.bcr_wr_o = '1' then
+          uart_bcr <= std_logic_vector(to_unsigned(g_preset_bcr, uart_bcr'length));
+        elsif(regs_out.bcr_wr_o = '1')then
           uart_bcr <= regs_out.bcr_o;
         end if;
       end if;

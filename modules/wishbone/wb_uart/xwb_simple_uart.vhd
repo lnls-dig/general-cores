@@ -41,7 +41,9 @@ entity xwb_simple_uart is
     g_WITH_PHYSICAL_UART  : boolean                        := TRUE;
     g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
     g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
-    g_VUART_FIFO_SIZE     : integer                        := 1024);
+    g_VUART_FIFO_SIZE     : integer                        := 1024;
+    g_PRESET_BCR          : integer := 0
+);
 
   port (
     clk_sys_i : in std_logic;
@@ -68,7 +70,8 @@ begin  -- arch
       g_WITH_PHYSICAL_UART  => g_WITH_PHYSICAL_UART,
       g_INTERFACE_MODE      => g_INTERFACE_MODE,
       g_ADDRESS_GRANULARITY => g_ADDRESS_GRANULARITY,
-      g_VUART_FIFO_SIZE     => g_VUART_FIFO_SIZE)
+      g_VUART_FIFO_SIZE     => g_VUART_FIFO_SIZE,
+      g_PRESET_BCR => g_PRESET_BCR)
     port map (
       clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
