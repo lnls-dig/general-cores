@@ -615,7 +615,6 @@ static int ocores_i2c_mux_deselect(struct i2c_adapter *adap,
 	mux = oc_getreg(i2c, OCI2C_OHWR_MUX);
 	if (unlikely(!(mux & OCI2C_OHWR_MUX_BUSY)))
 		dev_err(&adap->dev, "deselect a bus that was not selected\n");
-	mux &= ~OCI2C_OHWR_MUX_SEL_MASK;
 	mux &= ~OCI2C_OHWR_MUX_BUSY;
 	oc_setreg(i2c, OCI2C_OHWR_MUX, mux);
 
