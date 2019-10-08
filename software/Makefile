@@ -7,6 +7,7 @@ REPO_PARENT ?= $(shell /bin/pwd)/..
 
 DIRS := i2c-ocores
 DIRS += spi-ocores
+DIRS += htvic
 
 .PHONY: all clean modules install modules_install $(DIRS)
 
