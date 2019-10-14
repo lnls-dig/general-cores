@@ -9,7 +9,7 @@ DIRS := i2c-ocores
 DIRS += spi-ocores
 DIRS += htvic
 
-.PHONY: all clean modules install modules_install $(DIRS)
+.PHONY: all clean modules install modules_install
 
 all clean modules install modules_install:
 	for D in $(DIRS); do $(MAKE) -C $$D $@; done

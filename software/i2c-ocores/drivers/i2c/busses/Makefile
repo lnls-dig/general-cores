@@ -1,6 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Copyright (C) 2019 CERN
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Copyright (C) 2019 CERN
+
 -include Makefile.specific
-# include parent_common.mk for buildsystem's defines
-#use absolute path for REPO_PARENT
 REPO_PARENT ?= $(shell /bin/pwd)/../..
 -include $(REPO_PARENT)/parent_common.mk
 
