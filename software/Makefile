@@ -11,14 +11,5 @@ DIRS += htvic
 
 .PHONY: all clean modules install modules_install $(DIRS)
 
-all clean: $(DIRS)
-
-clean:
-	$(MAKE)
-clean: TARGET = clean
-modules: TARGET = modules
-install: TARGET = install
-modules_install: TARGET = modules_install
-
-$(DIRS):
-	$(MAKE) -C $@ $(TARGET)
+all clean modules install modules_install:
+	for D in $(DIRS); do $(MAKE) -C $$D $@; done

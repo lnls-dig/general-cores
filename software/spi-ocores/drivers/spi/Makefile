@@ -8,13 +8,7 @@ LINUX ?= /lib/modules/$(shell uname -r)/build
 
 all: modules
 
-modules: spi-ocores
+clean modules help modules_install:
+	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) CONFIG_SPI_OCORES=m $@
 
-clean:
-	rm -f *.o *.ko *.mod.o *.mod.c Module.symvers modules.order
-
-spi-ocores:
-	make -C $(LINUX) M=$(shell pwd) CONFIG_SPI_OCORES=m modules
-
-
-.PHONY: all modules clean
+.PHONY: all modules clean help install modules_install

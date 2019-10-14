@@ -6,8 +6,8 @@ REPO_PARENT ?= $(shell /bin/pwd)/../..
 
 all: modules
 
-modules clean:
-	export CONFIG_I2C_OCORES=m
+install: modules_install
+clean modules modules_install:
 	make -C $(shell pwd)/drivers/i2c/busses $@
 
-.PHONY: all modules clean
+.PHONY: modules modules_install clean all

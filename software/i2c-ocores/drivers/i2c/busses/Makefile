@@ -8,12 +8,7 @@ LINUX ?= /lib/modules/$(shell uname -r)/build
 
 all: modules
 
-modules: i2c-ocores
+clean modules help modules_install:
+	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) CONFIG_I2C_OCORES=m $@
 
-clean:
-	rm -f *.o *.ko *.mod.o *.mod.c Module.symvers modules.order
-
-i2c-ocores:
-	make -C $(LINUX) M=$(shell pwd) CONFIG_I2C_OCORES=m modules
-
-.PHONY: all modules clean
+.PHONY: all modules clean help install modules_install
