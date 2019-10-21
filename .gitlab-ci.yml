@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: CC0-1.0
+#
+# SPDX-FileCopyrightText: 2019 CERN
+
+---
+variables:
+  KOJI_TARGET: 'ohwr7'
+  KOJI_DISTTAG: '.el7.cern'
+  DIST_PATH: distribution
+  BUILD_PATH: ${DIST_PATH}/build
+
+stages:
+  - static-analysis
+  - build
+  - srpm
+  - tools
+  - kscratch
+  - kbuild
+
+reuse:
+  stage: static-analysis
+  image: fsfe/reuse:latest
+  script:
+    - reuse lint
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - yum install -y kernel-devel git
+    - export LINUX=/usr/src/kernels/*/
+    - make -C software
