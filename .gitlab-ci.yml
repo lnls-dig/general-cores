@@ -30,3 +30,25 @@ build:
     - yum install -y kernel-devel git
     - export LINUX=/usr/src/kernels/*/
     - make -C software
+
+build_srpm:
+  stage: srpm
+  script:
+    - yum-builddep -y ${DIST_PATH}/*.spec
+    - export LINUX=/usr/src/kernels/*/
+    - make -C distribution srpm
+  artifacts:
+    paths:
+      - distribution/build/SRPMS/${CI_PROJECT_NAME}*src.rpm
+    expire_in: 1 day
+
+.koji_deps_template: &koji_deps
+  before_script:
+    - yum install -y koji krb5-workstation rpm-build
+    - echo ${OHWR_PASSWORD} | kinit ${OHWR_USER}
+
+kscratch:
+  <<: *koji_deps
+  stage: kscratch
+  script:
+    - koji --config=.koji build --wait --scratch ${KOJI_TARGET} distribution/build/SRPMS/${CI_PROJECT_NAME}*src.rpm
