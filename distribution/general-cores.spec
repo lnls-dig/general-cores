@@ -29,12 +29,12 @@ This package installs all general-cores drivers
 make TOP_DIR=`pwd` PREFIX=%{buildroot}/ RPMBUILD="1" dkms_install
 
 %post
-dkms add -m %{project_name}-vic -v %{version} --rpm_safe_upgrade
-dkms build -m %{project_name}-vic -v %{version} --rpm_safe_upgrade
-dkms install -m %{project_name}-vic -v %{version} --rpm_safe_upgrade
+dkms add -m %{project_name} -v %{version} --rpm_safe_upgrade
+dkms build -m %{project_name} -v %{version} --rpm_safe_upgrade
+dkms install -m %{project_name} -v %{version} --rpm_safe_upgrade
 
 %preun
-dkms remove -m %{project_name}-vic -v %{version} --rpm_safe_upgrade --all ||:
+dkms remove -m %{project_name} -v %{version} --rpm_safe_upgrade --all ||:
 
 %files
 %license LICENSES/CC0-1.0.txt
