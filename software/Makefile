@@ -34,10 +34,16 @@ dkms_install:
 	$(eval $@_dst := $(shell mktemp -d))
 	@mkdir -p $($@_dst)
 	@mkdir -p $(DST)
+ifdef RPMBUILD
+# We already did the file selection when producing the tar.gz
+# Just copy
+	@cp -a $(GCORES)/* $(DST)
+else
 	@$(GIT) archive --format=tar -o $($@_dst)/$(DIR_NAME).tar --prefix=$(DIR_NAME)/ HEAD
 	@cd $($@_dst) && tar -xf $(DIR_NAME).tar
 	@mv $($@_dst)/$(DIR_NAME)/* $(DST) && rm -rf $($@_dst)
 	@cp $(GCORES)/common.mk $(DST)
+endif
 	@sed -e '2,$$d' -i $(DST)/common.mk
 	@sed -r -i -e "s/@PKGVER@/$(VERSION)/" $(DST)/dkms.conf
 	@sed -e "15d" -e "6,13d" -e "23,26d" -e '33,$$d' \
