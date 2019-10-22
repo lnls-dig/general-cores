@@ -39,8 +39,9 @@ sources: sources-tar-gz
 srpm-changelog: sources
 	$(eval $@_pattern := ^\[([0-9]+\.[0-9]+\.[0-9]+)\]\s-\s([0-9]{4}-[0-9]{2}-[0-9]{2})$)
 	$(eval $@_replace := echo -e "\n"\\* `date --date="\2" "+%a %b %d %Y"` "\1")
-	@sed -r -i -e "/^[.]{2}/d" -e "/^\s{2}.*$$/d" $(SOURCES)/CHANGELOG
-	@sed -r -i -e "/Change Log/d" -e "/^(=|-|\s)*$$/d" $(SOURCES)/CHANGELOG
+	@sed -r -i -e '1,+18d' -e "/^[.]{2}/d" -e "/^\s{2}.*$$/d" \
+	     $(SOURCES)/CHANGELOG
+	@sed -r -i  -e "/^(=|-|\s)*$$/d" $(SOURCES)/CHANGELOG
 	@sed -r -i -e 's,$($@_pattern),$($@_replace),e' $(SOURCES)/CHANGELOG
 
 rpm-spec: general-cores.spec
