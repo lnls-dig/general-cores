@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2012-02-23
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -57,8 +57,9 @@ entity wb_onewire_master is
     wb_dat_i   : in  std_logic_vector(c_wishbone_data_width-1 downto 0);
     wb_dat_o   : out std_logic_vector(c_wishbone_data_width-1 downto 0);
     wb_ack_o   : out std_logic;
-    wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
+
+    int_o : out std_logic;
 
     owr_pwren_o : out std_logic_vector(g_num_ports -1 downto 0);
     owr_en_o    : out std_logic_vector(g_num_ports -1 downto 0);
@@ -115,7 +116,6 @@ begin  -- rtl
   slave_in.dat                                      <= wb_dat_i;
   slave_in.we                                       <= wb_we_i;
 
-  wb_int_o   <= slave_out.int;
   wb_dat_o   <= slave_out.dat;
   wb_stall_o <= slave_out.stall;
   wb_ack_o   <= slave_out.ack;
@@ -171,7 +171,7 @@ begin  -- rtl
       bus_adr => adp_out.adr(0 downto 0),
       bus_wdt => adp_out.dat,
       bus_rdt => rdat_int,
-      bus_irq => adp_in.int,
+      bus_irq => int_o,
       owr_p   => owr_pwren_o,
       owr_e   => owr_en_o,
       owr_i   => owr_i);

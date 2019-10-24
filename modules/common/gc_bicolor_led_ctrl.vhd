@@ -45,21 +45,20 @@
 --      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
 --          * added default values for determined start-up state
 --------------------------------------------------------------------------------
--- GNU LESSER GENERAL PUBLIC LICENSE
---------------------------------------------------------------------------------
--- This source file is free software; you can redistribute it and/or modify it
--- under the terms of the GNU Lesser General Public License as published by the
--- Free Software Foundation; either version 2.1 of the License, or (at your
--- option) any later version. This source is distributed in the hope that it
--- will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
--- of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
--- See the GNU Lesser General Public License for more details. You should have
--- received a copy of the GNU Lesser General Public License along with this
--- source; if not, download it from http://www.gnu.org/licenses/lgpl-2.1.html
---------------------------------------------------------------------------------
--- last changes: see log.
---------------------------------------------------------------------------------
--- TODO: - 
+--
+-- Copyright (c) 2012 - 2017 CERN
+--
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 0.51 (the "License") (which enables you, at your option,
+-- to treat this file as licensed under the Apache License 2.0); you may not
+-- use this file except in compliance with the License. You may obtain a copy
+-- of the License at http://solderpad.org/licenses/SHL-0.51.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--
 --------------------------------------------------------------------------------
 
 library IEEE;

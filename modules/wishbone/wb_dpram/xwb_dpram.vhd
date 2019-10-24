@@ -6,7 +6,7 @@
 -- Author     : Grzegorz Daniluk
 -- Company    : CERN
 -- Created    : 2011-02-15
--- Last update: 2017-02-03
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generics
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -178,8 +178,6 @@ begin
   slave2_out.err   <= '0';
   slave1_out.rty   <= '0';
   slave2_out.rty   <= '0';
-  slave1_out.int   <= '0';
-  slave2_out.int   <= '0';
   
 end struct;
 

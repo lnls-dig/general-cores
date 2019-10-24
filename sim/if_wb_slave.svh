@@ -58,13 +58,18 @@ interface IWishboneSlave
    struct {
       wb_cycle_type_t mode;
       int gen_random_stalls;
+      int gen_random_errors;
       int stall_min_duration;
       int stall_max_duration;
       real stall_prob;
+      real error_prob;
    } settings;
 
+   int permanent_stall = 0;
 
    function automatic int _poll(); return poll(); endfunction
+   function automatic int _permanent_stall_enable();  return permanent_stall_enable(); endfunction
+   function automatic int _permanent_stall_disable(); return permanent_stall_disable(); endfunction
    task automatic _get(ref wb_cycle_t xfer); get(xfer); endtask
 
    class CIWBSlaveAccessor extends CWishboneAccessor;
@@ -73,6 +78,14 @@ interface IWishboneSlave
          return _poll();
       endfunction
       
+      function automatic int permanent_stall_enable();
+         return _permanent_stall_enable();
+      endfunction
+
+      function automatic int permanent_stall_disable();
+         return _permanent_stall_disable();
+      endfunction     
+  
       task get(ref wb_cycle_t xfer);
          _get(xfer);
       endtask
@@ -89,6 +102,17 @@ interface IWishboneSlave
       return tmp;
    endfunction // get_accessor
       
+   function automatic int permanent_stall_enable();
+      permanent_stall = 1;
+      $display("permanent stall ON");
+      return permanent_stall;
+   endfunction
+
+   function automatic int permanent_stall_disable();
+      permanent_stall = 0;
+      $display("permanent stall OFF");
+      return permanent_stall;
+   endfunction 
    
    function automatic int poll();
       return c_queue.size() != 0;
@@ -152,7 +176,10 @@ interface IWishboneSlave
    
    task pipelined_fsm();
 
-      if(settings.gen_random_stalls)
+
+      if(permanent_stall)
+	stall               <= 1;
+      else if(settings.gen_random_stalls)
 	gen_random_stalls();
       else
         stall               <= 0;
@@ -173,6 +200,11 @@ interface IWishboneSlave
       if(cyc_end) begin
 	 c_queue.push_back(current_cycle);
       end
+
+      if(cyc && settings.gen_random_errors && probability_hit(settings.error_prob))
+        err <= 1;
+      else
+        err <= 0;
 
       if(stb && we && !stall && cyc) begin
          int oc, lzc, tzc;

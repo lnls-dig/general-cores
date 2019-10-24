@@ -1,41 +1,29 @@
---==============================================================================
--- CERN (BE-CO-HT)
--- Glitch filter with selectable length
---==============================================================================
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- author: Theodor Stana (t.stana@cern.ch)
+-- unit name:   gc_glitch_filt
 --
--- date of creation: 2013-03-12
+-- description: Glitch filter with selectable length, consisting of a set of
+-- chained flip-flops followed by a comparator. The comparator toggles to '1'
+-- when all FFs in the chain are '1' and respectively to '0' when all the FFS
+-- in the chain are '0'.
 --
--- version: 1.0
---
--- description:
---    Glitch filter consisting of a set of chained flip-flops followed by a
---    comparator. The comparator toggles to '1' when all FFs in the chain are
---    '1' and respectively to '0' when all the FFS in the chain are '0'.
---
--- dependencies:
---
--- references:
---
---==============================================================================
--- GNU LESSER GENERAL PUBLIC LICENSE
---==============================================================================
--- This source file is free software; you can redistribute it and/or modify it
--- under the terms of the GNU Lesser General Public License as published by the
--- Free Software Foundation; either version 2.1 of the License, or (at your
--- option) any later version. This source is distributed in the hope that it
--- will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
--- of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
--- See the GNU Lesser General Public License for more details. You should have
--- received a copy of the GNU Lesser General Public License along with this
--- source; if not, download it from http://www.gnu.org/licenses/lgpl-2.1.html
---==============================================================================
--- last changes:
---    2013-03-12   Theodor Stana     t.stana@cern.ch     File created
---==============================================================================
--- TODO: -
---==============================================================================
+--------------------------------------------------------------------------------
+-- Copyright CERN 2013-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -69,19 +57,10 @@ end entity gc_glitch_filt;
 
 architecture behav of gc_glitch_filt is
 
-  --============================================================================
-  -- Signal declarations
-  --============================================================================
   signal glitch_filt : std_logic_vector(g_len downto 0);
 
---==============================================================================
---  architecture begin
---==============================================================================
 begin
 
-  --============================================================================
-  -- Glitch filtration logic
-  --============================================================================
   glitch_filt(0) <= dat_i;
 
   -- Generate glitch filter FFs when the filter length is > 0
@@ -113,6 +92,3 @@ begin
   end process p_output;
 
 end architecture behav;
---==============================================================================
---  architecture end
---==============================================================================

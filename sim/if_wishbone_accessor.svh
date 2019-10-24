@@ -10,6 +10,7 @@ virtual class CWishboneAccessor extends CBusAccessor;
 
    function new();
       m_cycle_type  = CLASSIC;
+      m_default_xfer_size = 4;
    endfunction // new
 
    virtual task set_mode(wb_cycle_type_t mode);

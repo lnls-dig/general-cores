@@ -3,7 +3,7 @@
 -- Project      : General Cores Library
 -------------------------------------------------------------------------------
 -- File         : xwb_xilinx_fpga_loader.vhd
--- Author       : Tomasz Włostowski
+-- Author       : Tomasz Wlostowski
 -- Company      : CERN BE-CO-HT
 -- Created      : 2012-01-30
 -- Last update  : 2012-01-30
@@ -151,7 +151,6 @@ begin  -- rtl
       boot_en_i       => boot_en_i,
       gpio_o          => gpio_o);
 
-  slave_o.int <= '0';
   slave_o.err <= '0';
   slave_o.rty <= '0';
 end rtl;

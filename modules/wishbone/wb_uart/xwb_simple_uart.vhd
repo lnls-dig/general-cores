@@ -1,44 +1,33 @@
-------------------------------------------------------------------------------
--- Title      : Simple Wishbone UART
--- Project    : General Cores Collection (gencores) library
-------------------------------------------------------------------------------
--- File       : xwb_simple_uart.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-Co-HT
--- Created    : 2010-05-18
--- Last update: 2017-02-03
--- Platform   : FPGA-generic
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: A simple UART controller, providing two modes of operation
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General cores: Simple Wishbone UART
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   xwb_simple_uart
+--
+-- description: A simple UART controller, providing two modes of operation
 -- (both can be used simultenously):
 -- - physical UART (encoding fixed to 8 data bits, no parity and one stop bit)
 -- - virtual UART: TXed data is passed via a FIFO to the Wishbone host (and
 --   vice versa).
--------------------------------------------------------------------------------
--- Copyright (c) 2010 CERN
 --
--- This source file is free software; you can redistribute it
--- and/or modify it under the terms of the GNU Lesser General
--- Public License as published by the Free Software Foundation;
--- either version 2.1 of the License, or (at your option) any
--- later version.
+-- This unit uses VHDL records for entity ports and acts like a wrapper around
+-- wb_simple_uart.
 --
--- This source is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the implied
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
--- PURPOSE.  See the GNU Lesser General Public License for more
--- details.
---
--- You should have received a copy of the GNU Lesser General
--- Public License along with this source; if not, download it
--- from http://www.gnu.org/licenses/lgpl-2.1.html
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2010-05-18  1.0      twlostow        Created
--- 2011-10-04  1.1      twlostow        xwb module
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2010-2019
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -47,15 +36,14 @@ library work;
 use work.wishbone_pkg.all;
 
 entity xwb_simple_uart is
-  generic(
-    g_with_virtual_uart   : boolean := true;
-    g_with_physical_uart  : boolean := true;
-    g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-    g_address_granularity : t_wishbone_address_granularity := WORD;
-    g_vuart_fifo_size     : integer := 1024
-    );
+  generic (
+    g_WITH_VIRTUAL_UART   : boolean                        := TRUE;
+    g_WITH_PHYSICAL_UART  : boolean                        := TRUE;
+    g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
+    g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
+    g_VUART_FIFO_SIZE     : integer                        := 1024);
 
-  port(
+  port (
     clk_sys_i : in std_logic;
     rst_n_i   : in std_logic;
 
@@ -63,48 +51,24 @@ entity xwb_simple_uart is
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
     desc_o  : out t_wishbone_device_descriptor;
+    int_o   : out std_logic;
 
-    uart_rxd_i: in std_logic;
-    uart_txd_o: out std_logic
-
-    );
+    uart_rxd_i : in  std_logic;
+    uart_txd_o : out std_logic);
 
 end xwb_simple_uart;
 
-architecture rtl of xwb_simple_uart is
+architecture arch of xwb_simple_uart is
 
-  component wb_simple_uart
-    generic (
-      g_with_virtual_uart   : boolean;
-      g_with_physical_uart  : boolean;
-      g_interface_mode      : t_wishbone_interface_mode;
-      g_address_granularity : t_wishbone_address_granularity;
-      g_vuart_fifo_size     : integer);
-    port (
-      clk_sys_i  : in  std_logic;
-      rst_n_i    : in  std_logic;
-      wb_adr_i   : in  std_logic_vector(4 downto 0);
-      wb_dat_i   : in  std_logic_vector(31 downto 0);
-      wb_dat_o   : out std_logic_vector(31 downto 0);
-      wb_cyc_i   : in  std_logic;
-      wb_sel_i   : in  std_logic_vector(3 downto 0);
-      wb_stb_i   : in  std_logic;
-      wb_we_i    : in  std_logic;
-      wb_ack_o   : out std_logic;
-      wb_stall_o : out std_logic;
-      uart_rxd_i : in  std_logic;
-      uart_txd_o : out std_logic);
-  end component;
-  
-begin  -- rtl
+begin  -- arch
 
-  U_Wrapped_UART: wb_simple_uart
+  U_Wrapped_UART : entity work.wb_simple_uart
     generic map (
-      g_with_virtual_uart   => g_with_virtual_uart,
-      g_with_physical_uart  => g_with_physical_uart,
-      g_interface_mode      => g_interface_mode,
-      g_address_granularity => g_address_granularity,
-      g_vuart_fifo_size     => g_vuart_fifo_size)
+      g_WITH_VIRTUAL_UART   => g_WITH_VIRTUAL_UART,
+      g_WITH_PHYSICAL_UART  => g_WITH_PHYSICAL_UART,
+      g_INTERFACE_MODE      => g_INTERFACE_MODE,
+      g_ADDRESS_GRANULARITY => g_ADDRESS_GRANULARITY,
+      g_VUART_FIFO_SIZE     => g_VUART_FIFO_SIZE)
     port map (
       clk_sys_i  => clk_sys_i,
       rst_n_i    => rst_n_i,
@@ -117,13 +81,13 @@ begin  -- rtl
       wb_we_i    => slave_i.we,
       wb_ack_o   => slave_o.ack,
       wb_stall_o => slave_o.stall,
+      int_o      => int_o,
       uart_rxd_i => uart_rxd_i,
       uart_txd_o => uart_txd_o);
 
   slave_o.err <= '0';
   slave_o.rty <= '0';
-  slave_o.int <='0';
 
   desc_o <= (others => '0');
-  
-end rtl;
+
+end arch;
