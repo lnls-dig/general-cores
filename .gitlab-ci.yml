@@ -15,7 +15,6 @@ stages:
   - static-analysis
   - build
   - srpm
-  - tools
   - kscratch
   - kbuild
 
@@ -63,3 +62,13 @@ kscratch:
   stage: kscratch
   script:
     - koji --config=.koji build --wait --scratch ${KOJI_TARGET} ${SRPM_PATH}
+
+kbuild-ohwr:
+  <<: *koji_deps
+  stage: kbuild
+  only:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  except:
+    - branches
+  script:
+    - koji --config=.koji build --wait ${KOJI_TARGET} ${SRPM_PATH}
