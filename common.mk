@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: CC0-1.0
+#
+# SPDX-FileCopyrightText: 2019 CERN
+
 PREFIX ?= /
 
 GIT_VERSION := $(shell git describe --always --dirty --long --tags)

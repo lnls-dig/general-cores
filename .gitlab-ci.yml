@@ -7,7 +7,9 @@ variables:
   KOJI_TARGET: 'ohwr7'
   KOJI_DISTTAG: '.el7.cern'
   DIST_PATH: distribution
-  BUILD_PATH: ${DIST_PATH}/build
+  BUILD_PATH: distribution/rpmbuild
+  SRPM_PATH: distribution/rpmbuild/SRPMS/dkms-${CI_PROJECT_NAME}*src.rpm
+
 
 stages:
   - static-analysis
@@ -31,15 +33,24 @@ build:
     - export LINUX=/usr/src/kernels/*/
     - make -C software
 
+build-dkms:
+  stage: build
+  script:
+    - yum install -y kernel-devel lua git dkms
+    - export LINUX=/usr/src/kernels/*/
+    - export PREFIX=$(mktemp -d)
+    - make -C software/ -f dkms.mk dkms_install
+    - make -C ${PREFIX}/usr/src/${CI_PROJECT_NAME}*/
+
 build_srpm:
   stage: srpm
   script:
     - yum-builddep -y ${DIST_PATH}/*.spec
     - export LINUX=/usr/src/kernels/*/
-    - make -C distribution srpm
+    - make -C distribution rpmbuild-source
   artifacts:
     paths:
-      - distribution/build/SRPMS/${CI_PROJECT_NAME}*src.rpm
+      - ${SRPM_PATH}
     expire_in: 1 day
 
 .koji_deps_template: &koji_deps
@@ -51,4 +62,4 @@ kscratch:
   <<: *koji_deps
   stage: kscratch
   script:
-    - koji --config=.koji build --wait --scratch ${KOJI_TARGET} distribution/build/SRPMS/${CI_PROJECT_NAME}*src.rpm
+    - koji --config=.koji build --wait --scratch ${KOJI_TARGET} ${SRPM_PATH}

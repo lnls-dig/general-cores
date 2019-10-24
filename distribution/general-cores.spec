@@ -26,7 +26,7 @@ This package installs all general-cores drivers
 %build
 
 %install
-make TOP_DIR=`pwd` PREFIX=%{buildroot}/ RPMBUILD="1" dkms_install
+make -C software PREFIX=%{buildroot}/ -f dkms.mk dkms_install
 
 %post
 dkms add -m %{project_name} -v %{version} --rpm_safe_upgrade
@@ -38,7 +38,7 @@ dkms remove -m %{project_name} -v %{version} --rpm_safe_upgrade --all ||:
 
 %files
 %license LICENSES/CC0-1.0.txt
-%license LICENSES/GPL-2.0-or-later.txt
+%license LICENSES/GPL-2.0.txt
 /usr/src/%{project_name}-%{version}/*
 
 

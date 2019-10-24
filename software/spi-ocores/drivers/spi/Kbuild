@@ -8,6 +8,12 @@ SUBMODULE_VERSIONS-y += MODULE_INFO(version_$(CONFIG_SUPER_REPO),\"$(CONFIG_SUPE
 endif
 endif
 
+ccflags-y += -DGIT_VERSION=\"$(GIT_VERSION)\"
+ccflags-y += -Werror
 ccflags-y += -I$(src)/../../include
+
+# priority to our local headers (avoid conflict with the version in kernel)
+LINUXINCLUDE := -I$(src)/../../../include $(LINUXINCLUDE)
+LINUXINCLUDE := -I$(src)/../../../include/linux $(LINUXINCLUDE)
 
 obj-$(CONFIG_SPI_OCORES) += spi-ocores.o

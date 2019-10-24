@@ -9,6 +9,7 @@ endif
 endif
 
 ccflags-y += -DADDITIONAL_VERSIONS="$(SUBMODULE_VERSIONS-y)"
+ccflags-y += -DGIT_VERSION=\"$(GIT_VERSION)\"
 ccflags-y += -Werror
 
 obj-m := htvic.o
