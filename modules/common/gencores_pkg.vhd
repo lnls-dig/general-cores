@@ -726,6 +726,12 @@ package gencores_pkg is
   function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
     return std_logic_vector;
 
+  -- Functions to convert characters and strings to upper/lower case
+  function to_upper(c : character) return character;
+  function to_lower(c : character) return character;
+  function to_upper(s : string) return string;
+  function to_lower(s : string) return string;
+
 end package;
 
 package body gencores_pkg is
@@ -953,5 +959,47 @@ package body gencores_pkg is
   begin
     return f_pick (f_to_std_logic(cond), if_1, if_0);
   end function f_pick;
+
+  ------------------------------------------------------------------------------
+  -- Functions to convert characters and strings to upper/lower case
+  ------------------------------------------------------------------------------
+
+  function to_upper(c : character) return character is
+    variable i : integer;
+  begin
+    i := character'pos(c);
+    if (i > 96 and i < 123) then
+      i := i - 32;
+    end if;
+    return character'val(i);
+  end function to_upper;
+
+  function to_lower(c : character) return character is
+    variable i : integer;
+  begin
+    i := character'pos(c);
+    if (i > 64 and i < 91) then
+      i := i + 32;
+    end if;
+    return character'val(i);
+  end function to_lower;
+
+  function to_upper(s : string) return string is
+    variable uppercase : string (s'range);
+  begin
+    for i in s'range loop
+      uppercase(i) := to_upper(s(i));
+    end loop;
+    return uppercase;
+  end to_upper;
+
+  function to_lower(s : string) return string is
+    variable lowercase : string (s'range);
+  begin
+    for i in s'range loop
+      lowercase(i) := to_lower(s(i));
+    end loop;
+    return lowercase;
+  end to_lower;
 
 end gencores_pkg;
