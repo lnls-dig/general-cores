@@ -100,7 +100,8 @@ entity i2c_master_top is
             wb_stb_i      : in  std_logic;                    -- Strobe signals / core select signal
             wb_cyc_i      : in  std_logic;                    -- Valid bus cycle input
             wb_ack_o      : out std_logic;                    -- Bus cycle acknowledge output
-            wb_inta_o     : out std_logic := '0';             -- interrupt request output signal
+
+            inta_o        : out std_logic := '0';             -- interrupt request output signal
 
             -- i2c lines
             scl_pad_i     : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line input
@@ -373,13 +374,13 @@ begin
         gen_irq: process (wb_clk_i, rst_i)
         begin
             if (rst_i = '0') then
-                wb_inta_o <= '0';
+                inta_o <= '0';
             elsif (wb_clk_i'event and wb_clk_i = '1') then
                    if (wb_rst_i = '1') then
-                       wb_inta_o <= '0';
+                       inta_o <= '0';
                    else
                        -- interrupt signal is only generated when IEN (interrupt enable bit) is set
-                       wb_inta_o <= irq_flag and ien;
+                       inta_o <= irq_flag and ien;
                    end if;
             end if;
         end process gen_irq;

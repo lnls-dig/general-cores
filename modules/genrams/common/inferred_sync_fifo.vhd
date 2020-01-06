@@ -1,26 +1,29 @@
--------------------------------------------------------------------------------
--- Title      : Parametrizable synchronous FIFO (Generic version)
--- Project    : Generics RAMs and FIFOs collection
--------------------------------------------------------------------------------
--- File       : generic_sync_fifo_std.vhd
--- Author     : Tomasz Wlostowski
--- Company    : CERN BE-CO-HT
--- Created    : 2011-01-25
--- Last update: 2017-02-03
--- Platform   : 
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: Single-clock FIFO. 
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   inferred_sync_fifo
+--
+-- description: Parametrizable synchronous FIFO (Generic version).
+-- Single-clock FIFO.
 -- - configurable data width and size
 -- - configurable full/empty/almost full/almost empty/word count signals
--------------------------------------------------------------------------------
--- Copyright (c) 2011-2017 CERN
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2011-01-25  1.0      twlostow        Created
--------------------------------------------------------------------------------
-
+--
+--------------------------------------------------------------------------------
+-- Copyright CERN 2011-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -78,12 +81,12 @@ architecture syn of inferred_sync_fifo is
   signal   guard_bit                               : std_logic;
 
   signal q_comb : std_logic_vector(g_data_width-1 downto 0);
-  
+
 begin  -- syn
 
   we_int <= we_i and not full;
   rd_int <= rd_i and not empty;
-  
+
   U_FIFO_Ram : generic_dpram
     generic map (
       g_data_width               => g_data_width,
@@ -101,7 +104,7 @@ begin  -- syn
       ab_i    => std_logic_vector(rd_ptr_muxed(c_pointer_width-1 downto 0)),
       qb_o    => q_comb);
 
-  process(rd_ptr, rd_i, rd_int)
+  p_rd_ptr_mux: process(rd_int, rd_ptr)
   begin
     if(rd_int = '1' and g_show_ahead) then
       rd_ptr_muxed <= rd_ptr + 1;
@@ -110,7 +113,7 @@ begin  -- syn
     else
       rd_ptr_muxed <= rd_ptr - 1;
     end if;
-  end process;
+  end process p_rd_ptr_mux;
 
   q_o <= q_comb;
 
@@ -170,7 +173,7 @@ begin  -- syn
     p_reg_flags : process(clk_i)
     begin
       if rising_edge(clk_i) then
-        
+
         if(rst_n_i = '0') then
           full  <= '0';
           empty <= '1';
@@ -187,7 +190,7 @@ begin  -- syn
             full <= '0';
           end if;
         end if;
-        
+
       end if;
     end process;
   end generate gen_registered_flags;

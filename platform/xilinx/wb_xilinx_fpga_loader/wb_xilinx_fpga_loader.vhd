@@ -3,7 +3,7 @@
 -- Project      : General Cores Library
 -------------------------------------------------------------------------------
 -- File         : wb_xilinx_fpga_loader.vhd
--- Author       : Tomasz Włostowski
+-- Author       : Tomasz Wlostowski
 -- Company      : CERN BE-CO-HT
 -- Created      : 2012-01-30
 -- Last update  : 2012-01-30
@@ -213,7 +213,6 @@ begin  -- behavioral
   wb_out.err   <= '0';
   wb_out.rty   <= '0';
   wb_out.stall <= '0';
-  wb_out.int   <= '0';
 
   xlx_m_o <= "11";                      -- permamently select Passive serial
                                         -- boot mode

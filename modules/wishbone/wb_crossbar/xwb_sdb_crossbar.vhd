@@ -1,3 +1,29 @@
+--------------------------------------------------------------------------------
+-- GSI
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   xwb_sdb_crossbar
+--
+-- author:      Wesley W. Terpstra
+--
+-- description: An MxS Wishbone crossbar switch (with SDB ROM)
+--
+--------------------------------------------------------------------------------
+-- Copyright GSI 2012-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -5,12 +31,14 @@ use work.wishbone_pkg.all;
 
 entity xwb_sdb_crossbar is
   generic(
+    g_verbose     : boolean := true;
     g_num_masters : natural := 1;
     g_num_slaves  : natural := 1;
     g_registered  : boolean := false;
     g_wraparound  : boolean := true;
     g_layout      : t_sdb_record_array;
     g_sdb_addr    : t_wishbone_address;
+    g_sdb_wb_mode : t_wishbone_interface_mode := CLASSIC;
     g_sdb_name    : string := "WB4-Crossbar-GSI   ");
   port(
     clk_sys_i     : in  std_logic;
@@ -190,9 +218,11 @@ begin
       g_layout   => c_layout,
       g_masters  => g_num_masters,
       g_bus_end  => c_bus_last,
+      g_wb_mode  => g_sdb_wb_mode,
       g_sdb_name => g_sdb_name)
     port map(
       clk_sys_i => clk_sys_i,
+      rst_n_i   => rst_n_i,
       master_i  => sdb_sel,
       slave_i   => master_o_1(g_num_slaves),
       slave_o   => master_i_1(g_num_slaves));
@@ -203,7 +233,8 @@ begin
       g_num_slaves  => g_num_slaves + 1,
       g_registered  => g_registered,
       g_address     => c_address,
-      g_mask        => c_mask)
+      g_mask        => c_mask,
+      g_verbose     => g_verbose)
     port map(
       clk_sys_i     => clk_sys_i,
       rst_n_i       => rst_n_i,
@@ -219,7 +250,8 @@ begin
       g_num_slaves  => g_num_masters,
       g_registered  => g_registered,
       g_address     => c_addresses.msi_address,
-      g_mask        => c_addresses.msi_mask)
+      g_mask        => c_addresses.msi_mask,
+      g_verbose     => g_verbose)
     port map(
       clk_sys_i     => clk_sys_i,
       rst_n_i       => rst_n_i,

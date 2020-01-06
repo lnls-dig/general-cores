@@ -361,7 +361,6 @@ class CIWBMasterAccessor extends CWishboneAccessor;
    endtask // clear
 
    task put(ref wb_cycle_t xfer);
-      //       $display("WBMaster[%d]: PutCycle",g_data_width);
       request_queue.push_back(xfer);
    endtask // put
 
@@ -371,11 +370,12 @@ class CIWBMasterAccessor extends CWishboneAccessor;
 endclass // CIWBMasterAccessor
 
 
-   function CIWBMasterAccessor get_accessor();
-      CIWBMasterAccessor tmp;
+   function automatic CIWBMasterAccessor get_accessor();
+      automatic CIWBMasterAccessor tmp;
       tmp  = new;
       return tmp;
-      endfunction // get_accessoror
+   endfunction // get_accessor
+
 
    always@(posedge clk_i)
      if(!rst_n_i)

@@ -1,3 +1,29 @@
+--------------------------------------------------------------------------------
+-- GSI
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   sdb_rom
+--
+-- author:      Wesley W. Terpstra
+--
+-- description: SDB ROM for WB crossbar
+--
+--------------------------------------------------------------------------------
+-- Copyright GSI 2012-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -8,12 +34,14 @@ entity sdb_rom is
     g_layout   : t_sdb_record_array;
     g_masters  : natural;
     g_bus_end  : unsigned(63 downto 0);
-    g_sdb_name : string := "WB4-Crossbar-GSI   ");
+    g_wb_mode  : t_wishbone_interface_mode := CLASSIC;
+    g_sdb_name : string                    := "WB4-Crossbar-GSI   ");
   port(
-    clk_sys_i  : in  std_logic;
-    master_i   : in  std_logic_vector(g_masters-1 downto 0);
-    slave_i    : in  t_wishbone_slave_in;
-    slave_o    : out t_wishbone_slave_out);
+    clk_sys_i : in  std_logic;
+    rst_n_i   : in  std_logic := '1';
+    master_i  : in  std_logic_vector(g_masters-1 downto 0);
+    slave_i   : in  t_wishbone_slave_in;
+    slave_o   : out t_wishbone_slave_out);
 end sdb_rom;
 
 architecture rtl of sdb_rom is
@@ -133,22 +161,40 @@ architecture rtl of sdb_rom is
   signal r_flag : t_wishbone_data;
   signal r_ack  : std_logic;
 
+  signal slave_in  : t_wishbone_slave_in;
+  signal slave_out : t_wishbone_slave_out;
+
 begin
 
-  slave_o.dat <= r_rom or r_flag;
-  slave_o.ack <= r_ack;
-  slave_o.err   <= '0';
-  slave_o.rty   <= '0';
-  slave_o.stall <= '0';
-  slave_o.int   <= '0'; -- Tom sucks! This should not be here.
+  cmp_sdb_wb_adapter : wb_slave_adapter
+    generic map (
+      g_master_use_struct  => TRUE,
+      g_master_mode        => CLASSIC,
+      g_master_granularity => BYTE,
+      g_slave_use_struct   => TRUE,
+      g_slave_mode         => g_wb_mode,
+      g_slave_granularity  => BYTE)
+    port map (
+      clk_sys_i => clk_sys_i,
+      rst_n_i   => rst_n_i,
+      slave_i   => slave_i,
+      slave_o   => slave_o,
+      master_i  => slave_out,
+      master_o  => slave_in);
 
-  s_adr <= unsigned(slave_i.adr(c_rom_depth+c_rom_lowbits-1 downto c_rom_lowbits));
+  slave_out.dat   <= r_rom or r_flag;
+  slave_out.ack   <= r_ack;
+  slave_out.err   <= '0';
+  slave_out.rty   <= '0';
+  slave_out.stall <= '0';
+
+  s_adr <= unsigned(slave_in.adr(c_rom_depth+c_rom_lowbits-1 downto c_rom_lowbits));
   s_sel <= unsigned(f_msi_flag_index(master_i));
-  
+
   slave_clk : process(clk_sys_i)
   begin
     if (rising_edge(clk_sys_i)) then
-      r_ack <= slave_i.cyc and slave_i.stb;
+      r_ack  <= slave_in.cyc and slave_in.stb;
       r_rom  <= rom(to_integer(s_adr));
       r_flag <= (others => '0');
       if s_adr = s_sel and c_msi then
@@ -156,5 +202,5 @@ begin
       end if;
     end if;
   end process;
-  
+
 end rtl;

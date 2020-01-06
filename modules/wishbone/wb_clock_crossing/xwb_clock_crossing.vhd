@@ -1,7 +1,25 @@
 --------------------------------------------------------------------------------
---  Modifications:
---      2016-08-24: by Jan Pospisil (j.pospisil@cern.ch)
---          * added assignments to (new) unspecified WB signals
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   xwb_clock_crossing
+--
+-- description: Cross clock-domain wishbone adapter
+--
+--------------------------------------------------------------------------------
+-- Copyright CERN 2012-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -72,6 +90,10 @@ architecture rtl of xwb_clock_crossing is
    -- The slave pops them immediately from the mfifo and queues them itself.
    -- Suddenly, the slave can do work and answers all pending requests.
    -- The slow master is unable to read the sfifo fast enough and it overflows.
+   --
+   -- Therefore, we monitor the number of sent requests through MFIFO, versus
+   -- the acknowledgements received through SFIFO and we block if there are
+   -- g_SIZE pending requests, even if MFIFO is actually not full (or even empty).
 
    subtype t_count is unsigned(f_ceil_log2(g_size+1)-1 downto 0);
 
@@ -97,12 +119,12 @@ begin
       end if;
    end process;
 
-   mfifo : generic_async_fifo
+   mfifo : generic_async_fifo_dual_rst
       generic map(
          g_data_width      => mlen,
          g_size            => g_size)
       port map(
-         rst_n_i           => slave_rst_n_i,
+         rst_wr_n_i        => slave_rst_n_i,
          clk_wr_i          => slave_clk_i,
          d_i               => msend_vect,
          we_i              => mw_en,
@@ -111,6 +133,7 @@ begin
          wr_almost_empty_o => open,
          wr_almost_full_o  => open,
          wr_count_o        => open,
+         rst_rd_n_i        => master_rst_n_i,
          clk_rd_i          => master_clk_i,
          q_o               => mrecv_vect,
          rd_i              => mr_en,
@@ -132,12 +155,12 @@ begin
    mrecv.DAT <= mrecv_vect(mDAT_end downto mDAT_start);
    mrecv.SEL <= mrecv_vect(mSEL_end downto mSEL_start);
 
-   sfifo : generic_async_fifo
+   sfifo : generic_async_fifo_dual_rst
       generic map(
          g_data_width      => slen,
          g_size            => g_size)
       port map(
-         rst_n_i           => master_rst_n_i,
+         rst_wr_n_i        => master_rst_n_i,
          clk_wr_i          => master_clk_i,
          d_i               => ssend_vect,
          we_i              => sw_en,
@@ -146,6 +169,7 @@ begin
          wr_almost_empty_o => open,
          wr_almost_full_o  => open,
          wr_count_o        => open,
+         rst_rd_n_i        => slave_rst_n_i,
          clk_rd_i          => slave_clk_i,
          q_o               => srecv_vect,
          rd_i              => sr_en,
@@ -179,19 +203,22 @@ begin
    mr_en <= not mr_empty and (not mrecv.CYC or not master_o_STB or not master_i.STALL);
    master_o.CYC <= mrecv.CYC;
    master_o.STB <= master_o_STB; -- is high outside of CYC. that's ok; it should be ignored.
+                                 -- ** NOTE: violates Wishbone B4 Rule 3.25 **
    master_o.ADR <= mrecv.ADR;
    master_o.WE  <= mrecv.WE;
    master_o.SEL <= mrecv.SEL;
    master_o.DAT <= mrecv.DAT;
 
-   drive_master_port : process(master_clk_i, master_rst_n_i)
+   drive_master_port : process(master_clk_i)
    begin
+     if rising_edge(master_clk_i) then
       if master_rst_n_i = '0' then
-         master_o_STB <= '0';
-      elsif rising_edge(master_clk_i) then
-         master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
+        master_o_STB <= '0';
+      else
+        master_o_STB <= mr_en or (mrecv.CYC and master_o_STB and master_i.STALL);
       end if;
-   end process;
+     end if;
+   end process drive_master_port;
 
    -- Master clock domain: master -> sFIFO
    sw_en <= master_i.ACK or master_i.ERR or master_i.RTY;
@@ -208,16 +235,17 @@ begin
    slave_o.RTY <= srecv.RTY and slave_o_PUSH;
    slave_o.ERR <= srecv.ERR and slave_o_PUSH;
 
-   drive_slave_port : process(slave_clk_i, slave_rst_n_i)
+   drive_slave_port : process(slave_clk_i)
    begin
-      if slave_rst_n_i = '0' then
+     if rising_edge(slave_clk_i) then
+       if slave_rst_n_i = '0' then
          slave_o_PUSH <= '0';
-         slave_CYC <= '0';
-      elsif rising_edge(slave_clk_i) then
+         slave_CYC    <= '0';
+       else
          slave_o_PUSH <= sr_en;
-         slave_CYC <= slave_i.CYC;
-      end if;
-   end process;
+         slave_CYC    <= slave_i.CYC;
+       end if;
+     end if;
+   end process drive_slave_port;
 
-   slave_o.int <= '0'; -- TODO: not implemented
 end rtl;

@@ -1,19 +1,14 @@
--------------------------------------------------------------------------------
--- Title      : An MxS Wishbone crossbar switch
--- Project    : General Cores Library (gencores)
--------------------------------------------------------------------------------
--- File       : xwb_crossbar.vhd
--- Author     : Wesley W. Terpstra
--- Company    : GSI
--- Created    : 2011-06-08
--- Last update: 2011-09-22
--- Platform   : FPGA-generic
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description:
+--------------------------------------------------------------------------------
+-- GSI
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- An MxS Wishbone crossbar switch
--- 
+-- unit name:   xwb_crossbar
+--
+-- author:      Wesley W. Terpstra
+--
+-- description: An MxS Wishbone crossbar switch
 -- All masters, slaves, and the crossbar itself must share the same WB clock.
 -- All participants must support the same data bus width. 
 -- 
@@ -34,16 +29,19 @@
 -- 
 --   If g_registered = false, arbitration depth is added to M->S and S->M.
 --
--------------------------------------------------------------------------------
--- Copyright (c) 2011 GSI / Wesley W. Terpstra
--------------------------------------------------------------------------------
--- Revisions  :
--- Date        Version  Author          Description
--- 2012-03-05  3.0      wterpstra       made address generic and check overlap
--- 2011-11-04  2.0      wterpstra       timing improvements
--- 2011-06-08  1.0      wterpstra       import from SVN
--------------------------------------------------------------------------------
-
+--------------------------------------------------------------------------------
+-- Copyright GSI 2012-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -57,7 +55,9 @@ entity xwb_crossbar is
     g_registered  : boolean := false;
     -- Address of the slaves connected
     g_address     : t_wishbone_address_array;
-    g_mask        : t_wishbone_address_array);
+    g_mask        : t_wishbone_address_array;
+   -- Set to false to skip "Mapping Slave" notes during simulation
+    g_verbose     : boolean := true);
   port(
     clk_sys_i     : in  std_logic;
     rst_n_i       : in  std_logic;
@@ -113,10 +113,12 @@ architecture rtl of xwb_crossbar is
       severity Failure;
       
       -- Working case
-      report "Mapping slave #" & 
-             Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
-                                      f_bits2string(c_mask(i)) & "]"
-      severity Note;
+      if g_verbose then
+        report "Mapping slave #" &
+          Integer'image(i) & "[" & f_bits2string(c_address(i)) & "/" &
+          f_bits2string(c_mask(i)) & "]"
+          severity Note;
+      end if;
     end loop;
     return true;
   end f_ranges_ok;
@@ -129,9 +131,12 @@ architecture rtl of xwb_crossbar is
   signal master_ie : t_wishbone_master_in_array(g_num_slaves downto 0);
   signal master_oe : t_wishbone_master_out_array(g_num_slaves downto 0);
   signal virtual_ERR : std_logic;
-  
-  signal matrix_old : matrix; -- Registered connection matrix
-  signal matrix_new : matrix; -- The new values of the matrix
+
+   -- Registered connection matrix
+  signal matrix_old : matrix := (others => (others => '0'));
+
+   -- The new values of the matrix
+  signal matrix_new : matrix := (others => (others => '0'));
 
   -- Either matrix_old or matrix_new, depending on g_registered
   signal granted : matrix;
@@ -371,8 +376,7 @@ architecture rtl of xwb_crossbar is
       ERR => vector_OR(ERR_row),
       RTY => vector_OR(RTY_row),
       STALL => not vector_OR(STALL_row),
-      DAT => master_matrix_OR(DAT_matrix),
-      INT => '0');
+      DAT => master_matrix_OR(DAT_matrix));
   end master_logic;
 begin
   -- The virtual error slave is pretty straight-forward:
@@ -384,8 +388,7 @@ begin
     ERR   => virtual_ERR,
     RTY   => '0', 
     STALL => '0',
-    DAT   => (others => '0'),
-    INT   => '0');
+    DAT   => (others => '0'));
   virtual_error_slave : process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
