@@ -1119,8 +1119,9 @@ package wishbone_pkg is
     wb_we_i    : in  std_logic;
     wb_ack_o   : out std_logic;
     wb_err_o   : out std_logic;
-    wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
+
+    int_o      : out std_logic;
 
     pad_cs_o   : out std_logic_vector(7 downto 0);
     pad_sclk_o : out std_logic;
@@ -1144,6 +1145,8 @@ package wishbone_pkg is
     -- Wishbone
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
+
+    int_o      : out std_logic;
     desc_o  : out t_wishbone_device_descriptor;
 
     pad_cs_o       : out std_logic_vector(7 downto 0);

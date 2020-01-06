@@ -47,7 +47,7 @@ module spi_bidir_top
 (
   // Wishbone signals
   wb_clk_i, wb_rst_i, wb_adr_i, wb_dat_i, wb_dat_o, wb_sel_i,
-  wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_err_o, wb_int_o,
+  wb_we_i, wb_stb_i, wb_cyc_i, wb_ack_o, wb_err_o, int_o,
 
   // SPI signals
   ss_pad_o, sclk_pad_o, mosi_pad_o, miso_pad_i, mosi_pad_i,
@@ -68,7 +68,7 @@ module spi_bidir_top
   input                            wb_cyc_i;         // valid bus cycle input
   output                           wb_ack_o;         // bus cycle acknowledge output
   output                           wb_err_o;         // termination w/ error
-  output                           wb_int_o;         // interrupt request signal output
+  output                           int_o;            // interrupt request signal output
 
   // SPI signals
   output          [`SPI_SS_NB-1:0] ss_pad_o;         // slave select
@@ -82,7 +82,7 @@ module spi_bidir_top
 
   reg                     [32-1:0] wb_dat_o;
   reg                              wb_ack_o;
-  reg                              wb_int_o;
+  reg                              int_o;
 
   // Internal signals
   reg       [`SPI_DIVIDER_LEN-1:0] divider;          // Divider register
@@ -190,11 +190,11 @@ module spi_bidir_top
   always @(posedge wb_clk_i or posedge wb_rst_i)
   begin
     if (wb_rst_i)
-      wb_int_o <= #Tp 1'b0;
+      int_o <= #Tp 1'b0;
     else if (ie && tip && last_bit && pos_edge)
-      wb_int_o <= #Tp 1'b1;
+      int_o <= #Tp 1'b1;
     else if (wb_ack_o)
-      wb_int_o <= #Tp 1'b0;
+      int_o <= #Tp 1'b0;
   end
 
   // Divider register

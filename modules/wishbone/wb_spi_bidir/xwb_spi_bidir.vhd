@@ -16,6 +16,8 @@ entity xwb_spi_bidir is
     -- Wishbone
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out;
+
+    int_o   : out std_logic;
     desc_o  : out t_wishbone_device_descriptor;
 
     pad_cs_o       : out std_logic_vector(7 downto 0);
@@ -48,8 +50,8 @@ begin
       wb_we_i        => slave_i.we,
       wb_ack_o       => slave_o.ack,
       wb_err_o       => slave_o.err,
-      wb_int_o       => slave_o.int,
       wb_stall_o     => slave_o.stall,
+      int_o          => int_o,
       pad_cs_o       => pad_cs_o,
       pad_sclk_o     => pad_sclk_o,
       pad_mosi_o     => pad_mosi_o,
