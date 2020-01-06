@@ -5,7 +5,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-05-18
--- Last update: 2013-09-09
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -50,8 +50,9 @@ entity wb_i2c_master is
     wb_cyc_i   : in  std_logic;
     wb_we_i    : in  std_logic;
     wb_ack_o   : out std_logic;
-    wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
+
+    int_o : out std_logic;
 
     scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line input
     scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);  -- i2c clock line output
@@ -78,7 +79,7 @@ architecture rtl of wb_i2c_master is
       wb_stb_i     : in  std_logic;
       wb_cyc_i     : in  std_logic;
       wb_ack_o     : out std_logic;
-      wb_inta_o    : out std_logic;
+      inta_o       : out std_logic;
       scl_pad_i    : in  std_logic_vector(g_num_interfaces-1 downto 0);
       scl_pad_o    : out std_logic_vector(g_num_interfaces-1 downto 0);
       scl_padoen_o : out std_logic_vector(g_num_interfaces-1 downto 0);
@@ -120,8 +121,7 @@ begin
       sl_we_i    => wb_we_i,
       sl_dat_o   => wb_dat_o,
       sl_ack_o   => wb_ack_o,
-      sl_stall_o => wb_stall_o,
-      sl_int_o   => wb_int_o);
+      sl_stall_o => wb_stall_o);
 
   rst <= not rst_n_i;
 
@@ -140,7 +140,7 @@ begin
       wb_stb_i     => wb_in.stb,
       wb_cyc_i     => wb_in.cyc,
       wb_ack_o     => wb_out.ack,
-      wb_inta_o    => wb_out.int,
+      inta_o       => int_o,
       scl_pad_i    => scl_pad_i,
       scl_pad_o    => scl_pad_o,
       scl_padoen_o => scl_padoen_o,

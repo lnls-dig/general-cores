@@ -59,8 +59,9 @@ entity wb_spi is
     wb_we_i    : in  std_logic;
     wb_ack_o   : out std_logic;
     wb_err_o   : out std_logic;
-    wb_int_o   : out std_logic;
     wb_stall_o : out std_logic;
+
+    int_o : out std_logic;
 
     pad_cs_o   : out std_logic_vector(g_num_slaves-1 downto 0);
     pad_sclk_o : out std_logic;
@@ -93,7 +94,8 @@ architecture rtl of wb_spi is
       wb_we_i  : in  std_logic;
       wb_ack_o : out std_logic;
       wb_err_o : out std_logic;
-      wb_int_o : out std_logic;
+
+      int_o : out std_logic;
 
       ss_pad_o      : out std_logic_vector(SPI_SS_NB-1 downto 0);
       sclk_pad_o    : out std_logic;
@@ -136,7 +138,6 @@ begin
       sl_dat_o   => wb_dat_o,
       sl_ack_o   => wb_ack_o,
       sl_stall_o => wb_stall_o,
-      sl_int_o   => wb_int_o,
       sl_err_o   => wb_err_o);
 
   rst <= not rst_n_i;
@@ -149,22 +150,22 @@ begin
       SPI_CHAR_LEN_BITS => f_ceil_log2(g_max_char_len),
       SPI_SS_NB         => g_num_slaves)
     port map (
-      wb_clk_i      => clk_sys_i,
-      wb_rst_i      => rst,
-      wb_adr_i      => wb_in.adr(4 downto 0),
-      wb_dat_i      => wb_in.dat,
-      wb_dat_o      => wb_out.dat,
-      wb_sel_i      => wb_in.sel,
-      wb_stb_i      => wb_in.stb,
-      wb_cyc_i      => wb_in.cyc,
-      wb_we_i       => wb_in.we,
-      wb_ack_o      => wb_out.ack,
-      wb_err_o      => wb_out.err,
-      wb_int_o      => wb_out.int,
-      ss_pad_o      => pad_cs_o,
-      sclk_pad_o    => pad_sclk_o,
-      mosi_pad_o    => pad_mosi_o,
-      miso_pad_i    => pad_miso_i,
+      wb_clk_i   => clk_sys_i,
+      wb_rst_i   => rst,
+      wb_adr_i   => wb_in.adr(4 downto 0),
+      wb_dat_i   => wb_in.dat,
+      wb_dat_o   => wb_out.dat,
+      wb_sel_i   => wb_in.sel,
+      wb_stb_i   => wb_in.stb,
+      wb_cyc_i   => wb_in.cyc,
+      wb_we_i    => wb_in.we,
+      wb_ack_o   => wb_out.ack,
+      wb_err_o   => wb_out.err,
+      int_o      => int_o,
+      ss_pad_o   => pad_cs_o,
+      sclk_pad_o => pad_sclk_o,
+      mosi_pad_o => pad_mosi_o,
+      miso_pad_i => pad_miso_i,
       miosio_oen_o  => pad_oen_o);
 
     wb_out.rty <= '0';

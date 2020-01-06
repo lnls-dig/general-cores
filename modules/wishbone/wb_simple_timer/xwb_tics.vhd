@@ -6,7 +6,7 @@
 -- Author     : Grzegorz Daniluk
 -- Company    : CERN
 -- Created    : 2011-04-03
--- Last update: 2013-09-13
+-- Last update: 2018-03-08
 -- Platform   : FPGA-generics
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -97,7 +97,6 @@ begin
       wb_stall_o => slave_o.stall);
 
   slave_o.err <= '0';
-  slave_o.int <= '0';
   slave_o.rty <= '0';
   
 end rtl;

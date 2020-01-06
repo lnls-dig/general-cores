@@ -47,7 +47,9 @@
 -- source; if not, download it from http://www.gnu.org/licenses/lgpl-2.1.html
 --==============================================================================
 -- last changes:
---    2013-02-28   Theodor Stana     t.stana@cern.ch     File created
+--    2013-02-28   Theodor Stana     File created
+--    2014-04-07   Theodor Stana     Fixed non-assigned WB CYC and STB signals
+--                                   in IDLE state
 --==============================================================================
 -- TODO: -
 --==============================================================================
@@ -263,6 +265,9 @@ begin
             adr_byte_cnt <= (others => '0');
             dat_byte_cnt <= (others => '0');
             wdt_rst      <= '1';
+            wb_cyc       <= '0';
+            wb_stb       <= '0';
+            wb_we        <= '0';
             if (slv_addr_good_p = '1') then
               tip_o    <= '1';
               slv_ack  <= '1';
@@ -367,8 +372,6 @@ begin
               state     <= SYSMON_RD;
             elsif (wb_err = '1') then
               err_p_o <= '1';
-              wb_cyc  <= '0';
-              wb_stb  <= '0';
               state   <= IDLE;
             end if;
 

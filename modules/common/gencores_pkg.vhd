@@ -1,42 +1,27 @@
--------------------------------------------------------------------------------
--- Title      : General cores VHDL package
--- Project    : General Cores library
--------------------------------------------------------------------------------
--- File       : gencores_pkg.vhd
--- Author     : Tomasz Wlostowski
---              Theodor-Adrian Stana
---              Matthieu Cattin
---              Dimitrios Lampridis
--- Company    : CERN
--- Created    : 2009-09-01
--- Last update: 2017-10-11
--- Platform   : FPGA-generic
--- Standard   : VHDL '93
--------------------------------------------------------------------------------
--- Description:
--- Package incorporating simple VHDL modules and functions, which are used
--- in the WR and other OHWR projects.
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- CERN BE-CO-HT
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- Copyright (c) 2009-2016 CERN
+-- unit name:   gencores_pkg
 --
--- This source file is free software; you can redistribute it
--- and/or modify it under the terms of the GNU Lesser General
--- Public License as published by the Free Software Foundation;
--- either version 2.1 of the License, or (at your option) any
--- later version.
+-- description: Package incorporating simple VHDL modules and functions,
+-- which are used in OHWR projects.
 --
--- This source is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the implied
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
--- PURPOSE.  See the GNU Lesser General Public License for more
--- details.
---
--- You should have received a copy of the GNU Lesser General
--- Public License along with this source; if not, download it
--- from http://www.gnu.org/licenses/lgpl-2.1.html
---
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2009-2018
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -81,6 +66,17 @@ package gencores_pkg is
     pulse_i          : in  std_logic;      
     pulse_o          : out std_logic       
   );
+  end component;
+
+  component gc_dyn_extend_pulse is
+    generic (
+      g_len_width : natural := 10);
+  port (
+    clk_i      : in  std_logic;
+    rst_n_i    : in  std_logic;
+    pulse_i    : in  std_logic;
+    len_i      : in std_logic_vector(g_len_width-1 downto 0);
+    extended_o : out std_logic := '0');
   end component;
 
   ------------------------------------------------------------------------------
@@ -190,6 +186,24 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Comparator
+  ------------------------------------------------------------------------------
+  component gc_comparator is
+    generic (
+      g_IN_WIDTH : natural := 32);
+    port (
+      clk_i     : in  std_logic;
+      rst_n_i   : in  std_logic                               := '1';
+      pol_inv_i : in  std_logic                               := '0';
+      enable_i  : in  std_logic                               := '1';
+      inp_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0);
+      inn_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0);
+      hys_i     : in  std_logic_vector(g_IN_WIDTH-1 downto 0) := (others => '0');
+      out_o     : out std_logic;
+      out_p_o   : out std_logic);
+  end component gc_comparator;
+
+  ------------------------------------------------------------------------------
   -- Synchronisation FF chain
   ------------------------------------------------------------------------------
   component gc_sync_ffs
@@ -227,26 +241,64 @@ package gencores_pkg is
       clk_out_i   : in  std_logic;
       rst_out_n_i : in  std_logic;
       d_ready_o   : out std_logic;
+      d_ack_p_o   : out std_logic;
       d_p_i       : in  std_logic;
       q_p_o       : out std_logic);
   end component;
 
   ------------------------------------------------------------------------------
-  -- Frequency meter
+  -- Word synchroniser
+  ------------------------------------------------------------------------------
+  component gc_sync_word_wr is
+    generic (
+      g_AUTO_WR : boolean  := FALSE;
+      g_WIDTH   : positive := 8);
+    port (
+      clk_in_i    : in  std_logic;
+      rst_in_n_i  : in  std_logic;
+      clk_out_i   : in  std_logic;
+      rst_out_n_i : in  std_logic;
+      data_i      : in  std_logic_vector (g_WIDTH - 1 downto 0);
+      wr_i        : in  std_logic := '0';
+      busy_o      : out std_logic;
+      ack_o       : out std_logic;
+      data_o      : out std_logic_vector (g_WIDTH - 1 downto 0);
+      wr_o        : out std_logic);
+  end component gc_sync_word_wr;
+
+  ------------------------------------------------------------------------------
+  -- Frequency meters
   ------------------------------------------------------------------------------
   component gc_frequency_meter
     generic (
-      g_with_internal_timebase : boolean;
-      g_clk_sys_freq           : integer;
-      g_counter_bits           : integer);
+      g_WITH_INTERNAL_TIMEBASE : boolean := TRUE;
+      g_CLK_SYS_FREQ           : integer;
+      g_SYNC_OUT               : boolean := FALSE;
+      g_COUNTER_BITS           : integer);
     port (
       clk_sys_i    : in  std_logic;
       clk_in_i     : in  std_logic;
       rst_n_i      : in  std_logic;
       pps_p1_i     : in  std_logic;
-      freq_o       : out std_logic_vector(g_counter_bits-1 downto 0);
+      freq_o       : out std_logic_vector(g_COUNTER_BITS-1 downto 0);
       freq_valid_o : out std_logic);
   end component;
+
+  component gc_multichannel_frequency_meter is
+    generic (
+      g_with_internal_timebase : boolean;
+      g_clk_sys_freq           : integer;
+      g_counter_bits           : integer;
+      g_channels               : integer);
+    port (
+      clk_sys_i     : in  std_logic;
+      clk_in_i      : in  std_logic_vector(g_channels -1 downto 0);
+      rst_n_i       : in  std_logic;
+      pps_p1_i      : in  std_logic;
+      channel_sel_i : in  std_logic_vector(3 downto 0);
+      freq_o        : out std_logic_vector(g_counter_bits-1 downto 0);
+      freq_valid_o  : out std_logic);
+  end component gc_multichannel_frequency_meter;
 
   ------------------------------------------------------------------------------
   -- Time-division multiplexer with round robin arbitration
@@ -282,6 +334,20 @@ package gencores_pkg is
   end component;
 
   ------------------------------------------------------------------------------
+  -- Multiple clock domain reset generator and synchronizer with
+  -- Asynchronous Assert and Syncrhonous Deassert (AASD)
+  ------------------------------------------------------------------------------
+  component gc_reset_multi_aasd is
+    generic (
+      g_CLOCKS  : natural;
+      g_RST_LEN : natural);
+    port (
+      arst_i  : in  std_logic := '1';
+      clks_i  : in  std_logic_vector(g_CLOCKS-1 downto 0);
+      rst_n_o : out std_logic_vector(g_CLOCKS-1 downto 0));
+  end component gc_reset_multi_aasd;
+
+  ------------------------------------------------------------------------------
   -- Power-On reset generator of synchronous single reset from multiple
   -- asynchronous input reset signals
   ------------------------------------------------------------------------------
@@ -295,6 +361,7 @@ package gencores_pkg is
       rst_n_o             : out std_logic
     );
   end component;
+
 
   ------------------------------------------------------------------------------
   -- Round robin arbiter
@@ -325,8 +392,8 @@ package gencores_pkg is
       d_req_o   : out std_logic;
       flush_i   : in  std_logic := '0';
       q_o       : out std_logic_vector(g_output_width-1 downto 0);
-      q_id_o    : out unsigned;
       q_valid_o : out std_logic;
+      q_id_o    : out unsigned;
       q_req_i   : in  std_logic);
   end component;
 
@@ -363,7 +430,8 @@ package gencores_pkg is
         -- 0 - SCL and SDA lines are passed only through synchronizer
         -- 1 - one clk_i glitches filtered
         -- 2 - two clk_i glitches filtered
-        g_gf_len        : natural := 0;
+        g_gf_len : natural := 0;
+        -- Automatically ACK reception upon address match.
         g_auto_addr_ack : boolean := FALSE
         );
     port
@@ -539,6 +607,110 @@ package gencores_pkg is
       signals_pN_o                 : out std_logic_vector(g_signal_num-1 downto 0));
   end component;
 
+
+  ------------------------------------------------------------------------------
+  -- Priority encoder
+  ------------------------------------------------------------------------------
+  component gc_prio_encoder is
+  generic (
+    g_width : integer);
+  port (
+    d_i     : in  std_logic_vector(g_width-1 downto 0);
+    therm_o : out std_logic_vector(g_width-1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- Delay generator
+  ------------------------------------------------------------------------------
+  component gc_delay_gen is
+  generic(
+    g_delay_cycles : in natural;
+    g_data_width   : in natural);
+
+  port(clk_i   : in  std_logic;
+       rst_n_i : in  std_logic;
+       d_i     : in  std_logic_vector(g_data_width - 1 downto 0);
+       q_o     : out std_logic_vector(g_data_width - 1 downto 0));
+  end component;
+
+  ------------------------------------------------------------------------------
+  -- One-wire interface to DS1820 and DS1822
+  ------------------------------------------------------------------------------
+
+  -- Deprecated! Kept only for backward compatibility.
+  -- Please use gc_ds1282x_readout instead
+  component gc_ds182x_interface is
+    generic (
+      freq               : integer := 40;
+      g_USE_INTERNAL_PPS : boolean := false);
+    port (
+      clk_i     : in    std_logic;
+      rst_n_i   : in    std_logic;
+      pps_p_i   : in    std_logic;
+      onewire_b : inout std_logic;
+      id_o      : out   std_logic_vector(63 downto 0);
+      temper_o  : out   std_logic_vector(15 downto 0);
+      id_read_o : out   std_logic;
+      id_ok_o   : out   std_logic);
+  end component gc_ds182x_interface;
+
+  component gc_ds182x_readout is
+    generic (
+      g_CLOCK_FREQ_KHZ   : integer := 40000;
+      g_USE_INTERNAL_PPS : boolean := false);
+    port (
+      clk_i     : in    std_logic;
+      rst_n_i   : in    std_logic;
+      pps_p_i   : in    std_logic;
+      onewire_b : inout std_logic;
+      id_o      : out   std_logic_vector(63 downto 0);
+      temper_o  : out   std_logic_vector(15 downto 0);
+      id_read_o : out   std_logic;
+      id_ok_o   : out   std_logic);
+  end component gc_ds182x_readout;
+
+  component gc_dec_8b10b is
+    port (
+      clk_i       : in  std_logic;
+      rst_n_i     : in  std_logic;
+      in_10b_i    : in  std_logic_vector(9 downto 0);
+      ctrl_o      : out std_logic;
+      code_err_o  : out std_logic;
+      rdisp_err_o : out std_logic;
+      out_8b_o    : out std_logic_vector(7 downto 0));
+  end component gc_dec_8b10b;
+
+  ------------------------------------------------------------------------------
+  -- SFP I2C Adapter
+  ------------------------------------------------------------------------------
+
+  component gc_sfp_i2c_adapter is
+    port (
+      clk_i           : in  std_logic;
+      rst_n_i         : in  std_logic;
+      scl_i           : in  std_logic;
+      sda_i           : in  std_logic;
+      sda_en_o        : out std_logic;
+      sfp_det_valid_i : in  std_logic;
+      sfp_data_i      : in  std_logic_vector (127 downto 0));
+  end component gc_sfp_i2c_adapter;
+
+  ------------------------------------------------------------------------------
+  -- Asynchronous counter inc/dec pulses
+  ------------------------------------------------------------------------------
+  component gc_async_counter_diff is
+    generic (
+      g_bits         : integer := 8;
+      g_output_clock : string  := "inc");
+    port (
+      rst_n_i : in std_logic;
+      clk_inc_i : in std_logic;
+      clk_dec_i : in std_logic;
+      inc_i : in std_logic;
+      dec_i : in std_logic;
+      counter_o : out std_logic_vector(g_bits downto 0));
+  end component gc_async_counter_diff;
+
   --============================================================================
   -- Procedures and functions
   --============================================================================
@@ -546,8 +718,8 @@ package gencores_pkg is
     signal req       : in  std_logic_vector;
     signal pre_grant : in  std_logic_vector;
     signal grant     : out std_logic_vector);
-
   function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
+
   function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
   function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
@@ -555,6 +727,26 @@ package gencores_pkg is
 
   function f_bool2int (b : boolean) return natural;
   function f_int2bool (n : natural) return boolean;
+
+  --  Convert a boolean to std_logic ('1' for True, '0' for False).
+  function f_to_std_logic(b : boolean) return std_logic;
+
+  -- Reduce-OR an std_logic_vector to std_logic
+  function f_reduce_or (x : std_logic_vector) return std_logic;
+
+  -- Character/String to std_logic_vector
+  function f_to_std_logic_vector (c : character) return std_logic_vector;
+  function f_to_std_logic_vector (s : string) return std_logic_vector;
+
+  -- Functions for short-hand if assignments
+  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
+  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
 
 end package;
 
@@ -668,6 +860,7 @@ package body gencores_pkg is
     end if;
   end;
 
+
   ------------------------------------------------------------------------------
   -- Converts a boolean to natural integer (false -> 0, true -> 1)
   ------------------------------------------------------------------------------
@@ -691,5 +884,96 @@ package body gencores_pkg is
       return true;
     end if;
   end;
+
+  function f_to_std_logic(b : boolean) return std_logic is
+  begin
+    if b then
+      return '1';
+    else
+      return '0';
+    end if;
+  end f_to_std_logic;
+
+  ------------------------------------------------------------------------------
+  -- Perform reduction-OR on an std_logic_vector, return std_logic
+  ------------------------------------------------------------------------------
+  function f_reduce_or (x : std_logic_vector) return std_logic is
+    variable rv : std_logic;
+  begin
+    rv := '0';
+    for n in x'range loop
+      rv := rv or x(n);
+    end loop;
+    return rv;
+  end f_reduce_or;
+
+  ------------------------------------------------------------------------------
+  -- Convert a character to an 8-bit std_logic_vector
+  ------------------------------------------------------------------------------
+  function f_to_std_logic_vector (c : character) return std_logic_vector
+  is
+    variable rv : std_logic_vector(7 downto 0);
+  begin
+    rv := std_logic_vector(to_unsigned(character'pos(c), 8));
+    return rv;
+  end function f_to_std_logic_vector;
+
+  ------------------------------------------------------------------------------
+  -- Convert a string of characters to a std_logic_vector of bytes.
+  -- NOTE: right-most character is stored at rv(7 downto 0).
+  ------------------------------------------------------------------------------
+  function f_to_std_logic_vector (s : string) return std_logic_vector
+  is
+    variable rv : std_logic_vector(s'length*8-1 downto 0);
+    variable k  : natural;
+  begin
+    for i in s'range loop
+      -- calculate offset within rv
+      k := 8*(4-i);
+
+      -- do the character conversion and write to proper offset
+      rv(k+7 downto k) := f_to_std_logic_vector(s(i));
+    end loop;
+    return rv;
+  end function f_to_std_logic_vector;
+
+  ------------------------------------------------------------------------------
+  -- Functions for short-hand if assignments
+  ------------------------------------------------------------------------------
+  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
+    return std_logic
+  is
+  begin
+    if cond = '1' then
+      return if_1;
+    else
+      return if_0;
+    end if;
+  end function f_pick;
+
+  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector
+  is
+  begin
+    if cond = '1' then
+      return if_1;
+    else
+      return if_0;
+    end if;
+  end function f_pick;
+
+  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
+    return std_logic
+  is
+  begin
+    return f_pick (f_to_std_logic(cond), if_1, if_0);
+  end function f_pick;
+
+  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector
+  is
+  begin
+    return f_pick (f_to_std_logic(cond), if_1, if_0);
+  end function f_pick;
 
 end gencores_pkg;

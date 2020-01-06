@@ -42,7 +42,7 @@
 @titlepage
 @title @code{general-cores} VHDL library
 @subtitle Programmer's manual
-@author CERN BE-CO-HT / Tomasz Włostowski
+@author CERN BE-CO-HT / Tomasz Wlostowski
 
 @end titlepage
 @headings single
