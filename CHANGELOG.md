@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - VHDL functions to convert characters and strings to upper/lower case.
+### Changed
+- Rewritten the WB master interface used in simulations.
 
 ## [1.0.0] - 2019-10-21
 ### Added
