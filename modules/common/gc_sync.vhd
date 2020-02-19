@@ -30,7 +30,7 @@ entity gc_sync is
     clk_i     : in  std_logic;
     rst_n_a_i : in  std_logic;
     d_i       : in  std_logic;
-    q_o       : out std_logic;
+    q_o       : out std_logic
     );
 end gc_sync;
 
