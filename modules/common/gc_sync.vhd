@@ -31,7 +31,7 @@ entity gc_sync is
     rst_n_a_i : in  std_logic;
     d_i       : in  std_logic;
     q_o       : out std_logic;
-
+    );
 end gc_sync;
 
 -- make Altera Quartus quiet regarding unknown attributes:
