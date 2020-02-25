@@ -596,7 +596,7 @@ static int spi_ocores_process(struct spi_ocores *sp)
 			spi_ocores_finalize_current_message(sp);
 	}
 
-	return 0;
+	return err;
 }
 
 /**
