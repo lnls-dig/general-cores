@@ -13,6 +13,8 @@ files = [
     "gc_arbitrated_mux.vhd",
     "gc_sync_register.vhd",
     "gc_sync.vhd",
+    "gc_posedge.vhd",
+    "gc_negedge.vhd",
     "gc_pulse_synchronizer.vhd",
     "gc_pulse_synchronizer2.vhd",
     "gc_frequency_meter.vhd",
