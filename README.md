@@ -202,6 +202,12 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
   - [wb_axi4lite_bridge](modules/wishbone/wb_axi4lite_bridge) is an axi4lite
     to wishbone bridge
 
+* There are modules for axi4 bus
+  - [axi4lite32_axi4full64_bridge](modules/axi/axi4lite32_axi4full64_bridge) is
+    a bridge from axi4full64 to axi4lite32.  It was defined to interface with
+    the Vivado PCI-e bridge and doesn't support all the axi4full features
+    (in particular the burst accesses).
+
 * There a modules to build a bus hierarchy:
   - [wb_bus_fanout](modules/wishbone/wb_bus_fanout) is a simple master to
     multiple slave decoder.
