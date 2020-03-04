@@ -201,6 +201,9 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     AT91SAM9x CPU external bus interface.
   - [wb_axi4lite_bridge](modules/wishbone/wb_axi4lite_bridge) is an axi4lite
     to wishbone bridge
+  - [wb16_to_wb32](modules/wishbone/wb16_to_wb32) is an adapter from a
+    16 data bit wishbone master to a 32 data bit wishbone slave.  It uses
+    an intermediate register.  Refer to the module for how to use it.
 
 * There are modules for axi4 bus
   - [axi4lite32_axi4full64_bridge](modules/axi/axi4lite32_axi4full64_bridge) is
