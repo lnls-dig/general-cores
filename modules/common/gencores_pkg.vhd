@@ -45,6 +45,8 @@ package gencores_pkg is
   function f_gray_encode(x : std_logic_vector) return std_logic_vector;
   function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
 
+  function f_log2_ceil(N : natural) return positive;
+  -- kept for backwards compatibility, same as f_log2_ceil()
   function log2_ceil(N : natural) return positive;
 
   function f_bool2int (b : boolean) return natural;
