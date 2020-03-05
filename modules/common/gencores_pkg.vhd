@@ -32,6 +32,53 @@ use work.genram_pkg.all;
 package gencores_pkg is
 
   --============================================================================
+  -- Procedures and functions
+  --============================================================================
+
+  procedure f_rr_arbitrate (
+    signal req       : in  std_logic_vector;
+    signal pre_grant : in  std_logic_vector;
+    signal grant     : out std_logic_vector);
+
+  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
+
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
+
+  function f_gray_encode(x : std_logic_vector) return std_logic_vector;
+  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+
+  function log2_ceil(N : natural) return positive;
+
+  function f_bool2int (b : boolean) return natural;
+  function f_int2bool (n : natural) return boolean;
+
+  --  Convert a boolean to std_logic ('1' for True, '0' for False).
+  function f_to_std_logic(b : boolean) return std_logic;
+
+  -- Reduce-OR an std_logic_vector to std_logic
+  function f_reduce_or (x : std_logic_vector) return std_logic;
+
+  -- Character/String to std_logic_vector
+  function f_to_std_logic_vector (c : character) return std_logic_vector;
+  function f_to_std_logic_vector (s : string) return std_logic_vector;
+
+  -- Functions for short-hand if assignments
+  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
+  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
+
+  -- Functions to convert characters and strings to upper/lower case
+  function to_upper(c : character) return character;
+  function to_lower(c : character) return character;
+  function to_upper(s : string) return string;
+  function to_lower(s : string) return string;
+
+  --============================================================================
   -- Component instantiations
   --============================================================================
 
@@ -689,48 +736,6 @@ package gencores_pkg is
       dec_i : in std_logic;
       counter_o : out std_logic_vector(g_bits downto 0));
   end component gc_async_counter_diff;
-
-  --============================================================================
-  -- Procedures and functions
-  --============================================================================
-  procedure f_rr_arbitrate (
-    signal req       : in  std_logic_vector;
-    signal pre_grant : in  std_logic_vector;
-    signal grant     : out std_logic_vector);
-  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
-
-  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
-  function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
-  function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
-  function log2_ceil(N       : natural) return positive;
-  function f_bool2int (b : boolean) return natural;
-  function f_int2bool (n : natural) return boolean;
-
-  --  Convert a boolean to std_logic ('1' for True, '0' for False).
-  function f_to_std_logic(b : boolean) return std_logic;
-
-  -- Reduce-OR an std_logic_vector to std_logic
-  function f_reduce_or (x : std_logic_vector) return std_logic;
-
-  -- Character/String to std_logic_vector
-  function f_to_std_logic_vector (c : character) return std_logic_vector;
-  function f_to_std_logic_vector (s : string) return std_logic_vector;
-
-  -- Functions for short-hand if assignments
-  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
-    return std_logic;
-  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
-    return std_logic_vector;
-  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
-    return std_logic;
-  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
-    return std_logic_vector;
-
-  -- Functions to convert characters and strings to upper/lower case
-  function to_upper(c : character) return character;
-  function to_lower(c : character) return character;
-  function to_upper(s : string) return string;
-  function to_lower(s : string) return string;
 
 end package;
 
