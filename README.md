@@ -24,6 +24,11 @@ In [modules/common](modules/common) there are general purpose cores:
   is deprecated.  It can synchronize multiple signals at the same time but
   doesn't ensure coherency between these signals.
 
+  The module [gc_sync_edge](modules/common/gc_sync_edge.vhd) provides a
+  synchronizer with an (positive or negative) edge detector.  The signal
+  edge is always detected on the rising edge of the clock.  This module is
+  simpler than the gc_sync_ffs module.
+
   To pass words from one clock domain to another, you can use the module
   [gc_sync_word_wr](modules/common/gc_sync_word_wr.vhd) for writing data,
   and [gc_sync_word_rd](modules/common/gc_sync_word_rd.vhd) for reading

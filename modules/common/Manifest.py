@@ -15,6 +15,7 @@ files = [
     "gc_sync.vhd",
     "gc_posedge.vhd",
     "gc_negedge.vhd",
+    "gc_sync_edge.vhd",
     "gc_pulse_synchronizer.vhd",
     "gc_pulse_synchronizer2.vhd",
     "gc_frequency_meter.vhd",
