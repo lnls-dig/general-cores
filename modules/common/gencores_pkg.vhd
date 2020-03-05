@@ -27,8 +27,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.genram_pkg.all;
-
 package gencores_pkg is
 
   --============================================================================
@@ -342,7 +340,7 @@ package gencores_pkg is
       d_req_o      : out std_logic_vector(g_num_inputs-1 downto 0);
       q_o          : out std_logic_vector(g_width-1 downto 0);
       q_valid_o    : out std_logic;
-      q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
+      q_input_id_o : out std_logic_vector(f_log2_ceil(g_num_inputs)-1 downto 0));
   end component;
 
   ------------------------------------------------------------------------------
@@ -838,17 +836,22 @@ package body gencores_pkg is
   ------------------------------------------------------------------------------
   -- Returns log of 2 of a natural number
   ------------------------------------------------------------------------------
-  function log2_ceil(N : natural) return positive is
+  function f_log2_ceil(N : natural) return positive is
   begin
     if N <= 2 then
       return 1;
     elsif N mod 2 = 0 then
-      return 1 + log2_ceil(N/2);
+      return 1 + f_log2_ceil(N/2);
     else
-      return 1 + log2_ceil((N+1)/2);
+      return 1 + f_log2_ceil((N+1)/2);
     end if;
   end;
 
+  -- kept for backwards compatibility
+  function log2_ceil(N : natural) return positive is
+  begin
+    return f_log2_ceil(N);
+  end;
 
   ------------------------------------------------------------------------------
   -- Converts a boolean to natural integer (false -> 0, true -> 1)

@@ -248,14 +248,10 @@ end genram_pkg;
 
 package body genram_pkg is
 
+  -- kept for backwards compatibility
   function f_log2_size (A : natural) return natural is
   begin
-    for I in 1 to 64 loop               -- Works for up to 64 bits
-      if (2**I >= A) then
-        return(I);
-      end if;
-    end loop;
-    return(63);
+    return f_log2_ceil(N);
   end function f_log2_size;
 
   function f_gen_dummy_vec (val : std_logic; size : natural) return std_logic_vector is
