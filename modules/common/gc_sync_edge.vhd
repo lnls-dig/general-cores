@@ -31,40 +31,40 @@ entity gc_sync_edge is
     g_edge : string := "positive");
   port(
     clk_i     : in  std_logic;   -- clock from the destination clock domain
-    rst_n_a_i : in  std_logic;   -- reset
+    rst_n_a_i : in  std_logic;   -- async reset
     data_i    : in  std_logic;   -- async input
     synced_o  : out std_logic;   -- synchronized output
-    pulse_o   : out std_logic);   -- edge detect output
+    pulse_o   : out std_logic);  -- edge detect output
 end entity gc_sync_edge;
 
 architecture arch of gc_sync_edge is
   signal sync : std_logic;
 begin
 
-  inst_sync: entity work.gc_sync
+  inst_sync : entity work.gc_sync
     port map (
-      clk_i => clk_i,
+      clk_i     => clk_i,
       rst_n_a_i => rst_n_a_i,
-      d_i => data_i,
-      q_o => sync);
+      d_i       => data_i,
+      q_o       => sync);
 
-  assert g_edge = "positive" or g_edge = "negative" severity failure;
+  assert g_edge = "positive" or g_edge = "negative" severity FAILURE;
 
   sync_posedge : if g_edge = "positive" generate
-    inst_pedge: entity work.gc_posedge
+    inst_pedge : entity work.gc_posedge
       port map (
-        clk_i => clk_i,
+        clk_i   => clk_i,
         rst_n_i => rst_n_a_i,
-        data_i => sync,
+        data_i  => sync,
         pulse_o => pulse_o);
   end generate;
 
-  sync_negedge: if g_edge = "negative" generate
-    inst_pedge: entity work.gc_negedge
+  sync_negedge : if g_edge = "negative" generate
+    inst_pedge : entity work.gc_negedge
       port map (
-        clk_i => clk_i,
+        clk_i   => clk_i,
         rst_n_i => rst_n_a_i,
-        data_i => sync,
+        data_i  => sync,
         pulse_o => pulse_o);
   end generate;
 end architecture arch;

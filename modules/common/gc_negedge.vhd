@@ -27,11 +27,10 @@ use ieee.std_logic_1164.all;
 
 entity gc_negedge is
   port(
-    clk_i    : in  std_logic;   -- clock
-    rst_n_i  : in  std_logic;   -- reset
-    data_i   : in  std_logic;   -- input
-    pulse_o  : out std_logic    -- positive edge dectect output
-  );
+    clk_i   : in  std_logic;   -- clock
+    rst_n_i : in  std_logic;   -- reset
+    data_i  : in  std_logic;   -- input
+    pulse_o : out std_logic);  -- falling edge detect output
 end entity gc_negedge;
 
 architecture arch of gc_negedge is
