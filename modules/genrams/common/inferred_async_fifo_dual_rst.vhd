@@ -74,6 +74,10 @@ entity inferred_async_fifo_dual_rst is
     rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0)
     );
 
+  attribute keep_hierarchy : string;
+  attribute keep_hierarchy of
+    inferred_async_fifo_dual_rst : entity is "true";
+
 end inferred_async_fifo_dual_rst;
 
 

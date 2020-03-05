@@ -30,8 +30,7 @@ entity gc_sync is
     clk_i     : in  std_logic;
     rst_n_a_i : in  std_logic;
     d_i       : in  std_logic;
-    q_o       : out std_logic
-    );
+    q_o       : out std_logic);
 end gc_sync;
 
 -- make Altera Quartus quiet regarding unknown attributes:
@@ -55,6 +54,9 @@ architecture rtl of gc_sync is
   attribute keep of gc_sync_ffs_in : signal is "true";
   attribute keep of sync0          : signal is "true";
   attribute keep of sync1          : signal is "true";
+
+  attribute keep_hierarchy        : string;
+  attribute keep_hierarchy of rtl : architecture is "true";
 
   attribute async_reg                   : string;
   attribute async_reg of gc_sync_ffs_in : signal is "true";

@@ -62,6 +62,9 @@ architecture arch of gc_sync_ffs is
 
   attribute keep of gc_sync_ffs_in : signal is "true";
 
+  attribute keep_hierarchy         : string;
+  attribute keep_hierarchy of arch : architecture is "true";
+
   -- synchronizer attribute for Vivado
   attribute ASYNC_REG          : string;
   attribute ASYNC_REG of sync0 : signal is "true";
