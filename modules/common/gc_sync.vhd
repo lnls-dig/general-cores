@@ -47,10 +47,13 @@ architecture arch of gc_sync is
 
   signal sync0, sync1 : std_logic;
 
-  attribute shreg_extract                   : string;
-  attribute shreg_extract of gc_sync_ffs_in : signal is "no";
-  attribute shreg_extract of sync0          : signal is "no";
-  attribute shreg_extract of sync1          : signal is "no";
+  attribute rloc          : string;
+  attribute rloc of sync0 : signal is "X0Y0";
+  attribute rloc of sync1 : signal is "X0Y0";
+
+  attribute shreg_extract          : string;
+  attribute shreg_extract of sync0 : signal is "no";
+  attribute shreg_extract of sync1 : signal is "no";
 
   attribute keep                   : string;
   attribute keep of gc_sync_ffs_in : signal is "true";
@@ -60,10 +63,9 @@ architecture arch of gc_sync is
   attribute keep_hierarchy         : string;
   attribute keep_hierarchy of arch : architecture is "true";
 
-  attribute async_reg                   : string;
-  attribute async_reg of gc_sync_ffs_in : signal is "true";
-  attribute async_reg of sync0          : signal is "true";
-  attribute async_reg of sync1          : signal is "true";
+  attribute async_reg          : string;
+  attribute async_reg of sync0 : signal is "true";
+  attribute async_reg of sync1 : signal is "true";
 
 begin
 
