@@ -467,9 +467,11 @@ static int spi_ocores_sw_xfer_next_init(struct spi_ocores *sp)
 
 	ctrl = sp->ctrl_base;
 	if (sp->master->cur_msg->spi->mode & SPI_CPHA) {
-		ctrl |= SPI_OCORES_CTRL_Tx_NEG;
 		ctrl |= SPI_OCORES_CTRL_Rx_NEG;
 	}
+	else
+		ctrl |= SPI_OCORES_CTRL_Tx_NEG;	
+
 	if (sp->master->cur_msg->spi->mode & SPI_LSB_FIRST)
 		ctrl |= SPI_OCORES_CTRL_LSB;
 	ctrl |= nbits;
@@ -596,7 +598,7 @@ static int spi_ocores_process(struct spi_ocores *sp)
 			spi_ocores_finalize_current_message(sp);
 	}
 
-	return 0;
+	return err;
 }
 
 /**
