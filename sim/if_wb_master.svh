@@ -1,17 +1,26 @@
+//------------------------------------------------------------------------------
+// CERN BE-CO-HT
+// General Cores Library
+// https://www.ohwr.org/projects/general-cores
+//------------------------------------------------------------------------------
 //
-// Title          : Software Wishbone master unit for testbenches
+// unit name: IWishboneMaster
 //
-// File           : if_wishbone.sv
-// Author         : Tomasz Wlostowski <tomasz.wlostowski@cern.ch>
-// Created        : Tue Mar 23 12:19:36 2010
-// Standard       : SystemVerilog
+// description: Software Wishbone master unit for testbenches.
 //
-
-
-/* Todo:
-   pipelined reads
-   settings wrapped in the accessor object 
-*/
+//------------------------------------------------------------------------------
+// Copyright CERN 2010-2019
+//------------------------------------------------------------------------------
+// Copyright and related rights are licensed under the Solderpad Hardware
+// License, Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License. You may obtain a copy of the License at
+// http://solderpad.org/licenses/SHL-2.0.
+// Unless required by applicable law or agreed to in writing, software,
+// hardware and materials distributed under this License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+// or implied. See the License for the specific language governing permissions
+// and limitations under the License.
+//------------------------------------------------------------------------------
 
 `include "simdrv_defs.svh"
 `include "if_wishbone_types.svh"
@@ -23,35 +32,24 @@ interface IWishboneMaster
    input rst_n_i
    );
 
-   parameter g_addr_width 	   = 32;
-   parameter g_data_width 	   = 32;
+   parameter g_addr_width = 32;
+   parameter g_data_width = 32;
 
-   logic [g_addr_width - 1 : 0] adr;
-   logic [g_data_width - 1 : 0] dat_o;
-   logic [(g_data_width/8)-1 : 0] sel; 
-   wire [g_data_width - 1 : 0] dat_i;
-   wire ack;
-   wire stall;
-   wire err;
-   wire rty;
-   logic	cyc;
-   logic 	stb;
-   logic 	we;
+   logic [g_addr_width - 1   : 0] adr;
+   logic [g_data_width - 1   : 0] dat_o;
+   logic [(g_data_width/8)-1 : 0] sel;
+   wire  [g_data_width - 1   : 0] dat_i;
+   wire  ack;
+   wire  stall;
+   wire  err;
+   wire  rty;
+   logic cyc;
+   logic stb;
+   logic we;
 
-   wire clk;
-   wire rst_n;
- 
-   time last_access_t 	  = 0;
+   wire  stall_valid = stall & cyc;
 
-   struct {
-      int gen_random_throttling;
-      real throttle_prob;
-      int little_endian;
-      int cyc_on_stall;
-      wb_address_granularity_t addr_gran;
-   } settings;
-
-   modport master 
+   modport master
      (
       output adr,
       output dat_o,
@@ -59,316 +57,246 @@ interface IWishboneMaster
       output cyc,
       output stb,
       output we,
-      input ack,
-      input dat_i,
-      input stall,
-      input err,
-      input rty
+      input  ack,
+      input  dat_i,
+      input  stall,
+      input  err,
+      input  rty
       );
 
-   function automatic logic[g_addr_width-1:0] gen_addr(uint64_t addr, int xfer_size);
-      if(settings.addr_gran == WORD)
-        case(g_data_width)
-	  8: return addr;
-	  16: return addr >> 1;
-	  32: return addr >> 2;
-	  64: return addr >> 3;
-	  default: $error("IWishbone: invalid WB data bus width [%d bits\n]", g_data_width);
-        endcase // case (xfer_size)
-      else
-        return addr;
-   endfunction
+   time last_access_t = 0;
+
+   enum {
+         IDLE,
+         BUSY,
+         WAIT_ACK
+   } xf_state;
+
+   wb_cycle_t request_queue[$];
+   wb_cycle_t result_queue[$];
+
+   struct {
+      int gen_random_throttling;
+      real throttle_prob;
+      int little_endian; // not supported
+      int cyc_on_stall;  // not used, kept for compatibility
+      wb_address_granularity_t addr_gran;
+   } settings;
 
    function automatic logic[63:0] rev_bits(logic [63:0] x, int nbits);
       logic[63:0] tmp;
       int i;
-      
-      for (i=0;i<nbits;i++)
-        tmp[nbits-1-i]  = x[i];
+
+      for (i = 0; i < nbits; i++)
+        tmp[nbits-1-i] = x[i];
 
       return tmp;
    endfunction // rev_bits
-   
+
+   function automatic logic[g_addr_width-1:0] gen_addr(wb_xfer_t xfer);
+      if (settings.addr_gran == WORD)
+        case (g_data_width)
+           8: return xfer.a;
+          16: return xfer.a >> 1;
+          32: return xfer.a >> 2;
+          64: return xfer.a >> 3;
+          default: $error("IWishbone: invalid WB data bus width [%d bits\n]", g_data_width);
+        endcase
+      else
+        return xfer.a;
+   endfunction // gen_addr
 
    //FIXME: little endian
-   function automatic logic[(g_data_width/8)-1:0] gen_sel(uint64_t addr, int xfer_size, int little_endian);
+   function automatic logic[(g_data_width/8)-1:0] gen_sel(wb_xfer_t xfer);
       logic [(g_data_width/8)-1:0] sel;
+
+      sel = ((1 << xfer.size) - 1);
+
+      return rev_bits(sel << (xfer.a % xfer.size), g_data_width/8);
+   endfunction // gen_sel
+
+   //FIXME: little endian
+   function automatic logic[g_data_width-1:0] gen_data(wb_xfer_t xfer);
       const int dbytes  = (g_data_width/8-1);
-      
-      
-      sel               = ((1<<xfer_size) - 1);
 
-      return rev_bits(sel << (addr % xfer_size), g_data_width/8);
-      endfunction
+      return xfer.d << (8 * (dbytes - (xfer.size - 1 - (xfer.a % xfer.size))));
 
-   function automatic logic[g_data_width-1:0] gen_data(uint64_t addr, uint64_t data, int xfer_size, int little_endian);
-      const int dbytes  = (g_data_width/8-1);
-      logic[g_data_width-1:0] tmp;
-
-      tmp  = data << (8 * (dbytes - (xfer_size - 1 - (addr % xfer_size))));
-      
-//      $display("GenData: xs %d dbytes %d %x", tmp, xfer_size, dbytes);
-    
-  
-      return tmp;
-      
    endfunction // gen_data
 
-   function automatic uint64_t decode_data(uint64_t addr, logic[g_data_width-1:0] data,  int xfer_size);
+   function automatic uint64_t decode_data(wb_xfer_t xfer, logic[g_data_width-1:0] data);
       int rem;
 
-    //  $display("decode: a %x d %x xs %x", addr, data ,xfer_size);
-      
+      rem  = xfer.a % xfer.size;
 
-      rem  = addr % xfer_size;
-      return (data >> (8*rem)) & ((1<<(xfer_size*8)) - 1);
+      return (data >> (8 * rem)) & ((1 << (xfer.size * 8)) - 1);
    endfunction // decode_data
-   
 
-   task automatic classic_cycle 
-     (
-      inout wb_xfer_t xfer[],
-      input bit rw,
-      input int n_xfers,
-      output wb_cycle_result_t result
-      );
-      
+   task automatic classic_cycle(ref wb_cycle_t c);
+
       int i;
-      
-      if($time != last_access_t) 
-	    @(posedge clk_i); /* resynchronize, just in case */
-      
-      for(i=0;i<n_xfers;i++)
-	begin
-	      
-	   stb   <= 1'b1;
-	   cyc   <= 1'b1;
-	   adr   <= gen_addr(xfer[i].a, xfer[i].size);
-	   we    <= rw;
-	   sel   <= gen_sel(xfer[i].a, xfer[i].size, settings.little_endian);
-//gen_sel(xfer[i].a, xfer[i].size);
-	   dat_o <= gen_data(xfer[i].a, xfer[i].d, xfer[i].size, settings.little_endian);
-	   
-	   @(posedge clk_i);
-	 	 
-	   if(ack == 0) begin
-	      while(ack == 0) begin @(posedge clk_i); end
-	   end else if(err == 1'b1 || rty == 1'b1)
-	     begin
-		cyc    <= 0;
-		we     <= 0;
-		stb    <= 0;
-		result 	= (err ==1'b1 ? R_ERROR: R_RETRY);
-		break;
-	     end
 
-	   xfer[i].d 	 = decode_data(xfer[i].a, dat_i, xfer[i].size);
-           
- 	   cyc 		 <= 0;
-	   we 		 <= 0;
-	   stb 		 <= 0;
-	   
-	end // if (ack == 0)
-      
-      @(posedge clk_i);
-      
-      result 	     = R_OK;
-      last_access_t  = $time;
-   endtask // automatic
+      int failure = 0;
 
-   reg xf_idle 	     = 1;
-   
+      /* resynchronize, just in case */
+      if ($time != last_access_t) @(posedge clk_i);
 
-   int ack_cnt_int;
+      xf_state = BUSY;
 
-   always@(posedge clk_i)
-     begin
-        if(!cyc)
-          ack_cnt_int <= 0;
-        else if(stb && !stall && !ack) 
-	     ack_cnt_int++;
-	else if((!stb || stall) && ack) 
-	     ack_cnt_int--;
-     end
+      for (i = 0; i < c.data.size(); i++) begin
 
+         stb   <= 1'b1;
+         cyc   <= 1'b1;
+         adr   <= gen_addr(c.data[i]);
+         we    <= (c.rw != 0);
+         sel   <= gen_sel(c.data[i]);
+         dat_o <= gen_data(c.data[i]);
+         @(posedge clk_i);
 
-   task automatic count_ack(ref int ack_cnt);
-//      if(stb && !stall && !ack) 
-//	ack_cnt++;
-      if (ack) 
-	ack_cnt--;
-   endtask
+         while (ack != 1'b1 && err != 1'b1 && rty == 1'b1) @(posedge clk_i);
 
-   task automatic handle_readback(ref wb_xfer_t xf [$], input int read, ref int cur_rdbk);
-      if(ack && read)
-        begin
-           xf[cur_rdbk].d = dat_i;
-           cur_rdbk++;
-        end
-   endtask // handle_readback
-   
-   
-   task automatic pipelined_cycle 
-     (
-      ref wb_xfer_t xfer[$],
-      input int write,
-      input int n_xfers,
-      output wb_cycle_result_t result
-      );
-      
-      int i;
-      int ack_count ;
-      int failure ;
-      int cur_rdbk;
-      
+         if (err || rty) begin
+            c.result = (err ? R_ERROR: R_RETRY);
+            failure = 1;
+            break;
+         end
 
-      ack_count  = 0;
-      failure 	 = 0;
+         c.data[i].d = decode_data(c.data[i], dat_i);
 
-      xf_idle 	 = 0;
-      cur_rdbk = 0;
-      
-      
-      if($time != last_access_t) 
-	@(posedge clk_i); /* resynchronize, just in case */
+         cyc <= 0;
+         we  <= 0;
+         stb <= 0;
+         @(posedge clk_i);
 
-      while(stall && !settings.cyc_on_stall)
-	@(posedge clk_i);
-      
-      cyc       <= 1'b1;
-      i          =0;
+      end
 
-      ack_count  = n_xfers;
-      
-      while(i<n_xfers)
-	begin 
-           count_ack(ack_count);
-           handle_readback(xfer, !write, cur_rdbk);
-           
-          
-	   if(err) begin
-	      result   = R_ERROR;
-	      failure  = 1;
-	      break;
-	   end
-	
-	   if(rty) begin
-	      result   = R_RETRY;
-	      failure  = 1;
-	      break;
-	      end
+      if (!failure)
+        c.result = R_OK;
 
-          
-           if (!stall && settings.gen_random_throttling && probability_hit(settings.throttle_prob)) begin
-              stb   <= 1'b0;
-              we    <= 1'b0;
-              @(posedge clk_i);
-              
-             
-	   end else begin
-	      adr   <= gen_addr(xfer[i].a, xfer[i].size);
-	      stb   <= 1'b1;
-              if(write)
-                begin
-	           we    <= 1'b1;
-	           sel   <= gen_sel(xfer[i].a, xfer[i].size, settings.little_endian);
-	           dat_o <= gen_data(xfer[i].a, xfer[i].d, xfer[i].size, settings.little_endian);
-                end else begin
-                   we<=1'b0;
-                   sel <= 'hffffffff;
-                end
-              
-	      @(posedge clk_i);
-              stb      <= 1'b0;
-              we       <= 1'b0;
-              if(stall)
-                begin
-                   stb <= 1'b1;
-                   
-                   if(write)
-                     we  <= 1'b1;
-                   
-                   while(stall)
-                     begin
-                        count_ack(ack_count);
-                        @(posedge clk_i);
-                   
+      xf_state = IDLE;
 
-                     end
-                   stb      <= 1'b0;
-                   we       <= 1'b0;
-                end
-              i++;
-	   end
+      last_access_t = $time;
+   endtask // classic_cycle
 
-	end // for (i   =0;i<n_xfers;i++)
+   task automatic pipelined_cycle(ref wb_cycle_t c);
 
-      
-      while((ack_count > 0) && !failure)
-	begin
-      //     $display("AckCount %d", ack_count);
+      int stb_count = 0;
+      int ack_count = 0;
+      int failure   = 0;
+      int cur_rdbk  = 0;
 
-	   if(err) begin
-	      result   = R_ERROR;
-	      failure  = 1;
-	      break;
-	   end
-	   
-	   if(rty) begin
-	      result   = R_RETRY;
-	      failure  = 1;
-	      break;
-	   end
+      /* resynchronize, just in case */
+      if ($time != last_access_t) @(posedge clk_i);
 
+      xf_state = BUSY;
 
-           count_ack(ack_count);
-           handle_readback(xfer, !write, cur_rdbk);
+      cyc <= 1'b1;
+      stb <= 1'b1;
+      adr <= gen_addr(c.data[stb_count]);
+      if (c.rw == 1) begin
+         we    <= 1'b1;
+         sel   <= gen_sel(c.data[stb_count]);
+         dat_o <= gen_data(c.data[stb_count]);
+      end
+      else begin
+         we  <= 1'b0;
+         sel <= 'hffffffff;
+      end
 
-           if(stb && !ack) 
-	     ack_count++;
-	   else if(!stb && ack) 
-	     ack_count--;
-	   @(posedge clk_i);
-	end
+      while (stall_valid || ((stb_count < c.data.size()) && !failure)) begin
+         if (ack) begin
+            ack_count++;
+            if (c.rw == 0) begin
+               c.data[cur_rdbk].d = dat_i;
+               cur_rdbk++;
+            end
+         end
+         else if (err || rty) begin
+            c.result = (err ? R_ERROR: R_RETRY);
+            failure = 1;
+            break;
+         end
 
-      
-      
+         if (settings.gen_random_throttling &&
+             probability_hit(settings.throttle_prob)) begin
+            stb <= 1'b0;
+            we  <= 1'b0;
+         end
+         else if (stall_valid == 1'b0) begin
+            stb <= 1'b1;
+            adr <= gen_addr(c.data[stb_count]);
+            if (c.rw == 1) begin
+               we    <= 1'b1;
+               sel   <= gen_sel(c.data[stb_count]);
+               dat_o <= gen_data(c.data[stb_count]);
+            end
+            else begin
+               we  <= 1'b0;
+               sel <= 'hffffffff;
+            end
+            stb_count++;
+         end
+
+         @(posedge clk_i);
+      end
+
+      stb <= 1'b0;
+      we  <= 1'b0;
+
+      xf_state = WAIT_ACK;
+
+      while ((ack_count < c.data.size()) && !failure) begin
+         if (ack) begin
+            ack_count++;
+            if (c.rw == 0) begin
+               c.data[cur_rdbk].d = dat_i;
+               cur_rdbk++;
+            end
+         end
+         else if (err || rty) begin
+            c.result = (err ? R_ERROR: R_RETRY);
+            failure = 1;
+            xf_state = IDLE;
+            break;
+         end
+         if (ack_count == c.data.size()) begin
+            cyc <= 1'b0;
+            we  <= 1'b0;
+            xf_state = IDLE;
+         end
+         @(posedge clk_i);
+      end
+
       cyc <= 1'b0;
-      @(posedge clk_i);
-      if(!failure)
-        result 	     = R_OK;
-      xf_idle 	     = 1;
-      last_access_t  = $time;
-   endtask // automatic
+      we  <= 1'b0;
 
-	
-   wb_cycle_t request_queue[$];
-   wb_cycle_t result_queue[$];
+      if (!failure)
+        c.result = R_OK;
+
+      last_access_t = $time;
+
+   endtask // pipelined_cycle
 
 class CIWBMasterAccessor extends CWishboneAccessor;
 
    function automatic int poll();
       return 0;
-   endfunction
-   
+   endfunction // poll
+
    task get(ref wb_cycle_t xfer);
       while(!result_queue.size())
-	@(posedge clk_i);
-      xfer  = result_queue.pop_front();
-   endtask
-   
-   task clear();
-   endtask // clear
+        @(posedge clk_i);
+      xfer = result_queue.pop_front();
+   endtask // get
 
    task put(ref wb_cycle_t xfer);
       request_queue.push_back(xfer);
    endtask // put
 
    function int idle();
-      return (request_queue.size() == 0) && xf_idle;
+      return (request_queue.size() == 0) && (xf_state == IDLE);
    endfunction // idle
-endclass // CIWBMasterAccessor
 
+endclass // CIWBMasterAccessor
 
    function automatic CIWBMasterAccessor get_accessor();
       automatic CIWBMasterAccessor tmp;
@@ -376,63 +304,44 @@ endclass // CIWBMasterAccessor
       return tmp;
    endfunction // get_accessor
 
-
    always@(posedge clk_i)
-     if(!rst_n_i)
-       begin
-	  request_queue 	      = {};
-	  result_queue 		      = {};
-	  xf_idle 		      = 1;
-	  cyc 			     <= 0;
-	  dat_o 		     <= 0;
-	  stb 			     <= 0;
-	  sel 			     <= 0;
-	  adr 			     <= 0;
-	  we 			     <= 0;
-       end
+     if (!rst_n_i) begin
+        request_queue = {};
+        result_queue  = {};
+        xf_state      = IDLE;
+        cyc          <= 0;
+        dat_o        <= 0;
+        stb          <= 0;
+        sel          <= 0;
+        adr          <= 0;
+        we           <= 0;
+  end
 
    initial begin
       settings.gen_random_throttling  = 0;
-      settings.throttle_prob 	      = 0.1;
-      settings.cyc_on_stall = 0;
-      settings.addr_gran = WORD;
+      settings.throttle_prob          = 0.1;
+      settings.addr_gran              = WORD;
    end
 
-   
-   initial forever
-     begin
-	@(posedge clk_i);
+   initial forever begin
+      @(posedge clk_i);
 
+      if (request_queue.size() > 0) begin
 
-	if(request_queue.size() > 0)
-	  begin
+         wb_cycle_t c;
 
-             
-	     wb_cycle_t c;
-	     wb_cycle_result_t res;
+         c = request_queue.pop_front();
 
-	     c 	= request_queue.pop_front();
+         case(c.ctype)
+           PIPELINED:
+             pipelined_cycle(c);
+           CLASSIC:
+             classic_cycle(c);
+         endcase
 
-             case(c.ctype)
-               PIPELINED:
-                 begin
-		    pipelined_cycle(c.data, c.rw, c.data.size(), res);
-	            c.result  =res;
-                 end
-               CLASSIC:
-                 begin
-	         //   $display("WBMaster: got classic cycle [%d, rw %d]", c.data.size(), c.rw);
-                    classic_cycle(c.data, c.rw, c.data.size, res);
-                    
-	            c.result  =res;
+         result_queue.push_back(c);
+      end
 
-                    
-                 end
-             endcase // case (c.ctype)
-             
-	     result_queue.push_back(c);
-	  end
-     end
-   
-   
-endinterface // IWishbone
+   end
+
+endinterface // IWishboneMaster
