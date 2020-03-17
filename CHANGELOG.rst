@@ -14,6 +14,7 @@ Versioning: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 Added
 -----
 - [hdl] VHDL functions to convert characters and strings to upper/lower case.
+- [sw][i2c] support for kernel greater than 4.7
 Changed
 -------
 - [hdl] Rewritten the WB master interface used in simulations.
