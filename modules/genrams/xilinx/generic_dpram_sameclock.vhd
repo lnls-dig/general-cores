@@ -123,9 +123,7 @@ architecture syn of generic_dpram_sameclock is
   shared variable ram : t_ram_type := f_file_to_ramtype;
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
   signal s_we_b     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_b : std_logic_vector(g_data_width-1 downto 0);
 
   signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
 
