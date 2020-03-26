@@ -1,0 +1,51 @@
+[*]
+[*] GTKWave Analyzer v3.3.98 (w)1999-2018 BSI
+[*] Tue Mar  3 12:42:41 2020
+[*]
+[dumpfile] "/home/tgingold/Repositories/ohwr/general-cores/modules/wishbone/wb16_to_wb32/tb/tb.ghw"
+[dumpfile_mtime] "Tue Mar  3 12:40:34 2020"
+[dumpfile_size] 2363
+[savefile] "/home/tgingold/Repositories/ohwr/general-cores/modules/wishbone/wb16_to_wb32/tb/tb.gtkw"
+[timestart] 0
+[size] 1620 1056
+[pos] -1 -1
+*-23.629396 61240000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_wb16_to_wb32.
+[sst_width] 283
+[signals_width] 102
+[sst_expanded] 1
+[sst_vpaned_height] 315
+@28
+top.tb_wb16_to_wb32.rst_n
+top.tb_wb16_to_wb32.clk
+@200
+-wb32
+@28
+top.tb_wb16_to_wb32.wb32_in.cyc
+top.tb_wb16_to_wb32.wb32_in.stb
+top.tb_wb16_to_wb32.wb32_in.we
+top.tb_wb16_to_wb32.wb32_out.ack
+@22
+#{top.tb_wb16_to_wb32.wb32_out.dat[31:0]} top.tb_wb16_to_wb32.wb32_out.dat[31] top.tb_wb16_to_wb32.wb32_out.dat[30] top.tb_wb16_to_wb32.wb32_out.dat[29] top.tb_wb16_to_wb32.wb32_out.dat[28] top.tb_wb16_to_wb32.wb32_out.dat[27] top.tb_wb16_to_wb32.wb32_out.dat[26] top.tb_wb16_to_wb32.wb32_out.dat[25] top.tb_wb16_to_wb32.wb32_out.dat[24] top.tb_wb16_to_wb32.wb32_out.dat[23] top.tb_wb16_to_wb32.wb32_out.dat[22] top.tb_wb16_to_wb32.wb32_out.dat[21] top.tb_wb16_to_wb32.wb32_out.dat[20] top.tb_wb16_to_wb32.wb32_out.dat[19] top.tb_wb16_to_wb32.wb32_out.dat[18] top.tb_wb16_to_wb32.wb32_out.dat[17] top.tb_wb16_to_wb32.wb32_out.dat[16] top.tb_wb16_to_wb32.wb32_out.dat[15] top.tb_wb16_to_wb32.wb32_out.dat[14] top.tb_wb16_to_wb32.wb32_out.dat[13] top.tb_wb16_to_wb32.wb32_out.dat[12] top.tb_wb16_to_wb32.wb32_out.dat[11] top.tb_wb16_to_wb32.wb32_out.dat[10] top.tb_wb16_to_wb32.wb32_out.dat[9] top.tb_wb16_to_wb32.wb32_out.dat[8] top.tb_wb16_to_wb32.wb32_out.dat[7] top.tb_wb16_to_wb32.wb32_out.dat[6] top.tb_wb16_to_wb32.wb32_out.dat[5] top.tb_wb16_to_wb32.wb32_out.dat[4] top.tb_wb16_to_wb32.wb32_out.dat[3] top.tb_wb16_to_wb32.wb32_out.dat[2] top.tb_wb16_to_wb32.wb32_out.dat[1] top.tb_wb16_to_wb32.wb32_out.dat[0]
+#{top.tb_wb16_to_wb32.wb32_in.adr[31:0]} top.tb_wb16_to_wb32.wb32_in.adr[31] top.tb_wb16_to_wb32.wb32_in.adr[30] top.tb_wb16_to_wb32.wb32_in.adr[29] top.tb_wb16_to_wb32.wb32_in.adr[28] top.tb_wb16_to_wb32.wb32_in.adr[27] top.tb_wb16_to_wb32.wb32_in.adr[26] top.tb_wb16_to_wb32.wb32_in.adr[25] top.tb_wb16_to_wb32.wb32_in.adr[24] top.tb_wb16_to_wb32.wb32_in.adr[23] top.tb_wb16_to_wb32.wb32_in.adr[22] top.tb_wb16_to_wb32.wb32_in.adr[21] top.tb_wb16_to_wb32.wb32_in.adr[20] top.tb_wb16_to_wb32.wb32_in.adr[19] top.tb_wb16_to_wb32.wb32_in.adr[18] top.tb_wb16_to_wb32.wb32_in.adr[17] top.tb_wb16_to_wb32.wb32_in.adr[16] top.tb_wb16_to_wb32.wb32_in.adr[15] top.tb_wb16_to_wb32.wb32_in.adr[14] top.tb_wb16_to_wb32.wb32_in.adr[13] top.tb_wb16_to_wb32.wb32_in.adr[12] top.tb_wb16_to_wb32.wb32_in.adr[11] top.tb_wb16_to_wb32.wb32_in.adr[10] top.tb_wb16_to_wb32.wb32_in.adr[9] top.tb_wb16_to_wb32.wb32_in.adr[8] top.tb_wb16_to_wb32.wb32_in.adr[7] top.tb_wb16_to_wb32.wb32_in.adr[6] top.tb_wb16_to_wb32.wb32_in.adr[5] top.tb_wb16_to_wb32.wb32_in.adr[4] top.tb_wb16_to_wb32.wb32_in.adr[3] top.tb_wb16_to_wb32.wb32_in.adr[2] top.tb_wb16_to_wb32.wb32_in.adr[1] top.tb_wb16_to_wb32.wb32_in.adr[0]
+#{top.tb_wb16_to_wb32.wb32_in.dat[31:0]} top.tb_wb16_to_wb32.wb32_in.dat[31] top.tb_wb16_to_wb32.wb32_in.dat[30] top.tb_wb16_to_wb32.wb32_in.dat[29] top.tb_wb16_to_wb32.wb32_in.dat[28] top.tb_wb16_to_wb32.wb32_in.dat[27] top.tb_wb16_to_wb32.wb32_in.dat[26] top.tb_wb16_to_wb32.wb32_in.dat[25] top.tb_wb16_to_wb32.wb32_in.dat[24] top.tb_wb16_to_wb32.wb32_in.dat[23] top.tb_wb16_to_wb32.wb32_in.dat[22] top.tb_wb16_to_wb32.wb32_in.dat[21] top.tb_wb16_to_wb32.wb32_in.dat[20] top.tb_wb16_to_wb32.wb32_in.dat[19] top.tb_wb16_to_wb32.wb32_in.dat[18] top.tb_wb16_to_wb32.wb32_in.dat[17] top.tb_wb16_to_wb32.wb32_in.dat[16] top.tb_wb16_to_wb32.wb32_in.dat[15] top.tb_wb16_to_wb32.wb32_in.dat[14] top.tb_wb16_to_wb32.wb32_in.dat[13] top.tb_wb16_to_wb32.wb32_in.dat[12] top.tb_wb16_to_wb32.wb32_in.dat[11] top.tb_wb16_to_wb32.wb32_in.dat[10] top.tb_wb16_to_wb32.wb32_in.dat[9] top.tb_wb16_to_wb32.wb32_in.dat[8] top.tb_wb16_to_wb32.wb32_in.dat[7] top.tb_wb16_to_wb32.wb32_in.dat[6] top.tb_wb16_to_wb32.wb32_in.dat[5] top.tb_wb16_to_wb32.wb32_in.dat[4] top.tb_wb16_to_wb32.wb32_in.dat[3] top.tb_wb16_to_wb32.wb32_in.dat[2] top.tb_wb16_to_wb32.wb32_in.dat[1] top.tb_wb16_to_wb32.wb32_in.dat[0]
+#{top.tb_wb16_to_wb32.wb32_in.sel[3:0]} top.tb_wb16_to_wb32.wb32_in.sel[3] top.tb_wb16_to_wb32.wb32_in.sel[2] top.tb_wb16_to_wb32.wb32_in.sel[1] top.tb_wb16_to_wb32.wb32_in.sel[0]
+@200
+-wb16
+@28
+top.tb_wb16_to_wb32.wb16_out.cyc
+top.tb_wb16_to_wb32.wb16_out.stb
+top.tb_wb16_to_wb32.wb16_out.we
+@29
+top.tb_wb16_to_wb32.wb16_in.stall
+@22
+#{top.tb_wb16_to_wb32.wb16_out.adr[31:0]} top.tb_wb16_to_wb32.wb16_out.adr[31] top.tb_wb16_to_wb32.wb16_out.adr[30] top.tb_wb16_to_wb32.wb16_out.adr[29] top.tb_wb16_to_wb32.wb16_out.adr[28] top.tb_wb16_to_wb32.wb16_out.adr[27] top.tb_wb16_to_wb32.wb16_out.adr[26] top.tb_wb16_to_wb32.wb16_out.adr[25] top.tb_wb16_to_wb32.wb16_out.adr[24] top.tb_wb16_to_wb32.wb16_out.adr[23] top.tb_wb16_to_wb32.wb16_out.adr[22] top.tb_wb16_to_wb32.wb16_out.adr[21] top.tb_wb16_to_wb32.wb16_out.adr[20] top.tb_wb16_to_wb32.wb16_out.adr[19] top.tb_wb16_to_wb32.wb16_out.adr[18] top.tb_wb16_to_wb32.wb16_out.adr[17] top.tb_wb16_to_wb32.wb16_out.adr[16] top.tb_wb16_to_wb32.wb16_out.adr[15] top.tb_wb16_to_wb32.wb16_out.adr[14] top.tb_wb16_to_wb32.wb16_out.adr[13] top.tb_wb16_to_wb32.wb16_out.adr[12] top.tb_wb16_to_wb32.wb16_out.adr[11] top.tb_wb16_to_wb32.wb16_out.adr[10] top.tb_wb16_to_wb32.wb16_out.adr[9] top.tb_wb16_to_wb32.wb16_out.adr[8] top.tb_wb16_to_wb32.wb16_out.adr[7] top.tb_wb16_to_wb32.wb16_out.adr[6] top.tb_wb16_to_wb32.wb16_out.adr[5] top.tb_wb16_to_wb32.wb16_out.adr[4] top.tb_wb16_to_wb32.wb16_out.adr[3] top.tb_wb16_to_wb32.wb16_out.adr[2] top.tb_wb16_to_wb32.wb16_out.adr[1] top.tb_wb16_to_wb32.wb16_out.adr[0]
+#{top.tb_wb16_to_wb32.wb16_out.dat[31:0]} top.tb_wb16_to_wb32.wb16_out.dat[31] top.tb_wb16_to_wb32.wb16_out.dat[30] top.tb_wb16_to_wb32.wb16_out.dat[29] top.tb_wb16_to_wb32.wb16_out.dat[28] top.tb_wb16_to_wb32.wb16_out.dat[27] top.tb_wb16_to_wb32.wb16_out.dat[26] top.tb_wb16_to_wb32.wb16_out.dat[25] top.tb_wb16_to_wb32.wb16_out.dat[24] top.tb_wb16_to_wb32.wb16_out.dat[23] top.tb_wb16_to_wb32.wb16_out.dat[22] top.tb_wb16_to_wb32.wb16_out.dat[21] top.tb_wb16_to_wb32.wb16_out.dat[20] top.tb_wb16_to_wb32.wb16_out.dat[19] top.tb_wb16_to_wb32.wb16_out.dat[18] top.tb_wb16_to_wb32.wb16_out.dat[17] top.tb_wb16_to_wb32.wb16_out.dat[16] top.tb_wb16_to_wb32.wb16_out.dat[15] top.tb_wb16_to_wb32.wb16_out.dat[14] top.tb_wb16_to_wb32.wb16_out.dat[13] top.tb_wb16_to_wb32.wb16_out.dat[12] top.tb_wb16_to_wb32.wb16_out.dat[11] top.tb_wb16_to_wb32.wb16_out.dat[10] top.tb_wb16_to_wb32.wb16_out.dat[9] top.tb_wb16_to_wb32.wb16_out.dat[8] top.tb_wb16_to_wb32.wb16_out.dat[7] top.tb_wb16_to_wb32.wb16_out.dat[6] top.tb_wb16_to_wb32.wb16_out.dat[5] top.tb_wb16_to_wb32.wb16_out.dat[4] top.tb_wb16_to_wb32.wb16_out.dat[3] top.tb_wb16_to_wb32.wb16_out.dat[2] top.tb_wb16_to_wb32.wb16_out.dat[1] top.tb_wb16_to_wb32.wb16_out.dat[0]
+#{top.tb_wb16_to_wb32.wb16_out.sel[3:0]} top.tb_wb16_to_wb32.wb16_out.sel[3] top.tb_wb16_to_wb32.wb16_out.sel[2] top.tb_wb16_to_wb32.wb16_out.sel[1] top.tb_wb16_to_wb32.wb16_out.sel[0]
+@28
+top.tb_wb16_to_wb32.wb16_in.ack
+@22
+#{top.tb_wb16_to_wb32.wb16_in.dat[31:0]} top.tb_wb16_to_wb32.wb16_in.dat[31] top.tb_wb16_to_wb32.wb16_in.dat[30] top.tb_wb16_to_wb32.wb16_in.dat[29] top.tb_wb16_to_wb32.wb16_in.dat[28] top.tb_wb16_to_wb32.wb16_in.dat[27] top.tb_wb16_to_wb32.wb16_in.dat[26] top.tb_wb16_to_wb32.wb16_in.dat[25] top.tb_wb16_to_wb32.wb16_in.dat[24] top.tb_wb16_to_wb32.wb16_in.dat[23] top.tb_wb16_to_wb32.wb16_in.dat[22] top.tb_wb16_to_wb32.wb16_in.dat[21] top.tb_wb16_to_wb32.wb16_in.dat[20] top.tb_wb16_to_wb32.wb16_in.dat[19] top.tb_wb16_to_wb32.wb16_in.dat[18] top.tb_wb16_to_wb32.wb16_in.dat[17] top.tb_wb16_to_wb32.wb16_in.dat[16] top.tb_wb16_to_wb32.wb16_in.dat[15] top.tb_wb16_to_wb32.wb16_in.dat[14] top.tb_wb16_to_wb32.wb16_in.dat[13] top.tb_wb16_to_wb32.wb16_in.dat[12] top.tb_wb16_to_wb32.wb16_in.dat[11] top.tb_wb16_to_wb32.wb16_in.dat[10] top.tb_wb16_to_wb32.wb16_in.dat[9] top.tb_wb16_to_wb32.wb16_in.dat[8] top.tb_wb16_to_wb32.wb16_in.dat[7] top.tb_wb16_to_wb32.wb16_in.dat[6] top.tb_wb16_to_wb32.wb16_in.dat[5] top.tb_wb16_to_wb32.wb16_in.dat[4] top.tb_wb16_to_wb32.wb16_in.dat[3] top.tb_wb16_to_wb32.wb16_in.dat[2] top.tb_wb16_to_wb32.wb16_in.dat[1] top.tb_wb16_to_wb32.wb16_in.dat[0]
+[pattern_trace] 1
+[pattern_trace] 0
