@@ -72,13 +72,13 @@ end inferred_sync_fifo;
 
 architecture syn of inferred_sync_fifo is
 
-  constant c_pointer_width                         : integer := f_log2_size(g_size);
-  signal   rd_ptr, wr_ptr, wr_ptr_d0, rd_ptr_muxed : unsigned(c_pointer_width-1 downto 0);
-  signal   usedw                                   : unsigned(c_pointer_width downto 0);
-  signal   full, empty                             : std_logic;
-  signal   q_int                                   : std_logic_vector(g_data_width-1 downto 0);
-  signal   we_int, rd_int                          : std_logic;
-  signal   guard_bit                               : std_logic;
+  constant c_pointer_width              : integer := f_log2_size(g_size);
+  signal   rd_ptr, wr_ptr, rd_ptr_muxed : unsigned(c_pointer_width-1 downto 0);
+  signal   usedw                        : unsigned(c_pointer_width downto 0);
+  signal   full, empty                  : std_logic;
+
+  signal   we_int, rd_int               : std_logic;
+  signal   guard_bit                    : std_logic;
 
   signal q_comb : std_logic_vector(g_data_width-1 downto 0);
 
