@@ -9,6 +9,15 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+Unreleased
+==========
+https://ohwr.org/project/general-cores/compare/master...proposed_master
+
+Fixed
+-----
+- [hdl] avoid f_log2() circular dependencies in gc_extend_pulse.
+
+
 1.0.4 - 2020-03-26
 ==================
 https://www.ohwr.org/project/general-cores/tags/v1.0.4

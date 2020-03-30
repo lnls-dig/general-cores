@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2012-06-19
+-- Last update: 2020-03-30
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -41,7 +41,6 @@ use ieee.NUMERIC_STD.all;
 
 library work;
 use work.gencores_pkg.all;
-use work.genram_pkg.all;
 
 entity gc_extend_pulse is
   
@@ -60,7 +59,7 @@ end gc_extend_pulse;
 
 architecture rtl of gc_extend_pulse is
 
-  signal cntr : unsigned(f_log2_size(g_width)-1 downto 0);
+  signal cntr : unsigned(f_log2_ceil(g_width)-1 downto 0);
   signal extended_int : std_logic;
   
 begin  -- rtl
