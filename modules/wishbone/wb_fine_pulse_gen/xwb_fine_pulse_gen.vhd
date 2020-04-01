@@ -7,8 +7,8 @@ use work.wishbone_pkg.all;
 
 use work.fpg_wbgen2_pkg.all;
 
-library unisim;
-use unisim.VCOMPONENTS.all;
+--library unisim;
+--use unisim.VCOMPONENTS.all;
 
 entity xwb_fine_pulse_gen is
   generic (

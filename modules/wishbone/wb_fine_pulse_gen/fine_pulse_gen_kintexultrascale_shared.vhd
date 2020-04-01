@@ -139,7 +139,7 @@ architecture rtl of fine_pulse_gen_kintexultrascale_shared is
 
 begin
 
-  gen_use_Ext_serdes_clock : if not g_use_external_serdes_clock generate
+  gen_use_Ext_serdes_clock : if g_use_external_serdes_clock generate
     -- stub for the moment
     clk_ser_o    <= clk_ser_ext_i;
     clk_par_o    <= clk_ref_i;
@@ -147,7 +147,7 @@ begin
 
   end generate gen_use_Ext_serdes_clock;
 
-  gen_use_int_serdes_clock : if g_use_external_serdes_clock generate
+  gen_use_int_serdes_clock : if not g_use_external_serdes_clock generate
 
     U_MMCM : MMCME3_ADV
       generic map (
