@@ -215,7 +215,8 @@ package genram_pkg is
       g_with_almost_full       : boolean := false;
       g_with_count             : boolean := false;
       g_almost_empty_threshold : integer := 0;
-      g_almost_full_threshold  : integer := 0);
+      g_almost_full_threshold  : integer := 0;
+      g_register_flag_outputs  : boolean := true);
     port (
       rst_n_i        : in  std_logic := '1';
       clk_i          : in  std_logic;
