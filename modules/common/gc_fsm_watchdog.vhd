@@ -38,7 +38,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.genram_pkg.all;
+use work.gencores_pkg.all;
 
 entity gc_fsm_watchdog is
   generic
@@ -66,7 +66,7 @@ architecture behav of gc_fsm_watchdog is
   --============================================================================
   -- Signal declarations
   --============================================================================
-  signal wdt                : unsigned(f_log2_size(g_wdt_max)-1 downto 0);
+  signal wdt                : unsigned(f_log2_ceil(g_wdt_max)-1 downto 0);
 
 --==============================================================================
 --  architecture begin

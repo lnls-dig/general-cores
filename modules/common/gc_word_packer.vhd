@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2012-09-13
--- Last update: 2012-09-13
+-- Last update: 2020-09-18
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.genram_pkg.all;
+use work.gencores_pkg.all;
 
 entity gc_word_packer is
 
@@ -101,7 +101,7 @@ architecture rtl of gc_word_packer is
   constant c_sreg_entries : integer := c_sreg_size / f_min(g_input_width, g_output_width);
 
   signal sreg  : std_logic_vector(c_sreg_size-1 downto 0);
-  signal count : unsigned(f_log2_size(c_sreg_entries + 1) - 1 downto 0);
+  signal count : unsigned(f_log2_ceil(c_sreg_entries + 1) - 1 downto 0);
   signal empty : std_logic;
 
   signal q_valid_comb, q_valid_reg, q_req_d0 : std_logic;
