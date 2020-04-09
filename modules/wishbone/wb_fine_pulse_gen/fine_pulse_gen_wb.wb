@@ -116,6 +116,24 @@ peripheral {
          access_dev = READ_ONLY;
 			};
 
+			
+			field {
+				 name = "Serdes Reset";
+				 prefix = "SERDES_RST";
+				 type = BIT;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
+			
+			field {
+				 name = "PLL Locked";
+				 prefix = "PLL_LOCKED";
+				 type = BIT;
+         access_bus = READ_ONLY;
+         access_dev = WRITE_ONLY;
+			};
+
 	 };
 
 	 reg {
