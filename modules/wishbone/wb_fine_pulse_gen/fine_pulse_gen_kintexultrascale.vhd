@@ -19,6 +19,8 @@ entity fine_pulse_gen_kintexultrascale is
       clk_par_i    : in std_logic;
       clk_serdes_i : in std_logic;
 
+      rst_serdes_i : in std_logic;
+      
       rst_sys_n_i : in std_logic;
       cont_i      : in std_logic;
 
@@ -204,7 +206,7 @@ begin
         D(5)      => par_data(2),
         D(6)      => par_data(1),
         D(7)      => par_data(0),
-        RST    => RST,
+        RST    => rst_serdes_i,
         T => '0'
    );
 

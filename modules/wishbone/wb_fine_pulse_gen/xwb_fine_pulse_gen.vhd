@@ -31,6 +31,8 @@ entity xwb_fine_pulse_gen is
 
     pulse_o : out std_logic_vector(g_num_channels-1 downto 0);
 
+    clk_par_o : out std_logic;
+
     slave_i : in  t_wishbone_slave_in;
     slave_o : out t_wishbone_slave_out
     );
@@ -129,6 +131,8 @@ architecture rtl of xwb_fine_pulse_gen is
   signal pps_cnt : unsigned(15 downto 0);
 
   signal pll_locked : std_logic;
+
+  signal rst_serdes : std_logic;
 
 begin
 
@@ -405,7 +409,7 @@ begin
         clk_serdes_i => clk_ser,
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
-        cont_i => ch(i).cont,
+        cont_i =>  ch(i).cont,
         coarse_i       => ch(I).mask,
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
@@ -424,6 +428,7 @@ begin
       port map (
         clk_par_i    => clk_par,
         clk_serdes_i => clk_ser,
+        rst_serdes_i => regs_out.csr_serdes_rst_o,
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
         cont_i => ch(i).cont,
@@ -476,7 +481,10 @@ begin
   end generate gen_is_kintex_ultrascale;
   
 
+  clk_par_o <= clk_par;
 
+  regs_in.csr_pll_locked_i <= pll_locked;
+  
 end rtl;
 
 
