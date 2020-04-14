@@ -13,6 +13,10 @@ Unreleased
 ==========
 https://ohwr.org/project/general-cores/compare/master...proposed_master
 
+Added
+-----
+- [hdl] New memory wrapper for Cheby
+
 Fixed
 -----
 - [hdl] avoid f_log2() circular dependencies in gc_extend_pulse.
