@@ -427,6 +427,7 @@ begin
         g_use_odelay => f_to_bool(g_use_odelay(i)) )
       port map (
         clk_par_i    => clk_par,
+        clk_ref_i => clk_ref_i,
         clk_serdes_i => clk_ser,
         rst_serdes_i => regs_out.csr_serdes_rst_o,
         rst_sys_n_i  => rst_sys_n_i,

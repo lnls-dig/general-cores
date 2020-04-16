@@ -43,8 +43,8 @@ class DDSSyncUnitDriver;
       
       
       int coarse_par = int'($floor (delta / 16.0));
-      int coarse_ser = int'($floor (delta / 2.0) - coarse_par * 8);
-      int fine = int'((delta / 2.0 - $floor(delta / 2.0)) * 2.0 / tap_size);
+      int coarse_ser = int'($floor (delta / 1.0) - coarse_par * 16);
+      int fine = int'((delta / 1.0 - $floor(delta / 1.0)) * 1.0 / tap_size);
       int mask = coarse_ser;
  //(1 << (7-coarse_ser+1)) - 1;
       uint32_t ocr;
@@ -149,7 +149,7 @@ module main;
 	       first_delay = dly;
 
 
-	     $display("t_pps %t t_pulse %t delta %d", t_pps, t_pulse, (t_pulse - t_pps) / 1ns );
+	     $display("t_pps %t t_pulse %t delta %.2f", t_pps, t_pulse, real'(t_pulse - t_pps) / real'(1ns) );
 	     
 	     
 /*	     delta = dly-first_delay;
@@ -173,14 +173,14 @@ module main;
    xwb_fine_pulse_gen
      #(
        .g_target_platform("KintexUltrascale"),
-       .g_use_external_serdes_clock(1),
+       .g_use_external_serdes_clock(0),
        .g_num_channels(1)
        )
    DUT
      (
       .rst_sys_n_i(rst_n),
 
-      .clk_ser_ext_i(clk_250m),
+//      .clk_ser_ext_i(clk_250m),
       .clk_sys_i (clk_62m5),
       .clk_ref_i (clk_62m5),
       
@@ -222,12 +222,12 @@ module main;
  -----/\----- EXCLUDED -----/\----- */
 
 
-      for (t = 1.0; t <= 200.9; t+=1.0)
+      for (t = 1.0; t <= 200.9; t+=0.1)
 	begin
 //	   $display("Pulse @ %f", t );
 	   
 	   dlys.push_back(t);
-	   drv.pulse(0, 0, 0, t);
+	   drv.pulse(0, 1, 0, t);
 	end
       
       

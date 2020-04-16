@@ -136,6 +136,7 @@ architecture rtl of fine_pulse_gen_kintexultrascale_shared is
   end component BUFG;
 
   signal clk_ser_prebuf, mmcm_clk_fb_prebuf, mmcm_clk_fb : std_logic;
+  signal clk_par_prebuf : std_logic;
 
 begin
 
@@ -165,10 +166,14 @@ begin
         CLKFBOUT_PHASE       => 0.0,  -- Phase offset in degrees of CLKFB (-360.000-360.000)
         CLKFBOUT_USE_FINE_PS => "FALSE",
 
-        CLKOUT0_DIVIDE_F    => 4.0,     -- clk_ser: 250 MHz
+        CLKOUT0_DIVIDE_F    => 2.0,     -- clk_ser: 500 MHz
         CLKOUT0_DUTY_CYCLE  => 0.5,
         CLKOUT0_PHASE       => 0.0,
-        CLKOUT0_USE_FINE_PS => "FALSE"
+        CLKOUT1_DIVIDE    =>   8,     -- clk_par: 125 MHz
+        CLKOUT1_DUTY_CYCLE  => 0.5,
+        CLKOUT1_PHASE       => 0.0,
+        CLKOUT0_USE_FINE_PS => "FALSE",
+        CLKOUT1_USE_FINE_PS => "FALSE"
         )
       port map (
         -- Clock Inputs inputs: Clock inputs
@@ -176,6 +181,7 @@ begin
         CLKIN2   => '0',
         -- Clock Outputs outputs: User configurable clock outputs
         CLKOUT0  => clk_ser_prebuf,
+        CLKOUT1  => clk_par_prebuf,
         -- Feedback
         CLKFBOUT => mmcm_clk_fb_prebuf,
         CLKFBIN  => mmcm_clk_fb,
@@ -208,7 +214,10 @@ begin
         I => clk_ser_prebuf,
         O => clk_ser_o);
 
-    clk_par_o <= clk_ref_i;
+    u_buf_mmcm_par : BUFG
+      port map (
+        I => clk_par_prebuf,
+        O => clk_par_o);
 
   end generate gen_use_int_serdes_clock;
 
