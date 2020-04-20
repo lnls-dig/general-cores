@@ -10,13 +10,13 @@ except NameError:
 
 # Target specific modules.
 if target == "altera":
-	local_modules = ["altera", "generic"]
+	modules = {"local": ["altera", "generic"]}
 elif target == "xilinx":
     if syn_device[0:4].upper()=="XC6V":
-        local_modules = ["xilinx", "xilinx/virtex6"]
+        modules = {"local": ["xilinx", "xilinx/virtex6"]}
     else:
-        local_modules = ["xilinx", "generic"]
+        modules = {"local": ["xilinx", "generic"]}
 else:
-	local_modules = ["generic"]
+	modules = {"local" : ["generic"]}
 
-modules = {"local" : local_modules + ["common", "cheby"]}
+modules["local"].extend(["common", "cheby"])
