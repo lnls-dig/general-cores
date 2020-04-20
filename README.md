@@ -228,3 +228,5 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     superseeded by the crossbar.
   - [wb_metadata](modules/wishbone/wb_metadata) is a little helper to
     create metadata for the convention.
+  - [wb_indirect](modules/wishbone/wb_indirect) provides a wishbone
+    master driven by an address and a data registers.
