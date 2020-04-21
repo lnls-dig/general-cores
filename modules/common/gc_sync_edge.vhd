@@ -53,23 +53,15 @@ begin
       d_i       => data_i,
       q_o       => sync);
 
-  assert g_EDGE = "positive" or g_EDGE = "negative" severity FAILURE;
+  inst_gc_edge_detect : entity work.gc_edge_detect
+    generic map (
+      g_ASYNC_RST  => TRUE,
+      g_PULSE_EDGE => g_EDGE,
+      g_CLOCK_EDGE => "positive")
+    port map (
+      clk_i   => clk_i,
+      rst_n_i => rst_n_a_i,
+      data_i  => sync,
+      pulse_o => pulse_o);
 
-  sync_posedge : if g_EDGE = "positive" generate
-    inst_pedge : entity work.gc_posedge
-      port map (
-        clk_i   => clk_i,
-        rst_n_i => rst_n_a_i,
-        data_i  => sync,
-        pulse_o => pulse_o);
-  end generate;
-
-  sync_negedge : if g_EDGE = "negative" generate
-    inst_pedge : entity work.gc_negedge
-      port map (
-        clk_i   => clk_i,
-        rst_n_i => rst_n_a_i,
-        data_i  => sync,
-        pulse_o => pulse_o);
-  end generate;
 end architecture arch;

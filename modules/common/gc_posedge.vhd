@@ -26,6 +26,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity gc_posedge is
+  generic(
+    g_ASYNC_RST  : boolean := FALSE;
+    -- Clock edge sensitivity of edge detection flip-flop.
+    -- Valid values are "positive" and "negative".
+    g_CLOCK_EDGE : string  := "positive");
   port(
     clk_i   : in  std_logic;   -- clock
     rst_n_i : in  std_logic;   -- reset
@@ -34,18 +39,18 @@ entity gc_posedge is
 end entity gc_posedge;
 
 architecture arch of gc_posedge is
-  signal dff : std_logic;
-begin
-  pulse_o <= data_i and not dff;
 
-  process (clk_i)
-  begin
-    if rising_edge (clk_i) then
-      if rst_n_i = '0' then
-        dff <= '0';
-      else
-        dff <= data_i;
-      end if;
-    end if;
-  end process;
-end arch;
+begin
+
+  inst_gc_edge_detect : entity work.gc_edge_detect
+    generic map (
+      g_ASYNC_RST  => g_ASYNC_RST,
+      g_PULSE_EDGE => "positive",
+      g_CLOCK_EDGE => g_CLOCK_EDGE)
+    port map (
+      clk_i   => clk_i,
+      rst_n_i => rst_n_i,
+      data_i  => data_i,
+      pulse_o => pulse_o);
+
+end architecture arch;

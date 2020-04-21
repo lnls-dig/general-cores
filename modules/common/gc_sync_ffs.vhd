@@ -55,6 +55,9 @@ begin
       q_o       => sync);
 
   cmp_gc_posedge : entity work.gc_posedge
+    generic map (
+      g_ASYNC_RST  => TRUE,
+      g_CLOCK_EDGE => g_SYNC_EDGE)
     port map (
       clk_i   => clk_i,
       rst_n_i => rst_n_i,
@@ -62,6 +65,9 @@ begin
       pulse_o => ppulse);
 
   cmp_gc_negedge : entity work.gc_negedge
+    generic map (
+      g_ASYNC_RST  => TRUE,
+      g_CLOCK_EDGE => g_SYNC_EDGE)
     port map (
       clk_i   => clk_i,
       rst_n_i => rst_n_i,

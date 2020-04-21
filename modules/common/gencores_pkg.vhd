@@ -272,7 +272,22 @@ package gencores_pkg is
   ------------------------------------------------------------------------------
   -- Edge detectors
   ------------------------------------------------------------------------------
+  component gc_edge_detect is
+    generic (
+      g_ASYNC_RST  : boolean := FALSE;
+      g_PULSE_EDGE : string  := "positive";
+      g_CLOCK_EDGE : string  := "positive");
+    port (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+      data_i  : in  std_logic;
+      pulse_o : out std_logic);
+  end component gc_edge_detect;
+
   component gc_negedge is
+    generic (
+      g_ASYNC_RST  : boolean := FALSE;
+      g_CLOCK_EDGE : string  := "positive");
     port (
       clk_i   : in  std_logic;
       rst_n_i : in  std_logic;
@@ -281,6 +296,9 @@ package gencores_pkg is
   end component gc_negedge;
 
   component gc_posedge is
+    generic (
+      g_ASYNC_RST  : boolean := FALSE;
+      g_CLOCK_EDGE : string  := "positive");
     port (
       clk_i   : in  std_logic;
       rst_n_i : in  std_logic;

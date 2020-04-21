@@ -13,8 +13,9 @@ In [modules/common](modules/common) there are general purpose cores:
 * The package [matrix_pkg](modules/common/matrix_pkg.vhd) declares a 2d
   array of std_logic, and some subprograms to handle it.
 
-* Edge detectors are provided by [gc_posedge](modules/common/gc_posedge.vhd)
-  and [gc_negedge](modules/common/gc_negedge.vhd).
+* Edge detectors are provided by [gc_posedge](modules/common/gc_posedge.vhd),
+  [gc_negedge](modules/common/gc_negedge.vhd), and
+  [gc_edge_detect](modules/common/gc_edge_detect.vhd).
 
 * For clock-domain crossing or asynchronous signal register, use
   [gc_sync](modules/common/gc_sync.vhd).  This is the basic synchronizer.
