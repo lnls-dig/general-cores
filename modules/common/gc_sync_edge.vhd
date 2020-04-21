@@ -10,7 +10,7 @@
 --   All the registers in the chain are cleared at reset.
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2010-2018
+-- Copyright CERN 2010-2020
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,12 @@ use ieee.std_logic_1164.all;
 
 entity gc_sync_edge is
   generic(
-    g_edge : string := "positive");
+    -- This defines the edge detection for the pulse_o output.
+    -- IMPORTANT: it should not be confused with g_SYNC_EDGE used
+    -- in other modules such as gc_sync_ffs. The gc_sync_edge module
+    -- is *only* sensitive to the rising edge of clk_i.
+    -- Valid values are "positive" and "negative"
+    g_EDGE : string := "positive");
   port(
     clk_i     : in  std_logic;   -- clock from the destination clock domain
     rst_n_a_i : in  std_logic;   -- async reset
@@ -48,9 +53,9 @@ begin
       d_i       => data_i,
       q_o       => sync);
 
-  assert g_edge = "positive" or g_edge = "negative" severity FAILURE;
+  assert g_EDGE = "positive" or g_EDGE = "negative" severity FAILURE;
 
-  sync_posedge : if g_edge = "positive" generate
+  sync_posedge : if g_EDGE = "positive" generate
     inst_pedge : entity work.gc_posedge
       port map (
         clk_i   => clk_i,
@@ -59,7 +64,7 @@ begin
         pulse_o => pulse_o);
   end generate;
 
-  sync_negedge : if g_edge = "negative" generate
+  sync_negedge : if g_EDGE = "negative" generate
     inst_pedge : entity work.gc_negedge
       port map (
         clk_i   => clk_i,

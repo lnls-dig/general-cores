@@ -10,7 +10,7 @@
 --   All the registers in the chain are cleared at reset.
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2010-2018
+-- Copyright CERN 2010-2020
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,8 @@ use ieee.std_logic_1164.all;
 
 entity gc_sync_ffs is
   generic(
-    g_sync_edge : string := "positive");
+    -- valid values are "positive" and "negative"
+    g_SYNC_EDGE : string := "positive");
   port(
     clk_i    : in  std_logic;   -- clock from the destination clock domain
     rst_n_i  : in  std_logic;   -- async reset
@@ -46,7 +47,7 @@ begin
 
   cmp_gc_sync : entity work.gc_sync
     generic map (
-      g_sync_edge => g_sync_edge)
+      g_SYNC_EDGE => g_SYNC_EDGE)
     port map (
       clk_i     => clk_i,
       rst_n_a_i => rst_n_i,
@@ -67,7 +68,7 @@ begin
       data_i  => sync,
       pulse_o => npulse);
 
-  sync_posedge : if (g_sync_edge = "positive") generate
+  sync_posedge : if (g_SYNC_EDGE = "positive") generate
     process(clk_i, rst_n_i)
     begin
       if(rst_n_i = '0') then
@@ -82,7 +83,7 @@ begin
     end process;
   end generate sync_posedge;
 
-  sync_negedge : if(g_sync_edge = "negative") generate
+  sync_negedge : if(g_SYNC_EDGE = "negative") generate
     process(clk_i, rst_n_i)
     begin
       if(rst_n_i = '0') then
