@@ -238,7 +238,7 @@ package gencores_pkg is
   ------------------------------------------------------------------------------
   component gc_sync_ffs
     generic (
-      g_sync_edge : string := "positive");
+      g_SYNC_EDGE : string := "positive");
     port (
       clk_i    : in  std_logic;
       rst_n_i  : in  std_logic;
@@ -246,28 +246,17 @@ package gencores_pkg is
       synced_o : out std_logic;
       npulse_o : out std_logic;
       ppulse_o : out std_logic);
-  end component;
+  end component gc_sync_ffs;
 
   component gc_sync is
     generic (
-      g_sync_edge : string := "positive");
+      g_SYNC_EDGE : string := "positive");
     port (
-        clk_i     : in  std_logic;
-        rst_n_a_i : in  std_logic;
-        d_i       : in  std_logic;
-        q_o       : out std_logic);
+      clk_i     : in  std_logic;
+      rst_n_a_i : in  std_logic;
+      d_i       : in  std_logic;
+      q_o       : out std_logic);
   end component gc_sync;
-
-  component gc_sync_edge is
-    generic (
-      g_edge : string := "positive");
-    port (
-        clk_i     : in  std_logic;
-        rst_n_a_i : in  std_logic;
-        data_i    : in  std_logic;
-        synced_o  : out std_logic;
-        pulse_o   : out std_logic);
-  end component gc_sync_edge;
 
   ------------------------------------------------------------------------------
   -- Edge detectors
