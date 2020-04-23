@@ -54,7 +54,7 @@ architecture rtl of xwb_axi4lite_bridge is
   signal state : t_state;
 
   signal count : unsigned(10 downto 0);
-  
+
 begin
 
   process(clk_sys_i)
@@ -77,7 +77,7 @@ begin
             axi4_slave_o.RRESP  <= (others => 'X');
             axi4_slave_o.RVALID <= '0';
             axi4_slave_o.RLAST <= '0';
-            
+
             if(axi4_slave_i.AWVALID = '1') then
               state           <= ISSUE_WRITE;
               wb_master_o.adr <= axi4_slave_i.AWADDR;
@@ -124,7 +124,7 @@ begin
               end if;
             end if;
 
-            
+
           when COMPLETE_WRITE =>
             if(wb_master_i.stall = '0') then
               wb_master_o.stb <= '0';
@@ -172,24 +172,21 @@ begin
             end if;
             count <= count + 1;
 
-            
+
           when RESPONSE_WRITE =>
+            axi4_slave_o.BVALID <= '1';
             if (axi4_slave_i.BREADY = '1') then
               axi4_slave_o.BVALID <= '0';
               state               <= IDLE;
             end if;
 
-<<<<<<< HEAD
-          when RESPONSE_READ => null;
-=======
           when RESPONSE_READ =>
->>>>>>> 49d9064... axi4: add 512-bit data width AXI4-full record, fixed compilation issue in axi->wb bridge
             if (axi4_slave_i.RREADY = '1') then
               axi4_slave_o.RVALID <= '0';
               state               <= IDLE;
             end if;
-            
-            
+
+
         end case;
 
 
@@ -199,4 +196,3 @@ begin
   end process;
 
 end rtl;
-
