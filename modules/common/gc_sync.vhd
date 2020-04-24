@@ -9,7 +9,7 @@
 -- description: Elementary synchronizer chain using two flip-flops.
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2014-2018
+-- Copyright CERN 2014-2020
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -27,7 +27,8 @@ use ieee.std_logic_1164.all;
 
 entity gc_sync is
   generic(
-    g_sync_edge : string := "positive");
+    -- valid values are "positive" and "negative"
+    g_SYNC_EDGE : string := "positive");
   port (
     clk_i     : in  std_logic;
     rst_n_a_i : in  std_logic;
@@ -69,11 +70,11 @@ architecture arch of gc_sync is
 
 begin
 
-  assert g_sync_edge = "positive" or g_sync_edge = "negative" severity failure;
+  assert g_SYNC_EDGE = "positive" or g_SYNC_EDGE = "negative" severity failure;
 
   gc_sync_ffs_in <= d_i;
 
-  sync_posedge : if (g_sync_edge = "positive") generate
+  sync_posedge : if (g_SYNC_EDGE = "positive") generate
     process(clk_i, rst_n_a_i)
     begin
       if rst_n_a_i = '0' then
@@ -86,7 +87,7 @@ begin
     end process;
   end generate sync_posedge;
 
-  sync_negedge : if(g_sync_edge = "negative") generate
+  sync_negedge : if(g_SYNC_EDGE = "negative") generate
     process(clk_i, rst_n_a_i)
     begin
       if rst_n_a_i = '0' then

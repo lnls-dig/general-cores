@@ -63,23 +63,27 @@ architecture rtl of gc_pulse_synchronizer2 is
 
 begin  -- rtl
 
-  cmp_in2out_sync : gc_sync_ffs
+  cmp_in2out_sync : gc_sync
     port map (
-      clk_i    => clk_out_i,
-      rst_n_i  => rst_out_n_i,
-      data_i   => in_ext,
-      synced_o => out_ext,
-      npulse_o => open,
-      ppulse_o => q_p_o);
+      clk_i     => clk_out_i,
+      rst_n_a_i => rst_out_n_i,
+      d_i       => in_ext,
+      q_o       => out_ext);
 
-  cmp_out2in_sync : gc_sync_ffs
+
+  cmp_pulse_out : gc_edge_detect
     port map (
-      clk_i    => clk_in_i,
-      rst_n_i  => rst_in_n_i,
-      data_i   => out_ext,
-      synced_o => out_feedback,
-      npulse_o => open,
-      ppulse_o => open);
+      clk_i   => clk_out_i,
+      rst_n_i => rst_out_n_i,
+      data_i  => out_ext,
+      pulse_o => q_p_o);
+
+  cmp_out2in_sync : gc_sync
+    port map (
+      clk_i     => clk_in_i,
+      rst_n_a_i => rst_in_n_i,
+      d_i       => out_ext,
+      q_o       => out_feedback);
 
   p_input_ack : process(clk_in_i)
   begin
