@@ -9,16 +9,20 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
-Unreleased
+1.1.0 - TBD
 ==========
-https://ohwr.org/project/general-cores/compare/master...proposed_master
+https://www.ohwr.org/project/general-cores/tags/v1.1.0
 
 Added
 -----
-- [hdl] New memory wrapper for Cheby
+- [hdl] New indirect wishbone master (driven by an address and data register).
+- [hdl] New memory wrapper for Cheby.
 
 Fixed
 -----
+- [hdl] regression to gc_sync_ffs introduced by v1.0.4.
+- [hdl] add dummy generic to generic_dpram in altera.
+- [hdl] add missing generics to generic_sync_fifo in genram_pkg.
 - [hdl] avoid f_log2() circular dependencies in gc_extend_pulse.
 
 
