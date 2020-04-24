@@ -54,9 +54,10 @@ begin
       d_i       => data_i,
       q_o       => sync);
 
-  cmp_gc_posedge : entity work.gc_posedge
+  cmp_gc_posedge : entity work.gc_edge_detect
     generic map (
       g_ASYNC_RST  => TRUE,
+      g_PULSE_EDGE => "positive",
       g_CLOCK_EDGE => g_SYNC_EDGE)
     port map (
       clk_i   => clk_i,
@@ -64,9 +65,10 @@ begin
       data_i  => sync,
       pulse_o => ppulse);
 
-  cmp_gc_negedge : entity work.gc_negedge
+  cmp_gc_negedge : entity work.gc_edge_detect
     generic map (
       g_ASYNC_RST  => TRUE,
+      g_PULSE_EDGE => "negative",
       g_CLOCK_EDGE => g_SYNC_EDGE)
     port map (
       clk_i   => clk_i,
