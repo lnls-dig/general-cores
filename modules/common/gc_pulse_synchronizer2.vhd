@@ -40,9 +40,10 @@ entity gc_pulse_synchronizer2 is
     -- pulse input ready (clk_in_i domain). When HI, a pulse
     -- coming to d_p_i will be correctly transferred to q_p_o.
     d_ready_o   : out std_logic;
-    -- last pulse input acknowledged. This is an alternative
-    -- status flag to d_ready_o for applications that work better
-    -- with a pulsed ACK instead of a "ready" flag.
+    -- last pulse input acknowledged (clk_in_i domain).
+    -- This is an alternative status flag to d_ready_o for
+    -- applications that work better with a pulsed ACK
+    -- instead of a "ready" flag.
     d_ack_p_o   : out std_logic;
     -- pulse input (clk_in_i domain)
     d_p_i       : in  std_logic;
