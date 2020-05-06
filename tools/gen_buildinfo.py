@@ -3,11 +3,16 @@
 with open("buildinfo_pkg.vhd", "w") as f:
   import subprocess
   import time
+
+  # Extract current commit id.
   try:
     commitid = subprocess.check_output(
       ["git", "log", "-1", "--format=%H"]).decode().strip()
   except:
     commitid = "unknown"
+
+  # Extract current tag + dirty indicator.
+  # It is not sure if the definition of dirty is stable across all git versions.
   try:
     tag = subprocess.check_output(
       ["git", "describe", "--dirty", "--always"]).decode().strip()
@@ -18,6 +23,7 @@ with open("buildinfo_pkg.vhd", "w") as f:
   except:
     tag = 'unknown'
     dirty = "-??"
+
   try:
     userid = subprocess.check_output(
       ["git", "config", "--get", "user.name"]).decode().strip()
