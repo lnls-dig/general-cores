@@ -9,6 +9,16 @@ with open("buildinfo_pkg.vhd", "w") as f:
   except:
     commitid = "unknown"
   try:
+    tag = subprocess.check_output(
+      ["git", "describe", "--dirty", "--always"]).decode().strip()
+    if tag.endswith('-dirty'):
+      dirty = '-dirty'
+    else:
+      dirty = ''
+  except:
+    tag = 'unknown'
+    dirty = "-??"
+  try:
     userid = subprocess.check_output(
       ["git", "config", "--get", "user.name"]).decode().strip()
   except:
@@ -27,7 +37,8 @@ with open("buildinfo_pkg.vhd", "w") as f:
   f.write("  constant buildinfo : string :=\n")
   f.write('       "buildinfo:1" & LF\n')
   f.write('     & "module:{}" & LF\n'.format(top))
-  f.write('     & "commit:{}" & LF\n'.format(commitid))
+  f.write('     & "commit:{}" & LF\n'.format(commitid + dirty))
+  f.write('     & "tag:{}" & LF\n'.format(tag))
   f.write('     & "syntool:{}" & LF\n'.format(tool))
   f.write('     & "syndate:{}" & LF\n'.format(
       time.strftime("%F, %H:%M %Z", time.localtime())))
