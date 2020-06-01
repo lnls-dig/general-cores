@@ -133,6 +133,10 @@ package wishbone_pkg is
 
   constant c_DUMMY_WB_SLAVE_D64_IN   : t_wishbone_slave_data64_in :=
     ('0', '0', c_DUMMY_WB_ADDR, (others => 'X'), 'X', (others => 'X'));
+  constant c_DUMMY_WB_MASTER_D64_OUT : t_wishbone_master_data64_out := c_DUMMY_WB_SLAVE_D64_IN;
+  constant c_DUMMY_WB_SLAVE_D64_OUT   : t_wishbone_slave_data64_out :=
+    ('1', '0', '0', '0', (others => 'X'));
+  constant c_DUMMY_WB_MASTER_D64_IN  : t_wishbone_master_data64_in := c_DUMMY_WB_SLAVE_D64_OUT;
 
   -- For backward compatibility
   constant cc_dummy_address : std_logic_vector(c_wishbone_address_width-1 downto 0) := c_DUMMY_WB_ADDR;
