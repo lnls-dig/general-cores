@@ -1,20 +1,37 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-License-Identifier: CC0-1.0
 #
 # Copyright (C) 2019 CERN
 
-# SPDX-License-Identifier: GPL-2.0-or-later
-#
-# Copyright (C) 2019 CERN
+TOPDIR ?= ../../../../../
+GCORES ?= $(abspath $(TOPDIR))
 
+#
+# External variables and targets
+#
 -include Makefile.specific
-REPO_PARENT ?= $(shell /bin/pwd)/../..
 -include $(REPO_PARENT)/parent_common.mk
+include $(GCORES)/common.mk
 
-LINUX ?= /lib/modules/$(shell uname -r)/build
+#
+# Local variables
+#
+KVERSION ?= $(shell uname -r)
+LINUX ?= /lib/modules/$(KVERSION)/build
+
+#
+# Local targets
+#
 
 all: modules
+install: modules_install
 
-clean modules help modules_install:
-	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) CONFIG_I2C_OCORES=m $@
+clean coccicheck modules:
+	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) \
+		GIT_VERSION=$(GIT_VERSION) \
+		CONFIG_I2C_OCORES=m \
+		$@
+modules_install: modules
+	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
 
-.PHONY: all modules clean help install modules_install
+
+.PHONY: all clean coccicheck modules modules_install install

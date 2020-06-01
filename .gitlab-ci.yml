@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: CC0-1.0
+#
+# SPDX-FileCopyrightText: 2019 CERN
+
+---
+variables:
+  KOJI_TARGET: 'ohwr7'
+  KOJI_DISTTAG: '.el7.cern'
+  DIST_PATH: distribution
+  BUILD_PATH: distribution/rpmbuild
+  SRPM_PATH: distribution/rpmbuild/SRPMS/dkms-${CI_PROJECT_NAME}*src.rpm
+
+
+stages:
+  - static-analysis
+  - build
+  - srpm
+  - kscratch
+  - kbuild
+
+reuse:
+  stage: static-analysis
+  image: fsfe/reuse:latest
+  script:
+    - reuse lint
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - yum install -y kernel-devel git
+    - export LINUX=/usr/src/kernels/*/
+    - make -C software
+
+build-dkms:
+  stage: build
+  script:
+    - yum install -y kernel-devel lua git dkms
+    - export LINUX=/usr/src/kernels/*/
+    - export PREFIX=$(mktemp -d)
+    - make -C software/ -f dkms.mk dkms_install
+    - make -C ${PREFIX}/usr/src/${CI_PROJECT_NAME}*/
+
+build_srpm:
+  stage: srpm
+  script:
+    - yum-builddep -y ${DIST_PATH}/*.spec
+    - export LINUX=/usr/src/kernels/*/
+    - make -C distribution rpmbuild-source
+  artifacts:
+    paths:
+      - ${SRPM_PATH}
+    expire_in: 1 day
+
+.koji_deps_template: &koji_deps
+  before_script:
+    - yum install -y koji krb5-workstation rpm-build
+    - echo ${OHWR_PASSWORD} | kinit ${OHWR_USER}
+
+kscratch:
+  <<: *koji_deps
+  stage: kscratch
+  script:
+    - koji --config=.koji build --wait --scratch ${KOJI_TARGET} ${SRPM_PATH}
+
+kbuild-ohwr:
+  <<: *koji_deps
+  stage: kbuild
+  only:
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  except:
+    - branches
+  script:
+    - koji --config=.koji build --wait ${KOJI_TARGET} ${SRPM_PATH}

@@ -27,6 +27,7 @@ modules =  { "local" : [
   "wb_ds182x_readout",
   "wb_metadata",
   "wb_split",
+  "wb16_to_wb32",
   "wbgen2",
   "wbgenplus",
   ]}

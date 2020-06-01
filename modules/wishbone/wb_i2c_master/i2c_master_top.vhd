@@ -157,7 +157,7 @@ architecture structural of i2c_master_top is
     signal sr   : std_logic_vector(7 downto 0);                     -- status register
 
     -- internal reset signal
-    signal rst_i : std_logic;
+    signal arst_n : std_logic;
 
     -- wishbone write access
     signal wb_wacc : std_logic;
@@ -190,7 +190,7 @@ architecture structural of i2c_master_top is
 
 begin
     -- generate internal reset signal
-    rst_i <= not wb_rst_i; --arst_i xor ARST_LVL;
+    arst_n <= arst_i xor ARST_LVL;
 
     -- generate acknowledge output signal
     gen_ack_o : process(wb_clk_i)
@@ -228,9 +228,9 @@ begin
 
 
     -- generate registers (CR, SR see below)
-    gen_regs: process(rst_i, wb_clk_i)
+    gen_regs: process(arst_n, wb_clk_i)
     begin
-        if (rst_i = '0') then
+        if (arst_n = '0') then
             prer <= (others => '1');
             ctr  <= (others => '0');
             txr  <= (others => '0');
@@ -268,9 +268,9 @@ begin
 
 
     -- generate command register
-    gen_cr: process(rst_i, wb_clk_i)
+    gen_cr: process(arst_n, wb_clk_i)
     begin
-        if (rst_i = '0') then
+        if (arst_n = '0') then
             cr <= (others => '0');
         elsif (wb_clk_i'event and wb_clk_i = '1') then
             if (wb_rst_i = '1') then
@@ -309,7 +309,7 @@ begin
     port map (
               clk      => wb_clk_i,
               rst      => wb_rst_i,
-              nReset   => rst_i,
+              nReset   => arst_n,
               ena      => core_en,
               clk_cnt  => prer,
               start    => sta,
@@ -346,9 +346,9 @@ begin
     st_irq_block : block
     begin
         -- generate status register bits
-        gen_sr_bits: process (wb_clk_i, rst_i)
+        gen_sr_bits: process (arst_n, wb_clk_i)
         begin
-            if (rst_i = '0') then
+            if (arst_n = '0') then
                 al       <= '0';
                 rxack    <= '0';
                 tip      <= '0';
@@ -371,9 +371,9 @@ begin
         end process gen_sr_bits;
 
         -- generate interrupt request signals
-        gen_irq: process (wb_clk_i, rst_i)
+        gen_irq: process (arst_n, wb_clk_i)
         begin
-            if (rst_i = '0') then
+            if (arst_n = '0') then
                 inta_o <= '0';
             elsif (wb_clk_i'event and wb_clk_i = '1') then
                    if (wb_rst_i = '1') then

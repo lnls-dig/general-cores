@@ -28,6 +28,91 @@
 #include <linux/spinlock.h>
 #include <linux/jiffies.h>
 
+struct ocores_i2c;
+static int ohwr_i2c_mux_select(struct ocores_i2c *i2c, u32 num);
+static int ohwr_i2c_mux_deselect(struct ocores_i2c *i2c, u32 num);
+
+#if KERNEL_VERSION(4, 7, 0) > LINUX_VERSION_CODE
+struct i2c_mux_core {
+	struct i2c_adapter *parent;
+	struct device *dev;
+	void *priv;
+
+	unsigned int max_adapters;
+	struct i2c_adapter *adapter[0];
+};
+
+/**
+ * It selects the I2C bus to use and lock it
+ */
+static int ocores_i2c_mux_select_old_api(struct i2c_adapter *adap,
+					 void *priv, u32 num)
+{
+	struct ocores_i2c *i2c = priv;
+
+	return ohwr_i2c_mux_select(i2c, num);
+}
+
+/**
+ * It unlocks the bus so that it can be changed.
+ */
+static int ocores_i2c_mux_deselect_old_api(struct i2c_adapter *adap,
+					   void *priv, u32 num)
+{
+	struct ocores_i2c *i2c = priv;
+
+	return ohwr_i2c_mux_deselect(i2c, num);
+}
+
+struct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,
+				   struct device *dev, int max_adapters,
+				   int sizeof_priv, u32 flags,
+				   int (*select)(struct i2c_mux_core *, u32),
+				   int (*deselect)(struct i2c_mux_core *, u32))
+{
+	struct i2c_mux_core *muxc;
+
+	muxc = devm_kzalloc(dev, sizeof(*muxc) +
+			    sizeof(*muxc->adapter) * max_adapters +
+			    sizeof_priv, GFP_KERNEL);
+	if (!muxc)
+		return NULL;
+	if (sizeof_priv)
+		muxc->priv = &muxc->adapter[max_adapters];
+	muxc->parent = parent;
+	muxc->dev = dev;
+	muxc->max_adapters = max_adapters;
+
+	return muxc;
+}
+
+int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
+			u32 force_nr, u32 chan_id,
+			unsigned int class)
+{
+	muxc->adapter[chan_id] = i2c_add_mux_adapter(muxc->parent,
+						     muxc->dev,
+						     muxc->priv,
+						     force_nr,
+						     chan_id,
+#if  KERNEL_VERSION(3, 7, 0) <= LINUX_VERSION_CODE
+						     class, /* class */
+#endif
+						     ocores_i2c_mux_select_old_api,
+						     ocores_i2c_mux_deselect_old_api);
+	return muxc->adapter[chan_id] ? 0 : -EINVAL;
+}
+
+void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
+{
+	int i;
+
+	for (i = 0; i < muxc->max_adapters; ++i)
+		i2c_del_mux_adapter(muxc->adapter[i]);
+}
+#endif
+
+
 #define OCORES_FLAG_POLL BIT(0)
 
 /**
@@ -41,8 +126,7 @@ struct ocores_i2c {
 	unsigned long flags;
 	wait_queue_head_t wait;
 	struct i2c_adapter adap;
-	struct i2c_adapter **adap_mux;
-	unsigned int n_adap_mux;
+	struct i2c_mux_core *adap_mux;
 	struct i2c_msg *msg;
 	int pos;
 	int nmsgs;
@@ -578,14 +662,8 @@ static const struct platform_device_id ocores_id_table[] = {
 };
 MODULE_DEVICE_TABLE(id_table, ocores_id_table);
 
-
-/**
- * It selects the I2C bus to use and lock it
- */
-static int ocores_i2c_mux_select(struct i2c_adapter *adap,
-				 void *priv, u32 num)
+static int ohwr_i2c_mux_select(struct ocores_i2c *i2c, u32 num)
 {
-	struct ocores_i2c *i2c = priv;
 	u8 mux;
 
 	mux = oc_getreg(i2c, OCI2C_OHWR_MUX);
@@ -601,57 +679,69 @@ static int ocores_i2c_mux_select(struct i2c_adapter *adap,
 	return 0;
 }
 
-
-/**
- * It unlocks the bus so that it can be changed.
- */
-static int ocores_i2c_mux_deselect(struct i2c_adapter *adap,
-				   void *priv, u32 num)
+static int ohwr_i2c_mux_deselect(struct ocores_i2c *i2c, u32 num)
 {
-	struct ocores_i2c *i2c = priv;
 	u8 mux;
 
 	/* Unlock bus selection */
 	mux = oc_getreg(i2c, OCI2C_OHWR_MUX);
 	if (unlikely(!(mux & OCI2C_OHWR_MUX_BUSY)))
-		dev_err(&adap->dev, "deselect a bus that was not selected\n");
+		dev_err(i2c->adap_mux->dev,
+			"deselect a bus that was not selected\n");
 	mux &= ~OCI2C_OHWR_MUX_BUSY;
 	oc_setreg(i2c, OCI2C_OHWR_MUX, mux);
 
 	return 0;
 }
 
+/**
+ * It selects the I2C bus to use and lock it
+ */
+static int ocores_i2c_mux_select(struct i2c_mux_core *muxc, u32 num)
+{
+	struct ocores_i2c *i2c = muxc->priv;
+
+	return ohwr_i2c_mux_select(i2c, num);
+}
+
+/**
+ * It unlocks the bus so that it can be changed.
+ */
+static int ocores_i2c_mux_deselect(struct i2c_mux_core *muxc, u32 num)
+{
+	struct ocores_i2c *i2c = muxc->priv;
+
+	return ohwr_i2c_mux_deselect(i2c, num);
+}
 
 /**
  * Add OHWR multiplexer
  */
 static int ocores_i2c_probe_ohwr(struct ocores_i2c *i2c)
 {
-	int err, i;
+	int i, err = 0;
 
-	i2c->n_adap_mux = 2;
-	i2c->adap_mux = devm_kzalloc(&i2c->adap.dev,
-				     sizeof(void *) * i2c->n_adap_mux,
-				     GFP_KERNEL);
-	for (i = 0; i < i2c->n_adap_mux; ++i) {
-		i2c->adap_mux[i] = i2c_add_mux_adapter(&i2c->adap,
-						       i2c->adap.dev.parent,
-						       i2c,
-						       0, i,
-#if  KERNEL_VERSION(3, 7, 0) <= LINUX_VERSION_CODE
-						       0, /* class */
-#endif
-						       ocores_i2c_mux_select,
-						       ocores_i2c_mux_deselect);
-		if (!i2c->adap_mux[i])
+	i2c->adap_mux = i2c_mux_alloc(&i2c->adap, i2c->adap.dev.parent,
+				      2, sizeof(i2c), 0,
+				      ocores_i2c_mux_select,
+				      ocores_i2c_mux_deselect);
+	if (!i2c->adap_mux) {
+		err = -ENOMEM;
+		goto err_exit;
+	}
+	i2c->adap_mux->priv = i2c;
+	for (i = 0; i < i2c->adap_mux->max_adapters; ++i) {
+		err = i2c_mux_add_adapter(i2c->adap_mux,
+					  0, i, 0);
+		if (err)
 			goto err_add;
 	}
 
 	return 0;
 
 err_add:
-	while (--i >= 0)
-		i2c_del_mux_adapter(i2c->adap_mux[i]);
+	i2c_mux_del_adapters(i2c->adap_mux);
+err_exit:
 	return err;
 }
 
@@ -660,10 +750,7 @@ err_add:
  */
 static void ocores_i2c_remove_ohwr(struct ocores_i2c *i2c)
 {
-	int i;
-
-	for (i = 0; i < i2c->n_adap_mux; ++i)
-		i2c_del_mux_adapter(i2c->adap_mux[i]);
+	i2c_mux_del_adapters(i2c->adap_mux);
 }
 
 #ifdef CONFIG_OF

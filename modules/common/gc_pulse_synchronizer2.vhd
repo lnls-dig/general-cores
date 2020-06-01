@@ -89,12 +89,18 @@ begin  -- rtl
       d_ack_d0 <= d_ack;
 
       if ready = '1' and d_p_i = '1' and d_p_d0 = '0'then
+        --  Incoming pulse detected and the system is ready.
+        --  Transfer it.
         in_ext <= '1';
+        --  Clear ack and ready!
         d_ack  <= '0';
         ready  <= '0';
       elsif in_ext = '1' and out_feedback = '1' then
+        --  Pulse has been transfered, clear the input.
         in_ext <= '0';
       elsif in_ext = '0' and out_feedback = '0' then
+        --  Clear transfered.  Done.
+        --  This is also the steady state.
         d_ack <= '1';
         ready <= '1';
       end if;

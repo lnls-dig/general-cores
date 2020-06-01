@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-License-Identifier: CC0-1.0
 #
 # Copyright (C) 2019 CERN
 
@@ -8,9 +8,12 @@ SUBMODULE_VERSIONS-y += MODULE_INFO(version_$(CONFIG_SUPER_REPO),\"$(CONFIG_SUPE
 endif
 endif
 
+ccflags-y += -DGIT_VERSION=\"$(GIT_VERSION)\"
+ccflags-y += -Werror
 ccflags-y += -I$(src)/../../../include
 
-# priority to our local headers
-LINUXINCLUDE :=  -I$(src)/../../../include -I$(src)/../../../include/linux $(LINUXINCLUDE)
+# priority to our local headers (avoid conflict with the version in kernel)
+LINUXINCLUDE := -I$(src)/../../../include $(LINUXINCLUDE)
+LINUXINCLUDE := -I$(src)/../../../include/linux $(LINUXINCLUDE)
 
 obj-$(CONFIG_I2C_OCORES) += i2c-ocores.o
