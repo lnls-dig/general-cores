@@ -505,6 +505,23 @@ package gencores_pkg is
       c2_o    : out std_logic);
   end component;
 
+  component gc_big_adder2 is
+  generic(
+    g_data_bits : natural := 64;
+    g_parts     : natural := 4);
+  port(
+    clk_i        : in  std_logic;
+    stall_i      : in  std_logic := '0';
+    valid_i      : in  std_logic := '1';
+    a_i          : in  std_logic_vector(g_data_bits-1 downto 0);
+    b_i          : in  std_logic_vector(g_data_bits-1 downto 0);
+    c_i          : in  std_logic := '0';
+    c1_o         : out std_logic;
+    c1_valid_o   : out std_logic;
+    x2_o         : out std_logic_vector(g_data_bits-1 downto 0);
+    c2_o         : out std_logic;
+    c2x2_valid_o : out std_logic);
+  end component;
   ------------------------------------------------------------------------------
   -- I2C slave
   ------------------------------------------------------------------------------
