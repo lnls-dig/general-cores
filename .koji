@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: CC0-1.0
+#
+# SPDX-FileCopyrightText: 2019 CERN
+
+[koji]
+server = https://kojihub.cern.ch/kojihub
+weburl = https://koji.cern.ch/
+topurl = https://koji.cern.ch/kojifiles
+krb_canon_host = no
+krb_rdns = False

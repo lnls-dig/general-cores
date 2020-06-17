@@ -3,10 +3,16 @@
 with open("buildinfo_pkg.vhd", "w") as f:
   import subprocess
   import time
-  commitid = subprocess.check_output(
+  try:
+    commitid = subprocess.check_output(
       ["git", "log", "-1", "--format=%H"]).decode().strip()
-  userid = subprocess.check_output(
+  except:
+    commitid = "unknown"
+  try:
+    userid = subprocess.check_output(
       ["git", "config", "--get", "user.name"]).decode().strip()
+  except:
+    userid = "unknown"
   if action == "simulation":
       top = sim_top
       tool = sim_tool

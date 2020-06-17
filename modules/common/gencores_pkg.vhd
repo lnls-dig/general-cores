@@ -27,9 +27,59 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.genram_pkg.all;
-
 package gencores_pkg is
+
+  --============================================================================
+  -- Procedures and functions
+  --============================================================================
+
+  procedure f_rr_arbitrate (
+    signal req       : in  std_logic_vector;
+    signal pre_grant : in  std_logic_vector;
+    signal grant     : out std_logic_vector);
+
+  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
+
+  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
+
+  function f_gray_encode(x : std_logic_vector) return std_logic_vector;
+  function f_gray_decode(x : std_logic_vector; step : natural) return std_logic_vector;
+
+  function f_log2_ceil(N : natural) return positive;
+  -- kept for backwards compatibility, same as f_log2_ceil()
+  function log2_ceil(N : natural) return positive;
+
+  function f_bool2int (b : boolean) return natural;
+  function f_int2bool (n : natural) return boolean;
+
+  --  Convert a boolean to std_logic ('1' for True, '0' for False).
+  function f_to_std_logic(b : boolean) return std_logic;
+
+  -- Reduce-OR an std_logic_vector to std_logic
+  function f_reduce_or (x : std_logic_vector) return std_logic;
+
+  -- Character/String to std_logic_vector
+  function f_to_std_logic_vector (c : character) return std_logic_vector;
+  function f_to_std_logic_vector (s : string) return std_logic_vector;
+
+  -- Functions for short-hand if assignments
+  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
+  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
+    return std_logic;
+  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
+    return std_logic_vector;
+
+  -- Functions to convert characters and strings to upper/lower case
+  function to_upper(c : character) return character;
+  function to_lower(c : character) return character;
+  function to_upper(s : string) return string;
+  function to_lower(s : string) return string;
+
+  -- Bit reversal function
+  function f_reverse_vector (a : in std_logic_vector) return std_logic_vector;
 
   --============================================================================
   -- Component instantiations
@@ -218,6 +268,46 @@ package gencores_pkg is
       ppulse_o : out std_logic);
   end component;
 
+  component gc_sync is
+    generic (
+      g_sync_edge : string := "positive");
+    port (
+        clk_i     : in  std_logic;
+        rst_n_a_i : in  std_logic;
+        d_i       : in  std_logic;
+        q_o       : out std_logic);
+  end component gc_sync;
+
+  component gc_sync_edge is
+    generic (
+      g_edge : string := "positive");
+    port (
+        clk_i     : in  std_logic;
+        rst_n_a_i : in  std_logic;
+        data_i    : in  std_logic;
+        synced_o  : out std_logic;
+        pulse_o   : out std_logic);
+  end component gc_sync_edge;
+
+  ------------------------------------------------------------------------------
+  -- Edge detectors
+  ------------------------------------------------------------------------------
+  component gc_negedge is
+    port (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+      data_i  : in  std_logic;
+      pulse_o : out std_logic);
+  end component gc_negedge;
+
+  component gc_posedge is
+    port (
+      clk_i   : in  std_logic;
+      rst_n_i : in  std_logic;
+      data_i  : in  std_logic;
+      pulse_o : out std_logic);
+  end component gc_posedge;
+
   ------------------------------------------------------------------------------
   -- Pulse synchroniser
   ------------------------------------------------------------------------------
@@ -315,7 +405,7 @@ package gencores_pkg is
       d_req_o      : out std_logic_vector(g_num_inputs-1 downto 0);
       q_o          : out std_logic_vector(g_width-1 downto 0);
       q_valid_o    : out std_logic;
-      q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0));
+      q_input_id_o : out std_logic_vector(f_log2_ceil(g_num_inputs)-1 downto 0));
   end component;
 
   ------------------------------------------------------------------------------
@@ -711,43 +801,6 @@ package gencores_pkg is
       counter_o : out std_logic_vector(g_bits downto 0));
   end component gc_async_counter_diff;
 
-  --============================================================================
-  -- Procedures and functions
-  --============================================================================
-  procedure f_rr_arbitrate (
-    signal req       : in  std_logic_vector;
-    signal pre_grant : in  std_logic_vector;
-    signal grant     : out std_logic_vector);
-  function f_onehot_decode(x : std_logic_vector; size : integer) return std_logic_vector;
-
-  function f_big_ripple(a, b : std_logic_vector; c : std_logic) return std_logic_vector;
-  function f_gray_encode(x   : std_logic_vector) return std_logic_vector;
-  function f_gray_decode(x   : std_logic_vector; step : natural) return std_logic_vector;
-  function log2_ceil(N       : natural) return positive;
-
-  function f_bool2int (b : boolean) return natural;
-  function f_int2bool (n : natural) return boolean;
-
-  --  Convert a boolean to std_logic ('1' for True, '0' for False).
-  function f_to_std_logic(b : boolean) return std_logic;
-
-  -- Reduce-OR an std_logic_vector to std_logic
-  function f_reduce_or (x : std_logic_vector) return std_logic;
-
-  -- Character/String to std_logic_vector
-  function f_to_std_logic_vector (c : character) return std_logic_vector;
-  function f_to_std_logic_vector (s : string) return std_logic_vector;
-
-  -- Functions for short-hand if assignments
-  function f_pick (cond : boolean; if_1 : std_logic; if_0 : std_logic)
-    return std_logic;
-  function f_pick (cond : boolean; if_1 : std_logic_vector; if_0 : std_logic_vector)
-    return std_logic_vector;
-  function f_pick (cond : std_logic; if_1 : std_logic; if_0 : std_logic)
-    return std_logic;
-  function f_pick (cond : std_logic; if_1 : std_logic_vector; if_0 : std_logic_vector)
-    return std_logic_vector;
-
 end package;
 
 package body gencores_pkg is
@@ -849,17 +902,22 @@ package body gencores_pkg is
   ------------------------------------------------------------------------------
   -- Returns log of 2 of a natural number
   ------------------------------------------------------------------------------
-  function log2_ceil(N : natural) return positive is
+  function f_log2_ceil(N : natural) return positive is
   begin
     if N <= 2 then
       return 1;
     elsif N mod 2 = 0 then
-      return 1 + log2_ceil(N/2);
+      return 1 + f_log2_ceil(N/2);
     else
-      return 1 + log2_ceil((N+1)/2);
+      return 1 + f_log2_ceil((N+1)/2);
     end if;
   end;
 
+  -- kept for backwards compatibility
+  function log2_ceil(N : natural) return positive is
+  begin
+    return f_log2_ceil(N);
+  end;
 
   ------------------------------------------------------------------------------
   -- Converts a boolean to natural integer (false -> 0, true -> 1)
@@ -975,5 +1033,60 @@ package body gencores_pkg is
   begin
     return f_pick (f_to_std_logic(cond), if_1, if_0);
   end function f_pick;
+
+  ------------------------------------------------------------------------------
+  -- Functions to convert characters and strings to upper/lower case
+  ------------------------------------------------------------------------------
+
+  function to_upper(c : character) return character is
+    variable i : integer;
+  begin
+    i := character'pos(c);
+    if (i > 96 and i < 123) then
+      i := i - 32;
+    end if;
+    return character'val(i);
+  end function to_upper;
+
+  function to_lower(c : character) return character is
+    variable i : integer;
+  begin
+    i := character'pos(c);
+    if (i > 64 and i < 91) then
+      i := i + 32;
+    end if;
+    return character'val(i);
+  end function to_lower;
+
+  function to_upper(s : string) return string is
+    variable uppercase : string (s'range);
+  begin
+    for i in s'range loop
+      uppercase(i) := to_upper(s(i));
+    end loop;
+    return uppercase;
+  end to_upper;
+
+  function to_lower(s : string) return string is
+    variable lowercase : string (s'range);
+  begin
+    for i in s'range loop
+      lowercase(i) := to_lower(s(i));
+    end loop;
+    return lowercase;
+  end to_lower;
+
+  ------------------------------------------------------------------------------
+  -- Vector bit reversal
+  ------------------------------------------------------------------------------
+
+  function f_reverse_vector (a : in std_logic_vector) return std_logic_vector is
+    variable v_result : std_logic_vector(a'reverse_range);
+  begin
+    for i in a'range loop
+      v_result(i) := a(i);
+    end loop;
+    return v_result;
+  end function f_reverse_vector;
 
 end gencores_pkg;

@@ -2,10 +2,13 @@
 #
 # SPDX-FileCopyrightText: 2019 CERN
 
+
+.PHONY: all clean modules install modules_install
+
+DIR := drivers/spi
+
 all: modules
-
 install: modules_install
-clean modules modules_install:
-	make -C $(shell pwd)/drivers/spi $@
 
-.PHONY: modules modules_install clean all
+clean modules modules_install coccicheck:
+	@$(MAKE) -C $(DIR) $@

@@ -118,17 +118,12 @@ architecture syn of generic_dpram_dualclock is
     return false;
     -- synthesis translate_on
     return true;
-  end f_is_synthesis; 
+  end f_is_synthesis;
 
   shared variable ram : t_ram_type := f_file_to_ramtype;
 
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_a : std_logic_vector(g_data_width-1 downto 0);
   signal s_we_b     : std_logic_vector(c_num_bytes-1 downto 0);
-  signal s_ram_in_b : std_logic_vector(g_data_width-1 downto 0);
-
-  signal clka_int : std_logic;
-  signal clkb_int : std_logic;
 
   signal wea_rep, web_rep : std_logic_vector(c_num_bytes-1 downto 0);
 
@@ -177,7 +172,7 @@ begin
         end loop;
       end if;
     end process;
-    
+
 
 
 
@@ -266,6 +261,6 @@ begin
       end if;
     end process;
   end generate gen_without_byte_enable_nochange;
-  
+
 
 end syn;

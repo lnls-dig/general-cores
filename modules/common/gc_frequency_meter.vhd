@@ -22,6 +22,21 @@
 -- and limitations under the License.
 --------------------------------------------------------------------------------
 
+--  Principle of operation:
+--
+--  This block counts the number of pulses on CLK_IN_I during a period.
+--  At the end of the period, the value is saved and the counter reset.
+--  The saved value is available on FREQ_O, which is synchronized with
+--  CLK_SYS_I if G_SYNC_OUT is True.
+--  The width of the counter is defined by G_COUNTER_BITS.
+--
+--  - If g_WITH_INTERNAL_TIMEBASE is True:
+--    The period is defined by an internal counter that generates a pulse
+--    every G_CLK_SYS_FREQ CLK_SYS_I ticks.
+--
+--  - If g_WITH_INTERNAL_TIMEBASE is False:
+--    The period is defined by PPS_P1_I
+
 library ieee;
 
 use ieee.std_logic_1164.all;
