@@ -14,7 +14,7 @@ entity fine_pulse_gen_kintexultrascale_shared is
   port (
     -- PLL async reset
     pll_rst_i : in std_logic;
-
+    odelayctrl_rst_i : in std_logic;
     clk_ser_ext_i : in std_logic;
 
     -- 62.5 MHz reference
@@ -28,7 +28,8 @@ entity fine_pulse_gen_kintexultrascale_shared is
 
     clk_odelay_o : out std_logic;
 
-    pll_locked_o : out std_logic
+    pll_locked_o : out std_logic;
+    odelayctrl_rdy_o : out std_logic
     );
 
 end fine_pulse_gen_kintexultrascale_shared;
@@ -136,10 +137,30 @@ architecture rtl of fine_pulse_gen_kintexultrascale_shared is
   end component BUFG;
 
   signal clk_ser_prebuf, mmcm_clk_fb_prebuf, mmcm_clk_fb : std_logic;
-  signal clk_par_prebuf : std_logic;
+  signal clk_odelay_prebuf, clk_odelay, clk_par_prebuf : std_logic;
 
+  
 begin
 
+  gen_use_odelay : if g_global_use_odelay generate
+    b_idelayctrl: block
+      attribute IODELAY_GROUP: string;
+      attribute IODELAY_GROUP of U_IDELAYCTRL_Fine_Pulse_Gen : label is "IODELAY_FPGen";
+    begin
+      
+    U_IDELAYCTRL_Fine_Pulse_Gen : IDELAYCTRL
+      generic map (
+        SIM_DEVICE => "ULTRASCALE"        -- Must be set to "ULTRASCALE"
+        )
+      port map (
+        RDY    => odelayctrl_rdy_o,
+        REFCLK => clk_odelay,    
+        RST    => odelayctrl_rst_i
+        );
+    end block;
+  end generate gen_use_odelay;
+  
+  
   gen_use_Ext_serdes_clock : if g_use_external_serdes_clock generate
     -- stub for the moment
     clk_ser_o    <= clk_ser_ext_i;
@@ -169,9 +190,15 @@ begin
         CLKOUT0_DIVIDE_F    => 2.0,     -- clk_ser: 500 MHz
         CLKOUT0_DUTY_CYCLE  => 0.5,
         CLKOUT0_PHASE       => 0.0,
+
         CLKOUT1_DIVIDE    =>   8,     -- clk_par: 125 MHz
         CLKOUT1_DUTY_CYCLE  => 0.5,
         CLKOUT1_PHASE       => 0.0,
+
+        CLKOUT2_DIVIDE    =>   4,     -- clk_odelay: 250 MHz
+        CLKOUT2_DUTY_CYCLE  => 0.5,
+        CLKOUT2_PHASE       => 0.0,
+        
         CLKOUT0_USE_FINE_PS => "FALSE",
         CLKOUT1_USE_FINE_PS => "FALSE"
         )
@@ -182,6 +209,7 @@ begin
         -- Clock Outputs outputs: User configurable clock outputs
         CLKOUT0  => clk_ser_prebuf,
         CLKOUT1  => clk_par_prebuf,
+        CLKOUT2  => clk_odelay_prebuf,
         -- Feedback
         CLKFBOUT => mmcm_clk_fb_prebuf,
         CLKFBIN  => mmcm_clk_fb,
@@ -218,6 +246,13 @@ begin
       port map (
         I => clk_par_prebuf,
         O => clk_par_o);
+
+    u_buf_mmcm_odelay : BUFG
+      port map (
+        I => clk_odelay_prebuf,
+        O => clk_odelay);
+
+    clk_odelay_o <= clk_odelay;
 
   end generate gen_use_int_serdes_clock;
 

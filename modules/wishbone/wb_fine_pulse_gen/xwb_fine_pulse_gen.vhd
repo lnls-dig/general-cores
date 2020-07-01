@@ -96,9 +96,14 @@ architecture rtl of xwb_fine_pulse_gen is
     pps_offs : unsigned(3 downto 0);
     mask       : std_logic_vector(7 downto 0);
     delay_load : std_logic;
-    delay_fine : std_logic_vector(4 downto 0);
+    delay_fine : std_logic_vector(8 downto 0);
     cont : std_logic;
     force_tr : std_logic;
+
+    
+    odelay_load      :  std_logic;
+    odelay_value_out : std_logic_vector(8 downto 0);
+
   end record;
 
   type t_channel_array is array(integer range <>) of t_channel;
@@ -169,6 +174,7 @@ begin
       slave_i   => slave_i,
       slave_o   => slave_o,
       clk_odelay_i => clk_odelay,
+      clk_oserdes_i => clk_par,
       regs_i    => regs_in,
       regs_o    => regs_out);
 
@@ -332,6 +338,7 @@ begin
           ch(i).trig_p <= '0';
           ch(i).delay_load <= '0';
           ch(i).trig_p <= '0';
+          ch(i).odelay_load <= '0';
               
         else
 
@@ -414,7 +421,7 @@ begin
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
         dly_load_i => ch(i).delay_load,
-        dly_fine_i   => ch(i).delay_fine);
+        dly_fine_i   => ch(i).delay_fine(4 downto 0));
 
   end generate gen_is_kintex7_pg;
 
@@ -429,6 +436,7 @@ begin
         clk_par_i    => clk_par,
         clk_ref_i => clk_ref_i,
         clk_serdes_i => clk_ser,
+        clk_odelay_i => clk_odelay,
         rst_serdes_i => regs_out.csr_serdes_rst_o,
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
@@ -437,13 +445,23 @@ begin
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
         dly_load_i => ch(i).delay_load,
-        dly_fine_i   => ch(i).delay_fine);
+        dly_fine_i   => ch(i).delay_fine,
+
+        odelay_load_i => ch(i).odelay_load,
+        odelay_en_vtc_i => regs_out.odelay_calib_en_vtc_o,
+        odelay_rst_i => regs_out.odelay_calib_rst_odelay_o,
+        odelay_value_in_i => regs_out.odelay_calib_value_o,
+        odelay_value_out_o => ch(i).odelay_value_out,
+        odelay_cal_latch_i => regs_out.odelay_calib_cal_latch_o
+
+        );
 
   end generate gen_is_kintex_us_pg;
     
   end generate;
 
 
+  regs_in.odelay_calib_taps_i <= ch(0).odelay_value_out;
 
 
   gen_is_kintex7: if g_target_platform = "Kintex7" generate
@@ -465,7 +483,7 @@ begin
 
   gen_is_kintex_ultrascale: if g_target_platform = "KintexUltrascale" generate
 
-    U_K7U_Shared: fine_pulse_gen_kintexultrascale_shared
+    U_K7U_Shared: entity work.fine_pulse_gen_kintexultrascale_shared
       generic map (
         g_global_use_odelay => f_global_use_odelay,
         g_use_external_serdes_clock => g_use_external_serdes_clock
@@ -477,7 +495,14 @@ begin
         clk_ser_o    => clk_ser,
         clk_ser_ext_i => clk_ser_ext_i,
         clk_odelay_o => clk_odelay,
-        pll_locked_o => pll_locked);
+        pll_locked_o => pll_locked,
+
+        
+        
+        odelayctrl_rdy_o => regs_in.odelay_calib_rdy_i,
+        odelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl_o
+
+        );
 
   end generate gen_is_kintex_ultrascale;
   

@@ -2,11 +2,12 @@
 set StdArithNoWarnings 1
 set NumericStdNoWarnings 1
 
-vsim -L unisim -L XilinxCoreLib  work.main -voptargs=+acc -t 10fs
+vsim -modelsimini /home/twl/eda/modelsim-lib-2016.4/modelsim.ini -L unisim -L secureip -L XilinxCoreLib  work.main work.glbl -voptargs=+acc -t 10fs
 
 set StdArithNoWarnings 1
 set NumericStdNoWarnings 1
 
 do wave.do
 radix -hexadecimal
-run 1350us
+run 15us
+wave zoomfull

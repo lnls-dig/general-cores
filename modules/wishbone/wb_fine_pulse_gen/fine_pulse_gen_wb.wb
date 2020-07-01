@@ -152,7 +152,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -211,7 +211,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -269,7 +269,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -326,7 +326,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -383,7 +383,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -440,7 +440,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -498,7 +498,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -555,7 +555,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 5;
+				 size = 9;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -620,7 +620,7 @@ peripheral {
 					name = "Reset Output OSERDES";
 					type = BIT;
 					prefix = "rst_oserdes";
-					clock = "clk_odelay_i";
+					clock = "clk_oserdes_i";
 			 };
 			 
 			 field {
@@ -640,14 +640,14 @@ peripheral {
 					access_bus = READ_WRITE;
 					access_dev = READ_ONLY;
 					prefix = "value";
-					clock = "clk_odelay_i";
+					clock = "clk_ref_i";
 			 };
 
 			 field {
 					name = "Delay value update";
 					prefix = "value_update";
 					type = MONOSTABLE;
-					clock = "clk_odelay_i";
+					clock = "clk_ref_i";
 			 };
 			 
 			 field {

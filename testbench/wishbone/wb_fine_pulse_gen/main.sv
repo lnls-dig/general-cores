@@ -21,41 +21,101 @@ module dupa;
     xwb_fine_pulse_gen dut();
 endmodule // dupa
 
+class IBusDevice;
 
-class DDSSyncUnitDriver;
+   CBusAccessor m_acc;
+   uint64_t m_base;
 
-   protected CBusAccessor m_acc;
-   protected int m_base;
+   function new ( CBusAccessor acc, uint64_t base );
+      m_acc =acc;
+      m_base = base;
+   endfunction // new
+   
+   virtual task write32( uint32_t addr, uint32_t val );
+      m_acc.write(m_base +addr, val);
+   endtask // write
+   
+   virtual task read32( uint32_t addr, output uint32_t val );
+      uint64_t val64;
+      
+      m_acc.read(m_base +addr, val64);
+      val = val64;
+      
+   endtask // write
+   
+   
 
+endclass // BusDevice
+
+
+class FinePulseGenDriver extends IBusDevice;
+
+   protected int m_use_delayctrl = 1;
+   protected real m_coarse_range = 16.0;
+   protected real m_delay_tap_size = 0.078; /*ns*/
+   protected int  m_fine_taps;
+   
+   
+   
 
    function new(CBusAccessor acc, int base);
-      m_acc =acc;
-      m_base =base;
+      super.new(acc,base);
    endfunction // new
 
-   task automatic pulse( int out, int polarity, int cont, real delta, int tr_force = 0 );
-      const real refclk_period = 5.0;
-      const real n_fine_taps = 31;
-      const real tap_size = 0.078; /* ns */
- // refclk_period/n_fine_taps;
-      uint64_t rv;
+   task automatic calibrate();
+      int rv;
+      real calib_time;
+      int  calib_taps;
 
+      $error("Calibrate start");
       
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_EN_VTC);
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_RST_IDELAYCTRL  |  `FPG_ODELAY_CALIB_RST_OSERDES | `FPG_ODELAY_CALIB_RST_ODELAY);
+      #100ns;
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_RST_IDELAYCTRL  | `FPG_ODELAY_CALIB_RST_OSERDES );
+      #100ns;
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_RST_IDELAYCTRL  );
+      #100ns;
+      write32( `ADDR_FPG_ODELAY_CALIB, 0 );
+      #100ns;
+
+      while(1)
+	begin
+	   read32( `ADDR_FPG_ODELAY_CALIB, rv );
+	   $display("odelay = %x", rv);
+	   
+	   if ( rv & `FPG_ODELAY_CALIB_RDY )
+	     break;
+	   
+	end
+
+      write32(`ADDR_FPG_ODELAY_CALIB, 0);
+      write32(`ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_CAL_LATCH);
+
+      read32( `ADDR_FPG_ODELAY_CALIB, rv );
+
+      calib_time = real'(1.0);
+      calib_taps = (rv & `FPG_ODELAY_CALIB_TAPS) >> `FPG_ODELAY_CALIB_TAPS_OFFSET;
+      
+      $display("FPG ODELAY calibration done, val %.1f/%d\n", calib_time, calib_taps );
+
+      m_delay_tap_size = calib_time / real'(calib_taps);
+            
+   endtask // calibrate
+   
+
+   task automatic pulse( int out, int polarity, int cont, real delta, int tr_force = 0 );
+      uint64_t rv;
       
       int coarse_par = int'($floor (delta / 16.0));
       int coarse_ser = int'($floor (delta / 1.0) - coarse_par * 16);
-      int fine = int'((delta / 1.0 - $floor(delta / 1.0)) * 1.0 / tap_size);
+      int fine = int'((delta / 1.0 - $floor(delta / 1.0)) * 1.0 / m_delay_tap_size);
       int mask = coarse_ser;
- //(1 << (7-coarse_ser+1)) - 1;
       uint32_t ocr;
 
-  //    coarse_par = 0;
-//      coarse_ser = 0;
-//      $display("tapSize %f \n", tap_size);
+      $display("Tapsize %.5f Fine %d", m_delay_tap_size, fine);
       
-//      $display("pgm %d %d %d", coarse_par, coarse_ser, fine);
 
-      
       ocr = (coarse_par << `FPG_OCR0_PPS_OFFS_OFFSET)
 	| (mask << `FPG_OCR0_MASK_OFFSET)
       | (fine << `FPG_OCR0_FINE_OFFSET)
@@ -83,7 +143,8 @@ class DDSSyncUnitDriver;
    endtask
 
    
-endclass // DDSSyncUnitDriver
+endclass // FinePulseGenDriver
+
 
 
   
@@ -174,7 +235,8 @@ module main;
      #(
        .g_target_platform("KintexUltrascale"),
        .g_use_external_serdes_clock(0),
-       .g_num_channels(1)
+       .g_num_channels(1),
+       .g_use_odelay(6'b1)
        )
    DUT
      (
@@ -203,15 +265,21 @@ module main;
    initial begin
       real t;
       
-      CBusAccessor acc = Host.get_accessor();
-      DDSSyncUnitDriver drv = new( acc, 0 );
+      CWishboneAccessor acc;
+      FinePulseGenDriver drv;
       
-
       @(posedge rst_n);
       @(posedge clk_62m5);
       @(posedge pps_p);
 
       #1us;
+      
+      acc = Host.get_accessor();
+      acc.set_mode(PIPELINED);
+      
+      drv = new( acc, 0 );      
+
+      drv.calibrate();
       
       
 
@@ -224,7 +292,7 @@ module main;
 
       for (t = 1.0; t <= 200.9; t+=0.1)
 	begin
-//	   $display("Pulse @ %f", t );
+	   $display("Pulse @ %f", t );
 	   
 	   dlys.push_back(t);
 	   drv.pulse(0, 1, 0, t);
