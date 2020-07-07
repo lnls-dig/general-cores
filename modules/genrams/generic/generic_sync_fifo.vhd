@@ -45,8 +45,8 @@ entity generic_sync_fifo is
     g_with_almost_full  : boolean := false;
     g_with_count        : boolean := false;  -- with words counter
 
-    g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer;  -- threshold for almost full flag
+    g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
     g_register_flag_outputs  : boolean := true
     );
 
