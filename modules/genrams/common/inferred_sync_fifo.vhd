@@ -12,7 +12,7 @@
 -- - configurable full/empty/almost full/almost empty/word count signals
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2011-2018
+-- Copyright CERN 2011-2020
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -37,6 +37,12 @@ entity inferred_sync_fifo is
     g_data_width : natural;
     g_size       : natural;
     g_show_ahead : boolean := false;
+
+    -- Previously, the full flag was asserted at g_size-1 when using g_show_ahead.
+    -- The new implementation solves this. However, for backward compatibility,
+    -- the default is to still use the previous behaviour. Set this to false to
+    -- switch to the new one.
+    g_show_ahead_legacy_mode : boolean := true;
 
     -- Read-side flag selection
     g_with_empty        : boolean := true;   -- with empty flag
@@ -83,6 +89,12 @@ architecture syn of inferred_sync_fifo is
   signal q_comb : std_logic_vector(g_data_width-1 downto 0);
 
 begin  -- syn
+
+  legacy_mode_check: assert g_show_ahead = false or g_show_ahead_legacy_mode = false
+    report legacy_mode_check'instance_name & ": show-ahead enabled for sync FIFO in " &
+    "legacy mode. In this mode, the full flag is asserted at g_SIZE-1. if you want the " &
+    "full flag to be asserted at g_SIZE, then disable g_SHOW_AHEAD_LEGACY_MODE."
+    severity NOTE;
 
   we_int <= we_i and not full;
   rd_int <= rd_i and not empty;
@@ -135,7 +147,8 @@ begin  -- syn
     end if;
   end process;
 
-  gen_comb_flags_showahead : if(g_show_ahead = true) generate
+  gen_comb_flags_showahead_legacy : if g_show_ahead = true and
+                                      g_show_ahead_legacy_mode = true generate
 
     process(clk_i)
     begin
@@ -148,6 +161,34 @@ begin  -- syn
       end if;
     end process;
     full <= '1' when (wr_ptr + 1 = rd_ptr) else '0';
+
+  end generate gen_comb_flags_showahead_legacy;
+
+  gen_comb_flags_showahead : if g_show_ahead = true and
+                               g_show_ahead_legacy_mode = false generate
+
+    process(clk_i)
+    begin
+      if rising_edge(clk_i) then
+        if rst_n_i = '0' then
+          guard_bit <= '0';
+          empty     <= '1';
+        else
+          if wr_ptr = rd_ptr_muxed and guard_bit = '0' then
+            empty <= '1';
+          else
+            empty <= '0';
+          end if;
+          if(wr_ptr + 1 = rd_ptr and we_int = '1') then
+            guard_bit <= '1';
+          elsif(rd_i = '1') then
+            guard_bit <= '0';
+          end if;
+        end if;
+      end if;
+    end process;
+
+    full <= '1' when (wr_ptr = rd_ptr and guard_bit = '1') else '0';
 
   end generate gen_comb_flags_showahead;
 
