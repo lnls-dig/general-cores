@@ -24,7 +24,7 @@ entity xwb_fine_pulse_gen is
 
     clk_ser_ext_i : in std_logic := '0';       -- external SERDES clock, used when
                                         -- g_use_external_serdes_clock == true
-    
+
     ext_trigger_p_i : in std_logic := '0'; -- External trigger (i.e. RF receiver)
 
     pps_p_i : in std_logic;             -- WR PPS
@@ -49,7 +49,7 @@ architecture rtl of xwb_fine_pulse_gen is
       return false;
     end if;
   end function;
-  
+
 
 
   component fine_pulse_gen_kintex7_shared is
@@ -100,7 +100,7 @@ architecture rtl of xwb_fine_pulse_gen is
     cont : std_logic;
     force_tr : std_logic;
 
-    
+
     odelay_load      :  std_logic;
     odelay_value_out : std_logic_vector(8 downto 0);
 
@@ -109,19 +109,19 @@ architecture rtl of xwb_fine_pulse_gen is
   type t_channel_array is array(integer range <>) of t_channel;
 
   constant c_MAX_NUM_CHANNELS : integer := 6;
-  
+
   signal ch : t_channel_array(0 to c_MAX_NUM_CHANNELS-1);
 
   signal clk_par : std_logic;
   signal clk_ser : std_logic;
   signal clk_odelay : std_logic;
-  
+
   signal regs_out : t_fpg_out_registers;
   signal regs_in  : t_fpg_in_registers;
 
   signal rst_n_wr : std_logic;
   signal pps_p_d : std_logic;
-  
+
   function f_to_bool(x : bit) return boolean is
   begin
     if x= '1' then
@@ -130,28 +130,33 @@ architecture rtl of xwb_fine_pulse_gen is
       return false;
     end if;
   end f_to_bool;
-    
+
   constant c_pps_divider : integer := 6250;
   signal pps_ext   : std_logic;
   signal pps_cnt : unsigned(15 downto 0);
 
   signal pll_locked : std_logic;
 
-  signal rst_serdes : std_logic;
+  signal rst_serdes_in, rst_serdes : std_logic;
+  signal odelay_calib_rdy : std_logic;
+
+  signal pps_p1 : std_logic;
 
 begin
 
-  
+
   p_extend_pps : process(clk_ref_i)
   begin
     if rising_edge(clk_ref_i) then
       if rst_n_wr = '0' then
         pps_ext <= '0';
         pps_cnt <= (others => '0');
+        pps_p1 <= '0';
       else
 
         pps_p_d <= pps_p_i;
-        
+        pps_p1 <= not pps_p_d and pps_p_i;
+
         if pps_p_i = '1' and pps_p_d = '0' then
           pps_cnt <= to_unsigned(1, pps_cnt'length);
           pps_ext <= '0';
@@ -165,16 +170,13 @@ begin
       end if;
     end if;
   end process;
-  
+
   U_Regs : entity work.fine_pulse_gen_wb
     port map (
       rst_n_i   => rst_sys_n_i,
       clk_sys_i => clk_sys_i,
-      clk_ref_i => clk_ref_i,
       slave_i   => slave_i,
       slave_o   => slave_o,
-      clk_odelay_i => clk_odelay,
-      clk_oserdes_i => clk_par,
       regs_i    => regs_in,
       regs_o    => regs_out);
 
@@ -274,13 +276,27 @@ begin
       q_p_o     => ch(5).force_tr);
 
 
-  
-  regs_in.csr_ready_i(0) <= ch(0).ready;
-  regs_in.csr_ready_i(1) <= ch(1).ready;
-  regs_in.csr_ready_i(2) <= ch(2).ready;
-  regs_in.csr_ready_i(3) <= ch(3).ready;
-  regs_in.csr_ready_i(4) <= ch(4).ready;
-  regs_in.csr_ready_i(5) <= ch(5).ready;
+
+  gen_ready_flags : for i in 0 to g_num_channels-1 generate
+  U_Sync : gc_sync_ffs
+    port map (
+      clk_i    => clk_sys_i,
+      rst_n_i  => rst_sys_n_i,
+      data_i   => ch(i).ready,
+      synced_o => regs_in.csr_ready_i(i)
+      );
+  end generate gen_ready_flags;
+
+  rst_serdes_in <= regs_out.odelay_calib_rst_oserdes_o or regs_out.csr_serdes_rst_o;
+
+  U_Sync_Serdes_Reset : gc_sync_ffs
+    port map (
+      clk_i    => clk_ref_i,
+      rst_n_i  => '1',
+      data_i   => rst_serdes_in,
+      synced_o => rst_serdes
+      );
+
 
   ch(0).pol <= regs_out.ocr0_pol_o;
   ch(1).pol <= regs_out.ocr1_pol_o;
@@ -323,13 +339,13 @@ begin
   ch(3).pps_offs <= unsigned(regs_out.ocr3_pps_offs_o);
   ch(4).pps_offs <= unsigned(regs_out.ocr4_pps_offs_o);
   ch(5).pps_offs <= unsigned(regs_out.ocr5_pps_offs_o);
-    
+
   gen_channels : for i in 0 to g_NUM_CHANNELS-1 generate
 
 
- 
-              
-    
+
+
+
     p_fsm : process(clk_ref_i)
     begin
       if rising_edge(clk_ref_i) then
@@ -337,20 +353,17 @@ begin
           ch(i).state <= IDLE;
           ch(i).trig_p <= '0';
           ch(i).delay_load <= '0';
-          ch(i).trig_p <= '0';
-          ch(i).odelay_load <= '0';
-              
         else
 
           if ch(i).trig_sel = '1' then
             ch(i).trig_in <= ext_trigger_p_i;
           else
-            ch(i).trig_in <= pps_p_i;
+            ch(i).trig_in <= pps_p1;
           end if;
 
           ch(i).trig_in_d <= ch(i).trig_in;
-            
-          
+
+
           case ch(i).state is
             when IDLE =>
               ch(i).trig_p <= '0';
@@ -379,8 +392,8 @@ begin
               if pps_ext = '1' then
                 ch(i).state <= WAIT_TRIGGER;
               end if;
-              
-              
+
+
             when WAIT_PPS =>
               ch(i).trig_p <= '0';
               ch(i).delay_load <= '0';
@@ -414,6 +427,7 @@ begin
       port map (
         clk_par_i    => clk_par,
         clk_serdes_i => clk_ser,
+        rst_serdes_i => rst_serdes,
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
         cont_i =>  ch(i).cont,
@@ -430,14 +444,14 @@ begin
     U_Pulse_Gen : entity work.fine_pulse_gen_kintexultrascale
       generic map (
         g_sim_delay_tap_ps => 50,
-        g_ref_clk_freq     => 200.0,
+        g_idelayctrl_ref_clk_freq     => 250.0,
         g_use_odelay => f_to_bool(g_use_odelay(i)) )
       port map (
+        clk_sys_i => clk_sys_i,
         clk_par_i    => clk_par,
         clk_ref_i => clk_ref_i,
         clk_serdes_i => clk_ser,
-        clk_odelay_i => clk_odelay,
-        rst_serdes_i => regs_out.csr_serdes_rst_o,
+        rst_serdes_i => rst_serdes,
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
         cont_i => ch(i).cont,
@@ -457,7 +471,7 @@ begin
         );
 
   end generate gen_is_kintex_us_pg;
-    
+
   end generate;
 
 
@@ -476,7 +490,7 @@ begin
         clk_par_o    => clk_par,
         clk_ser_o    => clk_ser,
         clk_ser_ext_i => clk_ser_ext_i,
-        clk_odelay_o => clk_odelay,
+--        clk_odelay_o => clk_odelay,
         pll_locked_o => pll_locked);
 
   end generate gen_is_kintex7;
@@ -494,23 +508,24 @@ begin
         clk_par_o    => clk_par,
         clk_ser_o    => clk_ser,
         clk_ser_ext_i => clk_ser_ext_i,
-        clk_odelay_o => clk_odelay,
+--        clk_odelay_o => clk_odelay,
         pll_locked_o => pll_locked,
 
-        
-        
-        odelayctrl_rdy_o => regs_in.odelay_calib_rdy_i,
+        odelayctrl_rdy_o => odelay_calib_rdy,
         odelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl_o
-
         );
 
+    U_Sync_Reset : gc_sync_ffs
+    port map (
+      clk_i    => clk_sys_i,
+      rst_n_i  => rst_sys_n_i,
+      data_i   => odelay_calib_rdy,
+      synced_o => regs_in.odelay_calib_rdy_i
+      );
+
   end generate gen_is_kintex_ultrascale;
-  
 
   clk_par_o <= clk_par;
-
   regs_in.csr_pll_locked_i <= pll_locked;
-  
+
 end rtl;
-
-

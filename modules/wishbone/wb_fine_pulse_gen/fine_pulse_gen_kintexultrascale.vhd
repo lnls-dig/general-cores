@@ -11,15 +11,14 @@ use unisim.VCOMPONENTS.all;
 entity fine_pulse_gen_kintexultrascale is
   generic (
     g_sim_delay_tap_ps : integer := 30;
-    g_ref_clk_freq     : real    := 125.0;
-    g_use_odelay       : boolean := false;
-    g_CLK_ODELAY_FREQ : real := 200.0
+    g_idelayctrl_ref_clk_freq     : real    := 250.0;
+    g_use_odelay       : boolean := false
     );
   port
     (
+      clk_sys_i  : in std_logic; -- system clock
       clk_ref_i    : in std_logic; -- 62.5 MHz (WR)
       clk_par_i    : in std_logic; -- 125 MHz
-      clk_odelay_i : in std_logic; -- 200 MHz
       clk_serdes_i : in std_logic; -- 500 MHz (DDR)
       rst_serdes_i : in std_logic;
 
@@ -50,6 +49,8 @@ end fine_pulse_gen_kintexultrascale;
 
 architecture rtl of fine_pulse_gen_kintexultrascale is
 
+
+  
   constant c_DELAY_VALUE : integer := 1000;  -- in ps
 
   component OSERDESE3 is
@@ -132,7 +133,14 @@ architecture rtl of fine_pulse_gen_kintexultrascale is
 
   signal odelay_value_out, odelay_value_in, odelay_value_in_pulse : std_logic_vector(8 downto 0);
   signal odelay_load_clk_ref, odelay_load_pulse    : std_logic;
-  signal odelay_load_clk_odelay : std_logic;
+  signal odelay_load_clk_par : std_logic;
+
+  attribute mark_debug : string;
+
+  attribute mark_debug of odelay_en_vtc_i : signal is "true";
+  attribute mark_debug of odelay_cal_latch_i : signal is "true";
+  attribute mark_debug of odelay_value_out : signal is "true";
+  
 
  
 begin
@@ -274,6 +282,7 @@ begin
     elsif rising_edge(clk_ref_i) then
       clk_ref_div2 <= not clk_ref_div2;
 
+     
       odelay_load_clk_ref <= odelay_load_pulse or odelay_load_i;
 
       if odelay_load_pulse = '1' then
@@ -293,7 +302,7 @@ begin
       rst_n_i   => rst_sys_n_i,
       d_ready_o => open,
       d_p_i     => odelay_load_clk_ref,
-      q_p_o     => odelay_load_clk_odelay);
+      q_p_o     => odelay_load_clk_par);
 
   p_gearbox : process(clk_par_i)
   begin
@@ -311,7 +320,7 @@ begin
   end process;
 
 
-
+  
 
   U_Serdes : OSERDESE3
     generic map (
@@ -345,8 +354,28 @@ begin
     b_odelay : block
        attribute IODELAY_GROUP: string;
        attribute IODELAY_GROUP of U_ODELAYE3_Fine_Pulse_Gen : label is "IODELAY_FPGen";
+       signal odelay_rst_clk_par : std_logic;
+       signal odelay_en_vtc_clk_par : std_logic;
        begin
+
+    U_Sync_Reset : gc_sync_ffs
+    port map (
+      clk_i    => clk_par_i,
+      rst_n_i  => '1',
+      data_i   => odelay_rst_i,
+      synced_o => odelay_rst_clk_par
+      );
     
+    U_Sync_VTC : gc_sync_ffs
+    port map (
+      clk_i    => clk_par_i,
+      rst_n_i  => '1',
+      data_i   => odelay_en_vtc_i,
+      synced_o => odelay_en_vtc_clk_par
+      );
+
+
+         
     -- If a OSERDESE3 block (or its simplified version ODDRE) is instantiated,
     -- the ODELAYE3 CLK and OSERDESE3 CLK_DIV (or ODDRE C) port must share the same clock
     U_ODELAYE3_Fine_Pulse_Gen : ODELAYE3
@@ -357,7 +386,7 @@ begin
         DELAY_VALUE      => c_DELAY_VALUE,  -- Output delay tap setting
         IS_CLK_INVERTED  => '0',        -- Optional inversion for CLK
         IS_RST_INVERTED  => '0',        -- Optional inversion for RST
-        REFCLK_FREQUENCY => g_CLK_ODELAY_FREQ,  -- IDELAYCTRL clock input frequency in MHz (200.0-2667.0).
+        REFCLK_FREQUENCY => g_idelayctrl_ref_clk_freq,  -- IDELAYCTRL clock input frequency in MHz (200.0-2667.0).
         SIM_DEVICE       => "ULTRASCALE",  -- Set the device version (ULTRASCALE, ULTRASCALE_PLUS, ULTRASCALE_PLUS_ES1, ULTRASCALE_PLUS_ES2)
         UPDATE_MODE      => "ASYNC"  -- Determines when updates to the delay will take effect (ASYNC, MANUAL, SYNC)
         )
@@ -370,18 +399,19 @@ begin
         CE          => '0',  -- 1-bit input: Active high enable increment/decrement input
         CLK         => clk_par_i,    -- 1-bit input: Clock input
         CNTVALUEIN  => odelay_value_in,  -- 9-bit input: Counter value input
-        EN_VTC      => odelay_en_vtc_i,  -- 1-bit input: Keep delay constant over VT
+        EN_VTC      => odelay_en_vtc_clk_par,  -- 1-bit input: Keep delay constant over VT
         INC         => '0',  -- 1-bit input: Increment/Decrement tap delay input
-        LOAD        => odelay_load_clk_odelay,   -- 1-bit input: Load DELAY_VALUE input
+        LOAD        => odelay_load_clk_par,   -- 1-bit input: Load DELAY_VALUE input
         ODATAIN     => pulse_predelay,  -- 1-bit input: Data input
-        RST         => odelay_rst_i  -- 1-bit input: Asynchronous Reset to the DELAY_VALUE
+        RST         => odelay_rst_clk_par  -- 1-bit input: Asynchronous Reset to the DELAY_VALUE
         );
 
     end block;
+
     -- same delay applied to all pins
-    p_latch_delay : process(clk_odelay_i)
+    p_latch_delay : process(clk_sys_i)
     begin
-      if rising_edge(clk_odelay_i) then
+      if rising_edge(clk_sys_i) then
         if odelay_cal_latch_i = '1' then
           odelay_value_out_o <= odelay_value_out;
         end if;

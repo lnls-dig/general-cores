@@ -103,7 +103,6 @@ peripheral {
 				 size = 6;
 				 type = SLV;
          prefix = "READY";
-				 clock = "clk_ref_i";
          access_bus = READ_ONLY;
          access_dev = WRITE_ONLY;
 			};
@@ -606,21 +605,18 @@ peripheral {
 					name = "Reset Output IDELAYCTRL";
 					type = BIT;
 					prefix = "rst_idelayctrl";
-					clock = "clk_odelay_i";
 			 };
 
 			 field {
 					name = "Reset Output ODELAY";
 					type = BIT;
 					prefix = "rst_odelay";
-					clock = "clk_odelay_i";
 			 };
 
 			 field {
 					name = "Reset Output OSERDES";
 					type = BIT;
 					prefix = "rst_oserdes";
-					clock = "clk_oserdes_i";
 			 };
 			 
 			 field {
@@ -629,7 +625,6 @@ peripheral {
 					access_bus = READ_ONLY;
 					access_dev = WRITE_ONLY;
 					prefix = "rdy";
-					clock = "clk_odelay_i";
 			 };
 
 			 field {
@@ -640,27 +635,14 @@ peripheral {
 					access_bus = READ_WRITE;
 					access_dev = READ_ONLY;
 					prefix = "value";
-					clock = "clk_ref_i";
 			 };
 
 			 field {
 					name = "Delay value update";
 					prefix = "value_update";
 					type = MONOSTABLE;
-					clock = "clk_ref_i";
 			 };
 			 
-			 field {
-					name = "Serdes Bitslip";
-					description = "Bit slip of the DAC output serdes. Together with the value field, it allows output delay adjustment range of a full DAC clock cycle. Expressed in nanoseconds (0 to 4).";
-					type = SLV;
-					size = 2;
-					access_bus = READ_WRITE;
-					access_dev = READ_ONLY;
-					prefix = "bitslip";
-					clock = "clk_odelay_i";
-			 };
-
 			 field {
 					name = "Enable VT compensation";
 					description = "Enable VT compensation";
@@ -668,14 +650,12 @@ peripheral {
 					access_bus = READ_WRITE;
 					access_dev = READ_ONLY;
 					prefix = "en_vtc";
-					clock = "clk_odelay_i";
 			 };
 
 			 field {
 					name = "Latch calibration taps";
 					type = MONOSTABLE;
 					prefix = "cal_latch";
-					clock = "clk_odelay_i";
 			 };
 		
 			 field {
@@ -686,7 +666,6 @@ peripheral {
 					access_bus = READ_ONLY;
 					access_dev = WRITE_ONLY;
 					prefix = "taps";
-					clock = "clk_odelay_i";
 			 };
 		};
 };

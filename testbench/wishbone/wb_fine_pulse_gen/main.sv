@@ -97,7 +97,7 @@ class FinePulseGenDriver extends IBusDevice;
       calib_time = real'(1.0);
       calib_taps = (rv & `FPG_ODELAY_CALIB_TAPS) >> `FPG_ODELAY_CALIB_TAPS_OFFSET;
       
-      $display("FPG ODELAY calibration done, val %.1f/%d\n", calib_time, calib_taps );
+      $display("FPG ODELAY calibration done, %.1f ns = %d taps\n", calib_time, calib_taps );
 
       m_delay_tap_size = calib_time / real'(calib_taps);
             

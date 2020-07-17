@@ -1,6 +1,7 @@
 library ieee;
 
 use ieee.std_logic_1164.all;
+use work.gencores_pkg.all;
 
 library unisim;
 
@@ -146,8 +147,17 @@ begin
     b_idelayctrl: block
       attribute IODELAY_GROUP: string;
       attribute IODELAY_GROUP of U_IDELAYCTRL_Fine_Pulse_Gen : label is "IODELAY_FPGen";
+      signal rst_synced : std_logic;
     begin
-      
+
+    U_Sync_Reset : gc_sync_ffs
+    port map (
+      clk_i    => clk_odelay,
+      rst_n_i  => '1',
+      data_i   => odelayctrl_rst_i,
+      synced_o => rst_synced
+      );
+    
     U_IDELAYCTRL_Fine_Pulse_Gen : IDELAYCTRL
       generic map (
         SIM_DEVICE => "ULTRASCALE"        -- Must be set to "ULTRASCALE"
@@ -198,7 +208,7 @@ begin
         CLKOUT2_DIVIDE    =>   4,     -- clk_odelay: 250 MHz
         CLKOUT2_DUTY_CYCLE  => 0.5,
         CLKOUT2_PHASE       => 0.0,
-        
+
         CLKOUT0_USE_FINE_PS => "FALSE",
         CLKOUT1_USE_FINE_PS => "FALSE"
         )
