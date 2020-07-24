@@ -1,0 +1,37 @@
+memory-map:
+  bus: wb-32-be
+  name: wb_xc7_fw_update_regs
+  description: System Control Registers
+  x-hdl:
+    busgroup: True
+  children:
+  - reg:
+        name: far
+        width: 32
+        access: rw
+        comment: Flash Access Register
+        description: Provides direct access to the SPI flash memory containing the bitstream.
+        x-hdl:
+          type: wire
+          write-strobe: true
+        children:
+          - field:
+              name: data
+              range: 7-0
+              comment: SPI Data
+              description: Data to be written / read to/from the flash SPI controller.
+          - field:
+              name: xfer
+              range: 8
+              comment: SPI Start Transfer
+              description: "write 1: initiate an SPI transfer with an 8-bit data word taken from the DATA field. write 0: no effect"
+          - field:
+              name: ready
+              range: 9
+              comment: SPI Ready
+              description: "read 1: Core is ready to initiate another transfer. DATA field contains the data read during previous transaction. read 0: core is busy"
+          - field:
+              name: cs
+              range: 10
+              comment: SPI Chip Select
+              description: "write 1: Enable target SPI controller. write 0: Disable target SPI controller"

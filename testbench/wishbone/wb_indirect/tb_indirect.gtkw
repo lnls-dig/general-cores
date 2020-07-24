@@ -1,0 +1,47 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Mon Apr 20 13:42:47 2020
+[*]
+[dumpfile] "/Users/gingold/work/general-cores/testbench/wishbone/wb_indirect/tb.ghw"
+[dumpfile_mtime] "Mon Apr 20 13:26:13 2020"
+[dumpfile_size] 6946
+[savefile] "/Users/gingold/work/general-cores/testbench/wishbone/wb_indirect/tb_indirect.gtkw"
+[timestart] 0
+[size] 1603 918
+[pos] -1 -1
+*-25.749573 20000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_wb_indirect.
+[treeopen] top.tb_wb_indirect.inst_xwb_indirect.
+[treeopen] top.tb_wb_indirect.inst_xwb_indirect.inst_regs.
+[sst_width] 193
+[signals_width] 214
+[sst_expanded] 1
+[sst_vpaned_height] 278
+@420
+top.tb_wb_indirect.done
+@28
+top.tb_wb_indirect.clk
+top.tb_wb_indirect.rst_n
+top.tb_wb_indirect.wb_out.ack
+@22
+#{top.tb_wb_indirect.wb_out.dat[31:0]} top.tb_wb_indirect.wb_out.dat[31] top.tb_wb_indirect.wb_out.dat[30] top.tb_wb_indirect.wb_out.dat[29] top.tb_wb_indirect.wb_out.dat[28] top.tb_wb_indirect.wb_out.dat[27] top.tb_wb_indirect.wb_out.dat[26] top.tb_wb_indirect.wb_out.dat[25] top.tb_wb_indirect.wb_out.dat[24] top.tb_wb_indirect.wb_out.dat[23] top.tb_wb_indirect.wb_out.dat[22] top.tb_wb_indirect.wb_out.dat[21] top.tb_wb_indirect.wb_out.dat[20] top.tb_wb_indirect.wb_out.dat[19] top.tb_wb_indirect.wb_out.dat[18] top.tb_wb_indirect.wb_out.dat[17] top.tb_wb_indirect.wb_out.dat[16] top.tb_wb_indirect.wb_out.dat[15] top.tb_wb_indirect.wb_out.dat[14] top.tb_wb_indirect.wb_out.dat[13] top.tb_wb_indirect.wb_out.dat[12] top.tb_wb_indirect.wb_out.dat[11] top.tb_wb_indirect.wb_out.dat[10] top.tb_wb_indirect.wb_out.dat[9] top.tb_wb_indirect.wb_out.dat[8] top.tb_wb_indirect.wb_out.dat[7] top.tb_wb_indirect.wb_out.dat[6] top.tb_wb_indirect.wb_out.dat[5] top.tb_wb_indirect.wb_out.dat[4] top.tb_wb_indirect.wb_out.dat[3] top.tb_wb_indirect.wb_out.dat[2] top.tb_wb_indirect.wb_out.dat[1] top.tb_wb_indirect.wb_out.dat[0]
+@28
+top.tb_wb_indirect.wb_out.err
+top.tb_wb_indirect.wb_out.rty
+top.tb_wb_indirect.wb_out.stall
+@22
+#{top.tb_wb_indirect.wb_in.adr[31:0]} top.tb_wb_indirect.wb_in.adr[31] top.tb_wb_indirect.wb_in.adr[30] top.tb_wb_indirect.wb_in.adr[29] top.tb_wb_indirect.wb_in.adr[28] top.tb_wb_indirect.wb_in.adr[27] top.tb_wb_indirect.wb_in.adr[26] top.tb_wb_indirect.wb_in.adr[25] top.tb_wb_indirect.wb_in.adr[24] top.tb_wb_indirect.wb_in.adr[23] top.tb_wb_indirect.wb_in.adr[22] top.tb_wb_indirect.wb_in.adr[21] top.tb_wb_indirect.wb_in.adr[20] top.tb_wb_indirect.wb_in.adr[19] top.tb_wb_indirect.wb_in.adr[18] top.tb_wb_indirect.wb_in.adr[17] top.tb_wb_indirect.wb_in.adr[16] top.tb_wb_indirect.wb_in.adr[15] top.tb_wb_indirect.wb_in.adr[14] top.tb_wb_indirect.wb_in.adr[13] top.tb_wb_indirect.wb_in.adr[12] top.tb_wb_indirect.wb_in.adr[11] top.tb_wb_indirect.wb_in.adr[10] top.tb_wb_indirect.wb_in.adr[9] top.tb_wb_indirect.wb_in.adr[8] top.tb_wb_indirect.wb_in.adr[7] top.tb_wb_indirect.wb_in.adr[6] top.tb_wb_indirect.wb_in.adr[5] top.tb_wb_indirect.wb_in.adr[4] top.tb_wb_indirect.wb_in.adr[3] top.tb_wb_indirect.wb_in.adr[2] top.tb_wb_indirect.wb_in.adr[1] top.tb_wb_indirect.wb_in.adr[0]
+@28
+top.tb_wb_indirect.wb_in.cyc
+@29
+top.tb_wb_indirect.wb_in.stb
+@22
+#{top.tb_wb_indirect.wb_in.dat[31:0]} top.tb_wb_indirect.wb_in.dat[31] top.tb_wb_indirect.wb_in.dat[30] top.tb_wb_indirect.wb_in.dat[29] top.tb_wb_indirect.wb_in.dat[28] top.tb_wb_indirect.wb_in.dat[27] top.tb_wb_indirect.wb_in.dat[26] top.tb_wb_indirect.wb_in.dat[25] top.tb_wb_indirect.wb_in.dat[24] top.tb_wb_indirect.wb_in.dat[23] top.tb_wb_indirect.wb_in.dat[22] top.tb_wb_indirect.wb_in.dat[21] top.tb_wb_indirect.wb_in.dat[20] top.tb_wb_indirect.wb_in.dat[19] top.tb_wb_indirect.wb_in.dat[18] top.tb_wb_indirect.wb_in.dat[17] top.tb_wb_indirect.wb_in.dat[16] top.tb_wb_indirect.wb_in.dat[15] top.tb_wb_indirect.wb_in.dat[14] top.tb_wb_indirect.wb_in.dat[13] top.tb_wb_indirect.wb_in.dat[12] top.tb_wb_indirect.wb_in.dat[11] top.tb_wb_indirect.wb_in.dat[10] top.tb_wb_indirect.wb_in.dat[9] top.tb_wb_indirect.wb_in.dat[8] top.tb_wb_indirect.wb_in.dat[7] top.tb_wb_indirect.wb_in.dat[6] top.tb_wb_indirect.wb_in.dat[5] top.tb_wb_indirect.wb_in.dat[4] top.tb_wb_indirect.wb_in.dat[3] top.tb_wb_indirect.wb_in.dat[2] top.tb_wb_indirect.wb_in.dat[1] top.tb_wb_indirect.wb_in.dat[0]
+#{top.tb_wb_indirect.wb_in.sel[3:0]} top.tb_wb_indirect.wb_in.sel[3] top.tb_wb_indirect.wb_in.sel[2] top.tb_wb_indirect.wb_in.sel[1] top.tb_wb_indirect.wb_in.sel[0]
+@28
+top.tb_wb_indirect.wb_in.we
+@200
+-xwb_indirect
+[pattern_trace] 1
+[pattern_trace] 0

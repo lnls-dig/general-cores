@@ -24,10 +24,10 @@ virtual class CBusAccessor;
 
 
    
-   pure virtual task writem(uint64_t addr[], uint64_t data[], input int size, ref int result);
-   pure virtual task readm(uint64_t addr[], ref uint64_t data[], input int size, ref int result);
+   pure virtual task automatic writem(uint64_t addr[], uint64_t data[], input int size, ref int result);
+   pure virtual task automatic readm(uint64_t addr[], ref uint64_t data[], input int size, ref int result);
 
-   virtual task read(uint64_t addr, ref uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
+   virtual task automatic read(uint64_t addr, ref uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
       int res;
       uint64_t aa[1], da[];
 
@@ -39,7 +39,7 @@ virtual class CBusAccessor;
    endtask
 
 
-   virtual task write(uint64_t addr, uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
+   virtual task automatic  write(uint64_t addr, uint64_t data, input int size = m_default_xfer_size, ref int result = _null);
       uint64_t aa[1], da[1];
       aa[0]  = addr;
       da[0]  = data;

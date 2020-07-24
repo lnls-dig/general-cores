@@ -13,8 +13,9 @@ In [modules/common](modules/common) there are general purpose cores:
 * The package [matrix_pkg](modules/common/matrix_pkg.vhd) declares a 2d
   array of std_logic, and some subprograms to handle it.
 
-* Edge detectors are provided by [gc_posedge](modules/common/gc_posedge.vhd)
-  and [gc_negedge](modules/common/gc_negedge.vhd).
+* Edge detectors are provided by [gc_posedge](modules/common/gc_posedge.vhd),
+  [gc_negedge](modules/common/gc_negedge.vhd), and
+  [gc_edge_detect](modules/common/gc_edge_detect.vhd).
 
 * For clock-domain crossing or asynchronous signal register, use
   [gc_sync](modules/common/gc_sync.vhd).  This is the basic synchronizer.
@@ -195,6 +196,8 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
   - [wb_vic](modules/wishbone/wb_vic) is the vectored interrupt controller.
   - [wb_ds182x_readout](modules/wishbone/wb_ds182x_readout) is a direct
     interface to the digital thermometer.
+  - [wb_xc7_fw_update](modules/wishbone/wb_xc7_fw_update) is an SPI interface
+    to drive the xc7 bitstream spi flash (using the ht-flash tool).
 
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
@@ -228,3 +231,5 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     superseeded by the crossbar.
   - [wb_metadata](modules/wishbone/wb_metadata) is a little helper to
     create metadata for the convention.
+  - [wb_indirect](modules/wishbone/wb_indirect) provides a wishbone
+    master driven by an address and a data registers.

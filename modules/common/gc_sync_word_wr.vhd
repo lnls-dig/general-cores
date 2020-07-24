@@ -37,7 +37,7 @@ use work.gencores_pkg.all;
 
 entity gc_sync_word_wr is
   generic (
-    -- automatically write next word when not busy
+    -- Automatically write next word when not busy.
     g_AUTO_WR : boolean  := FALSE;
     g_WIDTH   : positive := 8);
   port (
@@ -47,16 +47,18 @@ entity gc_sync_word_wr is
     --  Output clock and reset
     clk_out_i   : in  std_logic;
     rst_out_n_i : in  std_logic;
-    --  Input data
+    --  Input data (from clk_in_i domain)
     data_i      : in  std_logic_vector (g_WIDTH - 1 downto 0);
-    --  Input control and status
+    --  Input control (from clk_in_i domain)
     --  wr_i is ignored if g_AUTO_WR is set
     wr_i        : in  std_logic := '0';
+    --  Transfer in progress (clk_in_i domain).
     busy_o      : out std_logic;
+    --  Input wr_i has been used (clk_in_i domain).
     ack_o       : out std_logic;
     --  Output data
     data_o      : out std_logic_vector (g_WIDTH - 1 downto 0);
-    --  Output status
+    --  Output status.  Pulse set when the data has been transfered (clk_out_i domain).
     wr_o        : out std_logic);
 end entity;
 
