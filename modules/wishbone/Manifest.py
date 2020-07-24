@@ -1,4 +1,3 @@
-
 modules =  { "local" : [
   "wb_async_bridge",
   "wb_axi4lite_bridge",
@@ -30,6 +29,7 @@ modules =  { "local" : [
   "wb_indirect",
   "wbgen2",
   "wbgenplus",
+  "wb_xc7_fw_update",
   ]}
 
 files = [
