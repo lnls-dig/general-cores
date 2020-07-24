@@ -209,6 +209,7 @@ package genram_pkg is
       g_data_width             : natural;
       g_size                   : natural;
       g_show_ahead             : boolean := false;
+      g_show_ahead_legacy_mode : boolean := true;
       g_with_empty             : boolean := true;
       g_with_full              : boolean := true;
       g_with_almost_empty      : boolean := false;
