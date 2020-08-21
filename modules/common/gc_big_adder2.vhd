@@ -43,6 +43,7 @@ entity gc_big_adder2 is
     g_parts     : natural := 4);
   port(
     clk_i        : in  std_logic;
+    ce_i         : in  std_logic := '1';
     stall_i      : in  std_logic := '0';
     valid_i      : in  std_logic := '1';
     a_i          : in  std_logic_vector(g_data_bits-1 downto 0);
@@ -96,29 +97,31 @@ begin
     variable sum0, sum1 : std_logic_vector(c_sub_bits downto 0);
   begin
     if rising_edge(clk_i) then
-      if stall_i = '0' then
-        for i in 0 to c_parts-1 loop
-          sum0 := f_big_ripple(a_i((i+1)*c_sub_bits-1 downto i*c_sub_bits),
-                               b_i((i+1)*c_sub_bits-1 downto i*c_sub_bits), '0');
-          sum1 := f_big_ripple(a_i((i+1)*c_sub_bits-1 downto i*c_sub_bits),
-                               b_i((i+1)*c_sub_bits-1 downto i*c_sub_bits), '1');
+      if ce_i = '1' then
+        if stall_i = '0' then
+          for i in 0 to c_parts-1 loop
+            sum0 := f_big_ripple(a_i((i+1)*c_sub_bits-1 downto i*c_sub_bits),
+                                 b_i((i+1)*c_sub_bits-1 downto i*c_sub_bits), '0');
+            sum1 := f_big_ripple(a_i((i+1)*c_sub_bits-1 downto i*c_sub_bits),
+                                 b_i((i+1)*c_sub_bits-1 downto i*c_sub_bits), '1');
 
-          r1_sum0(i) <= sum0(c_sub_bits-1 downto 0);
-          --r1_sum1(i) <= sum1(c_sub_bits-1 downto 0);
-          r1_g(i)  <= sum0(c_sub_bits);
-          r1_p(i)  <= sum1(c_sub_bits);
-        end loop;
+            r1_sum0(i) <= sum0(c_sub_bits-1 downto 0);
+            --r1_sum1(i) <= sum1(c_sub_bits-1 downto 0);
+            r1_g(i)  <= sum0(c_sub_bits);
+            r1_p(i)  <= sum1(c_sub_bits);
+          end loop;
 
-        -- first pipeline stage
-        r_valid(0) <= valid_i;
+          -- first pipeline stage
+          r_valid(0) <= valid_i;
 
-        r1_c    <= c_i;
-        r2_c    <= s1_r(c_parts-1 downto 0) xor (r1_p xor r1_g);
-        r2_cH   <= s1_r(c_parts);
-        r2_sum0 <= r1_sum0;
-        -- second pipeline stage
-        r_valid(1) <= r_valid(0);
-        --r2_sum1 <= r1_sum1;
+          r1_c    <= c_i;
+          r2_c    <= s1_r(c_parts-1 downto 0) xor (r1_p xor r1_g);
+          r2_cH   <= s1_r(c_parts);
+          r2_sum0 <= r1_sum0;
+          -- second pipeline stage
+          r_valid(1) <= r_valid(0);
+          --r2_sum1 <= r1_sum1;
+        end if;
       end if;
     end if;
   end process;

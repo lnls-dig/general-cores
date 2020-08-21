@@ -511,6 +511,7 @@ package gencores_pkg is
     g_parts     : natural := 4);
   port(
     clk_i        : in  std_logic;
+    ce_i         : in  std_logic := '1';
     stall_i      : in  std_logic := '0';
     valid_i      : in  std_logic := '1';
     a_i          : in  std_logic_vector(g_data_bits-1 downto 0);
