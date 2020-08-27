@@ -944,13 +944,19 @@ package wishbone_pkg is
       uart_txd_o : out std_logic);
   end component;
 
+        
+
   component xwb_simple_uart
     generic (
-      g_with_virtual_uart   : boolean                        := false;
-      g_with_physical_uart  : boolean                        := true;
-      g_interface_mode      : t_wishbone_interface_mode      := CLASSIC;
-      g_address_granularity : t_wishbone_address_granularity := WORD;
-      g_vuart_fifo_size     : integer := 1024);
+      g_WITH_VIRTUAL_UART   : boolean                        := TRUE;
+      g_WITH_PHYSICAL_UART  : boolean                        := TRUE;
+      g_WITH_PHYSICAL_UART_FIFO : boolean := false;
+      g_TX_FIFO_SIZE : integer := 0;
+      g_RX_FIFO_SIZE : integer := 0;
+      g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
+      g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
+      g_VUART_FIFO_SIZE     : integer                        := 1024;
+      g_PRESET_BCR          : integer := 0 );
     port (
       clk_sys_i  : in  std_logic;
       rst_n_i    : in  std_logic;
