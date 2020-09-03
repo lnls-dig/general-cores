@@ -5,8 +5,23 @@ use ieee.numeric_std.all;
 use work.wishbone_pkg.all;
 
 package sim_wishbone is
+    procedure init (signal wb_o: out t_wishbone_master_out);
+
+    --  Classic
+    procedure write32 (signal clk : std_logic;
+                       signal wb_o: out t_wishbone_master_out;
+                       signal wb_i: in  t_wishbone_master_in;
+                       addr : std_logic_vector (31 downto 0);
+                       data : std_logic_vector (31 downto 0));
+
+    procedure read32 (signal clk : std_logic;
+                      signal wb_o: out t_wishbone_master_out;
+                      signal wb_i: in  t_wishbone_master_in;
+                      addr : std_logic_vector (31 downto 0);
+                      data : out std_logic_vector (31 downto 0));
+
     --  PL: pipelined versions.
-    
+
     procedure write32_pl (signal clk : std_logic;
                           signal wb_o: out t_wishbone_master_out;
                           signal wb_i: in  t_wishbone_master_in;
@@ -52,9 +67,51 @@ package body sim_wishbone is
             wait until rising_edge(clk);
         end loop;
         wb_o.cyc <= '0';
+        wb_o.stb <= '0';
         wb_o.adr <= (others => 'X');
         wb_o.dat <= (others => 'X');
     end wait_ack;
+
+    procedure init (signal wb_o: out t_wishbone_master_out) is
+    begin
+      wb_o.stb <= '0';
+      wb_o.cyc <= '0';
+    end init;
+
+    procedure write32 (signal clk : std_logic;
+                       signal wb_o: out t_wishbone_master_out;
+                       signal wb_i: in  t_wishbone_master_in;
+                       addr : std_logic_vector (31 downto 0);
+                       data : std_logic_vector (31 downto 0)) is
+    begin
+        wb_o.adr <= addr;
+        wb_o.dat <= data;
+        wb_o.sel <= "1111";
+        wb_o.we <= '1';
+        wb_o.cyc <= '1';
+        wb_o.stb <= '1';
+        wait until rising_edge(clk);
+
+        wait_ack (clk, wb_o, wb_i);
+        wait until rising_edge(clk);
+    end write32;
+
+    procedure read32 (signal clk : std_logic;
+                      signal wb_o: out t_wishbone_master_out;
+                      signal wb_i: in  t_wishbone_master_in;
+                      addr : std_logic_vector (31 downto 0);
+                      data : out std_logic_vector (31 downto 0)) is
+    begin
+        wb_o.adr <= addr;
+        wb_o.we <= '0';
+        wb_o.cyc <= '1';
+        wb_o.stb <= '1';
+        wait until rising_edge(clk);
+
+        wait_ack (clk, wb_o, wb_i);
+        data := wb_i.dat;
+        wait until rising_edge(clk);
+    end read32;
 
     procedure write32_pl (signal clk : std_logic;
                           signal wb_o: out t_wishbone_master_out;
@@ -104,5 +161,5 @@ package body sim_wishbone is
     begin
        read32_pl (clk, wb_o, wb_i, std_logic_vector (to_unsigned(addr, 32)), data);
     end read32_pl;
-                    
+
 end sim_wishbone;
