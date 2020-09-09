@@ -11,7 +11,7 @@ with open("sourceid_{}_pkg.vhd".format(project), "w") as f:
       ["git", "log", "-1", "--format=%H"]).decode().strip()
     sourceid = sourceid[0:32]
   except:
-    commitid = 16 * "00"
+    sourceid = 16 * "00"
 
   # Extract current tag + dirty indicator.
   # It is not sure if the definition of dirty is stable across all git versions.
