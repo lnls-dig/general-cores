@@ -9,6 +9,14 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+1.1.1 - 2020-09-14
+==================
+https://www.ohwr.org/project/general-cores/tags/v1.1.1
+
+Fixed
+-----
+- sw: fix SPI driver to update the spi_message->actual_length
+
 1.1.0 - 2020-07-24
 ==================
 https://www.ohwr.org/project/general-cores/tags/v1.1.0
