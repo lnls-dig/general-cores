@@ -416,8 +416,9 @@ static int spi_ocores_sw_xfer_finish(struct spi_ocores *sp)
 	sp->cur_tx_buf = NULL;
 	sp->cur_rx_buf = NULL;
 	sp->cur_len = 0;
+	sp->master->cur_msg->actual_length += sp->cur_xfer->len;
 
-	return 0;
+        return 0;
 }
 
 /**
