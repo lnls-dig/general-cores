@@ -19,6 +19,7 @@ entity fine_pulse_gen_kintex7 is
       clk_par_i    : in std_logic;
       clk_serdes_i : in std_logic;
 
+      rst_serdes_i : in std_logic;
       rst_sys_n_i : in std_logic;
       cont_i      : in std_logic;
 
@@ -188,7 +189,7 @@ begin
       OQ       => dout_nodelay,
       TBYTEIN  => '0',
       TCE      => '0',
-      RST      => rst);
+      RST      => rst_serdes_i);
 
   gen_with_odelay : if g_use_odelay generate
 
@@ -211,7 +212,7 @@ begin
         INC        => '0',
         ODATAIN    => dout_predelay,
         LD         => odelay_load,
-        REGRST     => rst,
+        REGRST     => rst_serdes_i,
         LDPIPEEN   => '0',
         CNTVALUEIN => odelay_ntaps,
         CINVCTRL   => '0'

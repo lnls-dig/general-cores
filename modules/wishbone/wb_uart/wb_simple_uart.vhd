@@ -31,6 +31,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 use work.genram_pkg.all;
 use work.wishbone_pkg.all;
@@ -47,7 +48,6 @@ entity wb_simple_uart is
     g_ADDRESS_GRANULARITY     : t_wishbone_address_granularity := WORD;
     g_VUART_FIFO_SIZE         : integer                        := 1024;
     g_PRESET_BCR              : integer                        := 0
-
     );
   port (
 
