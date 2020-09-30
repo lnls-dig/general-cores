@@ -1,4 +1,4 @@
--- Do not edit.  Generated on Wed Sep 30 10:51:30 2020 by tgingold
+-- Do not edit.  Generated on Wed Sep 30 11:24:49 2020 by tgingold
 -- With Cheby 1.4.dev0 and these options:
 --  --gen-hdl wb_ds182x_regs.vhd -i wb_ds182x_regs.cheby
 
@@ -21,6 +21,8 @@ entity wb_ds182x_regs is
     -- temperature
     -- temperature value
     temperature_data_i   : in    std_logic_vector(15 downto 0);
+    -- temperature is not valid
+    temperature_error_i  : in    std_logic;
 
     -- status
     -- Set when unique id was read
@@ -136,7 +138,7 @@ begin
   end process;
 
   -- Process for read requests.
-  process (adr_int, rd_req_int, id_i, temperature_data_i, status_id_read_i, status_id_ok_i, status_temp_ok_i) begin
+  process (adr_int, rd_req_int, id_i, temperature_data_i, temperature_error_i, status_id_read_i, status_id_ok_i, status_temp_ok_i) begin
     -- By default ack read requests
     rd_dat_d0 <= (others => 'X');
     case adr_int(3 downto 3) is
@@ -159,7 +161,8 @@ begin
         -- Reg temperature
         rd_ack_d0 <= rd_req_int;
         rd_dat_d0(15 downto 0) <= temperature_data_i;
-        rd_dat_d0(31 downto 16) <= (others => '0');
+        rd_dat_d0(30 downto 16) <= (others => '0');
+        rd_dat_d0(31) <= temperature_error_i;
       when "1" =>
         -- Reg status
         rd_ack_d0 <= rd_req_int;

@@ -49,6 +49,7 @@ architecture arch of xwb_ds182x_readout is
   signal id_read :  std_logic;                     -- id_o value is valid_o
   signal id_ok   :  std_logic;                    -- Same as id_read_o, but not reset with rst_n_i
   signal temp_ok :  std_logic;
+  signal temp_err : std_logic;
 begin
   i_readout: entity work.gc_ds182x_readout
     generic map (
@@ -65,6 +66,8 @@ begin
       id_read_o => id_read,
       id_ok_o => id_ok);
 
+  temp_err <= not temp_ok;
+
   i_regs: entity work.wb_ds182x_regs
     port map (
       rst_n_i => rst_n_i,
@@ -74,6 +77,7 @@ begin
 
       id_i => id,
       temperature_data_i => temper,
+      temperature_error_i => temp_err,
       status_id_read_i => id_read,
       status_id_ok_i => id_ok,
       status_temp_ok_i => temp_ok

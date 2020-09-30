@@ -21,6 +21,10 @@ memory-map:
         name: data
         description: temperature value
         range: 15-0
+     - field:
+        name: error
+        description: temperature is not valid
+        range: 31
   - reg:
      name: status
      description: status
