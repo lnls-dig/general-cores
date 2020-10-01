@@ -364,7 +364,7 @@ begin  -- arch
         g_DATA_WIDTH => 8,
         g_SIZE       => g_VUART_FIFO_SIZE,
         g_WITH_COUNT => true,
-        g_SHOW_AHEAD => true)
+        g_SHOW_AHEAD => false)
       port map (
         rst_n_i => rst_n_i,
         clk_i   => clk_sys_i,
