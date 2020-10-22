@@ -29,7 +29,6 @@ use ieee.NUMERIC_STD.all;
 
 library work;
 use work.gencores_pkg.all;
-use work.genram_pkg.all;
 
 entity gc_dyn_extend_pulse is
   generic

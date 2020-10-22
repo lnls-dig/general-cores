@@ -91,7 +91,7 @@ architecture syn of inferred_sync_fifo is
 begin  -- syn
 
   legacy_mode_check: assert g_show_ahead = false or g_show_ahead_legacy_mode = false
-    report legacy_mode_check'instance_name & ": show-ahead enabled for sync FIFO in " &
+    report "inferred_sync_fifo: show-ahead enabled for sync FIFO in " &
     "legacy mode. In this mode, the full flag is asserted at g_SIZE-1. if you want the " &
     "full flag to be asserted at g_SIZE, then disable g_SHOW_AHEAD_LEGACY_MODE."
     severity NOTE;

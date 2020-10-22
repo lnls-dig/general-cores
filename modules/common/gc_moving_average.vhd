@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2009-09-01
--- Last update: 2017-10-11
+-- Last update: 2020-04-07
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '93
 -------------------------------------------------------------------------------
@@ -46,7 +46,6 @@ use ieee.NUMERIC_STD.all;
 
 library work;
 use work.gencores_pkg.all;
-use work.genram_pkg.all;
 
 entity gc_moving_average is
 

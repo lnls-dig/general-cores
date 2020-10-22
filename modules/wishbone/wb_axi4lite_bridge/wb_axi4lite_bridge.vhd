@@ -38,7 +38,7 @@ entity wb_axi4lite_bridge is
     AWVALID : in  std_logic;
     BREADY  : in  std_logic;
     RREADY  : in  std_logic;
-    WLAST   : in  std_logic;
+    WLAST   : in  std_logic := '1';
     WVALID  : in  std_logic;
     ARADDR  : in  std_logic_vector (31 downto 0);
     AWADDR  : in  std_logic_vector (31 downto 0);
