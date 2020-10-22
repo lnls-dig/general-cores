@@ -481,6 +481,12 @@ static int spi_ocores_sw_xfer_next_init(struct spi_ocores *sp)
 	else
 		hz = sp->master->cur_msg->spi->max_speed_hz;
 	divider = (sp->clock_hz / (hz * 2)) - 1;
+
+	if (WARN_ON(divider == 0)) {
+		dev_warn(&sp->master->dev, "divider value is 0\n");
+		divider =1;
+	}
+
 	spi_ocores_hw_xfer_config(sp, ctrl, divider);
 
 
