@@ -298,10 +298,14 @@ class CIWBMasterAccessor extends CWishboneAccessor;
 
 endclass // CIWBMasterAccessor
 
+
+   CIWBMasterAccessor theAccessor;
+
+   initial
+     theAccessor = new;
+   
    function automatic CIWBMasterAccessor get_accessor();
-      automatic CIWBMasterAccessor tmp;
-      tmp  = new;
-      return tmp;
+      return theAccessor;
    endfunction // get_accessor
 
    always@(posedge clk_i)

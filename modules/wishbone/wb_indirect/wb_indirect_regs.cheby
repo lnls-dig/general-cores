@@ -1,0 +1,26 @@
+memory-map:
+  bus: wb-32-be
+  name: wb_indirect_regs
+  description: Indirect access to a wishbone bus
+  x-hdl:
+    busgroup: True
+  children:
+    - reg:
+        name: addr
+        description: address to use on the wishbone bus
+        width: 32
+        access: rw
+        x-hdl:
+          write-strobe: True
+          type: wire
+    - reg:
+        name: data
+        description: data word to be read or written
+        width: 32
+        access: rw
+        x-hdl:
+          write-strobe: True
+          read-strobe: True
+          write-ack: True
+          read-ack: True
+          type: wire
