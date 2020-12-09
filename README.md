@@ -202,7 +202,10 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
     crossing.
-  - [wb_register](modules/wishbone/wb_register) add a pipeline register.
+  - [wb_register](modules/wishbone/wb_register) adds a pipeline register.
+  - [wb_skidpad2](modules/wishbone/wb_register) adds a pipeline register to
+    a pipelined wishbone bus (in one direction only) without downgrading
+    the throughput.
 
 * There are modules to convert to a different bus
   - [wb_async_bridge](modules/wishbone/wb_async_bridge) is a bridge with the
