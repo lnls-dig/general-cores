@@ -276,6 +276,10 @@ begin  -- arch
     regs_in.sr_tx_fifo_full_i      <= tx_fifo_full;
     regs_in.sr_tx_fifo_empty_i     <= tx_fifo_empty;
 
+    regs_in.sr_rx_fifo_bytes_i (rx_fifo_count'length-1 downto 0) <= rx_fifo_count;
+    regs_in.sr_rx_fifo_bytes_i ( 15 downto rx_fifo_count'length ) <= (others => '0');
+    
+    
     phys_tx_start <= '1' when tx_fifo_state = IDLE and tx_fifo_empty = '0' else '0';
 
     p_rx_fifo_overflow : process(clk_sys_i)
