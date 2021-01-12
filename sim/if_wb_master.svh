@@ -152,7 +152,7 @@ interface IWishboneMaster
          dat_o <= gen_data(c.data[i]);
          @(posedge clk_i);
 
-         while (ack != 1'b1 && err != 1'b1 && rty == 1'b1) @(posedge clk_i);
+         while (ack != 1'b1 && err != 1'b1 && rty == 1'b0) @(posedge clk_i);
 
          if (err || rty) begin
             c.result = (err ? R_ERROR: R_RETRY);
