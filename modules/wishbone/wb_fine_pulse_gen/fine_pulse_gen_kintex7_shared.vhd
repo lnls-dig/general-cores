@@ -15,6 +15,9 @@ entity fine_pulse_gen_kintex7_shared is
     -- PLL async reset
     pll_rst_i : in std_logic;
 
+    idelayctrl_rst_i : in std_logic;
+    idelayctrl_rdy_o : out std_logic;
+
     clk_ser_ext_i : in std_logic;
     
     -- 62.5 MHz reference
@@ -95,9 +98,9 @@ begin
 
     IDELAYCTRL_inst : IDELAYCTRL
       port map (
-        RDY    => open,                 -- 1-bit output: Ready output
+        RDY    => idelayctrl_rdy_o,                 -- 1-bit output: Ready output
         REFCLK => clk_iodelay_bufg,     -- 1-bit input: Reference clock input
-        RST    => '0'                   -- 1-bit input: Active high reset input
+        RST    => idelayctrl_rst_i                   -- 1-bit input: Active high reset input
         );
 
     clk_odelay_o <= clk_iodelay_bufg;

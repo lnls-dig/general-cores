@@ -151,7 +151,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -167,8 +167,8 @@ peripheral {
 
 			field {
 				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -191,6 +191,15 @@ peripheral {
 				 description = "1: external trigger; 0: PPS";
 			};
 
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+			
 	 };
 
 	 
@@ -210,7 +219,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -225,9 +234,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -248,6 +257,14 @@ peripheral {
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
+			};
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
 			};
 			
 	 };
@@ -268,7 +285,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -283,9 +300,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -307,6 +324,15 @@ peripheral {
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
 			};
+					field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
 	 };
 
 		reg {
@@ -325,7 +351,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -340,9 +366,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -364,6 +390,16 @@ peripheral {
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
 			};
+
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
 	 };
 
 				reg {
@@ -382,7 +418,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -397,9 +433,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -421,6 +457,16 @@ peripheral {
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
 			};
+
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
 	 };
 
 	 reg {
@@ -439,7 +485,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -454,9 +500,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -477,6 +523,14 @@ peripheral {
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
+			};
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
 			};
 
 		};
@@ -497,7 +551,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -512,9 +566,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -536,6 +590,15 @@ peripheral {
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
 			};
+			field {
+				 name = "Pulse Length (in clock cycles, 0 = 1 clock)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
 		};
 
 		reg {
@@ -554,7 +617,7 @@ peripheral {
 			field {
 				 name = "Fine delay adjust";
 				 prefix = "FINE";
-				 size = 9;
+				 size = 5;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -569,9 +632,9 @@ peripheral {
 			};
 
 			field {
-				 name = "Serdes Bitmask";
-				 prefix = "MASK";
-				 size = 8;
+				 name = "Coarse";
+				 prefix = "COARSE";
+				 size = 4;
 				 type = SLV;
          access_bus = READ_WRITE;
          access_dev = READ_ONLY;
@@ -593,6 +656,15 @@ peripheral {
          access_dev = READ_ONLY;
 				 description = "1: external trigger; 0: PPS";
 			};
+			field {
+				 name = "Pulse Length (in clock cycles * 16, 0 = 1 clock, 1 = 16 clocks, etc)";
+				 prefix = "LENGTH";
+				 size = 16;
+				 type = SLV;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+
 		};
 
 

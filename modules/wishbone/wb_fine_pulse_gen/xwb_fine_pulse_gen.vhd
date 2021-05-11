@@ -52,34 +52,6 @@ architecture rtl of xwb_fine_pulse_gen is
 
 
 
-  component fine_pulse_gen_kintex7_shared is
-    generic (
-      g_global_use_odelay : boolean;
-      g_use_external_serdes_clock : boolean);
-    port (
-      pll_rst_i    : in  std_logic;
-      clk_ser_ext_i : in std_logic;
-      clk_ref_i    : in  std_logic;
-      clk_par_o    : out std_logic;
-      clk_ser_o    : out std_logic;
-      clk_odelay_o : out std_logic;
-      pll_locked_o : out std_logic);
-  end component fine_pulse_gen_kintex7_shared;
-
-  component fine_pulse_gen_kintexultrascale_shared is
-    generic (
-      g_global_use_odelay : boolean;
-      g_use_external_serdes_clock : boolean
-      );
-    port (
-      pll_rst_i    : in  std_logic;
-      clk_ser_ext_i : in std_logic;
-      clk_ref_i    : in  std_logic;
-      clk_par_o    : out std_logic;
-      clk_ser_o    : out std_logic;
-      clk_odelay_o : out std_logic;
-      pll_locked_o : out std_logic);
-  end component fine_pulse_gen_kintexultrascale_shared;
 
   type t_channel_state is (IDLE, WAIT_PPS, WAIT_PPS_FORCED, WAIT_TRIGGER);
 
@@ -94,9 +66,10 @@ architecture rtl of xwb_fine_pulse_gen is
     pol        : std_logic;
     cnt : unsigned(3 downto 0);
     pps_offs : unsigned(3 downto 0);
-    mask       : std_logic_vector(7 downto 0);
+    coarse     : std_logic_vector(3 downto 0);
     delay_load : std_logic;
-    delay_fine : std_logic_vector(8 downto 0);
+    delay_fine : std_logic_vector(4 downto 0);
+    length: std_logic_vector(23 downto 0);
     cont : std_logic;
     force_tr : std_logic;
 
@@ -312,13 +285,20 @@ begin
   ch(4).delay_fine <= regs_out.ocr4_fine_o;
   ch(5).delay_fine <= regs_out.ocr5_fine_o;
 
-  ch(0).mask <= regs_out.ocr0_mask_o;
-  ch(1).mask <= regs_out.ocr1_mask_o;
-  ch(2).mask <= regs_out.ocr2_mask_o;
-  ch(3).mask <= regs_out.ocr3_mask_o;
-  ch(4).mask <= regs_out.ocr4_mask_o;
-  ch(5).mask <= regs_out.ocr5_mask_o;
+  ch(0).coarse <= regs_out.ocr0_coarse_o;
+  ch(1).coarse <= regs_out.ocr1_coarse_o;
+  ch(2).coarse <= regs_out.ocr2_coarse_o;
+  ch(3).coarse <= regs_out.ocr3_coarse_o;
+  ch(4).coarse <= regs_out.ocr4_coarse_o;
+  ch(5).coarse <= regs_out.ocr5_coarse_o;
 
+  ch(0).length <= "0000" & regs_out.ocr0_length_o & "0000";
+  ch(1).length <= "0000" & regs_out.ocr1_length_o & "0000";
+  ch(2).length <= "0000" & regs_out.ocr2_length_o & "0000";
+  ch(3).length <= "0000" & regs_out.ocr3_length_o & "0000";
+  ch(4).length <= "0000" & regs_out.ocr4_length_o & "0000";
+  ch(5).length <= "0000" & regs_out.ocr5_length_o & "0000";
+  
   ch(0).cont <= regs_out.ocr0_cont_o;
   ch(1).cont <= regs_out.ocr1_cont_o;
   ch(2).cont <= regs_out.ocr2_cont_o;
@@ -431,7 +411,8 @@ begin
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
         cont_i =>  ch(i).cont,
-        coarse_i       => ch(I).mask,
+        coarse_i       => ch(I).coarse,
+        length_i => ch(i).length,
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
         dly_load_i => ch(i).delay_load,
@@ -455,11 +436,12 @@ begin
         rst_sys_n_i  => rst_sys_n_i,
         trig_p_i     => ch(I).trig_p,
         cont_i => ch(i).cont,
-        coarse_i       => ch(I).mask,
+        coarse_i       => ("0000" & ch(I).coarse),
+--        length_i => ch(i).length, -- fixme: ultrascale PG doesn't support length
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
         dly_load_i => ch(i).delay_load,
-        dly_fine_i   => ch(i).delay_fine,
+        dly_fine_i   => ("0000" & ch(i).delay_fine),
 
         odelay_load_i => ch(i).odelay_load,
         odelay_en_vtc_i => regs_out.odelay_calib_en_vtc_o,
@@ -480,7 +462,7 @@ begin
 
   gen_is_kintex7: if g_target_platform = "Kintex7" generate
 
-    U_K7_Shared: fine_pulse_gen_kintex7_shared
+    U_K7_Shared: entity work.fine_pulse_gen_kintex7_shared
       generic map (
         g_global_use_odelay => f_global_use_odelay,
         g_use_external_serdes_clock => g_use_external_serdes_clock)
@@ -491,7 +473,18 @@ begin
         clk_ser_o    => clk_ser,
         clk_ser_ext_i => clk_ser_ext_i,
 --        clk_odelay_o => clk_odelay,
-        pll_locked_o => pll_locked);
+        pll_locked_o => pll_locked,
+        idelayctrl_rdy_o => odelay_calib_rdy,
+        idelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl_o
+        );
+
+    U_Sync_Reset : gc_sync_ffs
+    port map (
+      clk_i    => clk_sys_i,
+      rst_n_i  => rst_sys_n_i,
+      data_i   => odelay_calib_rdy,
+      synced_o => regs_in.odelay_calib_rdy_i
+      );    
 
   end generate gen_is_kintex7;
 
