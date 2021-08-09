@@ -165,7 +165,7 @@ begin
       port map (
         RDY    => odelayctrl_rdy_o,
         REFCLK => clk_odelay,    
-        RST    => odelayctrl_rst_i
+        RST    => rst_synced
         );
     end block;
   end generate gen_use_odelay;
