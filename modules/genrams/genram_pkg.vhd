@@ -333,6 +333,55 @@ package genram_pkg is
     );
   end component;
 
+  component inferred_async_fwft_fifo
+  generic
+  (
+    g_data_width                              : natural;
+    g_size                                    : natural;
+
+    g_with_rd_empty                           : boolean := true;
+    g_with_rd_full                            : boolean := false;
+    g_with_rd_almost_empty                    : boolean := false;
+    g_with_rd_almost_full                     : boolean := false;
+    g_with_rd_count                           : boolean := false;
+
+    g_with_wr_empty                           : boolean := false;
+    g_with_wr_full                            : boolean := true;
+    g_with_wr_almost_empty                    : boolean := false;
+    g_with_wr_almost_full                     : boolean := false;
+    g_with_wr_count                           : boolean := false;
+
+    g_almost_empty_threshold                  : integer;
+    g_almost_full_threshold                   : integer;
+    g_async                                   : boolean := true
+  );
+  port
+  (
+    -- Write clock
+    wr_clk_i                                  : in  std_logic;
+    wr_rst_n_i                                : in  std_logic;
+
+    wr_data_i                                 : in  std_logic_vector(g_data_width-1 downto 0);
+    wr_en_i                                   : in  std_logic;
+    wr_full_o                                 : out std_logic;
+    wr_count_o                                : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+    wr_almost_empty_o                         : out std_logic;
+    wr_almost_full_o                          : out std_logic;
+
+    -- Read clock
+    rd_clk_i                                  : in  std_logic;
+    rd_rst_n_i                                : in  std_logic;
+
+    rd_data_o                                 : out std_logic_vector(g_data_width-1 downto 0);
+    rd_valid_o                                : out std_logic;
+    rd_en_i                                   : in  std_logic;
+    rd_empty_o                                : out std_logic;
+    rd_count_o                                : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
+    rd_almost_empty_o                         : out std_logic;
+    rd_almost_full_o                          : out std_logic
+  );
+  end component;
+
 end genram_pkg;
 
 package body genram_pkg is
