@@ -9,6 +9,14 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+1.1.3 - 2021-08-23
+==================
+https://www.ohwr.org/project/general-cores/tags/v1.1.2
+
+Fixed
+-----
+- sw: kernel crash of htvic removal on modern kernel
+
 1.1.2 - 2021-07-29
 ==================
 https://www.ohwr.org/project/general-cores/tags/v1.1.2
