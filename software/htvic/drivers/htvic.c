@@ -320,6 +320,7 @@ static int htvic_irq_mapping(struct htvic_device *htvic)
 					      &htvic_irq_domain_ops, htvic);
 	if (!htvic->domain) {
 		irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+		htvic->pdev->dev.fwnode = NULL;
 		return -ENOMEM;
 	}
 #else
@@ -353,6 +354,7 @@ out:
 	irq_domain_remove(htvic->domain);
 #if KERNEL_VERSION(4, 4, 0) <= LINUX_VERSION_CODE
 	irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+	htvic->pdev->dev.fwnode = NULL;
 #endif
 	return -EPERM;
 }
@@ -607,6 +609,7 @@ static int htvic_remove(struct platform_device *pdev)
 	irq_domain_remove(htvic->domain);
 #if KERNEL_VERSION(4, 4, 0) <= LINUX_VERSION_CODE
 	irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+	htvic->pdev->dev.fwnode = NULL;
 #endif
 	kfree(htvic);
 	dev_set_drvdata(&pdev->dev, NULL);

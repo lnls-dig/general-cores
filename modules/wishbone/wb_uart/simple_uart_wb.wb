@@ -28,9 +28,84 @@ peripheral {
 				 access_bus = READ_ONLY;
 				 access_dev = WRITE_ONLY;
 			};
+
+			field {
+				 name = "RX FIFO supported";
+				 description = "1: UART supports RX FIFO";
+
+				 prefix = "RX_FIFO_SUPPORTED";
+				 type = BIT;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+
+			field {
+				 name = "TX FIFO supported";
+				 description = "1: UART supports TX FIFO";
+
+				 prefix = "TX_FIFO_SUPPORTED";
+				 type = BIT;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+
+			field {
+				 name = "RX FIFO data valid";
+				 description = "1: there's some data in the RX FIFO";
+
+				 prefix = "RX_FIFO_VALID";
+				 type = BIT;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+
+			field {
+				 name = "TX FIFO empty";
+				 description = "1: TX FIFO is empty";
+
+				 prefix = "TX_FIFO_EMPTY";
+				 type = BIT;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
 			
+			field {
+				 name = "TX FIFO full";
+				 description = "1: TX FIFO is full";
+
+				 prefix = "TX_FIFO_FULL";
+				 type = BIT;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
+
+
+			field {
+				 name = "RX FIFO overflow";
+				 description = "1: RX FIFO overflow occured (latched bit, write 1 to clear)";
+
+				 prefix = "RX_FIFO_OVERFLOW";
+				 type = BIT;
+				 access_bus = READ_WRITE;
+				 access_dev = READ_WRITE;
+				 load = LOAD_EXT;
+			};
+			
+
+			field {
+				 name = "RX FIFO data count";
+				 description = "Number of bytes currently in the RX FIFO";
+
+				 prefix = "RX_FIFO_BYTES";
+				 type = SLV;
+				 size = 8;
+				 access_bus = READ_ONLY;
+				 access_dev = WRITE_ONLY;
+			};
 	 };
 
+
+	 
 	 reg {
 			name = "Baudrate control register";
 			description = "Register controlling the UART baudrate";
@@ -122,4 +197,28 @@ peripheral {
          access_bus=READ_ONLY;
       };
    };
+
+	 reg {
+      name = "UART General Control Register";
+      prefix = "CR";
+
+	
+			field {
+				 name = "RX FIFO purge";
+				 description = "write 1: clears RX FIFO";
+
+				 prefix = "RX_FIFO_PURGE";
+				 type = MONOSTABLE;
+			};
+
+			field {
+				 name = "TX FIFO purge";
+				 description = "write 1: clears TX FIFO";
+
+				 prefix = "TX_FIFO_PURGE";
+				 type = MONOSTABLE;
+			};
+
+			
+	 };
 };
