@@ -79,7 +79,7 @@ architecture behaviour of wb_tics is
   signal cntr_overflow : std_logic;
 
 begin
-  
+
   process(clk_sys_i)
   begin
     if rising_edge(clk_sys_i) then
@@ -112,7 +112,7 @@ begin
 
   --Wishbone interface
   wb_dat_o   <= std_logic_vector(cntr_tics);
-  wb_ack_o   <= '1';
+  wb_ack_o   <= wb_stb_i and wb_cyc_i;
   wb_stall_o <= '0';
 
   --process(clk_sys_i)
