@@ -340,7 +340,7 @@ begin
             end if;
           when check_again =>
             if valid_ram_d = '1' and ecc_errors = '1' then
-              if (ecc_correctable_error = '0') then
+              if ecc_correctable_error = '0' then
                 double_error_p_o <= '1';
                 fsm_done_r_p     <= '1';
                 fsm_read <= normal_op;
