@@ -103,7 +103,7 @@ begin
   q_o      <= d_ram_i (31 downto 0);
   re_ram_o <= '1' when (fsm_read /= normal_op) else re;
 
-  syndrome              <= f_calc_syndrome (d_ram_i (31 downto 0)) xor d_ram_i(38 downto 32);
+  syndrome              <= f_calc_ecc (d_ram_i (31 downto 0)) xor d_ram_i(38 downto 32);
   ecc_errors            <= f_ecc_errors(syndrome);
   ecc_correctable_error <= f_ecc_one_error (syndrome);
 
@@ -256,7 +256,7 @@ begin
               fsm_write    <= check_write;
             elsif we = '1' then
               q_ram(31 downto 0) <= d;
-              q_ram(38 downto 32) <= f_calc_syndrome(d);
+              q_ram(38 downto 32) <= f_calc_ecc(d);
               we_ram_o  <= '1';
               fsm_write <= check_write;
             end if;
