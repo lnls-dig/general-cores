@@ -32,9 +32,7 @@ entity secded_ecc is
     lock_grant_i : in  std_logic;
 
     single_error_p_o : out std_logic;
-    double_error_p_o : out std_logic;
-    read_fault_p_o   : out std_logic;
-    write_fault_p_o  : out std_logic
+    double_error_p_o : out std_logic
   );
 end secded_ecc;
 
@@ -357,9 +355,7 @@ begin
         fsm_write <= normal_op;
         done_w <= '0';
         we_ram_o <= '0';
-        write_fault_p_o <= '0';
       else
-        write_fault_p_o <= '0';
         ack_correction  <= '0';
         done_w          <= '0';
 
@@ -367,7 +363,6 @@ begin
           when normal_op =>
             ack_correction  <= '0';
             done_w          <= '0';
-            write_fault_p_o <= '0';
             if req_correction = '1' and ack_correction = '0' then
               q_ram        <= f_fix_error (syndrome, d_ram_i);
 
@@ -381,7 +376,6 @@ begin
 
           when check_write =>
             if valid_ram_i = '1' then
-              write_fault_p_o <= '0';
               we_ram_o        <= '0';
 
               fsm_write <= normal_op;
