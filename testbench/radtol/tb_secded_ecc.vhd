@@ -108,7 +108,7 @@ begin
     wait until rising_edge(clk);
 
     --  Write words.
-    for i in 0 to 7 loop
+    for i in 0 to 80 loop
       xaddr := std_logic_vector (to_unsigned(i, addr_width));
       addr <= xaddr;
       din <= pattern;
@@ -116,11 +116,9 @@ begin
       we <= '1';
       bwe <= "1111";
       force_err <= (others => '0');
-      if i = 4 then
-        force_err (1) <= '1';
-      elsif i = 5 then
-        force_err (33) <= '1';
-      elsif i = 6 then
+      if i >= 32 and i < 32 + 39 then
+        force_err (i - 32) <= '1';
+      elsif i = 71 then
         force_err (31) <= '1';
         force_err (21) <= '1';
       end if;
@@ -131,22 +129,22 @@ begin
     end loop;
 
     --  Check words
-    for i in 0 to 6 loop
+    for i in 0 to 71 loop
       xaddr := std_logic_vector (to_unsigned(i, addr_width));
       addr <= xaddr;
       re <= '1';
       wait until rising_edge(clk) and done_r = '1';
       re <= '0';
       case i is
-        when 0 to 3 =>
+        when 0 to 31 =>
           assert dout = pattern (31 downto addr_width) & xaddr severity failure;
           assert single_error_p = '0' severity failure;
           assert double_error_p = '0' severity failure;
-        when 4 to 5 =>
+        when 32 to 70 =>
           assert dout = pattern (31 downto addr_width) & xaddr severity failure;
           assert single_error_p = '1' severity failure;
           assert double_error_p = '0' severity failure;
-        when 6 =>
+        when 71 =>
           assert single_error_p = '0' severity failure;
           assert double_error_p = '1' severity failure;
         when others =>
