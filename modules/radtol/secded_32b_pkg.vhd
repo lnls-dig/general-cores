@@ -30,14 +30,21 @@ package secded_32b_pkg is
   subtype ecc_word_t is std_logic_vector (6 downto 0);
 
   --  Compute the ECC bits for DATA.
+  --  The ECC is a xor of some DATA bits.
   function f_calc_ecc (data : data_word_t) return ecc_word_t;
 
+  --  SYNDROME is the xor of read ECC and recomputed ECC.
+  --  The xor should be 0, except in case of errors.
+  --  Return '1' if there is a difference (so if SYNDROME is not 0)
   function f_ecc_errors (syndrome : ecc_word_t) return std_logic;
 
+  --  Return '1' if only one bit of SYNDROME is 1, ie if there is only one error.
+  --  (in that case it could be fixed).
   function f_ecc_one_error (syndrome : ecc_word_t) return std_logic;
 
   function f_fix_error (syndrome : ecc_word_t;
-                        data : std_logic_vector (38 downto 0)) return std_logic_vector;
+                        ecc : ecc_word_t;
+                        data : data_word_t) return std_logic_vector;
 end secded_32b_pkg;
 
 package body secded_32b_pkg is
@@ -98,12 +105,15 @@ package body secded_32b_pkg is
   end f_ecc_one_error;
 
   function f_fix_error (syndrome : ecc_word_t;
-                        data     : std_logic_vector (38 downto 0)) return std_logic_vector
+                        ecc : ecc_word_t;
+                        data : data_word_t) return std_logic_vector
   is
-    variable result         : std_logic_vector (31 downto 0) := (others => '1');
-    variable corrected_word : std_logic_vector (38 downto 0);
+    variable result : data_word_t := (others => '1');
   begin
-    --  The data bits
+    --  Compute which data bits have been altered.
+    --  If a data bit is altered, its corresponding ECC bits are altered too.
+    --  So, conversely (and because there is only one error), the altered ECC bits
+    --  designate the altered data bit.
     for i in 0 to 31 loop
       for k in 0 to 6 loop
         if syndrome_masks(k)(i) = '1' then
@@ -112,14 +122,7 @@ package body secded_32b_pkg is
       end loop;
     end loop;
 
-    if f_or (result) = '1' then
-      corrected_word := data (38 downto 32) & (result xor data(31 downto 0));
-    elsif f_or (syndrome) = '1' then
-      corrected_word := (syndrome & result) xor data;
-    else
-      corrected_word := "0000000" & x"00000000";
-    end if;
-
-    return corrected_word;
+    --  Return the fixed ecc+data.
+    return (syndrome xor ecc) & (result xor data);
   end f_fix_error;
 end secded_32b_pkg;

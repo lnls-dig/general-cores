@@ -251,7 +251,7 @@ begin
             ack_correction  <= '0';
             done_w          <= '0';
             if req_correction = '1' and ack_correction = '0' then
-              q_ram        <= f_fix_error (syndrome, d_ram_i);
+              q_ram        <= f_fix_error (syndrome, d_ram_i(38 downto 32), d_ram_i (31 downto 0));
               we_ram_o     <= '1';
               fsm_write    <= check_write;
             elsif we = '1' then
