@@ -25,6 +25,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.secded_32b_pkg.all;
+
 entity secded_ecc is
   generic (
     g_addr_width : natural := 16
@@ -60,144 +62,6 @@ entity secded_ecc is
 end secded_ecc;
 
 architecture rtl of secded_ecc is
-  function f_xor (x : std_logic_vector) return std_logic is
-    variable result : std_logic := '0';
-  begin
-    for i in x'range loop
-      result := result xor x(i);
-    end loop;
-    return result;
-  end f_xor;
-
-  function f_or (x : std_logic_vector) return std_logic is
-    variable result : std_logic := '0';
-  begin
-    for i in x'range loop
-      result := result or x(i);
-    end loop;
-    return result;
-  end f_or;
-
-  constant syndrome_s1_mask : std_logic_vector (31 downto 0) := "11000001010010000100000011111111";
-  constant syndrome_s2_mask : std_logic_vector (31 downto 0) := "00100001001001001111111110010000";
-  constant syndrome_s3_mask : std_logic_vector (31 downto 0) := "01101100111111110000100000001000";
-  constant syndrome_s4_mask : std_logic_vector (31 downto 0) := "11111111000000011010010001000100";
-  constant syndrome_s5_mask : std_logic_vector (31 downto 0) := "00010110111100001001001010100110";
-  constant syndrome_s6_mask : std_logic_vector (31 downto 0) := "00010000000111110111000101100001";
-  constant syndrome_s7_mask : std_logic_vector (31 downto 0) := "10001010100000100000111100011011";
-
-  type array_syndrome is array (0 to 38) of std_logic_vector (6 downto 0);
-  constant syn_correction_mask : array_syndrome := (
-    0  => "1100001",
-    1  => "1010001",
-    2  => "0011001",
-    3  => "1000101",
-    4  => "1000011",
-    5  => "0110001",
-    6  => "0101001",
-    7  => "0010011",
-    8  => "1100010",
-    9  => "1010010",
-    10 => "1001010",
-    11 => "1000110",
-    12 => "0110010",
-    13 => "0101010",
-    14 => "0100011",
-    15 => "0011010",
-    16 => "0101100",
-    17 => "1100100",
-    18 => "0100110",
-    19 => "0100101",
-    20 => "0110100",
-    21 => "0010110",
-    22 => "0010101",
-    23 => "1010100",
-    24 => "0001011",
-    25 => "1011000",
-    26 => "0011100",
-    27 => "1001100",
-    28 => "0111000",
-    29 => "0001110",
-    30 => "0001101",
-    31 => "1001001",
-    32 => "0000001",
-    33 => "0000010",
-    34 => "0000100",
-    35 => "0001000",
-    36 => "0010000",
-    37 => "0100000",
-    38 => "1000000");
-
-
-  function f_calc_syndrome (data : std_logic_vector (38 downto 0)) return std_logic_vector
-  is
-    variable result : std_logic_vector (6 downto 0);
-  begin
-    result (0) := f_xor (data(31 downto 0) and syndrome_s1_mask) xor data(32);
-    result (1) := f_xor (data(31 downto 0) and syndrome_s2_mask) xor data(33);
-    result (2) := f_xor (data(31 downto 0) and syndrome_s3_mask) xor data(34);
-    result (3) := f_xor (data(31 downto 0) and syndrome_s4_mask) xor data(35);
-    result (4) := f_xor (data(31 downto 0) and syndrome_s5_mask) xor data(36);
-    result (5) := f_xor (data(31 downto 0) and syndrome_s6_mask) xor data(37);
-    result (6) := f_xor (data(31 downto 0) and syndrome_s7_mask) xor data(38);
-    return result;
-  end f_calc_syndrome;
-
-  function f_ecc_word (data : std_logic_vector (31 downto 0)) return std_logic_vector
-  is
-    variable result : std_logic_vector (38 downto 0);
-  begin
-    result (31 downto 0)  := data;
-    result (38 downto 32) := f_calc_syndrome ("0000000" & data);
-    return result;
-  end f_ecc_word;
-
-  function f_ecc_errors (syndrome : std_logic_vector (6 downto 0)) return std_logic is
-  begin
-    if Is_x (syndrome (0)) then
-      -- report "memory wrong" severity error;
-      return 'X';
-    else
-      return f_or (syndrome);
-    end if;
-  end f_ecc_errors;
-
-  function f_ecc_one_error (syndrome : std_logic_vector (6 downto 0)) return std_logic is
-  begin
-    if Is_x (syndrome (0)) then
-      return '0';
-    else
-      return f_ecc_errors (syndrome) and f_xor (syndrome);
-    end if;
-  end f_ecc_one_error;
-
-  function f_fix_error (syndrome : std_logic_vector (6 downto 0);
-                        data : std_logic_vector (38 downto 0)) return std_logic_vector
-  is
-    variable result         : std_logic_vector (38 downto 0) := (others => '1');
-    variable mask           : std_logic_vector (6 downto 0);
-    variable corrected_word : std_logic_vector (38 downto 0);
-  begin
-    for i in 0 to 38 loop
-      mask := syn_correction_mask(i);
-      for k in mask'range loop
-        if mask (k) = '1' then
-          result(i) := result(i) and syndrome(k);
-        end if;
-      end loop;
-    end loop;
-
-    if f_or (result(31 downto 0)) = '1' then
-      corrected_word := data (38 downto 32) & (result (31 downto 0) xor data(31 downto 0));
-    elsif f_or (result(38 downto 32)) = '1' then
-      corrected_word := result xor data;
-    else
-      corrected_word := "0000000" & x"00000000";
-    end if;
-
-    return corrected_word;
-  end f_fix_error;
-
   function f_mask_word (mask : std_logic_vector (3 downto 0);
                         d1 : std_logic_vector (31 downto 0);
                         d2 : std_logic_vector (31 downto 0)) return std_logic_vector
@@ -239,7 +103,7 @@ begin
   q_o      <= d_ram_i (31 downto 0);
   re_ram_o <= '1' when (fsm_read /= normal_op) else re;
 
-  syndrome              <= f_calc_syndrome (d_ram_i);
+  syndrome              <= f_calc_syndrome (d_ram_i (31 downto 0)) xor d_ram_i(38 downto 32);
   ecc_errors            <= f_ecc_errors(syndrome);
   ecc_correctable_error <= f_ecc_one_error (syndrome);
 
@@ -388,11 +252,11 @@ begin
             done_w          <= '0';
             if req_correction = '1' and ack_correction = '0' then
               q_ram        <= f_fix_error (syndrome, d_ram_i);
-
-              we_ram_o       <= '1';
-              fsm_write      <= check_write;
+              we_ram_o     <= '1';
+              fsm_write    <= check_write;
             elsif we = '1' then
-              q_ram   <= f_ecc_word(d);
+              q_ram(31 downto 0) <= d;
+              q_ram(38 downto 32) <= f_calc_syndrome(d);
               we_ram_o  <= '1';
               fsm_write <= check_write;
             end if;
