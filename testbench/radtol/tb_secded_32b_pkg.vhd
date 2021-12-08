@@ -28,9 +28,13 @@ begin
   process
   begin
     data <= x"789a_d3f5";
+    syndrome <= "0000000";
     wait for 1 ns;
+    assert f_ecc_errors (syndrome) = '0' severity failure;
+    assert f_ecc_one_error (syndrome) = '0' severity failure;
     ecc <= f_calc_ecc (data);
 
+    --  Single error (detection and correction)
     for i in 0 to 38 loop
       err <= (others => '0');
       if i < 32 then
@@ -48,6 +52,8 @@ begin
       wait for 1 ns;
       syndrome <= ecc2 xor ecc;
       wait for 1 ns;
+      assert f_ecc_errors (syndrome) = '1' severity failure;
+      assert f_ecc_one_error (syndrome) = '1' severity failure;
       cor <= f_fix_error(syndrome, ecc2, data2);
       wait for 1 ns;
       report "data:  " & image (data) & ", ecc:  " & image (ecc) & ", err: " & image (err) & ", ecc/err: " & image(ecc2);
