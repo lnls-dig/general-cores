@@ -38,10 +38,12 @@ package secded_32b_pkg is
   --  Return '1' if there is a difference (so if SYNDROME is not 0)
   function f_ecc_errors (syndrome : ecc_word_t) return std_logic;
 
-  --  Return '1' if only one bit of SYNDROME is 1, ie if there is only one error.
-  --  (in that case it could be fixed).
+  --  Return '1' if the number of SYNDOME bits set to 1 is odd.
+  --  (a one bit error results in 1 or 3 bits set in the syndrome)
   function f_ecc_one_error (syndrome : ecc_word_t) return std_logic;
 
+  --  Fix the error (if any).
+  --  Returns new ecc + new data.
   function f_fix_error (syndrome : ecc_word_t;
                         ecc : ecc_word_t;
                         data : data_word_t) return std_logic_vector;
@@ -56,15 +58,6 @@ package body secded_32b_pkg is
     end loop;
     return result;
   end f_xor;
-
-  function f_or (x : std_logic_vector) return std_logic is
-    variable result : std_logic := '0';
-  begin
-    for i in x'range loop
-      result := result or x(i);
-    end loop;
-    return result;
-  end f_or;
 
   type syndrome_mask_array is array(0 to 6) of data_word_t;
   constant syndrome_masks : syndrome_mask_array := (
@@ -87,21 +80,24 @@ package body secded_32b_pkg is
     return result;
   end f_calc_ecc;
 
-  function f_ecc_errors (syndrome : ecc_word_t) return std_logic is
+  function f_ecc_errors (syndrome : ecc_word_t) return std_logic
+  is
+    variable result : std_logic := '0';
   begin
-    if Is_x (syndrome (0)) then
-      -- report "memory wrong" severity error;
-      return 'X';
-    end if;
-    return f_or (syndrome);
+    --  There is at least one error if the syndrome is not 0.
+    for i in syndrome'range loop
+      result := result or syndrome(i);
+    end loop;
+    return result;
   end f_ecc_errors;
 
   function f_ecc_one_error (syndrome : ecc_word_t) return std_logic is
   begin
-    if Is_x (syndrome (0)) then
-      return '0';
-    end if;
-    return f_ecc_errors (syndrome) and f_xor (syndrome);
+    --  If there is no error, syndrome is 0 so it will return 0.
+    --  If there is one error, 1 or 3 bits are set in the syndrome, so returns 1.
+    --  If there are 2 errors, 2, 4 or 6 bits are set in the syncrome, so returns 0.
+    --  If there are more than 2 errors, all bets are off (it's a secded).
+    return f_xor (syndrome);
   end f_ecc_one_error;
 
   function f_fix_error (syndrome : ecc_word_t;
