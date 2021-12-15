@@ -43,7 +43,7 @@ package secded_32b_pkg is
   function f_ecc_one_error (syndrome : ecc_word_t) return std_logic;
 
   --  Fix the error (if any).
-  --  Returns new ecc + new data.
+  --  Returns new ecc + data, from syndrome and original ecc + data.
   function f_fix_error (syndrome : ecc_word_t;
                         ecc : ecc_word_t;
                         data : data_word_t) return std_logic_vector;
@@ -119,6 +119,10 @@ package body secded_32b_pkg is
     end loop;
 
     --  Return the fixed ecc+data.
-    return (syndrome xor ecc) & (result xor data);
+    if result /= (data_word_t'range => '0') then
+      return ecc & (data xor result);
+    else
+      return (syndrome xor ecc) & (data xor result);
+    end if;
   end f_fix_error;
 end secded_32b_pkg;
