@@ -1,0 +1,93 @@
+-- -*- Mode: LUA; tab-width: 2 -*-
+
+peripheral {
+
+   name = "Clock Frequency Monitor";
+   hdl_entity = "clock_monitor_wb";
+   prefix = "cm";
+
+   reg {
+      name = "Control Register";
+      prefix = "CR";
+
+      field {
+         name = "Reset counters";
+         description = "write 1: resets the counters\
+                        write 0: no effect";
+
+         prefix = "CNT_RST";
+         type = MONOSTABLE;
+      };
+
+      field {
+         name = "Prescaler";
+         prefix = "PRESC";
+         type = SLV;
+				 size = 8;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+      };
+
+      field {
+         name = "Reference Select";
+				 prefix = "REFSEL"; -- 0..n-1: channel n, 14:ext PPS, 15:system clock
+         type = SLV;
+				 size = 4;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+	 };
+
+
+   reg {
+      name = "Reference Divider Register";
+      prefix = "REFDR";
+
+      field {
+         name = "Reference Division Ratio";
+				 prefix = "REFDR";
+         type = SLV;
+				 size = 32;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+	 };
+
+   reg {
+      name = "Counter Select Register";
+      prefix = "CNT_SEL";
+
+      field {
+         name = "Counter Select";
+				 prefix = "SEL";
+         type = SLV;
+				 size = 4;
+         access_bus = READ_WRITE;
+         access_dev = READ_ONLY;
+			};
+	 };
+
+	 reg {
+      name = "Counter Value Register";
+      prefix = "CNT_VAL";
+
+      field {
+         name = "Counter Value";
+				 prefix = "VALUE";
+         type = SLV;
+				 size = 31;
+         access_bus = READ_ONLY;
+         access_dev = WRITE_ONLY;
+			};
+
+      field {
+         name = "Counter Value Valid/Clear";
+				 prefix = "VALID";
+         type = BIT;
+				 size = 1;
+         access_bus = READ_WRITE;
+         access_dev = READ_WRITE;
+				 load = LOAD_EXT;
+			};
+	 };
+};
