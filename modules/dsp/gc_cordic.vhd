@@ -14,7 +14,7 @@ entity gc_cordic is
     g_M : positive := 16;
 
     --AngleMode = Default angle format S8.7 otherwise FS = 180 deg.
-    g_ANGLE_MODE : t_CORDIC_ANGLE_FORMAT := S8_7
+    g_ANGLE_FORMAT : integer := c_ANGLE_FORMAT_FULL_SCALE_180
     );
   port (
     clk_i : in std_logic;
@@ -54,7 +54,7 @@ architecture rtl of gc_cordic is
 
 begin
 
-  fi1    <= std_logic_vector(f_phi_lookup(0, cor_submode_i, g_ANGLE_MODE));
+  fi1    <= std_logic_vector(f_phi_lookup(0, cor_submode_i, g_ANGLE_FORMAT));
   z0_int <= std_logic_vector(resize (signed(z0_i), g_M + 1));
 
   p_latch_lims : process(clk_i)
@@ -73,7 +73,7 @@ begin
   U_Cordic_Init : entity work.cordic_init
     generic map (
       g_M          => g_M,
-      g_ANGLE_MODE => g_ANGLE_MODE)
+      g_ANGLE_FORMAT => g_ANGLE_FORMAT)
     port map (
       clk_i         => clk_i,
       rst_i         => rst_i,
@@ -87,18 +87,20 @@ begin
       z1_o          => z1,
       d1_o          => d1);
 
+ 
+
   U_Cordic_Core: entity work.cordic_xy_logic_nmhd
     generic map (
       g_N          => g_N-1,
       g_M          => g_M,
-      g_ANGLE_MODE => g_ANGLE_MODE)
+      g_ANGLE_FORMAT => g_ANGLE_FORMAT)
     port map (
       clk_i         => clk_i,
       rst_i         => rst_i,
       cor_mode_i    => cor_mode_i,
       cor_submode_i => cor_submode_i,
       d_i           => d1,
-      fi1_i         => fi1(31 downto 31 - g_M - 1),
+      fi1_i         => fi1(31 downto 31 - (g_M - 1) ),
       lim_x_i       => r_lim_x,
       lim_y_i       => r_lim_y,
       xi_i          => x1,
@@ -114,7 +116,7 @@ begin
   U_Fixup_Angle : entity work.cordic_modulo_360
     generic map (
       g_M          => g_M,
-      g_ANGLE_MODE => g_ANGLE_MODE)
+      g_ANGLE_FORMAT => g_ANGLE_FORMAT)
     port map (
       cor_submode_i => cor_submode_i,
       angle_i       => zj_int,

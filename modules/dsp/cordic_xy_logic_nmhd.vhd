@@ -14,7 +14,7 @@ entity cordic_xy_logic_nmhd is
     g_M : positive := 16;
 
     --AngleMode = Default angle format S8.7 otherwise FS = 180 deg.
-    g_ANGLE_MODE : t_CORDIC_ANGLE_FORMAT := S8_7
+    g_ANGLE_FORMAT : integer
     );
   port (
     clk_i : in std_logic;
@@ -93,7 +93,7 @@ begin
       g_M          => g_M,
       g_J          => g_N - 1,
       g_I          => g_N - 1,
-      g_ANGLE_MODE => g_ANGLE_MODE)
+      g_ANGLE_FORMAT => g_ANGLE_FORMAT)
     port map(
       clk_i => clk_i,
       rst_i => loc_Rst(g_N-2),
@@ -119,7 +119,7 @@ begin
       generic map(
         g_M          => g_M,
         g_J          => K,
-        g_ANGLE_MODE => g_ANGLE_MODE,
+        g_ANGLE_FORMAT => g_ANGLE_FORMAT,
         g_I          => K)
       port map(
         clk_i         => clk_i,

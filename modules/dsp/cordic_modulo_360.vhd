@@ -26,7 +26,7 @@ use work.gc_cordic_pkg.all;
 entity cordic_modulo_360 is
   generic(
     g_M          : positive := 16;
-    g_ANGLE_MODE : t_CORDIC_ANGLE_FORMAT
+    g_ANGLE_FORMAT : integer
     );
   port (
     cor_submode_i : in t_CORDIC_SUBMODE;
@@ -45,20 +45,20 @@ architecture rtl of cordic_modulo_360 is
   signal gt, lt : std_logic;
 
   constant c_M180D : signed(g_M downto 0) :=
-    f_pick(g_ANGLE_MODE = S8_7, c_DegMinus180HD_X(32 downto 32 - g_M), c_FSDegMinus180HD_X(32 downto 32-g_M));
+    f_pick(g_ANGLE_FORMAT = c_ANGLE_FORMAT_S8_7, c_DegMinus180HD_X(32 downto 32 - g_M), c_FSDegMinus180HD_X(32 downto 32-g_M));
 
   constant c_P180D : signed(g_M downto 0) :=
-    f_pick(g_ANGLE_MODE = S8_7, c_DegPlus180HD_X(32 downto 32 - g_M), c_FSDegPlus180HD_X(32 downto 32-g_M));
+    f_pick(g_ANGLE_FORMAT = c_ANGLE_FORMAT_S8_7, c_DegPlus180HD_X(32 downto 32 - g_M), c_FSDegPlus180HD_X(32 downto 32-g_M));
 
 
   constant c_OFFS_ZERO : signed(g_M downto 0) :=
-    f_pick(g_ANGLE_MODE = S8_7, c_DegZeroHD_X(32 downto 32 - g_M), c_FSDegZeroHD_X(32 downto 32 - g_M));
+    f_pick(g_ANGLE_FORMAT = c_ANGLE_FORMAT_S8_7, c_DegZeroHD_X(32 downto 32 - g_M), c_FSDegZeroHD_X(32 downto 32 - g_M));
 
   constant c_OFFS_P360D : signed(g_M downto 0) :=
-    f_pick(g_ANGLE_MODE = S8_7, c_DegPlus360HD_X(32 downto 32 - g_M), c_FSDegPlus360HD_X(32 downto 32 - g_M));
+    f_pick(g_ANGLE_FORMAT = c_ANGLE_FORMAT_S8_7, c_DegPlus360HD_X(32 downto 32 - g_M), c_FSDegPlus360HD_X(32 downto 32 - g_M));
 
   constant c_OFFS_N360D : signed(g_M downto 0) :=
-    f_pick(g_ANGLE_MODE = S8_7, c_DegMinus360HD_X(32 downto 32 - g_M), c_FSDegMinus360HD_X(32 downto 32 - g_M));
+    f_pick(g_ANGLE_FORMAT = c_ANGLE_FORMAT_S8_7, c_DegMinus360HD_X(32 downto 32 - g_M), c_FSDegMinus360HD_X(32 downto 32 - g_M));
 
 
 begin
@@ -82,7 +82,7 @@ begin
     variable angle_out : signed(g_M downto 0);
     variable lim_out   : std_logic;
   begin
-    if cor_submode_i = CIRCULAR then
+    if cor_submode_i = c_SUBMODE_CIRCULAR then
       if(lt = '1' and gt = '0') then
         f_limit_add(signed(angle_i), c_OFFS_P360D, angle_out, lim_out);
       elsif (lt = '0' and gt = '1') then

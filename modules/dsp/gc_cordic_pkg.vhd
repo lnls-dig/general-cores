@@ -11,10 +11,19 @@ use ieee.numeric_std.all;
 
 package gc_cordic_pkg is
 
-  type t_CORDIC_MODE is (VECTOR, ROTATE);
-  type t_CORDIC_SUBMODE is (CIRCULAR, LINEAR, HYPERBOLIC);
-  type t_CORDIC_ANGLE_FORMAT is (S8_7, FULL_SCALE_180);
+  subtype t_CORDIC_MODE is Std_logic_vector(0 downto 0);
+  subtype t_CORDIC_SUBMODE is Std_logic_vector(1 downto 0);
 
+  constant c_ANGLE_FORMAT_S8_7 : integer := 0;
+  constant c_ANGLE_FORMAT_FULL_SCALE_180 : integer := 1;
+
+  constant c_MODE_VECTOR : t_CORDIC_MODE := "0";
+  constant c_MODE_ROTATE : t_CORDIC_MODE := "1";
+
+  constant c_SUBMODE_CIRCULAR : t_CORDIC_SUBMODE := "00";
+  constant c_SUBMODE_LINEAR : t_CORDIC_SUBMODE := "01";
+  constant c_SUBMODE_HYPERBOLIC : t_CORDIC_SUBMODE := "11";
+  
 -- Used by CORDIC algo and init
 -- Constant GHHfFReg    : Std_logic_vector(19 downto 1) := X"0000"&"000";
   constant c_DegPlus90    : signed(15 downto 0) := X"2D00";
@@ -110,9 +119,9 @@ package gc_cordic_pkg is
     neg : in std_logic) return signed;
 
   function f_phi_lookup (
-    stage      : in natural range 0 to 31;
+    stage      : integer;
     submode    :    t_CORDIC_SUBMODE;
-    angle_mode :    t_CORDIC_ANGLE_FORMAT
+    angle_format :    integer
     )
     return signed;
 
@@ -192,9 +201,9 @@ package body gc_cordic_pkg is
 
 
   function f_phi_lookup (
-    stage      : in integer range 0 to 31;
+    stage      :  integer;
     submode    :    t_CORDIC_SUBMODE;
-    angle_mode :    t_CORDIC_ANGLE_FORMAT
+    angle_format :    integer
     ) return signed is
 
     type t_LUT is array(integer range<>) of signed(31 downto 0);
@@ -306,8 +315,8 @@ package body gc_cordic_pkg is
 
   begin
 
-    if submode = CIRCULAR then
-      if angle_mode = S8_7 then
+    if submode = c_SUBMODE_CIRCULAR then
+      if angle_format = c_ANGLE_FORMAT_S8_7 then
         return c_LUT_CIRC_A0(stage);
       else
         return c_LUT_CIRC_A1(stage);

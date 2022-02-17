@@ -10,7 +10,7 @@ entity cordic_xy_logic_nhd is
     g_M : positive := 16;
     g_J : integer := 0;
     g_I : integer := 0;
-    g_ANGLE_MODE : t_CORDIC_ANGLE_FORMAT
+    g_ANGLE_FORMAT : integer
     );
   port (
     clk_i : in std_logic;
@@ -45,7 +45,7 @@ architecture rtl of cordic_xy_logic_nhd is
     m   : integer;
     j   : integer) return signed is
   begin
-    if j < m - 2 then
+    if j <= m - 2 then
       return resize(vin(m-1 downto j), m);
     else
       return to_signed(0, m);
@@ -57,21 +57,22 @@ architecture rtl of cordic_xy_logic_nhd is
   signal fi : signed(g_M-1 downto 0);
   signal di_int : std_logic;
   signal rst_l, rst_d : std_logic;
-  
+  signal xi_muxed_s : signed(g_M-1 downto 0);
+  signal yi_muxed_s : signed(g_M-1 downto 0);
+
 begin
 
-  fi <= f_phi_lookup( g_I, cor_submode_i, g_ANGLE_MODE )(g_M-1 downto 0);
+  fi <= f_phi_lookup( g_I, cor_submode_i, g_ANGLE_FORMAT )(31 downto 31-(g_M-1) );
   
   xi_shifted <= f_shift(signed(xi_i), g_M, g_J);
   yi_shifted <= f_shift(signed(yi_i), g_M, g_J);
 
   p_gen_di: process(cor_mode_i, yi_i, zi_i)
   begin
-    di_int <= '0';
-    if cor_mode_i = VECTOR then
+    if cor_mode_i = c_MODE_VECTOR then
       di_int <= yi_i(g_M-1);
     else
-      di_int <= zi_i(g_M);
+      di_int <= not zi_i(g_M);
     end if;
   end process;
 
@@ -83,7 +84,8 @@ begin
   end process;
 
   rst_l <= rst_d or rst_i;
-                       
+  rst_o <= rst_l;
+  
   p_pipe: process(clk_i)
 
     variable xi_muxed : signed(g_M-1 downto 0);
@@ -112,21 +114,27 @@ begin
 
 
         case cor_submode_i is
-          when LINEAR =>
+          when c_SUBMODE_LINEAR =>
             -- scntrl = 1, updmode = 0
             yi_muxed := (others => '0');
 
-          when CIRCULAR =>
+          when c_SUBMODE_CIRCULAR =>
           -- scntrl = 1, updmode = 1
             yi_muxed := f_limit_negate(yi_shifted, not di_int);
 
-          when HYPERBOLIC =>
+          when c_SUBMODE_HYPERBOLIC =>
           -- scntrl = 0, updmode = 1
             yi_muxed := f_limit_negate(yi_shifted, di_int);
+
+          when others =>
+            yi_muxed := (others => '0');
+            
         end case;
 
         xi_muxed := f_limit_negate(xi_shifted, not di_int);
-
+        xi_muxed_s <= xi_muxed;
+        yi_muxed_s <= yi_muxed;
+        
         f_limit_subtract(signed(xi_i), yi_muxed, xj_comb, xj_limit);
         f_limit_add(signed(yi_i), xi_muxed, yj_comb, yj_limit);
 

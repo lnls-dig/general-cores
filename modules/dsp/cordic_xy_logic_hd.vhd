@@ -71,7 +71,8 @@ begin
   end process;
 
   rst_l <= rst_d or rst_i;
-
+  rst_o <= rst_l;
+  
   process(clk_i)
 
     variable xi_muxed : signed(g_M-1 downto 0);
@@ -100,17 +101,21 @@ begin
 
 
         case cor_submode_i is
-          when LINEAR =>
+          when c_SUBMODE_LINEAR =>
             -- scntrl = 1, updmode = 0
             yi_muxed := (others => '0');
 
           -- scntrl = 1, updmode = 1
-          when CIRCULAR =>
+          when c_SUBMODE_CIRCULAR =>
             yi_muxed := f_limit_negate(yi_shifted, not d_i);
 
           -- scntrl = 0, updmode = 1
-          when HYPERBOLIC =>
+          when c_SUBMODE_HYPERBOLIC =>
             yi_muxed := f_limit_negate(yi_shifted, d_i);
+
+          when others =>
+            yi_muxed := (others => '0');
+            
         end case;
 
         xi_muxed := f_limit_negate(xi_shifted, not d_i);
