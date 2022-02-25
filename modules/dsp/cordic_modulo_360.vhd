@@ -25,8 +25,9 @@ use work.gc_cordic_pkg.all;
 
 entity cordic_modulo_360 is
   generic(
-    g_M          : positive := 16;
-    g_ANGLE_FORMAT : integer
+    g_M                  : positive;
+    g_ANGLE_FORMAT       : integer;
+    g_USE_SATURATED_MATH : boolean
     );
   port (
     cor_submode_i : in t_CORDIC_SUBMODE;
@@ -84,14 +85,14 @@ begin
   begin
     if cor_submode_i = c_SUBMODE_CIRCULAR then
       if(lt = '1' and gt = '0') then
-        f_limit_add(signed(angle_i), c_OFFS_P360D, angle_out, lim_out);
+        f_limit_add(g_USE_SATURATED_MATH, signed(angle_i), c_OFFS_P360D, angle_out, lim_out);
       elsif (lt = '0' and gt = '1') then
-        f_limit_add(signed(angle_i), c_OFFS_N360D, angle_out, lim_out);
+        f_limit_add(g_USE_SATURATED_MATH, signed(angle_i), c_OFFS_N360D, angle_out, lim_out);
       else
-        f_limit_add(signed(angle_i), c_OFFS_ZERO, angle_out, lim_out);
+        f_limit_add(g_USE_SATURATED_MATH, signed(angle_i), c_OFFS_ZERO, angle_out, lim_out);
       end if;
     else
-      f_limit_add(signed(angle_i), to_signed(0, g_M), angle_out, lim_out);
+      f_limit_add(g_USE_SATURATED_MATH, signed(angle_i), to_signed(0, g_M), angle_out, lim_out);
     end if;
 
     angle_o <= std_logic_vector(angle_out(g_M-1 downto 0));

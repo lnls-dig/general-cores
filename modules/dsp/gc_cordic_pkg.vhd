@@ -11,19 +11,19 @@ use ieee.numeric_std.all;
 
 package gc_cordic_pkg is
 
-  subtype t_CORDIC_MODE is Std_logic_vector(0 downto 0);
-  subtype t_CORDIC_SUBMODE is Std_logic_vector(1 downto 0);
+  subtype t_CORDIC_MODE is std_logic_vector(0 downto 0);
+  subtype t_CORDIC_SUBMODE is std_logic_vector(1 downto 0);
 
-  constant c_ANGLE_FORMAT_S8_7 : integer := 0;
+  constant c_ANGLE_FORMAT_S8_7           : integer := 0;
   constant c_ANGLE_FORMAT_FULL_SCALE_180 : integer := 1;
 
   constant c_MODE_VECTOR : t_CORDIC_MODE := "0";
   constant c_MODE_ROTATE : t_CORDIC_MODE := "1";
 
-  constant c_SUBMODE_CIRCULAR : t_CORDIC_SUBMODE := "00";
-  constant c_SUBMODE_LINEAR : t_CORDIC_SUBMODE := "01";
+  constant c_SUBMODE_CIRCULAR   : t_CORDIC_SUBMODE := "00";
+  constant c_SUBMODE_LINEAR     : t_CORDIC_SUBMODE := "01";
   constant c_SUBMODE_HYPERBOLIC : t_CORDIC_SUBMODE := "11";
-  
+
 -- Used by CORDIC algo and init
 -- Constant GHHfFReg    : Std_logic_vector(19 downto 1) := X"0000"&"000";
   constant c_DegPlus90    : signed(15 downto 0) := X"2D00";
@@ -88,7 +88,7 @@ package gc_cordic_pkg is
   constant c_FSDegZeroHD     : signed(31 downto 0) := X"00000000";
 
 -- Cordic Sequencer Iteration Constants
-  constant c_CirIter   : Std_logic_vector(4 downto 0) := '0'&X"D";
+  constant c_CirIter   : std_logic_vector(4 downto 0) := '0'&X"D";
   constant c_LinIter   : std_logic_vector(4 downto 0) := '0'&X"F";
 -- Cordic Sequencer Iteration Constants for FS Angle format
   constant c_FSCirIter : std_logic_vector(4 downto 0) := '0'&X"F";
@@ -105,23 +105,26 @@ package gc_cordic_pkg is
 
 
   procedure f_limit_subtract
-    (a, b : in  signed;
-     o    : out signed;
-     lim  : out std_logic);
+    (use_limiter :     boolean;
+     a, b        : in  signed;
+     o           : out signed;
+     lim         : out std_logic);
 
   procedure f_limit_add
-    (a, b : in  signed;
-     o    : out signed;
-     lim  : out std_logic);
+    (use_limiter :     boolean;
+     a, b        : in  signed;
+     o           : out signed;
+     lim         : out std_logic);
 
   function f_limit_negate(
-    x   : in signed;
-    neg : in std_logic) return signed;
+    use_limiter :    boolean;
+    x           : in signed;
+    neg         : in std_logic) return signed;
 
   function f_phi_lookup (
-    stage      : integer;
-    submode    :    t_CORDIC_SUBMODE;
-    angle_format :    integer
+    stage        : integer;
+    submode      : t_CORDIC_SUBMODE;
+    angle_format : integer
     )
     return signed;
 
@@ -134,17 +137,21 @@ end package;
 package body gc_cordic_pkg is
 
   procedure f_limit_subtract
-    (a, b : in  signed;
-     o    : out signed;
-     lim  : out std_logic) is
+    (use_limiter :     boolean;
+     a, b        : in  signed;
+     o           : out signed;
+     lim         : out std_logic) is
     constant c_max_val : signed(o'range)           := ('0', others => '1');
     constant c_min_val : signed(o'range)           := ('1', others => '0');
     variable l_sum     : signed(O'length downto 0) := (others      => '0');
   begin
     l_sum := resize(a, o'length+1) - resize(b, o'length-1);
 
+    if not use_limiter then
+      o   := l_sum(o'range);
+      lim := '0';
     -- value above maximum
-    if l_sum(o'length) = '0' and l_sum(o'length-1) = '1' then
+    elsif l_sum(o'length) = '0' and l_sum(o'length-1) = '1' then
       o   := c_max_val;
       lim := '1';
     -- value below minimum
@@ -158,17 +165,22 @@ package body gc_cordic_pkg is
   end procedure;
 
   procedure f_limit_add
-    (a, b : in  signed;
-     o    : out signed;
-     lim  : out std_logic) is
+    (
+      use_limiter :     boolean;
+      a, b        : in  signed;
+      o           : out signed;
+      lim         : out std_logic) is
     constant c_max_val : signed(o'range)           := ('0', others => '1');
     constant c_min_val : signed(o'range)           := ('1', others => '0');
     variable l_sum     : signed(O'length downto 0) := (others      => '0');
   begin
     l_sum := resize(a, o'length+1) + resize(b, o'length-1);
 
+    if not use_limiter then
+      o   := l_sum(o'range);
+      lim := '0';
     -- value above maximum
-    if l_sum(o'length) = '0' and l_sum(o'length-1) = '1' then
+    elsif l_sum(o'length) = '0' and l_sum(o'length-1) = '1' then
       o   := c_max_val;
       lim := '1';
     -- value below minimum
@@ -182,13 +194,14 @@ package body gc_cordic_pkg is
   end procedure;
 
   function f_limit_negate(
-    x   : in signed;
-    neg : in std_logic) return signed is
+    use_limiter :    boolean;
+    x           : in signed;
+    neg         : in std_logic) return signed is
     constant c_max_val : signed(x'range) := ('0', others => '1');
     constant c_min_val : signed(x'range) := ('1', others => '0');
   begin
     if neg = '1' then
-      if x = c_min_val then
+      if x = c_min_val and use_limiter then
         return c_max_val;
       else
         return not x (x'length-1 downto 0) + 1;
@@ -201,9 +214,9 @@ package body gc_cordic_pkg is
 
 
   function f_phi_lookup (
-    stage      :  integer;
-    submode    :    t_CORDIC_SUBMODE;
-    angle_format :    integer
+    stage        : integer;
+    submode      : t_CORDIC_SUBMODE;
+    angle_format : integer
     ) return signed is
 
     type t_LUT is array(integer range<>) of signed(31 downto 0);

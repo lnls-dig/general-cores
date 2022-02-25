@@ -8,13 +8,15 @@ use work.gc_cordic_pkg.all;
 entity cordic_xy_logic_nmhd is
   generic(
     -- Number of XYlogicNHD cells instantiated
-    g_N : positive := 12;
+    g_N : positive;
 
     --M = Word-width (maximum = 32)
-    g_M : positive := 16;
+    g_M : positive;
 
     --AngleMode = Default angle format S8.7 otherwise FS = 180 deg.
-    g_ANGLE_FORMAT : integer
+    g_ANGLE_FORMAT : integer;
+
+    g_USE_SATURATED_MATH : boolean
     );
   port (
     clk_i : in std_logic;
@@ -64,8 +66,9 @@ begin
 
   B_Cell0 : entity work.cordic_xy_logic_hd
     generic map(
-      g_M => g_M,
-      g_J => 0)
+      g_M                  => g_M,
+      g_J                  => 0,
+      g_USE_SATURATED_MATH => g_USE_SATURATED_MATH)
     port map(
       clk_i => clk_i,
       rst_i => rst_i,
@@ -90,10 +93,11 @@ begin
 
   B_CellN_1 : entity work.cordic_xy_logic_nhd
     generic map(
-      g_M          => g_M,
-      g_J          => g_N - 1,
-      g_I          => g_N - 1,
-      g_ANGLE_FORMAT => g_ANGLE_FORMAT)
+      g_M                  => g_M,
+      g_J                  => g_N - 1,
+      g_I                  => g_N - 1,
+      g_ANGLE_FORMAT       => g_ANGLE_FORMAT,
+      g_USE_SATURATED_MATH => g_USE_SATURATED_MATH)
     port map(
       clk_i => clk_i,
       rst_i => loc_Rst(g_N-2),
@@ -117,10 +121,11 @@ begin
   GXYlogic : for K in 1 to g_N-2 generate
     B_CellN : entity work.cordic_xy_logic_nhd
       generic map(
-        g_M          => g_M,
-        g_J          => K,
-        g_ANGLE_FORMAT => g_ANGLE_FORMAT,
-        g_I          => K)
+        g_M                  => g_M,
+        g_J                  => K,
+        g_ANGLE_FORMAT       => g_ANGLE_FORMAT,
+        g_I                  => K,
+        g_USE_SATURATED_MATH => g_USE_SATURATED_MATH)
       port map(
         clk_i         => clk_i,
         rst_i         => loc_Rst(K-1),

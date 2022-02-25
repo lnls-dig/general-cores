@@ -7,10 +7,11 @@ use work.gc_cordic_pkg.all;
 
 entity cordic_xy_logic_nhd is
   generic(
-    g_M : positive := 16;
-    g_J : integer := 0;
-    g_I : integer := 0;
-    g_ANGLE_FORMAT : integer
+    g_M : positive;
+    g_J : integer;
+    g_I : integer;
+    g_ANGLE_FORMAT : integer;
+    g_USE_SATURATED_MATH : boolean
     );
   port (
     clk_i : in std_logic;
@@ -120,25 +121,25 @@ begin
 
           when c_SUBMODE_CIRCULAR =>
           -- scntrl = 1, updmode = 1
-            yi_muxed := f_limit_negate(yi_shifted, not di_int);
+            yi_muxed := f_limit_negate(g_USE_SATURATED_MATH, yi_shifted, not di_int);
 
           when c_SUBMODE_HYPERBOLIC =>
           -- scntrl = 0, updmode = 1
-            yi_muxed := f_limit_negate(yi_shifted, di_int);
+            yi_muxed := f_limit_negate(g_USE_SATURATED_MATH, yi_shifted, di_int);
 
           when others =>
             yi_muxed := (others => '0');
             
         end case;
 
-        xi_muxed := f_limit_negate(xi_shifted, not di_int);
+        xi_muxed := f_limit_negate(g_USE_SATURATED_MATH, xi_shifted, not di_int);
         xi_muxed_s <= xi_muxed;
         yi_muxed_s <= yi_muxed;
         
-        f_limit_subtract(signed(xi_i), yi_muxed, xj_comb, xj_limit);
-        f_limit_add(signed(yi_i), xi_muxed, yj_comb, yj_limit);
+        f_limit_subtract(g_USE_SATURATED_MATH, signed(xi_i), yi_muxed, xj_comb, xj_limit);
+        f_limit_add(g_USE_SATURATED_MATH, signed(yi_i), xi_muxed, yj_comb, yj_limit);
 
-        fi_inv := f_limit_negate( signed(fi), not di_int );
+        fi_inv := f_limit_negate(g_USE_SATURATED_MATH,  signed(fi), not di_int );
         
         zj_comb := signed(zi_i) - fi_inv;
         
