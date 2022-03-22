@@ -45,7 +45,7 @@ entity gc_iq_modulator is
   port (
     clk_i  : in std_logic;
     en_i   : in std_logic;
-    sync_i : in std_logic;
+    sync_p1_i : in std_logic;
     rst_i  : in std_logic;
 
     i_i : in std_logic_vector(g_N-1 downto 0);
@@ -74,7 +74,7 @@ begin
     if rising_edge(clk_i) then
       iin  <= signed(i_i);
       qin  <= signed(q_i);
-      sync <= sync_i;
+      sync <= sync_p1_i;
     end if;
   end process;
 
