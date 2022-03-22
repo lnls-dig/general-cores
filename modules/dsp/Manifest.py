@@ -14,4 +14,6 @@ files = ["cordic_init.vhd",
          "gc_iq_modulator.vhd",
          "gc_iq_rotate.vhd",
          "gc_pi_regulator.vhd",
-         "gc_rate_limiter.vhd"];
+         "gc_rate_limiter.vhd",
+         "gc_soft_ramp_switch.vhd",
+         "gc_integer_divide.vhd"];
