@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2019 CERN
 
 Makefile.specific
-*.mod.c
+*.mod*
 *.ko
 *.cmd
 Module.symvers
