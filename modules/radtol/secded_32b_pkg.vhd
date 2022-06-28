@@ -4,9 +4,9 @@
 -- https://www.ohwr.org/projects/general-cores
 --------------------------------------------------------------------------------
 --
--- unit name:   secded_ecc
+-- unit name:   secded_32b_pkg
 --
--- description: SECDED RAM controller
+-- description: ECC on 32b
 --
 --------------------------------------------------------------------------------
 -- Copyright CERN 2020-2021
