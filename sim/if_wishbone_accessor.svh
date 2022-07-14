@@ -66,8 +66,11 @@ virtual class CWishboneAccessor extends CBusAccessor;
         end
 
 //      $display("DS: %d", cycle.data.size());
-      
+
       put(cycle);
+      // wait for the transfer completion notification to avoid getting the result of the wrong transfer
+      // in case multiple threads are calling readm()/writem() in parallel.
+      @cycle.done;
       get(cycle);
       result  = cycle.result;
       
@@ -91,6 +94,9 @@ virtual class CWishboneAccessor extends CBusAccessor;
         end
 
       put(cycle);
+      // wait for the transfer completion notification to avoid getting the result of the wrong transfer
+      // in case multiple threads are calling readm()/writem() in parallel.
+      @cycle.done;
       get(cycle);
 
       for(i=0;i < addr.size(); i++)
