@@ -42,6 +42,7 @@ typedef struct  {
    wb_cycle_type_t ctype;
    wb_xfer_t data[$];
    wb_cycle_result_t result;
+   event done;
 } wb_cycle_t;
 
 typedef enum  
