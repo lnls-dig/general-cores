@@ -19,8 +19,12 @@ memory-map:
      children:
      - field:
         name: data
-        description: temperature
+        description: temperature value
         range: 15-0
+     - field:
+        name: error
+        description: temperature is not valid
+        range: 31
   - reg:
      name: status
      description: status
@@ -35,3 +39,7 @@ memory-map:
         name: id_ok
         description: Set when unique id was read, persist after reset
         range: 1
+     - field:
+        name: temp_ok
+        description: Set when the temperature register is correctly read
+        range: 2

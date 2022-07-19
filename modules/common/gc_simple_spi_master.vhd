@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2011-08-24
--- Last update: 2013-01-25
+-- Last update: 2020-05-05
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -129,6 +129,7 @@ begin  -- rtl
           -- Waits for start of transfer command
           when IDLE =>
             sclk    <= '0';
+            spi_mosi_o <= '0';
             counter <= (others => '0');
             if(start_i = '1') then
               sreg            <= data_i;

@@ -31,6 +31,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 use work.genram_pkg.all;
 use work.wishbone_pkg.all;
@@ -38,11 +39,15 @@ use work.UART_wbgen2_pkg.all;
 
 entity wb_simple_uart is
   generic(
-    g_WITH_VIRTUAL_UART   : boolean;
-    g_WITH_PHYSICAL_UART  : boolean;
-    g_INTERFACE_MODE      : t_wishbone_interface_mode      := CLASSIC;
-    g_ADDRESS_GRANULARITY : t_wishbone_address_granularity := WORD;
-    g_VUART_FIFO_SIZE     : integer                        := 1024
+    g_WITH_VIRTUAL_UART       : boolean;
+    g_WITH_PHYSICAL_UART      : boolean;
+    g_WITH_PHYSICAL_UART_FIFO : boolean                        := false;
+    g_TX_FIFO_SIZE            : integer                        := 0;
+    g_RX_FIFO_SIZE            : integer                        := 0;
+    g_INTERFACE_MODE          : t_wishbone_interface_mode      := CLASSIC;
+    g_ADDRESS_GRANULARITY     : t_wishbone_address_granularity := WORD;
+    g_VUART_FIFO_SIZE         : integer                        := 1024;
+    g_PRESET_BCR              : integer                        := 0
     );
   port (
 
@@ -88,23 +93,41 @@ architecture arch of wb_simple_uart is
   signal regs_in  : t_UART_in_registers;
   signal regs_out : t_UART_out_registers;
 
-  signal fifo_empty : std_logic;
-  signal fifo_full  : std_logic;
-  signal fifo_rd    : std_logic;
-  signal fifo_wr    : std_logic;
-  signal fifo_count : std_logic_vector(f_log2_size(g_VUART_FIFO_SIZE)-1 downto 0);
+  signal vuart_fifo_empty : std_logic;
+  signal vuart_fifo_full  : std_logic;
+  signal vuart_fifo_rd    : std_logic;
+  signal vuart_fifo_wr    : std_logic;
+  signal vuart_fifo_count : std_logic_vector(f_log2_size(g_VUART_FIFO_SIZE)-1 downto 0);
 
-  signal phys_rx_ready, phys_tx_busy : std_logic;
+  signal tx_fifo_empty   : std_logic;
+  signal tx_fifo_full    : std_logic;
+  signal tx_fifo_rd      : std_logic;
+  signal tx_fifo_wr      : std_logic;
+  signal tx_fifo_count   : std_logic_vector(f_log2_size(g_TX_FIFO_SIZE)-1 downto 0);
+  signal tx_fifo_reset_n : std_logic;
 
-  signal phys_rx_data : std_logic_vector(7 downto 0);
+  signal rx_fifo_empty    : std_logic;
+  signal rx_fifo_full     : std_logic;
+  signal rx_fifo_overflow : std_logic;
+  signal rx_fifo_rd       : std_logic;
+  signal rx_fifo_wr       : std_logic;
+  signal rx_fifo_count    : std_logic_vector(f_log2_size(g_RX_FIFO_SIZE)-1 downto 0);
+  signal rx_fifo_reset_n  : std_logic;
 
+  signal phys_rx_ready, phys_tx_busy, phys_tx_start : std_logic;
+
+  signal phys_rx_data, phys_tx_data : std_logic_vector(7 downto 0);
+
+  type t_tx_fifo_state is (IDLE, TRANSMIT_PENDING);
+
+  signal tx_fifo_state : t_tx_fifo_state;
 
 begin  -- arch
 
   gen_check_generics : if (not g_WITH_PHYSICAL_UART and not g_WITH_VIRTUAL_UART) generate
-    assert FALSE report
+    assert false report
       "wb_simple_uart: dummy configuration (use virtual, physical or both uarts)"
-      severity FAILURE;
+      severity failure;
   end generate gen_check_generics;
 
   resized_addr(4 downto 0)                          <= wb_adr_i;
@@ -112,10 +135,10 @@ begin  -- arch
 
   U_Adapter : wb_slave_adapter
     generic map (
-      g_MASTER_USE_STRUCT  => TRUE,
+      g_MASTER_USE_STRUCT  => true,
       g_MASTER_MODE        => CLASSIC,
       g_MASTER_GRANULARITY => WORD,
-      g_SLAVE_USE_STRUCT   => FALSE,
+      g_SLAVE_USE_STRUCT   => false,
       g_SLAVE_MODE         => g_INTERFACE_MODE,
       g_SLAVE_GRANULARITY  => g_ADDRESS_GRANULARITY)
     port map (
@@ -161,8 +184,8 @@ begin  -- arch
     begin
       if rising_edge(clk_sys_i) then
         if rst_n_i = '0' then
-          uart_bcr <= (others => '0');
-        elsif regs_out.bcr_wr_o = '1' then
+          uart_bcr <= std_logic_vector(to_unsigned(g_preset_bcr, uart_bcr'length));
+        elsif(regs_out.bcr_wr_o = '1')then
           uart_bcr <= regs_out.bcr_o;
         end if;
       end if;
@@ -184,8 +207,8 @@ begin  -- arch
         rst_n_i      => rst_n_i,
         baud_tick_i  => baud_tick,
         txd_o        => uart_txd_o,
-        tx_start_p_i => regs_out.tdr_tx_data_wr_o,
-        tx_data_i    => regs_out.tdr_tx_data_o,
+        tx_start_p_i => phys_tx_start,
+        tx_data_i    => phys_tx_data,
         tx_busy_o    => phys_tx_busy);
 
     U_RX : entity work.uart_async_rx
@@ -200,36 +223,168 @@ begin  -- arch
 
   end generate gen_phys_uart;
 
+  gen_phys_fifos : if g_WITH_PHYSICAL_UART_FIFO generate
+    rx_fifo_wr <= not rx_fifo_full and phys_rx_ready;
+    tx_fifo_wr <= not tx_fifo_full and regs_out.tdr_tx_data_wr_o;
+
+    tx_fifo_reset_n <= rst_n_i and not regs_out.cr_tx_fifo_purge_o;
+    rx_fifo_reset_n <= rst_n_i and not regs_out.cr_rx_fifo_purge_o;
+
+    rx_fifo_rd <= not rx_fifo_empty and rdr_rack;
+
+    U_UART_RX_FIFO : generic_sync_fifo
+      generic map (
+        g_DATA_WIDTH => 8,
+        g_SIZE       => g_RX_FIFO_SIZE,
+        g_WITH_COUNT => true,
+        g_SHOW_AHEAD => true
+        )
+      port map (
+        rst_n_i => rx_fifo_reset_n,
+        clk_i   => clk_sys_i,
+        d_i     => phys_rx_data,
+        we_i    => rx_fifo_wr,
+        q_o     => regs_in.rdr_rx_data_i,
+        rd_i    => rdr_rack,
+        empty_o => rx_fifo_empty,
+        full_o  => rx_fifo_full,
+        count_o => rx_fifo_count);
+
+    U_UART_TX_FIFO : generic_sync_fifo
+      generic map (
+        g_DATA_WIDTH => 8,
+        g_SIZE       => g_TX_FIFO_SIZE,
+        g_WITH_COUNT => false,
+        g_SHOW_AHEAD => true
+        )
+      port map (
+        rst_n_i => tx_fifo_reset_n,
+        clk_i   => clk_sys_i,
+        d_i     => regs_out.tdr_tx_data_o,
+        we_i    => tx_fifo_wr,
+        q_o     => phys_tx_data,
+        rd_i    => phys_tx_start,
+        empty_o => tx_fifo_empty,
+        full_o  => tx_fifo_full);
+
+
+    regs_in.sr_rx_fifo_supported_i <= '1';
+    regs_in.sr_tx_fifo_supported_i <= '1';
+    regs_in.sr_rx_fifo_valid_i     <= not rx_fifo_empty;
+    regs_in.sr_rx_rdy_i            <= not rx_fifo_empty;
+    regs_in.sr_rx_fifo_overflow_i  <= rx_fifo_overflow;
+    regs_in.sr_tx_fifo_full_i      <= tx_fifo_full;
+    regs_in.sr_tx_fifo_empty_i     <= tx_fifo_empty;
+
+    phys_tx_start <= '1' when tx_fifo_state = IDLE and tx_fifo_empty = '0' else '0';
+
+    p_rx_fifo_overflow : process(clk_sys_i)
+    begin
+      if rising_edge(clk_sys_i) then
+        if rx_fifo_reset_n = '0' then
+          rx_fifo_overflow <= '0';
+        else
+
+        end if;
+      end if;
+    end process;
+
+
+
+    p_tx_fifo_fsm : process(clk_sys_i)
+    begin
+      if rising_edge(clk_sys_i) then
+        if tx_fifo_reset_n = '0' then
+          tx_fifo_state <= IDLE;
+          tx_fifo_rd    <= '0';
+        else
+          case tx_fifo_state is
+            when IDLE =>
+              if tx_fifo_empty = '0' then
+                tx_fifo_rd    <= '1';
+                tx_fifo_state <= TRANSMIT_PENDING;
+              end if;
+
+            when TRANSMIT_PENDING =>
+              tx_fifo_rd <= '0';
+              if phys_tx_busy = '0' then
+                tx_fifo_state <= IDLE;
+              end if;
+          end case;
+        end if;
+      end if;
+    end process;
+
+    regs_in.sr_tx_busy_i   <= tx_fifo_full;
+  end generate gen_phys_fifos;
+
+  gen_phys_nofifos : if not g_WITH_PHYSICAL_UART_FIFO generate
+
+    phys_tx_data <= regs_out.tdr_tx_data_o;
+    phys_tx_start <= regs_out.tdr_tx_data_wr_o and not phys_tx_busy;
+    regs_in.sr_tx_busy_i   <= phys_tx_busy when (g_WITH_PHYSICAL_UART) else '0';
+
+    p_drive_rx_ready : process(clk_sys_i)
+    begin
+      if rising_edge(clk_sys_i) then
+        if rst_n_i = '0' then
+          regs_in.sr_rx_rdy_i   <= '0';
+          int_o                 <= '0';
+          regs_in.rdr_rx_data_i <= (others => '0');
+        else
+          if rdr_rack = '1' and phys_rx_ready = '0' then
+            regs_in.sr_rx_rdy_i <= '0';
+            int_o               <= '0';
+          elsif phys_rx_ready = '1' and g_WITH_PHYSICAL_UART then
+            regs_in.sr_rx_rdy_i   <= '1';
+            int_o                 <= '1';
+            regs_in.rdr_rx_data_i <= phys_rx_data;
+          elsif regs_out.host_tdr_data_wr_o = '1' and g_WITH_VIRTUAL_UART then
+            regs_in.sr_rx_rdy_i   <= '1';
+            int_o                 <= '1';
+            regs_in.rdr_rx_data_i <= regs_out.host_tdr_data_o;
+          end if;
+        end if;
+      end if;
+    end process p_drive_rx_ready;
+
+
+  end generate gen_phys_nofifos;
+
+
+
+
   gen_vuart : if (g_WITH_VIRTUAL_UART) generate
 
-    fifo_wr <= not fifo_full and regs_out.tdr_tx_data_wr_o;
-    fifo_rd <= not fifo_empty and not regs_in.host_rdr_rdy_i;
+    vuart_fifo_wr <= not vuart_fifo_full and regs_out.tdr_tx_data_wr_o;
+    vuart_fifo_rd <= not vuart_fifo_empty and not regs_in.host_rdr_rdy_i;
 
     U_VUART_FIFO : generic_sync_fifo
       generic map (
         g_DATA_WIDTH => 8,
         g_SIZE       => g_VUART_FIFO_SIZE,
-        g_WITH_COUNT => TRUE)
+        g_WITH_COUNT => true,
+        g_SHOW_AHEAD => false)
       port map (
         rst_n_i => rst_n_i,
         clk_i   => clk_sys_i,
         d_i     => regs_out.tdr_tx_data_o,
-        we_i    => fifo_wr,
+        we_i    => vuart_fifo_wr,
         q_o     => regs_in.host_rdr_data_i,
-        rd_i    => fifo_rd,
-        empty_o => fifo_empty,
-        full_o  => fifo_full,
-        count_o => fifo_count);
+        rd_i    => vuart_fifo_rd,
+        empty_o => vuart_fifo_empty,
+        full_o  => vuart_fifo_full,
+        count_o => vuart_fifo_count);
 
-    regs_in.host_rdr_count_i(fifo_count'LEFT downto 0)    <= fifo_count;
-    regs_in.host_rdr_count_i(15 downto fifo_count'length) <= (others => '0');
+    regs_in.host_rdr_count_i(vuart_fifo_count'left downto 0)    <= vuart_fifo_count;
+    regs_in.host_rdr_count_i(15 downto vuart_fifo_count'length) <= (others => '0');
 
     p_vuart_rx_ready : process(clk_sys_i)
     begin
       if rising_edge(clk_sys_i) then
         if rst_n_i = '0' then
           regs_in.host_rdr_rdy_i <= '0';
-        elsif fifo_rd = '1' then
+        elsif vuart_fifo_rd = '1' then
           regs_in.host_rdr_rdy_i <= '1';
         elsif host_rack = '1' then
           regs_in.host_rdr_rdy_i <= '0';
@@ -245,31 +400,6 @@ begin  -- arch
     regs_in.host_rdr_rdy_i   <= '0';
   end generate gen_no_vuart;
 
-  p_drive_rx_ready : process(clk_sys_i)
-  begin
-    if rising_edge(clk_sys_i) then
-      if rst_n_i = '0' then
-        regs_in.sr_rx_rdy_i   <= '0';
-        int_o                 <= '0';
-        regs_in.rdr_rx_data_i <= (others => '0');
-      else
-        if rdr_rack = '1' and phys_rx_ready = '0' and regs_out.host_tdr_data_wr_o = '0' then
-          regs_in.sr_rx_rdy_i <= '0';
-          int_o               <= '0';
-        elsif phys_rx_ready = '1' and g_WITH_PHYSICAL_UART then
-          regs_in.sr_rx_rdy_i   <= '1';
-          int_o                 <= '1';
-          regs_in.rdr_rx_data_i <= phys_rx_data;
-        elsif regs_out.host_tdr_data_wr_o = '1' and g_WITH_VIRTUAL_UART then
-          regs_in.sr_rx_rdy_i   <= '1';
-          int_o                 <= '1';
-          regs_in.rdr_rx_data_i <= regs_out.host_tdr_data_o;
-        end if;
-      end if;
-    end if;
-  end process p_drive_rx_ready;
-
-  regs_in.sr_tx_busy_i   <= phys_tx_busy when (g_WITH_PHYSICAL_UART) else '0';
   regs_in.host_tdr_rdy_i <= not regs_in.sr_rx_rdy_i;
 
 end arch;

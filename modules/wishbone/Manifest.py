@@ -28,6 +28,7 @@ modules =  { "local" : [
   "wb_split",
   "wb16_to_wb32",
   "wb_indirect",
+  "wb_fine_pulse_gen",
   "wbgen2",
   "wbgenplus",
   "wb_xc7_fw_update",

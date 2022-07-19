@@ -6,7 +6,7 @@
 -- Author     : Tomasz Wlostowski
 -- Company    : CERN
 -- Created    : 2011-08-24
--- Last update: 2019-09-09
+-- Last update: 2020-09-18
 -- Platform   : FPGA-generic
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -38,7 +38,6 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.gencores_pkg.all;
-use work.genram_pkg.all;
 
 entity gc_arbitrated_mux is
   
@@ -67,7 +66,7 @@ entity gc_arbitrated_mux is
     q_valid_o    : out std_logic;
 
     -- Index of the input, to which came the currently outputted data word.
-    q_input_id_o : out std_logic_vector(f_log2_size(g_num_inputs)-1 downto 0)
+    q_input_id_o : out std_logic_vector(f_log2_ceil(g_num_inputs)-1 downto 0)
     );
 
 end gc_arbitrated_mux;  
@@ -130,7 +129,7 @@ begin  -- rtl
 
         if(unsigned(grant) /= 0) then
           q_o          <= dregs(f_onehot_decode(grant));
-          q_input_id_o <= std_logic_vector(to_unsigned(f_onehot_decode(grant), f_log2_size(g_num_inputs)));
+          q_input_id_o <= std_logic_vector(to_unsigned(f_onehot_decode(grant), f_log2_ceil(g_num_inputs)));
           q_valid_o <= '1';
         else
           q_o <= (others => 'X');
