@@ -68,7 +68,7 @@ begin
           when S_PI2 =>
             state <= S_PI;
             iacc  <= (others => '0');
-            qacc  <= resize(signed(adc_data_i), g_N + 1);
+            qacc  <= resize(-signed(adc_data_i), g_N + 1);
           when S_PI =>
             state <= S_3PI2;
             iacc  <= resize(-signed(adc_data_i), g_N + 1);
@@ -76,7 +76,7 @@ begin
           when S_3PI2 =>
             state <= S_0;
             iacc  <= (others => '0');
-            qacc  <= resize(-signed(adc_data_i), g_N + 1);
+            qacc  <= resize(signed(adc_data_i), g_N + 1);
         end case;
       end if;
     end if;
