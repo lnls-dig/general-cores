@@ -20,6 +20,7 @@ entity gc_soft_ramp_switch is
     rate_i : in std_logic_vector(15 downto 0);
 
     on_i : in std_logic;
+    kill_i : in std_logic;
 
     is_on_o  : out std_logic;
     is_off_o : out std_logic;
@@ -68,7 +69,7 @@ begin
   p_switch : process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if rst_i = '1' then
+      if rst_i = '1' or kill_i = '1' then
         state      <= SW_OFF;
         ramp_integ <= (others => '0');
         is_off_o   <= '1';
@@ -139,7 +140,11 @@ begin
         y_valid_o <= x_valid_i;
 
         for i in 0 to g_NUM_CHANNELS loop
-          yo(i) <= f_mul_sar(xi(i), mulf, g_DATA_BITS);
+          if kill_i = '0' then
+            yo(i) <= f_mul_sar(xi(i), mulf, g_DATA_BITS);
+          else
+            yo(i) <= (others => '0');
+          end if;
         end loop;
       end if;
     end if;
