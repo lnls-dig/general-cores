@@ -5,26 +5,26 @@ use ieee.numeric_std.all;
 
 entity gc_integer_divide is
   generic (
-    g_BITS : integer := 32)
-    (
-      clk_i : in std_logic;
-      rst_i : in std_logic;
+    g_BITS : integer := 32);
+  port (
+    clk_i : in std_logic;
+    rst_i : in std_logic;
 
-      is_rem_i    : in  std_logic;
-      is_signed_i : in  std_logic;
-      a_i         : in  std_logic_vector(g_BITS-1 downto 0);
-      b_i         : in  std_logic_vector(g_BITS-1 downto 0);
-      q_o         : out std_logic_vector(g_BITS-1 downto 0);
-      start_i     : in  std_logic;
-      ready_o     : in  std_logic;
-      done_o      : out std_logic
-      );
+    is_rem_i    : in  std_logic;
+    is_signed_i : in  std_logic;
+    a_i         : in  std_logic_vector(g_BITS-1 downto 0);
+    b_i         : in  std_logic_vector(g_BITS-1 downto 0);
+    q_o         : out std_logic_vector(g_BITS-1 downto 0);
+    start_i     : in  std_logic;
+    ready_o     : out  std_logic;
+    done_o      : out std_logic
+    );
 
 end gc_integer_divide;
 
 architecture rtl of gc_integer_divide is
 
-  signal state : unsigned(5 downto 0);
+  signal state : integer range 0 to 63;  --unsigned(5 downto 0);
 
   signal q, r, n, d               : unsigned(g_BITS-1 downto 0);
   signal n_sign, d_sign           : std_logic;
@@ -33,11 +33,26 @@ architecture rtl of gc_integer_divide is
   signal alu_sub                  : std_logic;
   signal is_rem, is_div_by_zero   : std_logic;
 
+
+  signal done, busy, alu_ge, alu_eq, start_divide : std_logic;
+
+  function f_trunc_int(x : integer; tv : integer) return integer is
+  begin
+    if x < 0 then
+      return 0;
+    elsif x > tv then
+      return tv;
+    else
+      return x;
+    end if;
+  end f_trunc_int;
+
+
 begin
 
-  r_next <= r(g_BITS-1 downto 0) & n(g_BITS - (to_integer(state)-3));
+  r_next <= r(g_BITS-2 downto 0) & n(f_trunc_int(g_BITS - 1 - (state-3), g_BITS-1));
 
-  p_alu_ops : process(state)
+  p_alu_ops : process(state, n, d, q, r, r_next)
   begin
     case state is
       when 0 =>
@@ -100,7 +115,8 @@ begin
   end process;
 
   done_o <= done;
-  busy_o <= busy;
+  ready_o <= not busy;
+--  busy_o <= busy;
 
   p_alu_select_op : process(state, n_sign, d_sign)
   begin
@@ -122,7 +138,7 @@ begin
   begin
     if rising_edge(clk_i) then
       if rst_i = '1' or done = '1' then
-        state <= (others => '0');
+        state <= 0;
       elsif state /= 0 or start_divide = '1' then
         state <= state + 1;
       end if;
@@ -142,8 +158,8 @@ begin
 
             is_rem <= is_rem_i;
 
-            n <= a_i;
-            d <= b_i;
+            n <= unsigned(a_i);
+            d <= unsigned(b_i);
 
             if is_signed_i = '0' then
               n_sign <= '0';
@@ -162,16 +178,16 @@ begin
           is_div_by_zero <= alu_eq and not (is_rem_i or is_signed_i);
 
         when g_BITS + 3 =>
-          q_o <= alu_result(g_BITS-1 downto 0);
+          q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
 
         when g_BITS + 4 =>
-          q_o <= alu_result(g_BITS-1 downto 0);
+          q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
 
         when others =>  -- 3..g_BITS+2 (g_BITS) divider iterations
           q <= q(g_BITS-2 downto 0) & alu_ge;
 
           if alu_ge = '1' then
-            r <= alu_result;
+            r <= resize(alu_result, r'length);
           else
             r <= r_next;
           end if;
