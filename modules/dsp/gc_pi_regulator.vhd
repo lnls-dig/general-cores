@@ -92,7 +92,7 @@ architecture rtl of gc_pi_regulator is
 begin
 
   setpoint <= resize (signed(setpoint_i), setpoint'length);
-  xerror   <= resize(signed(x_i), setpoint'length) - setpoint;
+  xerror   <= setpoint - resize(signed(x_i), setpoint'length);
 
   p_the_pi : process(clk_i)
     variable v_integ_next      : signed(g_INTEGRATOR_BITS-1 downto 0);
@@ -114,8 +114,10 @@ begin
         elsif x_valid_i = '1' then
           pmul <= resize(xerror * signed(kp_i), pmul'length);
           imul <= resize(xerror * signed(ki_i), imul'length);
+
           f_clamp_add(integ, imul, v_integ_next, v_integ_limit_hit);
           integ <= v_integ_next;
+          
           f_clamp_add(integ, pmul, v_sum_next, v_sum_limit_hit);
           y_o <= std_logic_vector(v_sum_next(g_OUTPUT_BITS + g_GAIN_FRAC_BITS - 1 downto g_GAIN_FRAC_BITS));
           sum <= v_sum_next;
