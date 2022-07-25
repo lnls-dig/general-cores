@@ -61,7 +61,8 @@ entity generic_dpram_split is
     g_size                     : natural := 16384;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
-    g_fail_if_file_not_found   : boolean := true);
+    g_fail_if_file_not_found   : boolean := true;
+    g_implementation_hint      : string  := "auto");
   port (
     rst_n_i : in std_logic := '1';
     clk_i   : in std_logic;
@@ -112,6 +113,12 @@ architecture syn of generic_dpram_split is
   shared variable ram2 : t_split_ram := f_file_to_ramtype(2);
   shared variable ram3 : t_split_ram := f_file_to_ramtype(3);
 
+  attribute ram_type : string;
+  attribute ram_type of ram0 : variable is g_implementation_hint;
+  attribute ram_type of ram1 : variable is g_implementation_hint;
+  attribute ram_type of ram2 : variable is g_implementation_hint;
+  attribute ram_type of ram3 : variable is g_implementation_hint;
+  
   signal s_we_a  : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_we_b  : std_logic_vector(c_num_bytes-1 downto 0);
   signal wea_rep : std_logic_vector(c_num_bytes-1 downto 0);

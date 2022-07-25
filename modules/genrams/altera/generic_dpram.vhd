@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2011-01-25
--- Last update: 2013-03-04
+-- Last update: 2022-07-25
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -44,7 +44,9 @@ entity generic_dpram is
     g_addr_conflict_resolution : string := "dont_care";
     g_init_file                : string := "none";
     g_fail_if_file_not_found   : boolean := true; -- dummy (exists in Xilinx/generic)
-    g_dual_clock               : boolean := true);
+    g_dual_clock               : boolean := true;
+    g_implementation_hint      : string  := "auto"
+    );
   port(
     rst_n_i : in std_logic := '1';      -- synchronous reset, active LO
 

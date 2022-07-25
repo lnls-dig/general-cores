@@ -49,7 +49,8 @@ entity generic_dpram is
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
     g_dual_clock               : boolean := true;
-    g_fail_if_file_not_found   : boolean := true
+    g_fail_if_file_not_found   : boolean := true;
+    g_implementation_hint      : string  := "auto"
     );
 
   port (
@@ -89,7 +90,9 @@ architecture syn of generic_dpram is
       g_size                     : natural;
       g_addr_conflict_resolution : string  := "dont_care";
       g_init_file                : string  := "none";
-      g_fail_if_file_not_found   : boolean := true);
+      g_fail_if_file_not_found   : boolean := true;
+      g_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clk_i   : in  std_logic;
@@ -112,7 +115,9 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
-      g_fail_if_file_not_found   : boolean);
+      g_fail_if_file_not_found   : boolean;
+      g_implementation_hint      : string
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clk_i   : in  std_logic;
@@ -135,7 +140,9 @@ architecture syn of generic_dpram is
       g_with_byte_enable         : boolean;
       g_addr_conflict_resolution : string;
       g_init_file                : string;
-      g_fail_if_file_not_found   : boolean);
+      g_fail_if_file_not_found   : boolean;
+      g_implementation_hint      : string
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clka_i  : in  std_logic;
@@ -167,7 +174,8 @@ begin
         g_size                     => g_size,
         g_addr_conflict_resolution => g_addr_conflict_resolution,
         g_init_file                => g_init_file,
-        g_fail_if_file_not_found   => g_fail_if_file_not_found)
+        g_fail_if_file_not_found   => g_fail_if_file_not_found,
+        g_implementation_hint      => g_implementation_hint)
       port map(
         rst_n_i => rst_n_i,
         clk_i   => clka_i,
@@ -191,7 +199,8 @@ begin
       g_with_byte_enable         => g_with_byte_enable,
       g_addr_conflict_resolution => g_addr_conflict_resolution,
       g_init_file                => g_init_file,
-      g_fail_if_file_not_found   => g_fail_if_file_not_found)
+      g_fail_if_file_not_found   => g_fail_if_file_not_found,
+      g_implementation_hint      => g_implementation_hint)
     port map (
       rst_n_i => rst_n_i,
       clk_i   => clka_i,
@@ -217,7 +226,8 @@ begin
         g_with_byte_enable         => g_with_byte_enable,
         g_addr_conflict_resolution => g_addr_conflict_resolution,
         g_init_file                => g_init_file,
-        g_fail_if_file_not_found   => g_fail_if_file_not_found)
+        g_fail_if_file_not_found   => g_fail_if_file_not_found,
+        g_implementation_hint      => g_implementation_hint)
       port map (
         rst_n_i => rst_n_i,
         clka_i  => clka_i,

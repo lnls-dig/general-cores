@@ -48,7 +48,8 @@ entity generic_dpram_dualclock is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
-    g_fail_if_file_not_found   : boolean := true
+    g_fail_if_file_not_found   : boolean := true;
+    g_implementation_hint      : string  := "auto"
     );
 
   port (
@@ -122,6 +123,9 @@ architecture syn of generic_dpram_dualclock is
 
   shared variable ram : t_ram_type := f_file_to_ramtype;
 
+  attribute ram_type : string;
+  attribute ram_type of ram : variable is g_implementation_hint;
+  
   signal s_we_a     : std_logic_vector(c_num_bytes-1 downto 0);
   signal s_we_b     : std_logic_vector(c_num_bytes-1 downto 0);
 

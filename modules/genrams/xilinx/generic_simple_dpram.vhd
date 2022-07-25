@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-03-04
--- Last update: 2013-10-30
+-- Last update: 2022-07-25
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -58,7 +58,8 @@ entity generic_simple_dpram is
     g_addr_conflict_resolution : string  := "read_first";
     g_init_file                : string  := "";
     g_dual_clock               : boolean := true;
-    g_fail_if_file_not_found   : boolean := true
+    g_fail_if_file_not_found   : boolean := true;
+    g_implementation_hint      : string  := "auto"
     );
 
   port (
@@ -93,7 +94,8 @@ begin
       g_with_byte_enable         => g_with_byte_enable,
       g_addr_conflict_resolution => g_addr_conflict_resolution,
       g_init_file                => g_init_file,
-      g_dual_clock               => g_dual_clock)
+      g_dual_clock               => g_dual_clock,
+      g_implementation_hint      => g_implementation_hint )
     port map(
       rst_n_i => rst_n_i,
       clka_i  => clka_i,

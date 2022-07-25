@@ -19,7 +19,9 @@ entity generic_spram is
     -- RAM read-on-write conflict resolution. Can be "read_first" (read-then-write)
     -- or "write_first" (write-then-read)
     g_addr_conflict_resolution : string := "write_first";
-    g_init_file                : string := ""
+    g_init_file                : string := "";
+
+    g_implementation_hint      : string := "auto"
     );
 
   port (
@@ -59,7 +61,10 @@ architecture syn of generic_spram is
 
   signal s_ram_in  : std_logic_vector(g_data_width-1 downto 0);
   signal s_ram_out : std_logic_vector(g_data_width-1 downto 0);
-  
+
+  attribute ram_type : string;
+  attribute ram_type of ram : signal is g_implementation_hint;
+
   
 begin
   assert (g_init_file = "" or g_init_file = "none") 

@@ -53,7 +53,8 @@ entity generic_sync_fifo is
 
     g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
-    g_register_flag_outputs  : boolean := true
+    g_register_flag_outputs  : boolean := true;
+    g_memory_implementation_hint : string := "auto"
     );
 
   port (
@@ -90,7 +91,8 @@ architecture syn of generic_sync_fifo is
       g_with_count             : boolean;
       g_almost_empty_threshold : integer;
       g_almost_full_threshold  : integer;
-      g_register_flag_outputs  : boolean);
+      g_register_flag_outputs  : boolean;
+      g_memory_implementation_hint : string);
     port (
       rst_n_i        : in  std_logic := '1';
       clk_i          : in  std_logic;
@@ -120,8 +122,8 @@ begin  -- syn
         g_with_count             => g_with_count,
         g_almost_empty_threshold => g_almost_empty_threshold,
         g_almost_full_threshold  => g_almost_full_threshold,
-        g_register_flag_outputs  => g_register_flag_outputs)
-
+        g_register_flag_outputs  => g_register_flag_outputs,
+        g_memory_implementation_hint => g_memory_implementation_hint )
       port map (
         rst_n_i        => rst_n_i,
         clk_i          => clk_i,
