@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2019 CERN
 
-TOPDIR ?= ../../../../../
+TOPDIR ?= $(shell pwd)/../../../../../
 GCORES ?= $(abspath $(TOPDIR))
 
 #
