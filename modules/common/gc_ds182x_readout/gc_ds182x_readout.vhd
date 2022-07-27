@@ -45,7 +45,8 @@ entity gc_ds182x_readout is
     onewire_b : inout std_logic;                     -- IO to be connected to the chip(DS1820/DS1822)
     id_o      : out   std_logic_vector(63 downto 0); -- id_o value
     temper_o  : out   std_logic_vector(15 downto 0); -- temperature value (refreshed every second)
-    id_read_o : out   std_logic;                     -- id_o value is valid_o
+    temp_ok_o : out   std_logic;                     -- temperature was read and is correct.
+    id_read_o : out   std_logic;                     -- id_o value is valid
     id_ok_o   : out   std_logic);                    -- Same as id_read_o, but not reset with rst_n_i
 end gc_ds182x_readout;
 
@@ -55,18 +56,29 @@ end gc_ds182x_readout;
 --=================================================================================================
 architecture arch of gc_ds182x_readout is
 
+  constant SLOT_1US : natural := g_CLOCK_FREQ_KHZ/1000;
   -- time slot constants according to specs https://www.maximintegrated.com/en/app-notes/index.mvp/id/162
-  constant SLOT_CNT_START         : unsigned(15 downto 0) := to_unsigned(0*g_CLOCK_FREQ_KHZ/40000, 16);
-  constant SLOT_CNT_START_PLUSONE : unsigned(15 downto 0) := SLOT_CNT_START + 1;
-  constant SLOT_CNT_SET           : unsigned(15 downto 0) := to_unsigned(60*g_CLOCK_FREQ_KHZ/40000, 16);
-  constant SLOT_CNT_RD            : unsigned(15 downto 0) := to_unsigned(600*g_CLOCK_FREQ_KHZ/40000, 16); -- 15us
-  constant SLOT_CNT_STOP          : unsigned(15 downto 0) := to_unsigned(3600*g_CLOCK_FREQ_KHZ/40000, 16); -- 90us
-  constant SLOT_CNT_PRESTOP       : unsigned(15 downto 0) := to_unsigned((3600-60)*g_CLOCK_FREQ_KHZ/40000, 16);
+  constant SLOT_CNT_START   : natural := 0;
+
+  --  When the bit is written
+  constant SLOT_CNT_SET     : natural := 2 * SLOT_1US;
+
+  --  When the bit is read
+  constant SLOT_CNT_RD      : natural := 12 * SLOT_1US;
+
+  --  When the onewire is not driven anymore.
+  constant SLOT_CNT_STOP    : natural := 60 * SLOT_1US;
+
+  --  End of the cycle
+  constant SLOT_CNT_END     : natural := 62 * SLOT_1US;
+
+  --  Number of cycles for a reset (until reaching 0)
+  constant SLOT_CNT_RESET   : natural := 500 * SLOT_1US;
 
   constant READ_ID_HEADER     : std_logic_vector(7 downto 0) := X"33";
   constant CONVERT_HEADER     : std_logic_vector(7 downto 0) := X"44";
   constant READ_TEMPER_HEADER : std_logic_vector(7 downto 0) := X"BE";
-  constant SKIPHEADER         : std_logic_vector(7 downto 0) := X"CC";
+  constant SKIP_HEADER         : std_logic_vector(7 downto 0) := X"CC";
 
   constant ID_LEFT         : integer              := 71;
   constant ID_RIGHT        : integer              := 8;
@@ -74,32 +86,35 @@ architecture arch of gc_ds182x_readout is
   constant TEMPER_RIGHT    : integer              := 0;
   constant TEMPER_DONE_BIT : std_logic            := '0';  -- The serial line is asserted to this value by the
                                                            -- DS1820/DS1822 when the temperature conversion is ready
-  constant TEMPER_LGTH     : unsigned(7 downto 0) := to_unsigned(72, 8);
-  constant ID_LGTH         : unsigned(7 downto 0) := to_unsigned(64, 8);
+  constant TEMPER_LGTH     : natural := 72;
+  constant ID_LGTH         : natural := 64;
 
-  type op_fsm_t is (READ_ID_OP, SKIP_ROM_OP1, CONV_OP1, CONV_OP2, SKIP_ROM_OP2, READ_TEMP_OP);
-  type cm_fsm_t is (RST_CM, PREP_WR_CM, WR_CM, PREP_RD_CM, RD_CM, IDLE_CM);
+  type op_fsm_t is (READ_ID_OP, CONV_OP1, SKIP_ROM_OP1, READ_TEMP_OP, WAIT_PPS, SKIP_ROM_OP2);
+  type cm_fsm_t is (RESET_PULSE, PRESENCE_PULSE, WR_CM, RD_CM, IDLE_CM);
 
-  signal bit_top, bit_cnt                                  : unsigned(7 downto 0);
-  signal slot_cnt                                          : unsigned(15 downto 0);
-  signal start_p, end_p, set_value, read_value, init_pulse : std_logic;
-  signal state_op, nxt_state_op                            : op_fsm_t;
-  signal state_cm, nxt_state_cm                            : cm_fsm_t;
+  signal bit_cnt, bit_top  : natural range 0 to 127;
+  signal slot_cnt : natural range 0 to SLOT_CNT_RESET;
+  signal start_slot : std_logic;
 
-  signal crc_vec, header                        : std_logic_vector(7 downto 0);
-  signal crc_ok, init, pre_read_p, i_id_read    : std_logic;
-  signal load_temper, load_id, cm_only, pps_p_d : std_logic;
+  signal end_p     : std_logic;
+  signal state_op  : op_fsm_t;
+  signal state_cm  : cm_fsm_t;
 
-  signal serial_id_out, nx_serial_id_out, nx_serial_id_oe : std_logic;
-  signal i_serial_id_oe, serial_idr                       : std_logic;
-  signal end_wr_cm, end_rd_cm, inc_bit_cnt, rst_bit_cnt   : std_logic;
-  signal shift_header, id_cm_reg                          : std_logic;
-  signal cm_reg                                           : std_logic_vector(71 downto 0);
-  signal shifted_header                                   : std_logic_vector(7 downto 0);
-  signal pre_init_p                                       : std_logic;
+  --  Set for RESET/PRESENCE slots that lasts > 480uS
+  signal long_slot : std_logic;
+
+  signal crc_vec, header   : std_logic_vector(7 downto 0);
+  signal cm_only   : std_logic;
+
+  signal onewire_oe, onewire_in    : std_logic;
+  signal shift_header              : std_logic;
+  signal cm_reg                    : std_logic_vector(71 downto 0);
+  signal shifted_header            : std_logic_vector(7 downto 0);
+  signal cmd_done, cmd_init, cmd_start : std_logic;
 
   signal pps_counter : unsigned(31 downto 0);
   signal pps         : std_logic;
+
 
 --=================================================================================================
 --                                       architecture begin
@@ -107,7 +122,13 @@ architecture arch of gc_ds182x_readout is
 begin
 
   gen_external_pps : if not g_USE_INTERNAL_PPS generate
-    pps <= pps_p_i;
+    --  Delay to ease routing.
+    process (clk_i)
+    begin
+      if rising_edge(clk_i) then
+        pps <= pps_p_i;
+      end if;
+    end process;
   end generate gen_external_pps;
 
   gen_internal_pps : if g_USE_INTERNAL_PPS generate
@@ -131,479 +152,265 @@ begin
   end generate gen_internal_pps;
 
 
-
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  -- Serial data line in tri-state, when not writing data out
-  onewire_b <= serial_id_out when i_serial_id_oe = '1' else 'Z';
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  -- pps_p_i 1 clock tick delay
-  pps_p_iDelay : process (clk_i)
-  begin
-    if rising_edge(clk_i) then
-      pps_p_d <= pps;
-    end if;
-  end process;
-
-
-
 ---------------------------------------------------------------------------------------------------
 --                                         operations FSM                                        --
 ---------------------------------------------------------------------------------------------------
   op_fsm_transitions : process(clk_i)
   begin
     if rising_edge(clk_i) then
+      cmd_start <= '0';
+      cmd_init  <= '0';
+
       if rst_n_i = '0' then
-        state_op <= READ_ID_OP;
+        state_op  <= READ_ID_OP;
+        id_o      <= (others => '0');
+        temper_o  <= (others => '0');
+        id_read_o <= '0';
+        temp_ok_o <= '0';
+        cmd_init <= '1';
       else
-        state_op <= nxt_state_op;
+        case state_op is
+          when READ_ID_OP =>
+            --  Read the ROM (unique ID).  This is done once after reset.
+            header  <= READ_ID_HEADER;
+            bit_top <= ID_LGTH;
+            cm_only <= '0';
+
+            if cmd_done = '1' then
+              if crc_vec = x"00" then
+                --  ID is ok, keep it.
+                state_op  <= CONV_OP1;
+                id_o      <= cm_reg(ID_LEFT downto ID_RIGHT);
+                id_read_o <= '1';
+                id_ok_o   <= '1';
+
+                --  Start conversion.
+                header  <= CONVERT_HEADER;
+                cm_only <= '1';
+
+                cmd_start <= '1';
+                cmd_init  <= '0';
+              else
+                --  Try again.
+                null;
+              end if;
+            end if;
+          
+          when CONV_OP1 =>
+            if cmd_done = '1' then
+              --  Conversion can take at most 750ms
+              state_op <= WAIT_PPS;
+            end if;
+          
+          when WAIT_PPS =>
+            if pps = '1' then
+              -- Skip rom to directly reads the registers.
+              header  <= SKIP_HEADER;
+              cm_only <= '1';
+              cmd_init <= '1';
+
+              state_op <= SKIP_ROM_OP1;
+            end if;
+
+          when SKIP_ROM_OP1 =>
+            if cmd_done = '1' then
+              --  Read registers
+              header  <= READ_TEMPER_HEADER;
+              bit_top <= TEMPER_LGTH;
+              cm_only <= '0';
+              cmd_start <= '1';
+
+              state_op <= READ_TEMP_OP;
+            end if;
+          
+          when READ_TEMP_OP =>
+            if cmd_done = '1' then
+              temper_o <= cm_reg(TEMPER_LEFT downto TEMPER_RIGHT);
+              if crc_vec = x"00" then
+                temp_ok_o <= '1';
+              else
+                temp_ok_o <= '0';
+              end if;
+
+              -- Skip rom to directly reads the registers.
+              header  <= SKIP_HEADER;
+              cm_only <= '1';
+              cmd_init <= '1';
+
+              state_op <= SKIP_ROM_OP2;
+            end if;
+
+          when SKIP_ROM_OP2 =>
+            if cmd_done = '1' then
+              --  Start conversion.
+              header  <= CONVERT_HEADER;
+              cm_only <= '1';
+              cmd_start <= '1';
+              
+              state_op <= CONV_OP1;
+            end if;
+        end case;
       end if;
     end if;
   end process;
 
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  op_fsm_states : process(state_op, pps, crc_ok)
-  begin
-    nxt_state_op <= READ_ID_OP;
-    case state_op is
-
-      when READ_ID_OP =>
-        if pps = '1' and crc_ok = '1' then
-          nxt_state_op <= CONV_OP1;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-      when CONV_OP1 =>
-        if pps = '1' then
-          nxt_state_op <= SKIP_ROM_OP1;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-      when SKIP_ROM_OP1 =>
-        if pps = '1' then
-          nxt_state_op <= READ_TEMP_OP;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-      when READ_TEMP_OP =>
-        if pps = '1' then
-          nxt_state_op <= SKIP_ROM_OP2;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-      when SKIP_ROM_OP2 =>
-        if pps = '1' then
-          nxt_state_op <= CONV_OP2;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-      when CONV_OP2 =>
-        if pps = '1' then
-          nxt_state_op <= SKIP_ROM_OP1;
-        else
-          nxt_state_op <= state_op;
-        end if;
-
-    end case;
-  end process;
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  op_fsm_outputs : process(state_op, state_cm, crc_ok, pps, cm_only)
-  begin
-    header      <= READ_ID_HEADER;
-    bit_top     <= ID_LGTH;
-    load_temper <= '0';
-    load_id     <= '0';
-    cm_only     <= '0';
-
-    case state_op is
-
-      when READ_ID_OP =>
-        --  Read the ROM (unique ID).  This is done once after reset.
-        header  <= READ_ID_HEADER;
-        bit_top <= ID_LGTH;
-        if state_cm = IDLE_CM then
-          load_id <= crc_ok;
-        end if;
-
-      when CONV_OP1 =>
-        --  Start conversion.
-        header  <= CONVERT_HEADER;
-        cm_only <= '1';
-
-      when SKIP_ROM_OP1 =>
-        -- Skip rom to directly reads the registers.
-        header  <= SKIPHEADER;
-        cm_only <= '1';
-
-      when READ_TEMP_OP =>
-        --  Read registers
-        header  <= READ_TEMPER_HEADER;
-        bit_top <= TEMPER_LGTH;
-        if state_cm = IDLE_CM then
-          load_temper <= crc_ok and pps;
-        end if;
-
-      when SKIP_ROM_OP2 =>
-        -- Skip rom to directly reads the registers.
-        header  <= SKIPHEADER;
-        cm_only <= '1';
-
-      when CONV_OP2 =>
-        --  Start conversion.
-        header  <= CONVERT_HEADER;
-        cm_only <= '1';
-
-      when others => null;
-
-    end case;
-  end process;
-
-
-
----------------------------------------------------------------------------------------------------
---                                          commands FSM                                         --
----------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+--                                      commands FSM                                     --
+-------------------------------------------------------------------------------------------
   cm_fsm_transitions : process(clk_i)
   begin
     if rising_edge(clk_i) then
+      shift_header     <= '0';
+      onewire_oe       <= '0';
+      long_slot        <= '0';
+      onewire_oe       <= '0';
+      start_slot       <= '0';
+      cmd_done   <= '0';
+
       if rst_n_i = '0' then
-        state_cm <= RST_CM;
+        state_cm   <= IDLE_CM;
+        cm_reg     <= (others => '0');
       else
-        state_cm <= nxt_state_cm;
+        case state_cm is
+          when IDLE_CM =>
+            bit_cnt        <= 0;
+            if cmd_init = '1' then
+              state_cm       <= RESET_PULSE;
+              start_slot     <= '1';
+            elsif cmd_start = '1' then
+              state_cm       <= WR_CM;
+              shifted_header <= header;
+              start_slot     <= '1';
+            end if;
+
+          when RESET_PULSE =>
+            --  Reset pulse: set to 0
+            long_slot   <= '1';
+            --  Set to 0.
+            onewire_oe  <= '1';
+            crc_vec     <= (others => '0');
+            shifted_header <= header;
+            if end_p = '1' then
+              state_cm <= PRESENCE_PULSE;
+            end if;
+
+          when PRESENCE_PULSE =>
+            --  Presence pulse.
+            long_slot   <= '1';
+            --  Do not drive
+            onewire_oe  <= '0';
+
+            if end_p = '1' then
+              state_cm <= WR_CM;
+            end if;
+
+          when WR_CM =>
+            --  Shift at end of slot.
+            --  Low during init pulse.
+            if slot_cnt < SLOT_CNT_SET then
+              onewire_oe  <= '1';
+            elsif slot_cnt >= SLOT_CNT_STOP then
+              onewire_oe <=  '0';
+            else
+              onewire_oe <= not shifted_header(0);
+            end if;
+
+            if end_p = '1' then
+              --  End of slot
+              if bit_cnt = 7 then
+                --  End of command.
+                bit_cnt <= 0;
+                if cm_only = '0' then
+                  state_cm <= RD_CM;
+                else
+                  state_cm <= IDLE_CM;
+                  cmd_done <= '1';
+                end if;
+              else
+                --  Next bit
+                shifted_header <= '0' & shifted_header(7 downto 1);
+                bit_cnt <= bit_cnt + 1;
+              end if;
+            end if;
+
+          when RD_CM =>
+            --  Low during init pulse.
+            if slot_cnt < SLOT_CNT_SET then
+              onewire_oe  <= '1';
+            else
+              onewire_oe  <= '0';
+              if slot_cnt = SLOT_CNT_RD then
+                --  Sample
+                cm_reg <= onewire_in & cm_reg (cm_reg'left downto 1);
+                --  Update CRC
+                crc_vec(0)          <= onewire_in xor crc_vec(7);
+                crc_vec(3 downto 1) <= crc_vec(2 downto 0);
+                crc_vec(4)          <= (onewire_in xor crc_vec(7)) xor crc_vec(3);
+                crc_vec(5)          <= (onewire_in xor crc_vec(7)) xor crc_vec(4);
+                crc_vec(7 downto 6) <= crc_vec(6 downto 5);
+      
+                bit_cnt <= bit_cnt + 1;
+              end if;
+            end if;
+
+            if end_p = '1' then
+              --  End of slot
+              if bit_cnt = bit_top then
+                --  End of command
+                state_cm <= IDLE_CM;
+                cmd_done <= '1';
+              end if;
+            end if;
+        end case;
       end if;
     end if;
   end process;
 
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  cm_fsm_states : process(state_cm, start_p, end_wr_cm, end_rd_cm, crc_ok, state_op, cm_only, pps_p_d)
-  begin
-    nxt_state_cm <= RST_CM;
-    case state_cm is
-      when RST_CM =>
-        if start_p = '1' then
-          nxt_state_cm <= PREP_WR_CM;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-
-      when PREP_WR_CM =>
-        if start_p = '1' then
-          nxt_state_cm <= WR_CM;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-
-      when WR_CM =>
-        if end_wr_cm = '1' then
-          if cm_only = '0' then
-            nxt_state_cm <= PREP_RD_CM;
-          else
-            nxt_state_cm <= IDLE_CM;
-          end if;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-
-      when PREP_RD_CM =>
-        if start_p = '1' then
-          nxt_state_cm <= RD_CM;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-
-      when RD_CM =>
-        if end_rd_cm = '1' then
-          nxt_state_cm <= IDLE_CM;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-
-      when IDLE_CM =>
-        if state_op = READ_ID_OP then
-          if crc_ok = '0' then
-            nxt_state_cm <= RST_CM;
-          else
-            nxt_state_cm <= state_cm;
-          end if;
-        elsif state_op = READ_TEMP_OP then  -- At this moment I will send a Conv temper_o command
-          if pps_p_d = '1' then
-            nxt_state_cm <= PREP_WR_CM;
-          else
-            nxt_state_cm <= state_cm;
-          end if;
-        elsif (state_op = CONV_OP1) or (state_op = CONV_OP2) then  -- At this moment I will restart a temper_o read
-          if pps_p_d = '1' then
-            nxt_state_cm <= PREP_WR_CM;
-          else
-            nxt_state_cm <= state_cm;
-          end if;
-        elsif (state_op = SKIP_ROM_OP1) or (state_op = SKIP_ROM_OP2) then  -- At this moment I will restart
-          if pps_p_d = '1' then
-            nxt_state_cm <= RST_CM;
-          else
-            nxt_state_cm <= state_cm;
-          end if;
-        else
-          nxt_state_cm <= state_cm;
-        end if;
-    end case;
-  end process;
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  cm_fsm_outputs : process(state_cm, bit_cnt, pre_read_p, crc_vec, start_p,
-                           shifted_header, init_pulse, read_value, pre_init_p)
-  begin
-    inc_bit_cnt      <= '0';
-    nx_serial_id_out <= '0';
-    shift_header     <= '0';
-    id_cm_reg        <= '0';
-    nx_serial_id_oe  <= '0';
-    rst_bit_cnt      <= '0';
-    init             <= '0';
-    crc_ok           <= '0';
-    case state_cm is
-      when RST_CM =>
-        --  Reset pulse.
-        rst_bit_cnt      <= '1';
-        nx_serial_id_out <= '0';
-        nx_serial_id_oe  <= '1';
-        init             <= start_p;
-      when PREP_WR_CM =>
-        --  Presence pulse.
-        rst_bit_cnt      <= start_p;
-        nx_serial_id_oe  <= '0';
-        nx_serial_id_out <= '0';
-      when WR_CM =>
-        shift_header     <= start_p;
-        inc_bit_cnt      <= start_p;
-        rst_bit_cnt      <= '0';
-        nx_serial_id_out <= shifted_header(0) and (not init_pulse);
-        if bit_cnt < to_unsigned(7, bit_cnt'length) then
-          nx_serial_id_oe <= not pre_init_p;
-        else
-          nx_serial_id_oe <= not pre_read_p;
-        end if;
-      when PREP_RD_CM =>
-        rst_bit_cnt      <= start_p;
-        nx_serial_id_oe  <= '0';
-        nx_serial_id_out <= '0';
-      when RD_CM =>
-        inc_bit_cnt      <= start_p;
-        rst_bit_cnt      <= '0';
-        nx_serial_id_out <= not init_pulse;
-        id_cm_reg        <= read_value;
-        nx_serial_id_oe  <= init_pulse;
-      when IDLE_CM =>
-        if crc_vec = x"00" then
-          crc_ok <= '1';
-        else
-          crc_ok <= '0';
-        end if;
-        init <= '1';
-    end case;
-  end process;
-
-
-
----------------------------------------------------------------------------------------------------
---                                           time slots                                          --
----------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+--                                       time slots                                      --
+-------------------------------------------------------------------------------------------
   -- Generates time slots
-  -- Reset pulse
-  -- Read time slot
-  -- Write time slots
   process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if rst_n_i = '0' then
-        slot_cnt(slot_cnt'left)             <= '1';
-        slot_cnt(slot_cnt'left -1 downto 0) <= (others => '0');
-        start_p                             <= '0';
-        end_p                               <= '0';
-        set_value                           <= '0';
-        read_value                          <= '0';
-        init_pulse                          <= '0';
-        pre_init_p                          <= '0';
-        pre_read_p                          <= '0';
+      if rst_n_i = '0' or start_slot = '1' then
+        slot_cnt   <= 0;
+        end_p    <= '0';
       else
-
         -- Slot counter
-        if init = '1' then
-          slot_cnt(slot_cnt'left)              <= '1';
-          slot_cnt(slot_cnt'left - 1 downto 0) <= (others => '0');
-        elsif slot_cnt = SLOT_CNT_STOP then
-          slot_cnt <= (others => '0');
-        else
-          slot_cnt <= slot_cnt + 1;
-        end if;
-
-        -- Time slot start pulse
-        if slot_cnt = SLOT_CNT_START then
-          start_p <= '1';
-        else
-          start_p <= '0';
-        end if;
-
-        if ((slot_cnt > SLOT_CNT_START) and (slot_cnt < SLOT_CNT_SET)) then
-          init_pulse <= '1';
-        else
-          init_pulse <= '0';
-        end if;
-
-        if ((slot_cnt > SLOT_CNT_PRESTOP) and (slot_cnt < SLOT_CNT_STOP)) then
-          pre_init_p <= '1';
-        else
-          pre_init_p <= '0';
-        end if;
-
-        if (((slot_cnt > SLOT_CNT_PRESTOP) and (slot_cnt <= SLOT_CNT_STOP)) or
-            (slot_cnt                                    <= SLOT_CNT_START_PLUSONE)) then
-          pre_read_p <= '1';
-        else
-          pre_read_p <= '0';
-        end if;
-
-        -- End of time slot pulse
-        if slot_cnt = SLOT_CNT_START then
+        if end_p = '1' then
+          slot_cnt <= 0;
+          end_p <= '0';
+        elsif (long_slot = '1' and slot_cnt = SLOT_CNT_RESET)
+           or (long_slot = '0' and slot_cnt = SLOT_CNT_END)
+        then
+          --  End of slot, start next one.
           end_p <= '1';
         else
+          slot_cnt <= slot_cnt + 1;
           end_p <= '0';
         end if;
-
-        -- Pulse to write value on serial link
-        if slot_cnt = SLOT_CNT_SET then
-          set_value <= '1';
-        else
-          set_value <= '0';
-        end if;
-
-        -- Pulse to read value on serial link
-        if slot_cnt = SLOT_CNT_RD then
-          read_value <= '1';
-        else
-          read_value <= '0';
-        end if;
       end if;
     end if;
   end process;
 
+-------------------------------------------------------------------------------------------
+--                                         serdes                                        --
+-------------------------------------------------------------------------------------------
 
+  -- Serial data line in tri-state, when not writing data out
+  onewire_b <= '0' when onewire_oe = '1' else 'Z';
 
----------------------------------------------------------------------------------------------------
---                                             serdes                                            --
----------------------------------------------------------------------------------------------------
-  -- Data serializer bit counter
-  BitCnt_p : process(clk_i)
-  begin
-    if rising_edge(clk_i) then
-      if rst_n_i = '0' then
-        bit_cnt <= (others => '0');
-      else
-        if rst_bit_cnt = '1' then
-          bit_cnt <= (others => '0');
-        elsif inc_bit_cnt = '1' then
-          bit_cnt <= bit_cnt + 1;
-        end if;
-      end if;
-    end if;
-  end process;
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
   -- Data serializer shift register
   ShiftReg_p : process(clk_i)
   begin
     if rising_edge(clk_i) then
       if rst_n_i = '0' then
-        shifted_header <= READ_ID_HEADER;
-        cm_reg         <= (others => '0');
-        serial_idr     <= '0';
-        serial_id_out  <= '0';
-        i_serial_id_oe <= '0';
-        id_o           <= (others => '0');
-        i_id_read      <= '0';
-        id_read_o      <= '0';
-        crc_vec        <= (others => '0');
-        temper_o       <= (others => '0');
+        onewire_in     <= '0';
       else
         -- Samples serial input
-        serial_idr <= onewire_b;
-
-        -- Shifts command out
-        if init = '1' then
-          shifted_header <= header;
-        elsif shift_header = '1' then
-          shifted_header(shifted_header'left-1 downto 0) <= shifted_header(shifted_header'left downto 1);
-          shifted_header(shifted_header'left)            <= '0';
-        end if;
-
-        -- Computes CRC on read data (include the received CRC itself, if no errror crc_vec = X"00")
-        if init = '1' then
-          crc_vec <= (others => '0');
-        elsif id_cm_reg = '1' then
-          crc_vec(0)          <= serial_idr xor crc_vec(7);
-          crc_vec(3 downto 1) <= crc_vec(2 downto 0);
-          crc_vec(4)          <= (serial_idr xor crc_vec(7)) xor crc_vec(3);
-          crc_vec(5)          <= (serial_idr xor crc_vec(7)) xor crc_vec(4);
-          crc_vec(7 downto 6) <= crc_vec(6 downto 5);
-        end if;
-
-        -- Stores incoming data
-        if (id_cm_reg = '1') then
-          cm_reg(cm_reg'left - 1 downto 0) <= cm_reg(cm_reg'left downto 1);
-          cm_reg(cm_reg'left)              <= serial_idr;
-        end if;
-
-        -- Updates serial output data
-        serial_id_out <= nx_serial_id_out;
-
-        -- Updates serial output enable
-        i_serial_id_oe <= nx_serial_id_oe;
-
-        -- Stores id_o in register
-        if (load_id = '1')then
-          i_id_read <= '1';
-          id_o      <= cm_reg(ID_LEFT downto ID_RIGHT);
-        end if;
-
-        -- Stores temperature in register
-        if (load_temper = '1')then
-          temper_o <= cm_reg(TEMPER_LEFT downto TEMPER_RIGHT);
-        end if;
-
-        -- Delays id_o read
-        id_read_o <= i_id_read;
+        onewire_in <= onewire_b;
       end if;
     end if;
   end process;
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  -- Value on id_o port is valid_o
-  process(clk_i)
-  begin
-    if rising_edge(clk_i) then
-      if state_cm = IDLE_CM then
-        id_ok_o <= crc_ok;
-      end if;
-    end if;
-  end process;
-
---  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --  --
-  -- Detects end of read or end of write command
-  end_wr_cm <= '1' when (bit_cnt = to_unsigned(7, bit_cnt'length)) and (inc_bit_cnt = '1') else '0';
-  end_rd_cm <= '1' when (bit_cnt = bit_top)                                                else '0';
-
-
 end arch;
---=================================================================================================
---                                        architecture end
---=================================================================================================
----------------------------------------------------------------------------------------------------
---                                      E N D   O F   F I L E
----------------------------------------------------------------------------------------------------

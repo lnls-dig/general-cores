@@ -269,29 +269,6 @@ static struct irq_chip htvic_chip = {
 	.irq_set_type = htvic_irq_set_type,
 };
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
-static int htvic_irq_domain_select(struct irq_domain *d, struct irq_fwspec *fwspec,
-		      enum irq_domain_bus_token bus_token)
-{
-	struct htvic_device *htvic = d->host_data;
-	/*
-	 * FIXME this should point to htvic->pdev->dev.parent. Today it is not
-	 * a problem for CERN-like installations, so we leave it like this
-	 * so that the WR-stating kit works.
-	 */
-	struct device *dev = &htvic->pdev->dev;
-	struct device *req_dev;
-
-	if(fwspec->param_count != 2)
-		return 0;
-
-	req_dev = (struct device *) ((((unsigned long) fwspec->param[0]) << 32) |
-		(((unsigned long) fwspec->param[1]) & 0xFFFFFFFF));
-
-	return (dev == req_dev);
-}
-#endif
-
 /**
  * Given the hardware IRQ and the Linux IRQ number (virtirq), configure the
  * Linux IRQ number in order to handle properly the incoming interrupts
@@ -321,9 +298,6 @@ static int htvic_irq_domain_map(struct irq_domain *h,
 
 
 static struct irq_domain_ops htvic_irq_domain_ops = {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,7,0)
-	.select = htvic_irq_domain_select,
-#endif
 	.map = htvic_irq_domain_map,
 };
 
@@ -335,11 +309,27 @@ static int htvic_irq_mapping(struct htvic_device *htvic)
 {
 	int i, irq;
 
+#if KERNEL_VERSION(4, 4, 0) <= LINUX_VERSION_CODE
+	htvic->pdev->dev.fwnode = irq_domain_alloc_fwnode(NULL);
+	if (!htvic->pdev->dev.fwnode) {
+		dev_err(&htvic->pdev->dev, "Could not allocate fwnode");
+		return -ENOMEM;
+	}
+	htvic->domain = irq_domain_create_linear(htvic->pdev->dev.fwnode,
+					      VIC_MAX_VECTORS,
+					      &htvic_irq_domain_ops, htvic);
+	if (!htvic->domain) {
+		irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+		htvic->pdev->dev.fwnode = NULL;
+		return -ENOMEM;
+	}
+#else
 	htvic->domain = irq_domain_add_linear((void *)&htvic->pdev->dev,
 					      VIC_MAX_VECTORS,
 					      &htvic_irq_domain_ops, htvic);
 	if (!htvic->domain)
 		return -ENOMEM;
+#endif
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0)
 	htvic->domain->name = kasprintf(GFP_KERNEL, "%s",
 					dev_name(&htvic->pdev->dev));
@@ -362,6 +352,10 @@ static int htvic_irq_mapping(struct htvic_device *htvic)
 
 out:
 	irq_domain_remove(htvic->domain);
+#if KERNEL_VERSION(4, 4, 0) <= LINUX_VERSION_CODE
+	irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+	htvic->pdev->dev.fwnode = NULL;
+#endif
 	return -EPERM;
 }
 
@@ -613,6 +607,10 @@ static int htvic_remove(struct platform_device *pdev)
 	 * Clear the memory and restore flags when needed
 	 */
 	irq_domain_remove(htvic->domain);
+#if KERNEL_VERSION(4, 4, 0) <= LINUX_VERSION_CODE
+	irq_domain_free_fwnode(htvic->pdev->dev.fwnode);
+	htvic->pdev->dev.fwnode = NULL;
+#endif
 	kfree(htvic);
 	dev_set_drvdata(&pdev->dev, NULL);
 

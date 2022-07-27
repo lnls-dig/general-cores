@@ -691,50 +691,6 @@ port map(
       D_CYC_O	=> D_CYC,
       D_CTI_O	=> D_CTI);
 end generate gen_profile_full_debug;
-gen_profile_wr_node: if (g_profile = "wr_node") generate
-U_Wrapped_LM32: lm32_top_wr_node
-
-generic map (
-			eba_reset => g_reset_vector,
-                        sdb_address => g_sdb_address)
-port map(
-      clk_i	=> clk_sys_i,
-      rst_i	=> rst,
-      interrupt	=> irq_i,
-      -- Pass slave responses through unmodified
-      I_DAT_I	=> strip_undefined(iwb_i.DAT),
-      I_ACK_I	=> iwb_i.ACK,
-      I_ERR_I	=> iwb_i.ERR,
-      I_RTY_I	=> iwb_i.RTY,
-      D_DAT_I	=> strip_undefined(dwb_i.DAT),
-      D_ACK_I	=> dwb_i.ACK,
-      D_ERR_I	=> dwb_i.ERR,
-      D_RTY_I	=> dwb_i.RTY,
-      -- Writes can only happen as a single cycle
-      I_DAT_O	=> iwb_o.DAT,
-      D_DAT_O	=> dwb_o.DAT,
-      I_WE_O	=> iwb_o.WE,
-      D_WE_O	=> dwb_o.WE,
-      -- SEL /= 1111 only for single cycles
-      I_SEL_O	=> iwb_o.SEL,
-      D_SEL_O	=> dwb_o.SEL,
-      -- We can ignore BTE as we know it's always linear burst mode
-      I_BTE_O	=> open,
-      D_BTE_O	=> open,
-      -- Lock is never flagged by LM32. Besides, WBv4 locks intercon on CYC.
-      I_LOCK_O	=> open,
-      D_LOCK_O	=> open,
-      -- The LM32 has STB=CYC always
-      I_STB_O	=> open,
-      D_STB_O	=> open,
-      -- We monitor these pins to direct the adapter's logic
-      I_ADR_O	=> I_ADR,
-      I_CYC_O	=> I_CYC,
-      I_CTI_O	=> I_CTI,
-      D_ADR_O	=> D_ADR,
-      D_CYC_O	=> D_CYC,
-      D_CTI_O	=> D_CTI);
-end generate gen_profile_wr_node;
 
    -- Cycle durations always match in our adapter
    iwb_o.CYC <= I_CYC;

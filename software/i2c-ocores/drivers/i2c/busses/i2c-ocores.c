@@ -982,7 +982,11 @@ static int ocores_i2c_probe(struct platform_device *pdev)
 	/* add in known devices to the bus */
 	if (pdata) {
 		for (i = 0; i < pdata->num_devices; i++)
+#if KERNEL_VERSION(5, 2, 0) <= LINUX_VERSION_CODE
+			i2c_new_client_device(&i2c->adap, pdata->devices + i);
+#else
 			i2c_new_device(&i2c->adap, pdata->devices + i);
+#endif
 	}
 
 	return 0;

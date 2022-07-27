@@ -416,8 +416,9 @@ static int spi_ocores_sw_xfer_finish(struct spi_ocores *sp)
 	sp->cur_tx_buf = NULL;
 	sp->cur_rx_buf = NULL;
 	sp->cur_len = 0;
+	sp->master->cur_msg->actual_length += sp->cur_xfer->len;
 
-	return 0;
+        return 0;
 }
 
 /**
@@ -480,6 +481,12 @@ static int spi_ocores_sw_xfer_next_init(struct spi_ocores *sp)
 	else
 		hz = sp->master->cur_msg->spi->max_speed_hz;
 	divider = (sp->clock_hz / (hz * 2)) - 1;
+
+	if (WARN_ON(divider == 0)) {
+		dev_warn(&sp->master->dev, "divider value is 0\n");
+		divider =1;
+	}
+
 	spi_ocores_hw_xfer_config(sp, ctrl, divider);
 
 

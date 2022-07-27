@@ -48,6 +48,8 @@ architecture arch of xwb_ds182x_readout is
   signal temper  :  std_logic_vector(15 downto 0); -- temperature value (refreshed every second)
   signal id_read :  std_logic;                     -- id_o value is valid_o
   signal id_ok   :  std_logic;                    -- Same as id_read_o, but not reset with rst_n_i
+  signal temp_ok :  std_logic;
+  signal temp_err : std_logic;
 begin
   i_readout: entity work.gc_ds182x_readout
     generic map (
@@ -60,19 +62,24 @@ begin
       onewire_b => onewire_b,
       id_o => id,
       temper_o => temper,
+      temp_ok_o => temp_ok,
       id_read_o => id_read,
       id_ok_o => id_ok);
-  
+
+  temp_err <= not temp_ok;
+
   i_regs: entity work.wb_ds182x_regs
     port map (
       rst_n_i => rst_n_i,
       clk_i => clk_i,
       wb_i => wb_i,
       wb_o => wb_o,
-  
+
       id_i => id,
       temperature_data_i => temper,
+      temperature_error_i => temp_err,
       status_id_read_i => id_read,
-      status_id_ok_i => id_ok
+      status_id_ok_i => id_ok,
+      status_temp_ok_i => temp_ok
     );
 end arch;

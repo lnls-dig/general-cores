@@ -12,7 +12,7 @@
 -- - configurable full/empty/almost full/almost empty/word count signals
 --
 --------------------------------------------------------------------------------
--- Copyright CERN 2011-2018
+-- Copyright CERN 2011-2020
 --------------------------------------------------------------------------------
 -- Copyright and related rights are licensed under the Solderpad Hardware
 -- License, Version 2.0 (the "License"); you may not use this file except
@@ -38,15 +38,21 @@ entity generic_sync_fifo is
     g_size       : natural;
     g_show_ahead : boolean := false;
 
-    -- Read-side flag selection
+    -- Previously, the full flag was asserted at g_size-1 when using g_show_ahead.
+    -- The new implementation solves this. However, for backward compatibility,
+    -- the default is to still use the previous behaviour. Set this to false to
+    -- switch to the new one.
+    g_show_ahead_legacy_mode : boolean := true;
+
+      -- Read-side flag selection
     g_with_empty        : boolean := true;   -- with empty flag
     g_with_full         : boolean := true;   -- with full flag
     g_with_almost_empty : boolean := false;
     g_with_almost_full  : boolean := false;
     g_with_count        : boolean := false;  -- with words counter
 
-    g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer;  -- threshold for almost full flag
+    g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
     g_register_flag_outputs  : boolean := true
     );
 
@@ -76,6 +82,7 @@ architecture syn of generic_sync_fifo is
       g_data_width             : natural;
       g_size                   : natural;
       g_show_ahead             : boolean;
+      g_show_ahead_legacy_mode : boolean;
       g_with_empty             : boolean;
       g_with_full              : boolean;
       g_with_almost_empty      : boolean;
@@ -105,6 +112,7 @@ begin  -- syn
         g_data_width             => g_data_width,
         g_size                   => g_size,
         g_show_ahead             => g_show_ahead,
+        g_show_ahead_legacy_mode => g_show_ahead_legacy_mode,
         g_with_empty             => g_with_empty,
         g_with_full              => g_with_full,
         g_with_almost_empty      => g_with_almost_empty,
