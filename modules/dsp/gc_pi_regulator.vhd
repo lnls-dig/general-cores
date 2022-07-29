@@ -38,9 +38,6 @@ architecture rtl of gc_pi_regulator is
 
   constant c_MUL_BITS : integer := g_DATA_BITS + g_GAIN_BITS + 1;
 
-  constant c_INTEG_MIN : signed(g_INTEGRATOR_BITS-1 downto 0) := to_signed(2**g_INTEGRATOR_BITS-1, g_INTEGRATOR_BITS);
-  constant c_INTEG_MAX : signed(g_INTEGRATOR_BITS-1 downto 0) := to_signed(-2**g_INTEGRATOR_BITS, g_INTEGRATOR_BITS);
-
   signal xerror      : signed(g_DATA_BITS downto 0);
   signal setpoint    : signed(g_DATA_BITS downto 0);
   signal pmul, imul  : signed(c_MUL_BITS-1 downto 0);
