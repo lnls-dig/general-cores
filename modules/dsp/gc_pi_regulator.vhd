@@ -50,7 +50,7 @@ architecture rtl of gc_pi_regulator is
     x     :     signed;
     y     :     signed;
     o     : out signed;
-    limit : out std_logic) is
+    lim : out std_logic) is
 
     variable sum   : signed(o'length downto 0);
 
@@ -64,18 +64,17 @@ architecture rtl of gc_pi_regulator is
 
     if sum > v_max then
       o     := resize(v_max, o'length);
-      limit := '1';
+      lim := '1';
     elsif sum < v_min then
       o     := resize(v_min, o'length);
-      limit := '1';
+      lim := '1';
     else
       o     := sum(o'length-1 downto 0);
-      limit := '0';
+      lim := '0';
     end if;
 
   end f_clamp_add;
 
-  signal integ_limit_hit : std_logic;
   signal limit_sum1, limit_sum2 : std_logic;
 
 begin
