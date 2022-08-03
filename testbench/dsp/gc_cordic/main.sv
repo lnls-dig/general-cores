@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-
+import gencores_sim_pkg::*;
 import gc_cordic_pkg::*;
 
 const bit[0:0] MODE_VECTOR =1'b0;
@@ -51,7 +51,7 @@ module main;
    gc_cordic #(
 	       .g_N(16),
 	       .g_M(16),
-	       .g_ANGLE_FORMAT(1) //c_ANGLE_FORMAT_FULL_SCALE_180)
+	       .g_ANGLE_FORMAT(1)
 	       )
    DUT 
      (
@@ -117,6 +117,7 @@ module main;
    
 
    task automatic run_cordic_testcase( cordic_data_t in [$], cordic_data_t exp_out[$], int latency, int max_error, bit check_x, bit check_y, bit check_z, output int err_count );
+      automatic Logger l = Logger::get();
       automatic int j;
       
       cordic_data_t out[$];
@@ -150,19 +151,19 @@ module main;
 	   err.z = abs(e.z-o.z);
 	   if(check_x && err.x > max_error)
 	     begin
-		$error("Sample %d: X expected = %d, actual = %d", j, e.x, o.x);
+		l.msg(1, $sformatf( "Sample %d: X expected = %d, actual = %d", j, e.x, o.x) );
 		err_count++;
 	     end
 	   
 	   if(check_y && err.y > max_error)
 	     begin
-		$error("Sample %f: Y expected = %d, actual = %d", j, e.y, o.y);
+		l.msg(1, $sformatf( "Sample %f: Y expected = %d, actual = %d", j, e.y, o.y) );
 		err_count++;
 	     end
 	   
 	   if(check_z && err.z > max_error)
 	     begin
-		$error("Sample %d: Z expected = %d, actual = %d", j, e.z, o.z);
+		l.msg(1, $sformatf( "Sample %d: Z expected = %d, actual = %d", j, e.z, o.z) );
 		err_count++;
 	     end
 	   
@@ -198,8 +199,11 @@ module main;
    
   
    task automatic run_testcase_sincos( int nsamples );
+      automatic Logger l = Logger::get();
       cordic_data_t in[$], expected[$], tmp, result;
       int i, err_cnt=0;
+
+      l.startTest("Cordic Angle/Mag -> Sin/Cos");
 
       cor_mode = MODE_ROTATE;
       cor_submode = SUBMODE_CIRCULAR;
@@ -229,14 +233,23 @@ module main;
 	end
 
       run_cordic_testcase( in, expected, c_PIPELINE_DELAY, 20, 1, 1, 0, err_cnt );
-      $display("Mag/Phase->Sin/Cos: %d errors", err_cnt);
+      l.msg(0, $sformatf( "Mag/Phase->Sin/Cos: %d errors", err_cnt) );
+      
+      if( err_cnt )
+         l.fail("Cordic/s sin/cos value mismatch with model values");
+      else
+         l.pass();
       
    endtask // run_testcase_sincos
 
     task automatic run_testcase_angle_mag( int nsamples );
+      automatic Logger l = Logger::get();
+      
       cordic_data_t in[$], expected[$], tmp, result;
       int i, err_cnt=0;
 
+      l.startTest("Cordic Sin/Cos -> Angle/Mag");
+      
       cor_mode = MODE_VECTOR;
       cor_submode = SUBMODE_CIRCULAR;
 
@@ -259,21 +272,33 @@ module main;
 	end
 
       run_cordic_testcase( in, expected, c_PIPELINE_DELAY, 20, 1, 0, 1, err_cnt );
-      $display("Sin/Cos->Mag/Phase: %d errors", err_cnt);
+      l.msg(0, $sformatf( "Sin/Cos->Mag/Phase: %d errors", err_cnt) );
+
+      if( err_cnt )
+         l.fail("Cordic/s mag/phase value mismatch with model values");
+      else
+         l.pass();
 
    endtask
 	
    
-   initial begin
+   task setup();
       while(!rst_n) @(posedge clk);
 
       @(posedge clk);
+   endtask
 
+   initial begin
+      automatic Logger l = Logger::get();
+
+      setup();
+      
       run_testcase_sincos( 10000 );
       run_testcase_angle_mag( 10000 );
+
+      l.writeTestReport(1);
+
       $stop;
-      
-      
    end
    
    
