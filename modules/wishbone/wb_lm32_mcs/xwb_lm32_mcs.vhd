@@ -182,7 +182,7 @@ signal CONTROL0 : std_logic_vector(35 downto 0);
      c_slave_vuart => x"00000040"
      );
 
-  signal cpu_reset, cpu_enable, cpu_reset_n : std_logic;
+  signal cpu_reset, cpu_enable, cpu_enable_init, cpu_reset_n : std_logic;
 
   signal d_adr : std_logic_vector(31 downto 0);
 
@@ -198,11 +198,6 @@ signal CONTROL0 : std_logic_vector(35 downto 0);
 
   signal cpu_dwb_out, cpu_dwb_out_sys : t_wishbone_master_out;
   signal cpu_dwb_in, cpu_dwb_in_sys   : t_wishbone_master_in;
-  signal bwe                          : std_logic_vector(3 downto 0);
-  signal wr_d                         : std_logic_vector(3 downto 0);
-  signal data_d0, iram_d_dat_out      : std_logic_vector(31 downto 0);
-
-  signal iram_bwe : std_logic_vector(3 downto 0);
 
   signal dwb_out : t_wishbone_master_out;
 
@@ -273,34 +268,27 @@ begin
     end if;
   end process;
 
-  gen_iram_blocks : for i in 0 to 3 generate
-    
-    iram : generic_dpram
-      generic map (
-        g_data_width               => 8,
-        g_size                     => g_iram_size / 4,
-        g_with_byte_enable         => false,
-        g_dual_clock               => false,
-        g_addr_conflict_resolution => "dont_care")
-      port map (
-        rst_n_i => rst_n_i,
-        clka_i  => clk_sys_i,
 
-        wea_i => iram_i_wr,
-        aa_i  => iram_i_adr,
-        da_i  => iram_i_dat_d(8*i+7 downto 8*i),
-        qa_o  => iram_i_dat_q(8*i+7 downto 8*i),
 
-        clkb_i => clk_sys_i,
-        web_i  => iram_bwe(i),
-        ab_i   => iram_d_adr(f_log2_size(g_iram_size)-1 downto 2),
-        db_i   => iram_d_dat_d(8*i+7 downto 8*i),
-        qb_o   => iram_d_dat_q(8*i+7 downto 8*i)
-        );
-
-    iram_bwe(i) <= iram_d_sel(i) and iram_d_wr;
-    
-  end generate gen_iram_blocks;
+  inst_iram : generic_dpram_split
+    generic map (
+      g_size                     => g_iram_size/4,
+      g_addr_conflict_resolution => "dont_care",
+      g_init_file                => g_preload_firmware,
+      g_fail_if_file_not_found   => true )
+    port map (
+      rst_n_i => rst_n_i,
+      clk_i   => clk_sys_i,
+      bwea_i  => "1111",
+      wea_i   => iram_i_wr,
+      aa_i    => iram_i_adr,
+      da_i    => iram_i_dat_d,
+      qa_o    => iram_i_dat_q,
+      bweb_i  => iram_d_sel,
+      web_i   => iram_d_wr,
+      ab_i    => iram_d_adr(f_log2_size(g_iram_size)-1 downto 2),
+      db_i    => iram_d_dat_d,
+      qb_o    => iram_d_dat_q);
 
 
 
@@ -391,11 +379,18 @@ begin
         host_slave_out.err   <= '0';
         host_slave_out.rty   <= '0';
         host_slave_out.stall <= '0';
+        cpu_enable_init <= '0';
         
       else
         cpu_csr_udata_load <= '0';
         host_slave_out.ack <= '0';
 
+        if g_preload_firmware /= "" and cpu_enable_init = '0' then
+          cpu_enable <= '1';
+          cpu_enable_init <= '1';
+        end if;
+        
+        
         if host_slave_in.cyc = '1' and host_slave_in.stb = '1' then
 
           host_slave_out.ack <= '1';
