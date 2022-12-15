@@ -248,3 +248,16 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     create metadata for the convention.
   - [wb_indirect](modules/wishbone/wb_indirect) provides a wishbone
     master driven by an address and a data registers.
+
+In [modules/dsp](modules/dsp) there are digital signal processing-related cores:
+  - [gc_cordic](modules/dsp/gc_cordic) is a pipelined CORDIC core, capable of calculating
+    sine/cosine/magnitude/argument of fixed-point complex numbers.
+  - [gc_iq_modulator](modules/dsp/gc_iq_modulator) is a Fs/4 IQ modulator (upconverter)
+  - [gc_iq_demodulator](modules/dsp/gc_iq_demodulator) is a Fs/4 IQ demodulator (downconverter)
+  - [gc_pipelined_fir_filter](modules/dsp/gc_pipelined_fir_filter) is a generic FIR filter IP inferring FPGA's DSP macros
+  - [gc_integer_divide](modules/dsp/gc_integer_divide) is a generic sequential integer/fixed-point divider IP. 
+    Can work with signed/unsigned numbers, also supports remainder calculation.
+  - [gc_soft_ramp_switch](modules/dsp/gc_soft_ramp_switch) is a "soft switch" to enable/disable a DAC output gently.
+  
+
+    
