@@ -1,39 +1,28 @@
--------------------------------------------------------------------------------
--- Title      : LM32 Embedded Microcontroller System (MCS)
--- Project    : General Cores Library
--------------------------------------------------------------------------------
--- File       : xwb_lm32_mcs.vhd
--- Author     : Tomasz Włostowski
--- Company    : CERN BE-CO-HT
--- Platform   : FPGA-generic
--- Standard   : VHDL'93
--------------------------------------------------------------------------------
--- Description: 
+--------------------------------------------------------------------------------
+-- CERN BE-CEM-EDL
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
 --
--- A small embedded microcontroller with some amount of RAM,
--- UART and a Wishbone bus for user peripherals. The code can be preloaded
--- or loaded on-the-fly throufh the Wishbone system bus.
--------------------------------------------------------------------------------
+-- unit name:   xwb_lm32_mcs
 --
--- Copyright (c) 2014-2017 CERN
+-- description: A minimal embedded microcontroller with some amount of RAM,
+--              UART and a Wishbone bus for user peripherals. The code can
+--              be preloaded or loaded on-the-fly through the Wishbone system bus.
 --
--- This source file is free software; you can redistribute it   
--- and/or modify it under the terms of the GNU Lesser General   
--- Public License as published by the Free Software Foundation; 
--- either version 2.1 of the License, or (at your option) any   
--- later version.                                               
---
--- This source is distributed in the hope that it will be       
--- useful, but WITHOUT ANY WARRANTY; without even the implied   
--- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      
--- PURPOSE.  See the GNU Lesser General Public License for more 
--- details.                                                     
---
--- You should have received a copy of the GNU Lesser General    
--- Public License along with this source; if not, download it   
--- from http://www.gnu.org/licenses/lgpl-2.1.html
---
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Copyright CERN 2020-2021
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
+--------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
