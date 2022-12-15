@@ -1,0 +1,190 @@
+memory-map:
+  name: spi
+  description: Wishbone SPI
+  bus: wb-32-be
+  x-hdl:
+    busgroup: True
+  x-wbgen:
+    hdl_entity: spi_wishbone_slave
+  schema-version:
+    core: 2.0.0
+    x-conversions: 1.0.0
+    x-driver-edge: 1.0.0
+    x-enums: 1.0.0
+    x-fesa: 2.0.0
+    x-gena: 2.0.0
+    x-hdl: 1.0.0
+    x-map-info: 1.0.0
+    x-wbgen: 1.0.0
+  children:
+  - reg:
+      name: tx_rx_0
+      description: TX/RX 0
+      comment: 
+      width: 32
+      access: rw
+      address: 0x0
+      x-wbgen:
+        access_bus: READ_WRITE
+        access_dev: READ_WRITE
+        field_description: Tx/Rx word 0
+        load: LOAD_EXT
+        type: SLV
+      x-hdl:
+        write-strobe: True
+  - reg:
+      name: tx_rx_1
+      description: TX/RX 1
+      comment: 
+      width: 32
+      access: rw
+      address: 0x4
+      x-wbgen:
+        access_bus: READ_WRITE
+        access_dev: READ_WRITE
+        field_description: Tx/Rx word 1
+        load: LOAD_EXT
+        type: SLV
+      x-hdl:
+        write-strobe: True
+  - reg:
+      name: tx_rx_2
+      description: TX/RX 2
+      comment: 
+      width: 32
+      access: rw
+      address: 0x8
+      x-wbgen:
+        access_bus: READ_WRITE
+        access_dev: READ_WRITE
+        field_description: Tx/Rx word 2
+        load: LOAD_EXT
+        type: SLV
+      x-hdl:
+        write-strobe: True
+  - reg:
+      name: tx_rx_3
+      description: TX/RX 3
+      comment: 
+      width: 32
+      access: rw
+      address: 0xc
+      x-wbgen:
+        access_bus: READ_WRITE
+        access_dev: READ_WRITE
+        field_description: Tx/Rx word 3
+        load: LOAD_EXT
+        type: SLV
+      x-hdl:
+        write-strobe: True
+  - reg:
+      name: ctrl
+      description: Control register
+      width: 32
+      access: rw
+      address: 0x10
+      children:
+      - field:
+          name: len
+          description: Length of SPI transfer
+          range: 6-0
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+      - field:
+          name: go
+          description: Start SPI transfer
+          range: 8
+          x-wbgen:
+            access_bus: WRITE_ONLY
+            access_dev: READ_ONLY
+            size: 1
+            type: MONOSTABLE
+      - field:
+          name: rx_negedge
+          description: RX negedge
+          comment: 'write 1: data from Slave received on falling SCLK edge \n                     write 0: data from Slave received on rising SCLK edge'
+          range: 9
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            size: 1
+            type: BIT
+      - field:
+          name: tx_negedge
+          description: TX negedge
+          comment: 'write 1: data transmitted on falling SCLK edge \n                     write 0: data transmitted on rising SCLK edge'
+          range: 10
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            size: 1
+            type: BIT
+      - field:
+          name: lsb
+          description: LSB first
+          comment: 'write 1: LSB first on the line \n                     write 0: MSB first on the line'
+          range: 11
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            size: 1
+            type: BIT
+      - field:
+          name: irq
+          description: Interrupt enable
+          comment: 'write 1: IRQ enabled \n                     write 0: IRQ disabled'
+          range: 12
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            size: 1
+            type: BIT
+      - field:
+          name: ass
+          description: Automatic Slave select
+          range: 13
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            size: 1
+            type: BIT
+  - reg:
+      name: divider
+      description: Divider
+      comment: 
+      width: 32
+      access: rw
+      address: 0x14
+      children:
+      - field:
+          name: value
+          description: Divide factor
+          range: 15-0
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            field_description: Divide factor
+            type: SLV
+  - reg:
+      name: ss
+      description: Select SPI slave
+      comment: 
+      width: 32
+      access: rw
+      address: 0x18
+      x-hdl:
+        write-strobe: True
+      children:
+      - field:
+          name: value
+          description: Select slave
+          range: 0
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_WRITE
+            field_description: Select slave
+            load: LOAD_EXT
+            size: 1
+            type: SLV

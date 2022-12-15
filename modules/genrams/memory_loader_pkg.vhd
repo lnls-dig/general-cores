@@ -88,7 +88,7 @@ package body memory_loader_pkg is
     open_status      : in file_open_status;
     fail_if_notfound : in boolean) is
   begin
-    if open_status /= OPEN_OK then
+    if not (open_status = OPEN_OK) then
 
       if fail_if_notfound then
         report "f_load_mem_from_file(): can't open file '"&file_name&"'" severity FAILURE;

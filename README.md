@@ -44,6 +44,13 @@ In [modules/common](modules/common) there are general purpose cores:
   contains a complex handling for asynchronous signals (crossing clock
   domains, deglitcher, edge detection, pulse extension...)
 
+  * CDC modules come also with specific timing contraints in [modules/common/xdc](modules/common/xdc).
+    These constraints can be used in Vivado projects (so-called "module-bound" constraints)
+    to automatically derive proper timing constraints for CDC paths in each module.
+    To use it, add specific constraint file to your project and set `SCOPED_TO_REF`
+    property in GUI or your TCL file.  
+    (e.g. add `gc_sync.xdc` if you use `gc_sync.vhd` and set `SCOPED_TO_REF=gc_sync`)
+
 * For reset generation, you can use [gc_reset](modules/common/gc_reset.vhd)
   which generate synchronous resets once all the PLL lock signals are set.
   The module [gc_reset_multi_aasd](modules/common/gc_reset_multi_aasd.vhd)
@@ -202,7 +209,10 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
     crossing.
-  - [wb_register](modules/wishbone/wb_register) add a pipeline register.
+  - [wb_register](modules/wishbone/wb_register) adds a pipeline register.
+  - [wb_skidpad2](modules/wishbone/wb_register) adds a pipeline register to
+    a pipelined wishbone bus (in one direction only) without downgrading
+    the throughput.
 
 * There are modules to convert to a different bus
   - [wb_async_bridge](modules/wishbone/wb_async_bridge) is a bridge with the

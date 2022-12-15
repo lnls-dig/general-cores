@@ -9,16 +9,12 @@ virtual class CWishboneAccessor extends CBusAccessor;
    protected wb_cycle_type_t m_cycle_type;
 
    function new();
-      $display("NEW");
-      
       m_cycle_type  = CLASSIC;
       m_default_xfer_size = 4;
    endfunction // new
 
    virtual task automatic set_mode(wb_cycle_type_t mode);
       m_cycle_type  = mode;
-      $display("SET MODE %d", mode );
-      
    endtask // set_mode
    
    
@@ -70,8 +66,11 @@ virtual class CWishboneAccessor extends CBusAccessor;
         end
 
 //      $display("DS: %d", cycle.data.size());
-      
+
       put(cycle);
+      // wait for the transfer completion notification to avoid getting the result of the wrong transfer
+      // in case multiple threads are calling readm()/writem() in parallel.
+      @cycle.done;
       get(cycle);
       result  = cycle.result;
       
@@ -83,7 +82,6 @@ virtual class CWishboneAccessor extends CBusAccessor;
       int i;
 
       cycle.ctype  = m_cycle_type;
-      $display("CYCLE CTYPE %d %d", cycle.ctype, m_cycle_type );
 
       cycle.rw  = 1'b0;
       
@@ -96,6 +94,9 @@ virtual class CWishboneAccessor extends CBusAccessor;
         end
 
       put(cycle);
+      // wait for the transfer completion notification to avoid getting the result of the wrong transfer
+      // in case multiple threads are calling readm()/writem() in parallel.
+      @cycle.done;
       get(cycle);
 
       for(i=0;i < addr.size(); i++)

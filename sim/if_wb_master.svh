@@ -72,8 +72,8 @@ interface IWishboneMaster
          WAIT_ACK
    } xf_state;
 
-   wb_cycle_t request_queue[$];
-   wb_cycle_t result_queue[$];
+   mailbox #(wb_cycle_t) request_queue;
+   mailbox #(wb_cycle_t) result_queue;
 
    struct {
       int gen_random_throttling;
@@ -152,7 +152,7 @@ interface IWishboneMaster
          dat_o <= gen_data(c.data[i]);
          @(posedge clk_i);
 
-         while (ack != 1'b1 && err != 1'b1 && rty == 1'b1) @(posedge clk_i);
+         while (ack != 1'b1 && err != 1'b1 && rty == 1'b0) @(posedge clk_i);
 
          if (err || rty) begin
             c.result = (err ? R_ERROR: R_RETRY);
@@ -283,35 +283,29 @@ class CIWBMasterAccessor extends CWishboneAccessor;
    endfunction // poll
 
    task get(ref wb_cycle_t xfer);
-      while(!result_queue.size())
-        @(posedge clk_i);
-      xfer = result_queue.pop_front();
+      result_queue.get(xfer);
    endtask // get
 
    task put(ref wb_cycle_t xfer);
-      request_queue.push_back(xfer);
+      request_queue.put(xfer);
    endtask // put
 
    function int idle();
-      return (request_queue.size() == 0) && (xf_state == IDLE);
+      return (request_queue.num() == 0) && (xf_state == IDLE);
    endfunction // idle
 
 endclass // CIWBMasterAccessor
 
-
    CIWBMasterAccessor theAccessor;
 
-   initial
-     theAccessor = new;
-   
    function automatic CIWBMasterAccessor get_accessor();
       return theAccessor;
    endfunction // get_accessor
 
    always@(posedge clk_i)
      if (!rst_n_i) begin
-        request_queue = {};
-        result_queue  = {};
+        request_queue = new();
+        result_queue  = new();
         xf_state      = IDLE;
         cyc          <= 0;
         dat_o        <= 0;
@@ -322,30 +316,38 @@ endclass // CIWBMasterAccessor
   end
 
    initial begin
+      theAccessor   = new;
+      request_queue = new();
+      result_queue  = new();
+
       settings.gen_random_throttling  = 0;
       settings.throttle_prob          = 0.1;
       settings.addr_gran              = WORD;
-   end
 
-   initial forever begin
-      @(posedge clk_i);
-
-      if (request_queue.size() > 0) begin
+      forever begin
 
          wb_cycle_t c;
 
-         c = request_queue.pop_front();
+         @(posedge clk_i);
 
-         case(c.ctype)
-           PIPELINED:
-             pipelined_cycle(c);
-           CLASSIC:
-             classic_cycle(c);
-         endcase
+         if (request_queue.try_get(c)) begin
 
-         result_queue.push_back(c);
-      end
+            case (c.ctype)
+              PIPELINED:
+                pipelined_cycle(c);
+              CLASSIC:
+                classic_cycle(c);
+            endcase
 
-   end
+            // Notify any waiting thread that the transfer is complete
+            ->c.done;
+
+            result_queue.put(c);
+
+         end // if (request_queue.try_get(c))
+
+      end // forever begin
+
+   end // initial begin
 
 endinterface // IWishboneMaster
