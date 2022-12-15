@@ -1,5 +1,9 @@
-# Script to generate the buildinfo_pkg.vhd file
+# Script to generate the sourceid_<project>_pkg.vhd file
 # Local parameter: project
+
+# Note: this script differs from the (similar) gen_buildinfo.py in that it produces std_logic
+# vectors with versioning info to be embedded in the metadata, while buildinfo produces a string
+# that focuses more on when/how/who built the bitstream.
 
 with open("sourceid_{}_pkg.vhd".format(project), "w") as f:
   import subprocess
