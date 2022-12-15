@@ -1,14 +1,15 @@
 --------------------------------------------------------------------------------
--- CERN BE-CO-HT
+-- CERN SY-RF-FB
 -- General Cores Library
 -- https://www.ohwr.org/projects/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   gc_cordic
 --
--- authors:     fixme
---              
--- description: Fully pipelined multifunction CORDIC code. FIXME.
+-- authors:     Gregoire Hagmann <gregoire.hagmann@cern.ch>
+--              John Molendijk (CERN)
+--
+-- description: Fully pipelined multifunction CORDIC code.
 --
 --
 --------------------------------------------------------------------------------

@@ -1,8 +1,29 @@
 --------------------------------------------------------------------------------
--- (C) Copyright CERN 2014. All rights reserved.
--- This software is released under a CERN proprietary software license.
--- Any permission to use it shall be granted in writing.
--- Requests shall be addressed to CERN through mail-KT@cern.ch
+-- CERN SY-RF-FB
+-- General Cores Library
+-- https://www.ohwr.org/projects/general-cores
+--------------------------------------------------------------------------------
+--
+-- unit name:   gc_cordic_pkg
+--
+-- authors:     Gregoire Hagmann <gregoire.hagmann@cern.ch>
+--              John Molendijk (CERN)
+--
+-- description: Fully pipelined multifunction CORDIC code.
+--
+--
+--------------------------------------------------------------------------------
+-- Copyright CERN 2020
+--------------------------------------------------------------------------------
+-- Copyright and related rights are licensed under the Solderpad Hardware
+-- License, Version 2.0 (the "License"); you may not use this file except
+-- in compliance with the License. You may obtain a copy of the License at
+-- http://solderpad.org/licenses/SHL-2.0.
+-- Unless required by applicable law or agreed to in writing, software,
+-- hardware and materials distributed under this License is distributed on an
+-- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+-- or implied. See the License for the specific language governing permissions
+-- and limitations under the License.
 --------------------------------------------------------------------------------
 
 library ieee;
