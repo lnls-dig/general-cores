@@ -205,6 +205,11 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     interface to the digital thermometer.
   - [wb_xc7_fw_update](modules/wishbone/wb_xc7_fw_update) is an SPI interface
     to drive the xc7 bitstream spi flash (using the ht-flash tool).
+  - [wb_clock_monitor](modules/wishbone/wb_clock_monitor) is clock frequency
+    measurement/monitoring core with a programmable number of channels.
+  - [wb_lm32_mcs](modules/wishbone/wb_lm32_mcs) is a single-entity microcontroller
+    based on the LM32 softcore, featuring internal code/data RAM, UART, timer and
+    a pipelined Wishbone peripheral interface.
 
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
