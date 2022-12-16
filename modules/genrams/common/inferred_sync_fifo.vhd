@@ -54,7 +54,9 @@ entity inferred_sync_fifo is
     g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
 
-    g_register_flag_outputs : boolean := true
+    g_register_flag_outputs : boolean := true;
+
+    g_memory_implementation_hint : string := "auto"
     );
 
   port (
@@ -105,7 +107,8 @@ begin  -- syn
       g_size                     => g_size,
       g_with_byte_enable         => false,
       g_addr_conflict_resolution => "dont_care",
-      g_dual_clock               => false)
+      g_dual_clock               => false,
+      g_implementation_hint      => g_memory_implementation_hint)
     port map (
       rst_n_i => rst_n_i,
       clka_i  => clk_i,

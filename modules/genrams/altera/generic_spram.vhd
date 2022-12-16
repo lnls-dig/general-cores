@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2011-01-25
--- Last update: 2013-03-04
+-- Last update: 2022-07-25
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -39,7 +39,8 @@ entity generic_spram is
     g_size                     : natural := 1024;
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string  := "dont_care";
-    g_init_file                : string  := "");
+    g_init_file                : string  := "";
+    g_implementation_hint      : string  := "auto");
   port(
     rst_n_i : in  std_logic := '1';
     clk_i   : in  std_logic;

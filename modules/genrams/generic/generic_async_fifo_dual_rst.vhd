@@ -50,7 +50,8 @@ entity generic_async_fifo_dual_rst is
     g_with_wr_almost_full    : boolean := FALSE;
     g_with_wr_count          : boolean := FALSE;
     g_almost_empty_threshold : integer := 0;
-    g_almost_full_threshold  : integer := 0);
+    g_almost_full_threshold  : integer := 0;
+    g_memory_implementation_hint : string := "auto" );
   port (
     -- write port
     rst_wr_n_i        : in  std_logic := '1';
@@ -96,7 +97,8 @@ begin  -- arch
       g_with_wr_almost_full    => g_with_wr_almost_full,
       g_with_wr_count          => g_with_wr_count,
       g_almost_empty_threshold => g_almost_empty_threshold,
-      g_almost_full_threshold  => g_almost_full_threshold)
+      g_almost_full_threshold  => g_almost_full_threshold,
+      g_memory_implementation_hint => g_memory_implementation_hint )
     port map (
       rst_wr_n_i        => rst_wr_n_i,
       clk_wr_i          => clk_wr_i,

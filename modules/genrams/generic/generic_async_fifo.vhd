@@ -53,7 +53,9 @@ entity generic_async_fifo is
     g_with_wr_count        : boolean := false;
 
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer   -- threshold for almost full flag
+    g_almost_full_threshold  : integer;   -- threshold for almost full flag
+
+    g_memory_implementation_hint : string := "auto"
     );
 
   port (
@@ -104,7 +106,9 @@ architecture syn of generic_async_fifo is
       g_with_wr_almost_full    : boolean;
       g_with_wr_count          : boolean;
       g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer);
+      g_almost_full_threshold  : integer;
+      g_memory_implementation_hint : string
+      );
     port (
       rst_n_i           : in  std_logic := '1';
       clk_wr_i          : in  std_logic;
@@ -144,7 +148,8 @@ begin  -- syn
       g_with_wr_almost_full    => g_with_wr_almost_full,
       g_with_wr_count          => g_with_wr_count,
       g_almost_empty_threshold => g_almost_empty_threshold,
-      g_almost_full_threshold  => g_almost_full_threshold)
+      g_almost_full_threshold  => g_almost_full_threshold,
+      g_memory_implementation_hint => g_memory_implementation_hint )
     port map (
       rst_n_i           => rst_n_i,
       clk_wr_i          => clk_wr_i,
