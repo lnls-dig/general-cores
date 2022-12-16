@@ -31,6 +31,8 @@ modules =  { "local" : [
   "wbgen2",
   "wbgenplus",
   "wb_xc7_fw_update",
+  "wb_lm32_mcs",
+  "wb_clock_monitor"
   ]}
 
 files = [
