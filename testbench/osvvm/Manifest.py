@@ -1,0 +1,31 @@
+library="osvvm"
+
+files = [
+    "upstream/AlertLogPkg.vhd",
+    "upstream/CoveragePkg.vhd",
+    "upstream/MemoryGenericPkg.vhd",
+    "upstream/MemoryPkg.vhd",
+    "upstream/MemorySupportPkg.vhd",
+    "upstream/MessageListPkg.vhd",
+    "upstream/MessagePkg.vhd",
+    "upstream/NamePkg.vhd",
+    "upstream/NameStorePkg.vhd",
+    "upstream/OsvvmContext.vhd",
+    "upstream/OsvvmGlobalPkg.vhd",
+    "upstream/OsvvmTypesPkg.vhd",
+    "upstream/RandomBasePkg.vhd",
+    "upstream/RandomPkg.vhd",
+    "upstream/RandomProcedurePkg.vhd",
+    "upstream/ReportPkg.vhd",
+    "upstream/ResizePkg.vhd",
+    "upstream/ResolutionPkg.vhd",
+    "upstream/ScoreboardGenericPkg.vhd",
+    "upstream/ScoreboardPkg_int.vhd",
+    "upstream/ScoreboardPkg_slv.vhd",
+    "upstream/SortListPkg_int.vhd",
+    "upstream/TbUtilPkg.vhd",
+    "upstream/TextUtilPkg.vhd",
+    "upstream/TranscriptPkg.vhd",
+    "upstream/VendorCovApiPkg.vhd",
+]
+
