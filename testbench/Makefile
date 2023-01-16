@@ -12,20 +12,16 @@ TB_DIRS+=axi/axi4lite_axi4full_bridge
 all: $(TB_DIRS) summary
 
 $(TB_DIRS):
-	@echo "Compime OSVVM"
-	cd "$@"; \
-	/usr/local/lib/ghdl/vendors/compile-osvvm.sh --all 2>&1
-	@echo $@
 	@echo "Run HDLMAKE"
-	cd "$@"; \
+	@cd "$@"; \
 	hdlmake 2>&1
 	@echo "Run make"
-	$(MAKE) -C $@ $(TARGET)
+	@$(MAKE) -C $@ $(TARGET)
 
 	@echo "Run ghdl"
-	cd "$@" ;\
+	@cd "$@" ;\
 	./run.sh
-	echo "ghdl returned $$?"
+	@echo "ghdl returned $$?"
 
 summary: $(TB_DIRS)
 	@echo "-------------------------------------------------------------------"
