@@ -11,14 +11,10 @@ There are two options for the users, in order to run these tests. First is to ru
 ## Requirements
   - [hdlmake](https://hdlmake.readthedocs.io/en/master/#install-hdlmake-package)
   - [ghdl](https://ghdl.github.io/ghdl/development/building/index.html#build)
-  - [OSVVM](https://github.com/OSVVM/OSVVM)  version 2020.05+
 
 ## Set up environment
-  - Modify the file **/usr/local/lib/ghdl/vendors/config.sh** by adding the OSVVM path (in OSVVM_settings change the Installation Directory)
-  - Compile OSVVM:
-```console
-/usr/local/lib/ghdl/vendors/compile-osvvm --all
-```
+  - OSVVM is a dependency for most of these testbenches. It is already included as a git submodule. Therefore, it is necessary to run at least once `git submodule update --init` before running these testbenches.
+
 ## How to test
 ```console
 hdlmake makefile
@@ -29,7 +25,3 @@ make
 ```console
  ./run.sh --wave=waveform.ghw
 ```
-
-## Maintainer
-- [Konstantinos Blantos](mailto:konstantinos.blantos@cern.ch)
-
