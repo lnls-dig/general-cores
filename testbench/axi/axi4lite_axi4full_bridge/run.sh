@@ -1,8 +1,8 @@
+#!/bin/bash -e
+
 # SPDX-FileCopyrightText: 2023 CERN (home.cern)
 #
 # SPDX-License-Identifier: CERN-OHL-W-2.0+
-
-#!/bin/bash -e
 
 #This is a simple script to run simulations in GHDL
 
