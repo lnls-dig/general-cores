@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 CERN (home.cern)
+#
+# SPDX-License-Identifier: CERN-OHL-W-2.0+
+
+
 action  ="simulation"
 sim_tool="ghdl"
 target  ="generic"

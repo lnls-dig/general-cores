@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2023 CERN (home.cern)
+--
+-- SPDX-License-Identifier: CERN-OHL-W-2.0+
+-------------------------------------------------------------------------------
 -- Title      : Testbench for WB-to-AXI4Lite bridge
 -- Project    : General Cores
 -------------------------------------------------------------------------------
@@ -12,18 +16,10 @@
 --
 -- Testbench for a WB Slave Classic to AXI4-Lite Master bridge.
 -------------------------------------------------------------------------------
--- Copyright (c) 2019 CERN
---------------------------------------------------------------------------------
--- Copyright and related rights are licensed under the Solderpad Hardware
--- License, Version 2.0 (the "License"); you may not use this file except
--- in compliance with the License. You may obtain a copy of the License at
--- http://solderpad.org/licenses/SHL-2.0.
--- Unless required by applicable law or agreed to in writing, software,
--- hardware and materials distributed under this License is distributed on an
--- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
--- or implied. See the License for the specific language governing permissions
--- and limitations under the License.
---------------------------------------------------------------------------------
+
+--=============================================================================
+--                            Libraries & Packages                           --
+--=============================================================================
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -36,11 +32,19 @@ library osvvm;
 use osvvm.RandomPkg.all;
 use osvvm.CoveragePkg.all;
 
+--=============================================================================
+--                Entity declaration for tb_axi4lite_wb_bridge               --
+--=============================================================================
+
 entity tb_xaxi4lite_wb_bridge is
   generic (
     g_seed     : natural;
     g_sim_time : natural);
 end entity;
+
+--==============================================================================
+--                           Architecture declaration                         --
+--==============================================================================
 
 architecture tb of tb_xaxi4lite_wb_bridge is
 
@@ -167,9 +171,9 @@ begin
     wait;
   end process stim;
 
-  --------------------------------------------------------------------------------
-  -- Coverage
-  --------------------------------------------------------------------------------
+  --==============================================================================
+  --                              Coverage                                      --
+  --==============================================================================
 
   -- FSM
   fsm_proc : process(tb_clk_i)
@@ -256,9 +260,10 @@ begin
     report "Test PASS!";
   end process;
 
-  --------------------------------------------------------------------------------
-  -- Assertions
-  --------------------------------------------------------------------------------
+
+  --==============================================================================
+  --                              Assertions                                    --
+  --==============================================================================
 
   -- Check wb and axi4lite signals when IDLE
   process

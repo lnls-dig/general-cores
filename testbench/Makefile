@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 CERN (home.cern)
+#
+# SPDX-License-Identifier: CERN-OHL-W-2.0+
+
+
 # This Makefile can be called by the Continuous Integration (CI) tool to execute all
 # testbenches added for CI
 
