@@ -48,7 +48,8 @@ package genram_pkg is
       g_size                     : natural;
       g_with_byte_enable         : boolean := false;
       g_init_file                : string  := "none";
-      g_addr_conflict_resolution : string  := "dont_care") ;
+      g_addr_conflict_resolution : string  := "dont_care";
+      g_implementation_hint      : string  := "auto") ;
     port (
       rst_n_i : in  std_logic;
       clk_i   : in  std_logic;
@@ -66,7 +67,9 @@ package genram_pkg is
       g_with_byte_enable         : boolean := false;
       g_addr_conflict_resolution : string  := "dont_care";
       g_init_file                : string  := "none";
-      g_dual_clock               : boolean := true);
+      g_dual_clock               : boolean := true;
+      g_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clka_i  : in  std_logic;
@@ -87,7 +90,9 @@ package genram_pkg is
       g_addr_conflict_resolution : string  := "dont_care";
       g_init_file                : string  := "none";
       g_fail_if_file_not_found   : boolean := true;
-      g_dual_clock               : boolean := true);
+      g_dual_clock               : boolean := true;
+      g_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clka_i  : in  std_logic;
@@ -111,7 +116,9 @@ package genram_pkg is
       g_size                     : natural;
       g_addr_conflict_resolution : string := "dont_care";
       g_init_file                : string := "none";
-      g_dual_clock               : boolean := true);
+      g_dual_clock               : boolean := true;
+      g_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i : in  std_logic := '1';
       clka_i  : in  std_logic;
@@ -144,7 +151,8 @@ package genram_pkg is
       g_with_wr_almost_full    : boolean := false;
       g_with_wr_count          : boolean := false;
       g_almost_empty_threshold : integer := 0;
-      g_almost_full_threshold  : integer := 0);
+      g_almost_full_threshold  : integer := 0;
+      g_memory_implementation_hint      : string  := "auto");
     port (
       rst_wr_n_i        : in  std_logic := '1';
       clk_wr_i          : in  std_logic;
@@ -182,7 +190,9 @@ package genram_pkg is
       g_with_wr_almost_full    : boolean := false;
       g_with_wr_count          : boolean := false;
       g_almost_empty_threshold : integer := 0;
-      g_almost_full_threshold  : integer := 0);
+      g_almost_full_threshold  : integer := 0;
+      g_memory_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i           : in  std_logic := '1';
       clk_wr_i          : in  std_logic;
@@ -217,7 +227,9 @@ package genram_pkg is
       g_with_count             : boolean := false;
       g_almost_empty_threshold : integer := 0;
       g_almost_full_threshold  : integer := 0;
-      g_register_flag_outputs  : boolean := true);
+      g_register_flag_outputs  : boolean := true;
+      g_memory_implementation_hint      : string  := "auto"
+      );
     port (
       rst_n_i        : in  std_logic := '1';
       clk_i          : in  std_logic;
@@ -248,6 +260,29 @@ package genram_pkg is
       q_valid_o     : out std_logic
       );
   end component;
+
+  component generic_dpram_split is
+    generic (
+      g_size                     : natural;
+      g_init_file                : string  := "none";
+      g_addr_conflict_resolution : string  := "dont_care";
+      g_fail_if_file_not_found   : boolean := true;
+      g_implementation_hint      : string  := "auto"
+    );
+    port (
+      rst_n_i : in  std_logic := '1';
+      clk_i   : in  std_logic;
+      bwea_i  : in  std_logic_vector(3 downto 0);
+      wea_i   : in  std_logic;
+      aa_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      da_i    : in  std_logic_vector(31 downto 0);
+      qa_o    : out std_logic_vector(31 downto 0);
+      bweb_i  : in  std_logic_vector(3 downto 0);
+      web_i   : in  std_logic;
+      ab_i    : in  std_logic_vector(f_log2_size(g_size)-1 downto 0);
+      db_i    : in  std_logic_vector(31 downto 0);
+      qb_o    : out std_logic_vector(31 downto 0));
+  end component generic_dpram_split;
   
 end genram_pkg;
 

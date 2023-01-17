@@ -53,8 +53,9 @@ entity inferred_async_fifo is
     g_with_wr_count        : boolean := FALSE;
 
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer   -- threshold for almost full flag
-    );
+    g_almost_full_threshold  : integer;  -- threshold for almost full flag
+
+    g_memory_implementation_hint      : string  := "auto");
 
   port (
     rst_n_i : in std_logic := '1';
@@ -116,11 +117,24 @@ architecture syn of inferred_async_fifo is
     bin_x, gray_x   : t_counter;
   end record;
 
+  constant c_counters_reset_value : t_counter_block :=
+    ( bin => (others => '0'),
+      bin_next => (others => '0'),
+      gray  => (others => '0'),
+      gray_next  => (others => '0'),
+      bin_x => (others => '0'),
+      gray_x  => (others => '0') );
+  
+
   type t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
   signal mem : t_mem_type := (others => (others => '0'));
 
-  signal rcb, wcb : t_counter_block := (others =>(others => '0'));
 
+  attribute ram_type : string;
+  attribute ram_type of mem : signal is g_memory_implementation_hint;
+  
+  signal rcb, wcb : t_counter_block := c_counters_reset_value;
+  
   signal full_int, empty_int               : std_logic;
   signal almost_full_int, almost_empty_int : std_logic;
   signal going_full                        : std_logic;

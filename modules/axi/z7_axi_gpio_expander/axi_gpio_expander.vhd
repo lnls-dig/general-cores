@@ -134,17 +134,17 @@ architecture behav of axi_gpio_expander is
     return tmp;
   end function;
   -------------------------------------------
-  function f_update_gpio_in (orig : std_logic_vector; rdata : std_logic_vector; bank : integer)
+  function f_update_gpio_in (orig : std_logic_vector; rd_data : std_logic_vector; bank : integer)
     return std_logic_vector is
     variable tmp : std_logic_vector(g_num-1 downto 0);
   begin
     tmp := orig;
     if (bank = 0 and g_num >= c_GPIOPS_BANK0) then
-      tmp(c_GPIOPS_BANK0-1 downto 0) := rdata;
+      tmp(c_GPIOPS_BANK0-1 downto 0) := rd_data;
     elsif (bank = 0 and g_num < c_GPIOPS_BANK0) then
-      tmp := rdata(g_num-1 downto 0);
+      tmp := rd_data(g_num-1 downto 0);
     else
-      tmp(g_num-1 downto c_GPIOPS_BANK0) := rdata(g_num-c_GPIOPS_BANK0-1 downto 0);
+      tmp(g_num-1 downto c_GPIOPS_BANK0) := rd_data(g_num-c_GPIOPS_BANK0-1 downto 0);
     end if;
     return tmp;
   end function;
@@ -295,7 +295,7 @@ begin
               -- write accepted, let's proceed
               BREADY <= '0';
               state <= INIT_WRITE_OUT;
-            elsif (BVALID = '1' and BRESP = c_AXI4_RESP_OKAY) then 
+            elsif (BVALID = '1' and BRESP = c_AXI4_RESP_OKAY) then
               -- nothing to update in GPIO_OUT, skip to GPIO reading
               BREADY <= '0';
               state <= INIT_READ;
@@ -409,7 +409,7 @@ begin
             else -- current_bank = 0 and g_num =< c_GPIOPS_BANK0
               -- Only Bank0 is used, reset refresh_all flag, Bank0 registers are
               -- all set here.
-              refresh_all <= '0'; 
+              refresh_all <= '0';
             end if;
             state <= IDLE;
 

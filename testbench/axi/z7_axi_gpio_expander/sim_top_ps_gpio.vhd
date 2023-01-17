@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2023 CERN (home.cern)
+--
+-- SPDX-License-Identifier: CERN-OHL-W-2.0+
+-------------------------------------------------------------------------------
 -- Title      : AXI PS_GPIO Expander for Zynq-7 Testbench
 -- Project    : General Cores
 -------------------------------------------------------------------------------
@@ -16,33 +20,35 @@
 -- using xsim or GHDL.
 --
 -------------------------------------------------------------------------------
--- Copyright (c) 2019 CERN
---------------------------------------------------------------------------------
--- Copyright and related rights are licensed under the Solderpad Hardware
--- License, Version 2.0 (the "License"); you may not use this file except
--- in compliance with the License. You may obtain a copy of the License at
--- http://solderpad.org/licenses/SHL-2.0.
--- Unless required by applicable law or agreed to in writing, software,
--- hardware and materials distributed under this License is distributed on an
--- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
--- or implied. See the License for the specific language governing permissions
--- and limitations under the License.
---------------------------------------------------------------------------------
+
+--=============================================================================
+--                            Libraries & Packages                           --
+--=============================================================================
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_misc.all;
 
+--=============================================================================
+--                    Entity declaration for sim_top_ps_gpio                 --
+--=============================================================================
+
 entity sim_top_ps_gpio is
 end sim_top_ps_gpio;
 
+--==============================================================================
+--                           Architecture declaration                         --
+--==============================================================================
+
 architecture behav of sim_top_ps_gpio is
+
+  -- Constants
   constant c_PERIOD : time := 10 ns;
   constant c_NUM    : integer := 54;
 
+  -- Signals
   signal clk, rst_n : std_logic;
-
   signal ARVALID : std_logic;
   signal AWVALID : std_logic;
   signal BREADY  : std_logic;
@@ -105,7 +111,7 @@ begin
     ARADDR  =>  ARADDR,
     AWADDR  =>  AWADDR,
     WDATA   =>  WDATA,
-    WSTRB   =>  WSTRB, 
+    WSTRB   =>  WSTRB,
     ARREADY =>  ARREADY,
     AWREADY =>  AWREADY,
     BVALID  =>  BVALID,
@@ -128,7 +134,7 @@ begin
     araddr    => ARADDR(15 downto 2),
     awaddr    => AWADDR(15 downto 2),
     wdata     => WDATA,
-    wstrb     => WSTRB, 
+    wstrb     => WSTRB,
     arready   => ARREADY,
     awready   => AWREADY,
     bvalid    => BVALID,
@@ -193,5 +199,35 @@ begin
     end loop;
     wait;
   end process;
+
+  --==============================================================================
+  --                              Assertions                                    --
+  --==============================================================================
+
+  -- Check AXI-4 LITE signals
+  p_axi_check : process(AWREADY,WREADY,BVALID,ARREADY,RVALID)
+  begin
+    if falling_edge(AWREADY) then
+      assert (AWVALID = '0')
+      report "Wrong AWVALID for AWREADY LOW" severity failure;
+    end if;
+    if falling_edge(WREADY) then
+      assert (WVALID = '0')
+      report "Wrong WVALID for WREADY LOW" severity failure;
+    end if;
+    if falling_edge(BVALID) then
+      assert (BREADY = '0')
+      report "Wrong BREADY for BVALID LOW" severity failure;
+    end if;
+    if falling_edge(ARREADY) then
+      assert (ARVALID = '0')
+      report "Wrong ARVALID for ARREADY LOW" severity failure;
+    end if;
+    if falling_edge(RVALID) then
+      assert (RREADY = '0')
+      report "Wrong RREADY for RVALID LOW" severity failure;
+    end if;
+  end process;
+
 
 end behav;

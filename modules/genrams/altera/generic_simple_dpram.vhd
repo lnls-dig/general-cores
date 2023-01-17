@@ -6,7 +6,7 @@
 -- Author     : Wesley W. Terpstra
 -- Company    : GSI
 -- Created    : 2013-03-04
--- Last update: 2013-03-04
+-- Last update: 2022-07-25
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ entity generic_simple_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string := "dont_care";
     g_init_file                : string := "none";
-    g_dual_clock               : boolean := true);
+    g_dual_clock               : boolean := true;
+    g_implementation_hint      : string  := "auto");
   port(
     rst_n_i : in std_logic := '1';      -- synchronous reset, active LO
 

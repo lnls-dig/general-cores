@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- Title      : AXI4Full64 to AXI4Lite32 bridge
+-- Title      : AXI4Lite to AXI4Full bridge
 -- Project    : General Cores
 -------------------------------------------------------------------------------
--- File       : axi4lite32_axi4full64_bridge.vhd
+-- File       : axi4lite_axi4full_bridge.vhd
 -- Company    : CERN
 -- Platform   : FPGA-generics
 -- Standard   : VHDL '93
@@ -230,8 +230,11 @@ begin
 
   --  Read part.
   m_araddr <= raddr;
-  s_rdata <= rdata;
-  s_rid <= rid;
+  s_rdata  <= rdata;
+  s_rid    <= rid;
+
+  s_rlast <= '1' when (unsigned(rlen)=0 and s_rready = '1' and s_rvalid = '1')
+             else '0';
 
   process (clk_i)
   begin
@@ -240,7 +243,6 @@ begin
         rstate <= RD_IDLE;
         s_arready <= '1';
         s_rvalid <= '0';
-        s_rlast <= '0';
         m_arvalid <= '0';
         m_rready <= '0';
         raddr <= (others => 'X');
@@ -275,6 +277,7 @@ begin
               m_arvalid <= '0';
             end if;
             if m_rvalid = '1' then
+              m_rready <= '0';
               --  Read data.  Address must have been acked.
               --  According to A3.4.3 of AXI4 spec, the AXI4 bus is little
               --  endian.
@@ -283,11 +286,6 @@ begin
               --  To master.
               rstate <= RD_SLAVE;
               s_rresp <= RSP_OKAY;
-              if rlen = (g_LEN_WIDTH - 1 downto 0 => '0') then
-                s_rlast <= '1';
-              else
-                s_rlast <= '0';
-              end if;
               s_rvalid <= '1';
             end if;
 
