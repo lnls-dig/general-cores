@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 use work.gencores_pkg.all;
 use work.wishbone_pkg.all;
 
-use work.fpg_wbgen2_pkg.all;
+use work.fine_pulse_gen_wb_pkg.all;
 
 --library unisim;
 --use unisim.VCOMPONENTS.all;
@@ -65,18 +65,17 @@ architecture rtl of xwb_fine_pulse_gen is
     ready : std_logic;
     pol        : std_logic;
     cnt : unsigned(3 downto 0);
-    pps_offs : unsigned(3 downto 0);
+    pps_offs : unsigned(15 downto 0);
     coarse     : std_logic_vector(3 downto 0);
     delay_load : std_logic;
-    delay_fine : std_logic_vector(4 downto 0);
+    delay_fine : std_logic_vector(11 downto 0);
     length: std_logic_vector(23 downto 0);
     cont : std_logic;
     force_tr : std_logic;
-
-
+    phy_ready : std_logic;
+    trig_ready : std_logic;
     odelay_load      :  std_logic;
     odelay_value_out : std_logic_vector(8 downto 0);
-
   end record;
 
   type t_channel_array is array(integer range <>) of t_channel;
@@ -89,8 +88,8 @@ architecture rtl of xwb_fine_pulse_gen is
   signal clk_ser : std_logic;
   signal clk_odelay : std_logic;
 
-  signal regs_out : t_fpg_out_registers;
-  signal regs_in  : t_fpg_in_registers;
+  signal regs_out : t_fpgen_regs_master_out;
+  signal regs_in  : t_fpgen_regs_master_in;
 
   signal rst_n_wr : std_logic;
   signal pps_p_d : std_logic;
@@ -147,11 +146,11 @@ begin
   U_Regs : entity work.fine_pulse_gen_wb
     port map (
       rst_n_i   => rst_sys_n_i,
-      clk_sys_i => clk_sys_i,
-      slave_i   => slave_i,
-      slave_o   => slave_o,
-      regs_i    => regs_in,
-      regs_o    => regs_out);
+      clk_i => clk_sys_i,
+      wb_i   => slave_i,
+      wb_o   => slave_o,
+      fpgen_regs_i    => regs_in,
+      fpgen_regs_o    => regs_out);
 
   U_Sync_Reset : gc_sync_ffs
     port map (
@@ -167,42 +166,42 @@ begin
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig0_o,
+      d_p_i     => regs_out.csr_trig0,
       q_p_o     => ch(0).arm);
   U_Sync2: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig1_o,
+      d_p_i     => regs_out.csr_trig1,
       q_p_o     => ch(1).arm);
   U_Sync3: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig2_o,
+      d_p_i     => regs_out.csr_trig2,
       q_p_o     => ch(2).arm);
   U_Sync4: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig3_o,
+      d_p_i     => regs_out.csr_trig3,
       q_p_o     => ch(3).arm);
   U_Sync5: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig4_o,
+      d_p_i     => regs_out.csr_trig4,
       q_p_o     => ch(4).arm);
   U_Sync6: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_trig5_o,
+      d_p_i     => regs_out.csr_trig5,
       q_p_o     => ch(5).arm);
 
   U_Sync71: entity work.gc_pulse_synchronizer
@@ -210,42 +209,42 @@ begin
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force0_o,
+      d_p_i     => regs_out.csr_force0,
       q_p_o     => ch(0).force_tr);
   U_Sync72: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force1_o,
+      d_p_i     => regs_out.csr_force1,
       q_p_o     => ch(1).force_tr);
   U_Sync73: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force2_o,
+      d_p_i     => regs_out.csr_force2,
       q_p_o     => ch(2).force_tr);
   U_Sync74: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force3_o,
+      d_p_i     => regs_out.csr_force3,
       q_p_o     => ch(3).force_tr);
   U_Sync75: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force4_o,
+      d_p_i     => regs_out.csr_force4,
       q_p_o     => ch(4).force_tr);
   U_Sync76: entity work.gc_pulse_synchronizer
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
       rst_n_i   => rst_sys_n_i,
-      d_p_i     => regs_out.csr_force5_o,
+      d_p_i     => regs_out.csr_force5,
       q_p_o     => ch(5).force_tr);
 
 
@@ -256,11 +255,11 @@ begin
       clk_i    => clk_sys_i,
       rst_n_i  => rst_sys_n_i,
       data_i   => ch(i).ready,
-      synced_o => regs_in.csr_ready_i(i)
+      synced_o => regs_in.csr_ready(i)
       );
   end generate gen_ready_flags;
 
-  rst_serdes_in <= regs_out.odelay_calib_rst_oserdes_o or regs_out.csr_serdes_rst_o;
+  rst_serdes_in <= regs_out.odelay_calib_rst_oserdes or regs_out.csr_serdes_rst;
 
   U_Sync_Serdes_Reset : gc_sync_ffs
     port map (
@@ -270,61 +269,65 @@ begin
       synced_o => rst_serdes
       );
 
+  ch(0).odelay_load <= '0';
+  ch(1).odelay_load <= '0';
+  ch(2).odelay_load <= '0';
+  ch(3).odelay_load <= '0';
+  ch(4).odelay_load <= '0';
+  ch(5).odelay_load <= '0';
 
-  ch(0).pol <= regs_out.ocr0_pol_o;
-  ch(1).pol <= regs_out.ocr1_pol_o;
-  ch(2).pol <= regs_out.ocr2_pol_o;
-  ch(3).pol <= regs_out.ocr3_pol_o;
-  ch(4).pol <= regs_out.ocr4_pol_o;
-  ch(5).pol <= regs_out.ocr5_pol_o;
+  ch(0).pol <= regs_out.ocr0a_pol;
+  ch(1).pol <= regs_out.ocr1a_pol;
+  ch(2).pol <= regs_out.ocr2a_pol;
+  ch(3).pol <= regs_out.ocr3a_pol;
+  ch(4).pol <= regs_out.ocr4a_pol;
+  ch(5).pol <= regs_out.ocr5a_pol;
 
-  ch(0).delay_fine <= regs_out.ocr0_fine_o;
-  ch(1).delay_fine <= regs_out.ocr1_fine_o;
-  ch(2).delay_fine <= regs_out.ocr2_fine_o;
-  ch(3).delay_fine <= regs_out.ocr3_fine_o;
-  ch(4).delay_fine <= regs_out.ocr4_fine_o;
-  ch(5).delay_fine <= regs_out.ocr5_fine_o;
+  ch(0).delay_fine <= regs_out.ocr0a_fine;
+  ch(1).delay_fine <= regs_out.ocr1a_fine;
+  ch(2).delay_fine <= regs_out.ocr2a_fine;
+  ch(3).delay_fine <= regs_out.ocr3a_fine;
+  ch(4).delay_fine <= regs_out.ocr4a_fine;
+  ch(5).delay_fine <= regs_out.ocr5a_fine;
 
-  ch(0).coarse <= regs_out.ocr0_coarse_o;
-  ch(1).coarse <= regs_out.ocr1_coarse_o;
-  ch(2).coarse <= regs_out.ocr2_coarse_o;
-  ch(3).coarse <= regs_out.ocr3_coarse_o;
-  ch(4).coarse <= regs_out.ocr4_coarse_o;
-  ch(5).coarse <= regs_out.ocr5_coarse_o;
+  ch(0).coarse <= regs_out.ocr0a_coarse(3 downto 0);
+  ch(1).coarse <= regs_out.ocr1a_coarse(3 downto 0);
+  ch(2).coarse <= regs_out.ocr2a_coarse(3 downto 0);
+  ch(3).coarse <= regs_out.ocr3a_coarse(3 downto 0);
+  ch(4).coarse <= regs_out.ocr4a_coarse(3 downto 0);
+  ch(5).coarse <= regs_out.ocr5a_coarse(3 downto 0);
 
-  ch(0).length <= "0000" & regs_out.ocr0_length_o & "0000";
-  ch(1).length <= "0000" & regs_out.ocr1_length_o & "0000";
-  ch(2).length <= "0000" & regs_out.ocr2_length_o & "0000";
-  ch(3).length <= "0000" & regs_out.ocr3_length_o & "0000";
-  ch(4).length <= "0000" & regs_out.ocr4_length_o & "0000";
-  ch(5).length <= "0000" & regs_out.ocr5_length_o & "0000";
+  ch(0).length <= "0000" & regs_out.ocr0b_length & "0000";
+  ch(1).length <= "0000" & regs_out.ocr1b_length & "0000";
+  ch(2).length <= "0000" & regs_out.ocr2b_length & "0000";
+  ch(3).length <= "0000" & regs_out.ocr3b_length & "0000";
+  ch(4).length <= "0000" & regs_out.ocr4b_length & "0000";
+  ch(5).length <= "0000" & regs_out.ocr5b_length & "0000";
   
-  ch(0).cont <= regs_out.ocr0_cont_o;
-  ch(1).cont <= regs_out.ocr1_cont_o;
-  ch(2).cont <= regs_out.ocr2_cont_o;
-  ch(3).cont <= regs_out.ocr3_cont_o;
-  ch(4).cont <= regs_out.ocr4_cont_o;
-  ch(5).cont <= regs_out.ocr5_cont_o;
+  ch(0).cont <= regs_out.ocr0a_cont;
+  ch(1).cont <= regs_out.ocr1a_cont;
+  ch(2).cont <= regs_out.ocr2a_cont;
+  ch(3).cont <= regs_out.ocr3a_cont;
+  ch(4).cont <= regs_out.ocr4a_cont;
+  ch(5).cont <= regs_out.ocr5a_cont;
 
-  ch(0).trig_sel <= regs_out.ocr0_trig_sel_o;
-  ch(1).trig_sel <= regs_out.ocr1_trig_sel_o;
-  ch(2).trig_sel <= regs_out.ocr2_trig_sel_o;
-  ch(3).trig_sel <= regs_out.ocr3_trig_sel_o;
-  ch(4).trig_sel <= regs_out.ocr4_trig_sel_o;
-  ch(5).trig_sel <= regs_out.ocr5_trig_sel_o;
+  ch(0).trig_sel <= regs_out.ocr0a_trig_sel;
+  ch(1).trig_sel <= regs_out.ocr1a_trig_sel;
+  ch(2).trig_sel <= regs_out.ocr2a_trig_sel;
+  ch(3).trig_sel <= regs_out.ocr3a_trig_sel;
+  ch(4).trig_sel <= regs_out.ocr4a_trig_sel;
+  ch(5).trig_sel <= regs_out.ocr5a_trig_sel;
 
-  ch(0).pps_offs <= unsigned(regs_out.ocr0_pps_offs_o);
-  ch(1).pps_offs <= unsigned(regs_out.ocr1_pps_offs_o);
-  ch(2).pps_offs <= unsigned(regs_out.ocr2_pps_offs_o);
-  ch(3).pps_offs <= unsigned(regs_out.ocr3_pps_offs_o);
-  ch(4).pps_offs <= unsigned(regs_out.ocr4_pps_offs_o);
-  ch(5).pps_offs <= unsigned(regs_out.ocr5_pps_offs_o);
+  ch(0).pps_offs <= unsigned(regs_out.ocr0b_pps_offs);
+  ch(1).pps_offs <= unsigned(regs_out.ocr1b_pps_offs);
+  ch(2).pps_offs <= unsigned(regs_out.ocr2b_pps_offs);
+  ch(3).pps_offs <= unsigned(regs_out.ocr3b_pps_offs);
+  ch(4).pps_offs <= unsigned(regs_out.ocr4b_pps_offs);
+  ch(5).pps_offs <= unsigned(regs_out.ocr5b_pps_offs);
 
   gen_channels : for i in 0 to g_NUM_CHANNELS-1 generate
 
-
-
-
+    ch(i).ready <= ch(i).trig_ready and ch(i).phy_ready;
 
     p_fsm : process(clk_ref_i)
     begin
@@ -333,6 +336,7 @@ begin
           ch(i).state <= IDLE;
           ch(i).trig_p <= '0';
           ch(i).delay_load <= '0';
+          ch(i).trig_ready <= '0';
         else
 
           if ch(i).trig_sel = '1' then
@@ -350,20 +354,18 @@ begin
 
 
               if ch(i).force_tr = '1' then
-                ch(i).ready <= '0';
+                ch(i).trig_ready <= '0';
                 ch(i).cnt <= (others => '0');
                 ch(i).state <= WAIT_PPS_FORCED;
                 ch(i).delay_load <= '1';
               elsif ch(i).arm = '1' then
-                ch(i).ready <= '0';
+                ch(i).trig_ready <= '0';
                 ch(i).cnt <= (others => '0');
                 ch(i).state <= WAIT_PPS;
                 ch(i).delay_load <= '1';
               else
                 ch(i).delay_load <= '0';
-
-                ch(i).ready <= '1';
-
+                ch(i).trig_ready <= '1';
               end if;
 
             when WAIT_PPS_FORCED =>
@@ -415,6 +417,7 @@ begin
         length_i => ch(i).length,
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
+        ready_o      => ch(I).phy_ready,
         dly_load_i => ch(i).delay_load,
         dly_fine_i   => ch(i).delay_fine(4 downto 0));
 
@@ -441,14 +444,15 @@ begin
         pol_i        => ch(I).pol,
         pulse_o      => pulse_o(i),
         dly_load_i => ch(i).delay_load,
-        dly_fine_i   => ("0000" & ch(i).delay_fine),
+        dly_fine_i   => ch(i).delay_fine(8 downto 0),
+        ready_o      => ch(I).phy_ready,
 
         odelay_load_i => ch(i).odelay_load,
-        odelay_en_vtc_i => regs_out.odelay_calib_en_vtc_o,
-        odelay_rst_i => regs_out.odelay_calib_rst_odelay_o,
-        odelay_value_in_i => regs_out.odelay_calib_value_o,
+        odelay_en_vtc_i => regs_out.odelay_calib_en_vtc,
+        odelay_rst_i => regs_out.odelay_calib_rst_odelay,
+        odelay_value_in_i => regs_out.odelay_calib_value,
         odelay_value_out_o => ch(i).odelay_value_out,
-        odelay_cal_latch_i => regs_out.odelay_calib_cal_latch_o
+        odelay_cal_latch_i => regs_out.odelay_calib_cal_latch
 
         );
 
@@ -457,7 +461,7 @@ begin
   end generate;
 
 
-  regs_in.odelay_calib_taps_i <= ch(0).odelay_value_out;
+  regs_in.odelay_calib_taps <= ch(0).odelay_value_out;
 
 
   gen_is_kintex7: if g_target_platform = "Kintex7" generate
@@ -467,7 +471,7 @@ begin
         g_global_use_odelay => f_global_use_odelay,
         g_use_external_serdes_clock => g_use_external_serdes_clock)
       port map (
-        pll_rst_i    => regs_out.csr_pll_rst_o,
+        pll_rst_i    => regs_out.csr_pll_rst,
         clk_ref_i    => clk_ref_i,
         clk_par_o    => clk_par,
         clk_ser_o    => clk_ser,
@@ -475,7 +479,7 @@ begin
 --        clk_odelay_o => clk_odelay,
         pll_locked_o => pll_locked,
         idelayctrl_rdy_o => odelay_calib_rdy,
-        idelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl_o
+        idelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl
         );
 
     U_Sync_Reset : gc_sync_ffs
@@ -483,7 +487,7 @@ begin
       clk_i    => clk_sys_i,
       rst_n_i  => rst_sys_n_i,
       data_i   => odelay_calib_rdy,
-      synced_o => regs_in.odelay_calib_rdy_i
+      synced_o => regs_in.odelay_calib_rdy
       );    
 
   end generate gen_is_kintex7;
@@ -496,7 +500,7 @@ begin
         g_use_external_serdes_clock => g_use_external_serdes_clock
         )
       port map (
-        pll_rst_i    => regs_out.csr_pll_rst_o,
+        pll_rst_i    => regs_out.csr_pll_rst,
         clk_ref_i    => clk_ref_i,
         clk_par_o    => clk_par,
         clk_ser_o    => clk_ser,
@@ -505,7 +509,7 @@ begin
         pll_locked_o => pll_locked,
 
         odelayctrl_rdy_o => odelay_calib_rdy,
-        odelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl_o
+        odelayctrl_rst_i => regs_out.odelay_calib_rst_idelayctrl
         );
 
     U_Sync_Reset : gc_sync_ffs
@@ -513,12 +517,12 @@ begin
       clk_i    => clk_sys_i,
       rst_n_i  => rst_sys_n_i,
       data_i   => odelay_calib_rdy,
-      synced_o => regs_in.odelay_calib_rdy_i
+      synced_o => regs_in.odelay_calib_rdy
       );
 
   end generate gen_is_kintex_ultrascale;
 
   clk_par_o <= clk_par;
-  regs_in.csr_pll_locked_i <= pll_locked;
+  regs_in.csr_pll_locked <= pll_locked;
 
 end rtl;
