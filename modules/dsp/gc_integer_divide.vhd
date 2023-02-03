@@ -42,7 +42,7 @@ entity gc_integer_divide is
     b_i         : in  std_logic_vector(g_BITS-1 downto 0);
     q_o         : out std_logic_vector(g_BITS-1 downto 0);
     start_i     : in  std_logic;
-    ready_o     : out  std_logic;
+    ready_o     : out std_logic;
     done_o      : out std_logic
     );
 
@@ -90,15 +90,17 @@ begin
       when 2 =>
         alu_op1 <= (others => '0');
         alu_op2 <= d;
-      when g_BITS + 3 =>
-        alu_op1 <= (others => '0');
-        alu_op2 <= q;
-      when g_BITS + 4 =>
-        alu_op1 <= (others => '0');
-        alu_op2 <= r;
       when others =>
-        alu_op1 <= r_next;
-        alu_op2 <= d;
+        if state = g_BITS + 3 then
+          alu_op1 <= (others => '0');
+          alu_op2 <= q;
+        elsif state = g_BITS + 4 then
+          alu_op1 <= (others => '0');
+          alu_op2 <= r;
+        else
+          alu_op1 <= r_next;
+          alu_op2 <= d;
+        end if;
     end case;
   end process;
 
@@ -140,7 +142,7 @@ begin
 
   end process;
 
-  done_o <= done;
+  done_o  <= done;
   ready_o <= not busy;
 --  busy_o <= busy;
 
@@ -151,14 +153,17 @@ begin
         alu_sub <= n_sign;
       when 2 =>
         alu_sub <= d_sign;
-      when g_BITS + 3 =>
-        alu_sub <= n_sign xor d_sign;
-      when g_BITS + 4 =>
-        alu_sub <= n_sign;
       when others =>
-        alu_sub <= '1';
+        if state = g_BITS + 3 then
+          alu_sub <= n_sign xor d_sign;
+        elsif state = g_BITS + 4 then
+          alu_sub <= n_sign;
+        else
+          alu_sub <= '1';
+        end if;
     end case;
   end process;
+
 
   p_state_counter : process(clk_i)
   begin
@@ -203,19 +208,21 @@ begin
           d              <= alu_result(g_BITS-1 downto 0);
           is_div_by_zero <= alu_eq and not (is_rem_i or is_signed_i);
 
-        when g_BITS + 3 =>
-          q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
+        when others =>
 
-        when g_BITS + 4 =>
-          q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
-
-        when others =>  -- 3..g_BITS+2 (g_BITS) divider iterations
-          q <= q(g_BITS-2 downto 0) & alu_ge;
-
-          if alu_ge = '1' then
-            r <= resize(alu_result, r'length);
+          if state = g_BITS + 3 then
+            q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
+          elsif state = g_BITS + 4 then
+            q_o <= std_logic_vector(alu_result(g_BITS-1 downto 0));
           else
-            r <= r_next;
+
+            q <= q(g_BITS-2 downto 0) & alu_ge;
+
+            if alu_ge = '1' then
+              r <= resize(alu_result, r'length);
+            else
+              r <= r_next;
+            end if;
           end if;
       end case;
     end if;
