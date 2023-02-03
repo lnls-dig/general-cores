@@ -28,8 +28,8 @@ entity fine_pulse_gen_kintex7 is
       trig_p_i : in std_logic;
       length_i : in std_logic_vector(23 downto 0);
 
-
       pulse_o : out std_logic;
+      ready_o : out std_logic;
 
       dly_load_i : in std_logic;
       dly_fine_i : in std_logic_vector(4 downto 0)
@@ -85,6 +85,8 @@ begin
   begin
     if rst_sys_n_i = '0' then
       pulse_pending <= '0';
+      dly_load_d <= '0';
+      ready_o <= '0';
     elsif rising_edge(clk_par_i) then
 
       dly_load_d <= dly_load_i;
@@ -178,6 +180,22 @@ begin
                 rv := "0000001111111111";
               when x"7" =>
                 rv := "0000000111111111";
+              when x"8" =>
+                rv := "0000000011111111";
+              when x"9" =>
+                rv := "0000000001111111";
+              when x"a" =>
+                rv := "0000000000111111";
+              when x"b" =>
+                rv := "0000000000011111";
+              when x"c" =>
+                rv := "0000000000001111";
+              when x"d" =>
+                rv := "0000000000000111";
+              when x"e" =>
+                rv := "0000000000000011";
+              when x"f" =>
+                rv := "0000000000000001";
               when others =>
                 rv := (others => '0');
             end case;
@@ -208,13 +226,18 @@ begin
             par_data <= (others => '0');
           end if;
 
+          ready_o <= '1';
+
           if trig_p_i = '1' then
             if cont_i = '1' then
               state <= CONT_H;
+              ready_o <= '0';
             elsif length_d = 0 then
               state <= END_PULSE_H;
+              ready_o <= '0';
             else
               state <= START_PULSE_H;
+              ready_o <= '0';
             end if;
           end if;
 
