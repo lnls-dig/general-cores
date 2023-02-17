@@ -29,6 +29,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 package gc_cordic_pkg is
 
@@ -108,6 +109,8 @@ package gc_cordic_pkg is
   constant c_FSDegMinus180HD : signed(31 downto 0) := X"80000000";
   constant c_FSDegZeroHD     : signed(31 downto 0) := X"00000000";
 
+  function f_compute_an(nbits : integer) return std_logic_vector;
+
 -- Cordic Sequencer Iteration Constants
   constant c_CirIter   : std_logic_vector(4 downto 0) := '0'&X"D";
   constant c_LinIter   : std_logic_vector(4 downto 0) := '0'&X"F";
@@ -157,6 +160,18 @@ end package;
 
 package body gc_cordic_pkg is
 
+  function f_compute_an(nbits : integer) return std_logic_vector is
+    variable v_an : real := 1.0;
+    variable v_ret : std_logic_vector(nbits-1 downto 0);
+  begin
+    for i in 0 to nbits-1 loop
+      v_an := v_an * sqrt(1.0+2.0**(-2*i));
+    end loop;
+    v_ret := std_logic_vector(to_signed(integer((1.0/v_an)*(2.0**(nbits-1))), nbits));
+    return v_ret;
+  end function f_compute_an;
+
+
   procedure f_limit_subtract
     (use_limiter :     boolean;
      a, b        : in  signed;
@@ -166,7 +181,7 @@ package body gc_cordic_pkg is
     constant c_min_val : signed(o'range)           := ('1', others => '0');
     variable l_sum     : signed(O'length downto 0) := (others      => '0');
   begin
-    l_sum := resize(a, o'length+1) - resize(b, o'length-1);
+    l_sum := a(a'left)&a - b;
 
     if not use_limiter then
       o   := l_sum(o'range);
@@ -193,9 +208,9 @@ package body gc_cordic_pkg is
       lim         : out std_logic) is
     constant c_max_val : signed(o'range)           := ('0', others => '1');
     constant c_min_val : signed(o'range)           := ('1', others => '0');
-    variable l_sum     : signed(O'length downto 0) := (others      => '0');
+    variable l_sum     : signed(o'length downto 0) := (others      => '0');
   begin
-    l_sum := resize(a, o'length+1) + resize(b, o'length-1);
+    l_sum := a(a'left)&a + b;
 
     if not use_limiter then
       o   := l_sum(o'range);
@@ -225,7 +240,7 @@ package body gc_cordic_pkg is
       if x = c_min_val and use_limiter then
         return c_max_val;
       else
-        return not x (x'length-1 downto 0) + 1;
+        return not x(x'length-1 downto 0)+1;
       end if;
     else
       return x;

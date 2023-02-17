@@ -21,4 +21,5 @@ modules = {
 
 files = [
     "main.sv",
+    "gc_cordic_tb.vhd"
 ]
