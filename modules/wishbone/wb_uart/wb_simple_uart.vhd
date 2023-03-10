@@ -240,9 +240,8 @@ begin  -- arch
 
   gen_phys_fifos : if g_WITH_PHYSICAL_UART_FIFO generate
 
-    rx_fifo_wr <= not rx_fifo_full and phys_rx_ready;
-    tx_fifo_wr <= not tx_fifo_full and ( regs_out.tdr_tx_data_wr_o or
-                  ( f_to_sl(g_WITH_VIRTUAL_UART) and regs_out.host_tdr_data_wr_o ) );
+    rx_fifo_wr <= not rx_fifo_full and (phys_rx_ready or ( f_to_sl(g_WITH_VIRTUAL_UART) and regs_out.host_tdr_data_wr_o ) );
+    tx_fifo_wr <= not tx_fifo_full and regs_out.tdr_tx_data_wr_o;
 
     tx_fifo_reset_n <= rst_n_i and not regs_out.cr_tx_fifo_purge_o;
     rx_fifo_reset_n <= rst_n_i and not regs_out.cr_rx_fifo_purge_o;
