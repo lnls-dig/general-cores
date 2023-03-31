@@ -1,4 +1,6 @@
 #!/bin/bash
 
-cheby -i fine_pulse_gen_wb.cheby --gen-hdl fine_pulse_gen_wb.vhd
-cheby -i fine_pulse_gen_wb.cheby --consts-style sv --gen-consts ../../../sim/regs/fine_pulse_gen_regs.sv
+cheby -i wb_fpgen_regs.cheby --gen-hdl wb_fpgen_regs.vhd
+cheby -i wb_fpgen_regs.cheby --consts-style sv --gen-consts ../../../sim/regs/wb_fpgen_regs.sv
+cheby -i wb_fpgen_regs.cheby --gen-c wb_fpgen_regs.h
+cheby -i wb_fpgen_regs.cheby --consts-style h --gen-consts wb_fpgen_regs2.h

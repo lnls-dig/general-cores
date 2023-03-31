@@ -231,7 +231,7 @@ begin
           if trig_p_i = '1' then
             if cont_i = '1' then
               state <= CONT_H;
-              ready_o <= '0';
+              ready_o <= '1';
             elsif length_d = 0 then
               state <= END_PULSE_H;
               ready_o <= '0';

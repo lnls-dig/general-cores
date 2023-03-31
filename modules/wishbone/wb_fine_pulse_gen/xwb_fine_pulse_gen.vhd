@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 use work.gencores_pkg.all;
 use work.wishbone_pkg.all;
 
-use work.fine_pulse_gen_wb_pkg.all;
+use work.wb_fpgen_regs_pkg.all;
 
 --library unisim;
 --use unisim.VCOMPONENTS.all;
@@ -143,7 +143,7 @@ begin
     end if;
   end process;
 
-  U_Regs : entity work.fine_pulse_gen_wb
+  U_Regs : entity work.wb_fpgen_regs
     port map (
       rst_n_i   => rst_sys_n_i,
       clk_i => clk_sys_i,

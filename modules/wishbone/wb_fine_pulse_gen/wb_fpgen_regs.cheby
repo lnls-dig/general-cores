@@ -1,10 +1,11 @@
 memory-map:
   description: Generic Fine Pulse Generator Unit
   bus: wb-32-be
-  name: fine_pulse_gen_wb
+  name: wb_fpgen
   x-hdl:
     busgroup: True
     iogroup: fpgen_regs
+    name-suffix: _regs
   schema-version:
     core: 2.0.0
     x-gena: 1.0.0
