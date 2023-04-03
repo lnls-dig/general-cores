@@ -307,5 +307,6 @@ begin
   lim_y_o <= s_stg(g_ITERATIONS-1).lim_y;
   mode_o <= s_stg(g_ITERATIONS-1).mode;
   submode_o <= s_stg(g_ITERATIONS-1).submode;
+  valid_o <= s_stg(g_ITERATIONS-1).valid;
 
 end architecture rtl;
