@@ -3,6 +3,7 @@
 with open("buildinfo_pkg.vhd", "w") as f:
   import subprocess
   import time
+  import unicodedata
 
   # Extract current commit id.
   try:
@@ -27,6 +28,8 @@ with open("buildinfo_pkg.vhd", "w") as f:
   try:
     userid = subprocess.check_output(
       ["git", "config", "--get", "user.name"]).decode().strip()
+    # VHDL only handles ASCII strings
+    userid = unicodedata.normalize('NFKD', userid).encode('ascii', 'replace')
   except:
     userid = "unknown"
   if action == "simulation":
