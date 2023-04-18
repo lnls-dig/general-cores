@@ -279,7 +279,7 @@ module spi_top
     else if(spi_ctrl_sel && wb_we_i && !tip)
       begin
         if (wb_sel_i[0])
-          ctrl[7:0] <= #Tp wb_dat_i[7:0] | {7'b0, ctrl[0]};
+          ctrl[7:0] <= #Tp wb_dat_i[7:0];
         if (wb_sel_i[1])
           ctrl[`SPI_CTRL_BIT_NB-1:8] <= #Tp wb_dat_i[`SPI_CTRL_BIT_NB-1:8];
       end
