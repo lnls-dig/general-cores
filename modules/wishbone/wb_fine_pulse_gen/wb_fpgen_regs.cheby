@@ -1,0 +1,468 @@
+memory-map:
+  description: Generic Fine Pulse Generator Unit
+  bus: wb-32-be
+  name: wb_fpgen
+  x-hdl:
+    busgroup: True
+    iogroup: fpgen_regs
+    name-suffix: _regs
+  schema-version:
+    core: 2.0.0
+    x-gena: 1.0.0
+    x-hdl: 1.0.0
+    x-driver-edge: 1.0.0
+    x-conversions: 1.0.0
+    x-map-info: 1.0.0
+  x-map-info:
+    memmap-version: 0.0.1
+  children:
+  - reg:
+      name: csr
+      description: Control/Status Register
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: TRIG0
+          description: Trigger Pulse @ Output 0 at next PPS
+          range: 0
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG1
+          description: Trigger Pulse @ Output 1 at next PPS
+          range: 1
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG2
+          description: Trigger Pulse @ Output 2 at next PPS
+          range: 2
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG3
+          description: Trigger Pulse @ Output 3 at next PPS
+          range: 3
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG4
+          description: Trigger Pulse @ Output 4 at next PPS
+          range: 4
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG5
+          description: Trigger Pulse @ Output 5 at next PPS
+          range: 5
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG6
+          description: Trigger Pulse @ Output 6 at next PPS
+          range: 6
+          x-hdl:
+            type: autoclear
+      - field:
+          name: TRIG7
+          description: Trigger Pulse @ Output 7 at next PPS
+          range: 7
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE0
+          description: Trigger Pulse @ Output 0 immediately
+          range: 8
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE1
+          description: Trigger Pulse @ Output 1 immediately
+          range: 9
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE2
+          description: Trigger Pulse @ Output 2 immediately
+          range: 10
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE3
+          description: Trigger Pulse @ Output 3 immediately
+          range: 11
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE4
+          description: Trigger Pulse @ Output 4 immediately
+          range: 12
+          x-hdl:
+            type: autoclear
+      - field:
+          name: FORCE5
+          description: Trigger Pulse @ Output 5 immediately
+          range: 13
+          x-hdl:
+            type: autoclear
+      - field:
+          name: READY
+          description: Pulse Generator Ready
+          range: 19-14
+          x-hdl:
+            type: wire
+      - field:
+          name: PLL_RST
+          description: PLL Reset
+          range: 20
+      - field:
+          name: SERDES_RST
+          description: Serdes Reset
+          range: 21
+      - field:
+          name: PLL_LOCKED
+          description: PLL Locked
+          range: 22
+          x-hdl:
+            type: wire
+  - reg:
+      name: OCR0A
+      description: Output 0 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR0B
+      description: Output 0 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+  - reg:
+      name: OCR1A
+      description: Output 0 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR1B
+      description: Output 1 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+  - reg:
+      name: OCR2A
+      description: Output 2 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR2B
+      description: Output 2 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+  - reg:
+      name: OCR3A
+      description: Output 3 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR3B
+      description: Output 3 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+  - reg:
+      name: OCR4A
+      description: Output 4 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR4B
+      description: Output 4 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+  - reg:
+      name: OCR5A
+      description: Output 5 Control Register A
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: FINE
+          description: Fine delay adjust
+          range: 11-0
+      - field:
+          name: POL
+          description: Polarity
+          range: 12
+      - field:
+          name: COARSE
+          description: Serdes Bitmask
+          range: 17-13
+      - field:
+          name: CONT
+          description: Continuous mode select
+          range: 18
+      - field:
+          name: TRIG_SEL
+          description: Trigger select
+          comment: '1: external trigger; 0: PPS'
+          range: 19
+  - reg:
+      name: OCR5B
+      description: Output 5 Control Register B
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: PPS_OFFS
+          description: WR PPS offset in reference clock cycles
+          range: 15-0
+      - field:
+          name: LENGTH
+          description: Pulse Length (target platform specific, 0 = minimum possible pulse width)
+          range: 31-16
+          x-wbgen:
+            access_bus: READ_WRITE
+            access_dev: READ_ONLY
+            type: SLV
+
+  - reg:
+      name: odelay_calib
+      description: Output Delay Calibration (Ultrascale-specific)
+      width: 32
+      access: rw
+      address: next
+      children:
+      - field:
+          name: rst_idelayctrl
+          description: Reset Output IDELAYCTRL
+          range: 0
+      - field:
+          name: rst_odelay
+          description: Reset Output ODELAY
+          range: 1
+      - field:
+          name: rst_oserdes
+          description: Reset Output OSERDES
+          range: 2
+      - field:
+          name: rdy
+          description: Output Delay Ready
+          range: 3
+          x-hdl:
+            type: wire
+      - field:
+          name: value
+          description: Output Delay Value
+          comment: Delay value in taps
+          range: 12-4
+          x-hdl:
+            type: wire
+      - field:
+          name: value_update
+          description: Delay value update
+          range: 13
+          x-hdl:
+            type: autoclear
+      - field:
+          name: en_vtc
+          description: Enable VT compensation
+          comment: Enable VT compensation
+          range: 14
+      - field:
+          name: cal_latch
+          description: Latch calibration taps
+          range: 15
+          x-hdl:
+            type: autoclear
+      - field:
+          name: taps
+          description: n Taps
+          comment: Value in number of taps
+          range: 24-16
+          x-hdl:
+            type: wire

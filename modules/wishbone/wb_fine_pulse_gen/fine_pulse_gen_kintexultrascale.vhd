@@ -28,6 +28,7 @@ entity fine_pulse_gen_kintexultrascale is
       pol_i    : in std_logic;
       coarse_i : in std_logic_vector(7 downto 0);
       trig_p_i : in std_logic;
+      ready_o : out std_logic;
 
 
       pulse_o : out std_logic;
@@ -154,6 +155,8 @@ begin
   begin
     if rising_edge(clk_ref_i) then
 
+
+      ready_o <= '1';
       dly_load_d <= dly_load_i;
 
       if dly_load_i = '1' then
