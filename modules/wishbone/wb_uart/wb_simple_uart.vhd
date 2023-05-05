@@ -33,6 +33,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.gencores_pkg.all;
 use work.genram_pkg.all;
 use work.wishbone_pkg.all;
 use work.UART_wbgen2_pkg.all;
@@ -126,17 +127,6 @@ architecture arch of wb_simple_uart is
 
   signal rx_fifo_rdata : std_logic_vector(7 downto 0);
   signal rx_fifo_wdata : std_logic_vector(7 downto 0);
-
-
-  function f_to_sl( x : boolean ) return std_logic is
-  begin
-    if(x) then
-      return '1';
-    else
-      return '0';
-    end if;
-  end f_to_sl;
-  
 begin  -- arch
 
   gen_check_generics : if (not g_WITH_PHYSICAL_UART and not g_WITH_VIRTUAL_UART) generate
@@ -240,7 +230,7 @@ begin  -- arch
 
   gen_phys_fifos : if g_WITH_PHYSICAL_UART_FIFO generate
 
-    rx_fifo_wr <= not rx_fifo_full and (phys_rx_ready or ( f_to_sl(g_WITH_VIRTUAL_UART) and regs_out.host_tdr_data_wr_o ) );
+    rx_fifo_wr <= not rx_fifo_full and (phys_rx_ready or ( f_to_std_logic(g_WITH_VIRTUAL_UART) and regs_out.host_tdr_data_wr_o ) );
     tx_fifo_wr <= not tx_fifo_full and regs_out.tdr_tx_data_wr_o;
 
     tx_fifo_reset_n <= rst_n_i and not regs_out.cr_tx_fifo_purge_o;
