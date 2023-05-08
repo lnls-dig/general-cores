@@ -98,7 +98,7 @@ peripheral {
 
 				 prefix = "RX_FIFO_BYTES";
 				 type = SLV;
-				 size = 8;
+				 size = 16;
 				 access_bus = READ_ONLY;
 				 access_dev = WRITE_ONLY;
 			};
