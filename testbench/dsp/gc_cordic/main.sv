@@ -1,6 +1,6 @@
+`include "sim_logger.svh"
 `timescale 1ns/1ps
 
-import gencores_sim_pkg::*;
 import gc_cordic_pkg::*;
 
 const bit[0:0] MODE_VECTOR =1'b0;
