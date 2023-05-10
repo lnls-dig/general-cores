@@ -1,6 +1,7 @@
 `ifndef SIMDRV_DEFS_SV
  `define SIMDRV_DEFS_SV 1
 
+typedef byte unsigned uint8_t;
 typedef longint unsigned uint64_t;
 typedef int unsigned uint32_t;
 typedef shortint unsigned uint16_t;
