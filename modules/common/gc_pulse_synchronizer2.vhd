@@ -73,6 +73,9 @@ begin  -- rtl
 
 
   cmp_pulse_out : gc_edge_detect
+    generic map (
+      g_ASYNC_RST => true
+    )
     port map (
       clk_i   => clk_out_i,
       rst_n_i => rst_out_n_i,
