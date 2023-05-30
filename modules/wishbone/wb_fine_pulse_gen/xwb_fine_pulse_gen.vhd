@@ -161,89 +161,101 @@ begin
       );
 
 
-  U_Sync1: entity work.gc_pulse_synchronizer
+  U_Sync1: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig0,
       q_p_o     => ch(0).arm);
-  U_Sync2: entity work.gc_pulse_synchronizer
+  U_Sync2: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig1,
       q_p_o     => ch(1).arm);
-  U_Sync3: entity work.gc_pulse_synchronizer
+  U_Sync3: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig2,
       q_p_o     => ch(2).arm);
-  U_Sync4: entity work.gc_pulse_synchronizer
+  U_Sync4: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig3,
       q_p_o     => ch(3).arm);
-  U_Sync5: entity work.gc_pulse_synchronizer
+  U_Sync5: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig4,
       q_p_o     => ch(4).arm);
-  U_Sync6: entity work.gc_pulse_synchronizer
+  U_Sync6: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_trig5,
       q_p_o     => ch(5).arm);
 
-  U_Sync71: entity work.gc_pulse_synchronizer
+  U_Sync71: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force0,
       q_p_o     => ch(0).force_tr);
-  U_Sync72: entity work.gc_pulse_synchronizer
+  U_Sync72: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force1,
       q_p_o     => ch(1).force_tr);
-  U_Sync73: entity work.gc_pulse_synchronizer
+  U_Sync73: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force2,
       q_p_o     => ch(2).force_tr);
-  U_Sync74: entity work.gc_pulse_synchronizer
+  U_Sync74: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force3,
       q_p_o     => ch(3).force_tr);
-  U_Sync75: entity work.gc_pulse_synchronizer
+  U_Sync75: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force4,
       q_p_o     => ch(4).force_tr);
-  U_Sync76: entity work.gc_pulse_synchronizer
+  U_Sync76: entity work.gc_pulse_synchronizer2
     port map (
       clk_in_i  => clk_sys_i,
       clk_out_i => clk_ref_i,
-      rst_n_i   => rst_sys_n_i,
+      rst_in_n_i   => rst_sys_n_i,
+      rst_out_n_i => rst_n_wr,
       d_p_i     => regs_out.csr_force5,
       q_p_o     => ch(5).force_tr);
 
@@ -410,7 +422,7 @@ begin
         clk_par_i    => clk_par,
         clk_serdes_i => clk_ser,
         rst_serdes_i => rst_serdes,
-        rst_sys_n_i  => rst_sys_n_i,
+        rst_par_n_i  => rst_n_wr,
         trig_p_i     => ch(I).trig_p,
         cont_i =>  ch(i).cont,
         coarse_i       => ch(I).coarse,
