@@ -311,6 +311,7 @@ package body genram_pkg is
 
   function f_check_bounds(x : integer; minx : integer; maxx : integer) return integer is
   begin
+    -- synthesis translate_off
     if(x < minx) then
       return minx;
     elsif(x > maxx) then
@@ -318,6 +319,8 @@ package body genram_pkg is
     else
       return x;
     end if;
+    -- synthesis translate_on
+    return x;
   end f_check_bounds;
 
 end genram_pkg;
