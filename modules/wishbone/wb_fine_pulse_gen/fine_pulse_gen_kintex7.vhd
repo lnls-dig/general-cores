@@ -20,7 +20,7 @@ entity fine_pulse_gen_kintex7 is
       clk_serdes_i : in std_logic;
 
       rst_serdes_i : in std_logic;
-      rst_sys_n_i  : in std_logic;
+      rst_par_n_i  : in std_logic;
       cont_i       : in std_logic;
 
       pol_i    : in std_logic;
@@ -44,7 +44,6 @@ architecture rtl of fine_pulse_gen_kintex7 is
 
   signal dout_predelay, dout_prebuf, dout_nodelay : std_logic;
   signal odelay_load                              : std_logic;
-  signal rst                                      : std_logic;
   signal odelay_ntaps                             : std_logic_vector(4 downto 0);
 
 
@@ -76,16 +75,12 @@ architecture rtl of fine_pulse_gen_kintex7 is
 
 begin
 
-  rst <= not rst_sys_n_i;
-
-
-
-  process(clk_par_i, rst_sys_n_i)
+  process(clk_par_i, rst_par_n_i)
     variable rv, rv2 : std_logic_vector(15 downto 0);
   begin
-    if rst_sys_n_i = '0' then
+    if rst_par_n_i = '0' then
       pulse_pending <= '0';
-      dly_load_d <= '0';
+      --dly_load_d <= '0';
       ready_o <= '0';
     elsif rising_edge(clk_par_i) then
 
