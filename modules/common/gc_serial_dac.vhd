@@ -6,7 +6,7 @@
 -- Author     : Pablo Alvarez Sanchez
 -- Company    : CERN BE-Co-HT
 -- Created    : 2010-02-25
--- Last update: 2019-09-09
+-- Last update: 2023-05-17
 -- Platform   : FPGA-generic
 -- Standard   : VHDL '87
 -------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ begin
   process(clk_i)
   begin
     if rising_edge(clk_i) then
-      if iValidValue = '1' then
+      if iValidValue = '1' and sendingData = '0' then
         divider <= (others => '0');
       elsif sendingData = '1' then
         if(divider_muxed = '1') then
@@ -156,7 +156,7 @@ begin
       if rst_n_i = '0' then
         iDacClk <= '1';                 -- 0
       else
-        if iValidValue = '1' then
+        if iValidValue = '1' and sendingData = '0' then
           iDacClk <= '1';               -- 0
         elsif divider_muxed = '1' then
           iDacClk <= not(iDacClk);
