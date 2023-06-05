@@ -28,15 +28,21 @@
 ## obtain one at https://mozilla.org/MPL/2.0/.
 ##-------------------------------------------------------------------------------
 
+# Note: you can make sure all warnings for unmatched pins are displayed using:
+#  set_msg_config -id "Vivado 12-508" -limit 999999
+
 proc generate_gc_sync_constraints { f_out } {
     set the_cells [ get_cells -hier -filter { REF_NAME=~gc_sync* } ]
     set count 0
 
     foreach cell $the_cells {
 
-#skip gc_sync_ffs instances (as they contain a gc_sync inside)
-        if {[string first "gc_sync_ffs" [get_property REF_NAME [get_cells $cell]]] != -1} {
-            puts $f_out "#WARNING: skip gc_sync_ffs cell '$cell'"
+	#skip non gc_sync instances (as they contain a gc_sync inside)
+	set name [get_property REF_NAME $cell]
+        if {[string first "gc_sync_ffs" "$name"] != -1
+	    || [string first "gc_sync_word_" "$name"] != -1
+	    || [string first "gc_sync_register" "$name"] != -1} {
+            puts $f_out "#NOTE: skip '$name' cell '$cell'"
             continue
         }
 
@@ -51,7 +57,7 @@ proc generate_gc_sync_constraints { f_out } {
         }
 
         if { "$dst_ff" == "" } {
-            puts $f_out "#WARNING: can't find destination FF for cell '$cell'"
+            puts $f_out "#WARNING: can't find destination FF for sync cell '$cell'"
             continue
         }
 
@@ -88,10 +94,8 @@ proc generate_gc_sync_register_constraints { f_out } {
             set dst_ff_clr [get_pins -hier -filter "name=~$cell/sync*_*[*]/CLR" ]
         }
 
-        puts $dst_ff
-
         if { "$dst_ff" == "" } { 
-            puts $f_out "#WARNING: can't find destination FF for cell '$cell'"
+            puts $f_out "#WARNING: can't find destination FF for sync reg cell '$cell'"
             continue
         }
 
@@ -99,13 +103,44 @@ proc generate_gc_sync_register_constraints { f_out } {
         set src_ff [get_cells -of_objects [get_pins -filter {IS_LEAF && DIRECTION == OUT} -of_objects [get_nets -segments -of_objects $dst_ff]]]
         set clk_period [get_property PERIOD [ lindex $clk 0 ] ]
 
-        puts "Cell: $cell, src $src_ff, dst $dst_ff, clock $clk, period $clk_period"
+        puts $f_out "#Cell: $cell, src $src_ff, dst $dst_ff, clock $clk, period $clk_period"
         puts $f_out "set_max_delay $clk_period -quiet -datapath_only -from { $src_ff } -to { $dst_ff }"
         puts $f_out "set_bus_skew $clk_period -quiet -from { $src_ff } -to { $dst_ff }"
         
         foreach clr_pin $dst_ff_clr {
             puts $f_out "set_false_path -to { $clr_pin }"
         }
+        incr count
+    }
+
+    return $count
+}
+
+proc generate_gc_sync_word_constraints { f_out } {
+    set the_cells [ get_cells -hier -filter { REF_NAME=~gc_sync_word_* } ]
+    set count 0
+
+    foreach cell $the_cells {
+
+        set src_ffs [get_pins "$cell/gc_sync_word_data_reg[*]/Q" ]
+        if { "$src_ffs" == "" } {
+            puts $f_out "#WARNING: can't find source FF for cell '$cell'"
+            continue
+        }
+
+	puts $f_out "#Cell: $cell"
+
+	foreach src_ff $src_ffs {
+
+	    set src_nets [get_nets -segments -of_objects $src_ff]
+	    set dst_pins [get_pins -filter {DIRECTION==IN} -of_objects $src_nets]
+	    set dst_ff [get_cells -of_objects $dst_pins]
+
+	    set clk [ get_clocks -of_objects [ get_pins -filter {REF_PIN_NAME=~C} -of $dst_ff ] ]
+	    set clk_period [get_property PERIOD [ lindex $clk 0 ] ]
+
+	    puts $f_out "set_max_delay $clk_period -datapath_only -from { $src_ff } -to { $dst_ff }"
+	}
         incr count
     }
 
@@ -167,10 +202,12 @@ set f_out [open "gencores_constraints.xdc" w]
 set n_gc_sync_cells [ generate_gc_sync_constraints $f_out ]
 set n_gc_sync_register_cells [ generate_gc_sync_register_constraints $f_out ]
 set n_gc_reset_multi_aasd_cells  [ generate_gc_reset_multi_aasd_constraints $f_out ]
+set n_gc_sync_word_cells  [ generate_gc_sync_word_constraints $f_out ]
 #set n_gc_falsepath_waiver_cells  [ generate_gc_falsepath_waiver_constraints $f_out ]
 puts "gencores CDC statistics: "
 puts " - gc_sync:             $n_gc_sync_cells instances"
 puts " - gc_sync_register:    $n_gc_sync_register_cells instances"
+puts " - gc_sync_word:        $n_gc_sync_word_cells instances"
 puts " - gc_reset_multi_aasd: $n_gc_reset_multi_aasd_cells instances"
 #puts " - gc_falsepath_waiver: $n_gc_falsepath_waiver_cells instances"
 
