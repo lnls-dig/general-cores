@@ -6,6 +6,7 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/version.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/platform_device.h>
@@ -404,8 +405,13 @@ static int spi_ocores_hw_xfer_wait_complete(struct spi_ocores *sp,
  */
 static int spi_ocores_sw_xfer_finish(struct spi_ocores *sp)
 {
+#if KERNEL_VERSION(5,13,0) <= LINUX_VERSION_CODE
+	if (sp->cur_xfer->delay.value)
+		udelay(sp->cur_xfer->delay.value);
+#else
 	if (sp->cur_xfer->delay_usecs)
 		udelay(sp->cur_xfer->delay_usecs);
+#endif
 	if (sp->cur_xfer->cs_change) {
 		unsigned int cs;
 
