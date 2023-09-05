@@ -204,7 +204,7 @@ proc generate_gc_sync_register_constraints { f_out } {
 }
 
 proc generate_gc_sync_word_constraints { f_out } {
-    set the_cells [ get_cells -hier -filter { REF_NAME=~gc_sync_word_* } ]
+    set the_cells [ get_cells -hier -filter { REF_NAME==gc_sync_word_rd || ORIG_REF_NAME==gc_sync_word_rd || REF_NAME==gc_sync_word_wr || ORIG_REF_NAME==gc_sync_word_wr } ]
     set count 0
 
     puts $f_out "# gc_sync_word"
@@ -242,7 +242,7 @@ proc generate_gc_sync_word_constraints { f_out } {
 }
 
 proc generate_gc_reset_multi_aasd_constraints { f_out } {
-    set the_cells [ get_cells -hier -filter { REF_NAME=~gc_reset_multi_aasd* } ]
+    set the_cells [ get_cells -hier -filter { REF_NAME==gc_reset_multi_aasd || ORIG_REF_NAME==gc_reset_multi_aasd } ]
     set count 0
 
     puts $f_out "# gc_reset_multi_aasd"
