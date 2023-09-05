@@ -224,6 +224,10 @@ proc generate_gc_sync_word_constraints { f_out } {
 
 	    set src_nets [get_nets -segments -of_objects $src_ff]
 	    set dst_pins [get_pins -filter {DIRECTION==IN} -of_objects $src_nets]
+        if { "$dst_pins" == "" } {
+            puts "#WARNING: can't find destination pin for cell '$cell', it might have been optimized away"
+            continue
+        }
 	    set dst_ff [get_cells -of_objects $dst_pins]
 
 	    set clk [ get_clocks -of_objects [ get_pins -filter {REF_PIN_NAME=~C} -of $dst_ff ] ]
