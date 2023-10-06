@@ -3,6 +3,7 @@ modules = { "local" : [
     "axi4lite_wb_bridge",
     "axi4lite32_axi4full64_bridge",
     "axi4lite_axi4full_bridge",
+    "mpsoc_int_gen",
     ]}
 
 files = [
