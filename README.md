@@ -233,6 +233,9 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     a bridge from axi4full64 to axi4lite32.  It was defined to interface with
     the Vivado PCI-e bridge and doesn't support all the axi4full features
     (in particular the burst accesses).
+  - [mpsoc_int_gen](modules/axi/mpsoc_int_gen) is a module that generates a
+    PCIe interrupt when a signal goes high (by writting a specific register
+    in the PS).
 
 * There a modules to build a bus hierarchy:
   - [wb_bus_fanout](modules/wishbone/wb_bus_fanout) is a simple master to
