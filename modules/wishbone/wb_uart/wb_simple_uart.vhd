@@ -457,4 +457,8 @@ begin  -- arch
 
   regs_in.host_tdr_rdy_i <= not regs_in.sr_rx_rdy_i;
 
+  -- Registers used to clarify if we use Physical or Virtual UART
+  regs_in.sr_physical_uart_i <= '1' when g_WITH_PHYSICAL_UART else '0';
+  regs_in.sr_virtual_uart_i  <= '1' when g_WITH_VIRTUAL_UART  else '0';
+
 end arch;
