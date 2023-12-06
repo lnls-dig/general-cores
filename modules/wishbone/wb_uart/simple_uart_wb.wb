@@ -105,7 +105,7 @@ peripheral {
             
             field {
                  name = "Physical UART";
-                 description = "Register to show that we are using Physical UART";
+                 description = "Set if the Physical UART is present";
  
                  prefix = "PHYSICAL_UART";
                  type = BIT;
@@ -116,7 +116,7 @@ peripheral {
  
             field {
                  name = "Virtual UART";
-                 description = "Register to show that we are using Virtual UART";
+                 description = "Set if the Virtual UART is present";
  
                  prefix = "VIRTUAL_UART";
                  type = BIT;
