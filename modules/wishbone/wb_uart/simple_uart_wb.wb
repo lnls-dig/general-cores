@@ -102,6 +102,28 @@ peripheral {
 				 access_bus = READ_ONLY;
 				 access_dev = WRITE_ONLY;
 			};
+            
+            field {
+                 name = "Physical UART";
+                 description = "Set if the Physical UART is present";
+ 
+                 prefix = "PHYSICAL_UART";
+                 type = BIT;
+                 size = 1;
+                 access_bus = READ_ONLY;
+                 access_dev = WRITE_ONLY;
+             };
+ 
+            field {
+                 name = "Virtual UART";
+                 description = "Set if the Virtual UART is present";
+ 
+                 prefix = "VIRTUAL_UART";
+                 type = BIT;
+                 size = 1;
+                 access_bus = READ_ONLY;
+                 access_dev = WRITE_ONLY;
+            };
 	 };
 
 
