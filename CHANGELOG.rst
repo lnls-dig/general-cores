@@ -9,9 +9,18 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+1.1.4 - 2023-10-18
+==================
+https://www.ohwr.org/project/general-cores/tags/v1.1.4
+
+Fixed
+-----
+- sw: kernel compatibilty with modern version
+
+
 1.1.3 - 2021-08-23
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.2
+https://www.ohwr.org/project/general-cores/tags/v1.1.3
 
 Fixed
 -----

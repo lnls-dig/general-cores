@@ -53,8 +53,9 @@ entity inferred_async_fifo is
     g_with_wr_count        : boolean := FALSE;
 
     g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer   -- threshold for almost full flag
-    );
+    g_almost_full_threshold  : integer;  -- threshold for almost full flag
+
+    g_memory_implementation_hint      : string  := "auto");
 
   port (
     rst_n_i : in std_logic := '1';
@@ -116,11 +117,24 @@ architecture syn of inferred_async_fifo is
     bin_x, gray_x   : t_counter;
   end record;
 
+  constant c_counters_reset_value : t_counter_block :=
+    ( bin => (others => '0'),
+      bin_next => (others => '0'),
+      gray  => (others => '0'),
+      gray_next  => (others => '0'),
+      bin_x => (others => '0'),
+      gray_x  => (others => '0') );
+  
+
   type t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
   signal mem : t_mem_type := (others => (others => '0'));
 
-  signal rcb, wcb : t_counter_block := (others =>(others => '0'));
 
+  attribute ram_type : string;
+  attribute ram_type of mem : signal is g_memory_implementation_hint;
+  
+  signal rcb, wcb : t_counter_block := c_counters_reset_value;
+  
   signal full_int, empty_int               : std_logic;
   signal almost_full_int, almost_empty_int : std_logic;
   signal going_full                        : std_logic;
@@ -138,6 +152,7 @@ architecture syn of inferred_async_fifo is
 
 begin  -- syn
 
+  --  Protect against overflow and underflow.
   rd_int <= rd_i and not empty_int;
   we_int <= we_i and not full_int;
 
@@ -153,9 +168,15 @@ begin  -- syn
   p_mem_read : process(clk_rd_i)
   begin
     if rising_edge(clk_rd_i) then
+      --  In show ahead mode, the output is valid (unless the fifo is empty), and 'rd'
+      --  ack the current value.
+      --  In no show ahead mode, the output is not valid, and 'rd' will output the value
+      --  on the next cycle.
       if(rd_int = '1' and g_show_ahead) then
+        --  Read the next value.
         q_int <= mem(to_integer(unsigned(rcb.bin_next(rcb.bin_next'LEFT-1 downto 0))));
       elsif(rd_int = '1' or g_show_ahead) then
+        --  Read the current entry.
         q_int <= mem(to_integer(unsigned(rcb.bin(rcb.bin'LEFT-1 downto 0))));
       end if;
     end if;
@@ -229,6 +250,8 @@ begin  -- syn
     end if;
   end process p_gen_empty;
 
+  --  Note: because of the synchronizer, wr_empty may not be fully accurate,
+  --  but this is usually ok (the writer shouldn't care).
   gen_with_wr_empty : if g_with_wr_empty = TRUE generate
     U_Sync_Empty : gc_sync_ffs
       generic map (
@@ -240,6 +263,8 @@ begin  -- syn
         synced_o => wr_empty_x);
   end generate gen_with_wr_empty;
 
+  --  Likewise, because of the synchronizer the rd_full may not be fully
+  --  accurate.
   gen_with_rd_full : if g_with_rd_full = TRUE generate
     U_Sync_Full : gc_sync_ffs
       generic map (
@@ -258,10 +283,12 @@ begin  -- syn
   begin
     if ((wcb.bin (wcb.bin'LEFT-1 downto 0) = rcb.bin_x(rcb.bin_x'LEFT-1 downto 0))
         and (wcb.bin(wcb.bin'LEFT) /= rcb.bin_x(rcb.bin_x'LEFT))) then
+      --  It's already full!
       going_full <= '1';
     elsif (we_int = '1'
            and (wcb.bin_next(wcb.bin'LEFT-1 downto 0) = rcb.bin_x(rcb.bin_x'LEFT-1 downto 0))
            and (wcb.bin_next(wcb.bin'LEFT) /= rcb.bin_x(rcb.bin_x'LEFT))) then
+      --  Will probably be full (useless there is a read, but we are conservative)
       going_full <= '1';
     else
       going_full <= '0';

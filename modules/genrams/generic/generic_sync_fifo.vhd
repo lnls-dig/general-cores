@@ -53,7 +53,8 @@ entity generic_sync_fifo is
 
     g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
     g_almost_full_threshold  : integer := 0;  -- threshold for almost full flag
-    g_register_flag_outputs  : boolean := true
+    g_register_flag_outputs  : boolean := true;
+    g_memory_implementation_hint : string := "auto"
     );
 
   port (
@@ -76,38 +77,8 @@ entity generic_sync_fifo is
 end generic_sync_fifo;
 
 architecture syn of generic_sync_fifo is
-
-  component inferred_sync_fifo
-    generic (
-      g_data_width             : natural;
-      g_size                   : natural;
-      g_show_ahead             : boolean;
-      g_show_ahead_legacy_mode : boolean;
-      g_with_empty             : boolean;
-      g_with_full              : boolean;
-      g_with_almost_empty      : boolean;
-      g_with_almost_full       : boolean;
-      g_with_count             : boolean;
-      g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer;
-      g_register_flag_outputs  : boolean);
-    port (
-      rst_n_i        : in  std_logic := '1';
-      clk_i          : in  std_logic;
-      d_i            : in  std_logic_vector(g_data_width-1 downto 0);
-      we_i           : in  std_logic;
-      q_o            : out std_logic_vector(g_data_width-1 downto 0);
-      rd_i           : in  std_logic;
-      empty_o        : out std_logic;
-      full_o         : out std_logic;
-      almost_empty_o : out std_logic;
-      almost_full_o  : out std_logic;
-      count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
-  end component;
-
 begin  -- syn
-
-  U_Inferred_FIFO : inferred_sync_fifo
+  U_Inferred_FIFO : entity work.inferred_sync_fifo
       generic map (
         g_data_width             => g_data_width,
         g_size                   => g_size,
@@ -120,8 +91,8 @@ begin  -- syn
         g_with_count             => g_with_count,
         g_almost_empty_threshold => g_almost_empty_threshold,
         g_almost_full_threshold  => g_almost_full_threshold,
-        g_register_flag_outputs  => g_register_flag_outputs)
-
+        g_register_flag_outputs  => g_register_flag_outputs,
+        g_memory_implementation_hint => g_memory_implementation_hint )
       port map (
         rst_n_i        => rst_n_i,
         clk_i          => clk_i,
@@ -134,7 +105,4 @@ begin  -- syn
         almost_empty_o => almost_empty_o,
         almost_full_o  => almost_full_o,
         count_o        => count_o);
-
- 
-
 end syn;

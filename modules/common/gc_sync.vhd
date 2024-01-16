@@ -57,6 +57,7 @@ architecture arch of gc_sync is
   attribute shreg_extract of sync1 : signal is "no";
 
   attribute keep                   : string;
+  attribute keep of clk_i          : signal is "true";
   attribute keep of gc_sync_ffs_in : signal is "true";
   attribute keep of sync0          : signal is "true";
   attribute keep of sync1          : signal is "true";

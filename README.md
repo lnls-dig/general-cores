@@ -44,6 +44,13 @@ In [modules/common](modules/common) there are general purpose cores:
   contains a complex handling for asynchronous signals (crossing clock
   domains, deglitcher, edge detection, pulse extension...)
 
+  * CDC modules come also with specific timing contraints in [modules/common/xdc](modules/common/xdc).
+    These constraints can be used in Vivado projects (so-called "module-bound" constraints)
+    to automatically derive proper timing constraints for CDC paths in each module.
+    To use it, add specific constraint file to your project and set `SCOPED_TO_REF`
+    property in GUI or your TCL file.  
+    (e.g. add `gc_sync.xdc` if you use `gc_sync.vhd` and set `SCOPED_TO_REF=gc_sync`)
+
 * For reset generation, you can use [gc_reset](modules/common/gc_reset.vhd)
   which generate synchronous resets once all the PLL lock signals are set.
   The module [gc_reset_multi_aasd](modules/common/gc_reset_multi_aasd.vhd)
@@ -198,11 +205,19 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     interface to the digital thermometer.
   - [wb_xc7_fw_update](modules/wishbone/wb_xc7_fw_update) is an SPI interface
     to drive the xc7 bitstream spi flash (using the ht-flash tool).
+  - [wb_clock_monitor](modules/wishbone/wb_clock_monitor) is clock frequency
+    measurement/monitoring core with a programmable number of channels.
+  - [wb_lm32_mcs](modules/wishbone/wb_lm32_mcs) is a single-entity microcontroller
+    based on the LM32 softcore, featuring internal code/data RAM, UART, timer and
+    a pipelined Wishbone peripheral interface.
 
 * There are utilities to handle a wishbone bus:
   - [wb_clock_crossing](modules/wishbone/wb_clock_crossing) handle clock domain
     crossing.
-  - [wb_register](modules/wishbone/wb_register) add a pipeline register.
+  - [wb_register](modules/wishbone/wb_register) adds a pipeline register.
+  - [wb_skidpad2](modules/wishbone/wb_register) adds a pipeline register to
+    a pipelined wishbone bus (in one direction only) without downgrading
+    the throughput.
 
 * There are modules to convert to a different bus
   - [wb_async_bridge](modules/wishbone/wb_async_bridge) is a bridge with the
@@ -218,6 +233,9 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     a bridge from axi4full64 to axi4lite32.  It was defined to interface with
     the Vivado PCI-e bridge and doesn't support all the axi4full features
     (in particular the burst accesses).
+  - [mpsoc_int_gen](modules/axi/mpsoc_int_gen) is a module that generates a
+    PCIe interrupt when a signal goes high (by writting a specific register
+    in the PS).
 
 * There a modules to build a bus hierarchy:
   - [wb_bus_fanout](modules/wishbone/wb_bus_fanout) is a simple master to
@@ -233,3 +251,16 @@ Directory [modules/wishbone](modules/wishbone) contains modules for wishbone.
     create metadata for the convention.
   - [wb_indirect](modules/wishbone/wb_indirect) provides a wishbone
     master driven by an address and a data registers.
+
+In [modules/dsp](modules/dsp) there are digital signal processing-related cores:
+  - [gc_cordic](modules/dsp/gc_cordic) is a pipelined CORDIC core, capable of calculating
+    sine/cosine/magnitude/argument of fixed-point complex numbers.
+  - [gc_iq_modulator](modules/dsp/gc_iq_modulator) is a Fs/4 IQ modulator (upconverter)
+  - [gc_iq_demodulator](modules/dsp/gc_iq_demodulator) is a Fs/4 IQ demodulator (downconverter)
+  - [gc_pipelined_fir_filter](modules/dsp/gc_pipelined_fir_filter) is a generic FIR filter IP inferring FPGA's DSP macros
+  - [gc_integer_divide](modules/dsp/gc_integer_divide) is a generic sequential integer/fixed-point divider IP. 
+    Can work with signed/unsigned numbers, also supports remainder calculation.
+  - [gc_soft_ramp_switch](modules/dsp/gc_soft_ramp_switch) is a "soft switch" to enable/disable a DAC output gently.
+  
+
+    

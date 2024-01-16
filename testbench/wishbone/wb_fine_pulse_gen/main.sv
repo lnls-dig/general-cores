@@ -62,7 +62,7 @@ class FinePulseGenDriver extends IBusDevice;
       super.new(acc,base);
    endfunction // new
 
-   task automatic calibrate();
+   task automatic calibrate_k7u();
       int rv;
       real calib_time;
       int  calib_taps;
@@ -97,30 +97,60 @@ class FinePulseGenDriver extends IBusDevice;
       calib_time = real'(1.0);
       calib_taps = (rv & `FPG_ODELAY_CALIB_TAPS) >> `FPG_ODELAY_CALIB_TAPS_OFFSET;
       
-      $display("FPG ODELAY calibration done, %.1f ns = %d taps\n", calib_time, calib_taps );
+  //    $display("FPG ODELAY calibration done, %.1f ns = %d taps\n", calib_time, calib_taps );
 
       m_delay_tap_size = calib_time / real'(calib_taps);
             
    endtask // calibrate
+
+   task automatic calibrate_k7();
+      int rv;
+      real calib_time;
+      int  calib_taps;
+
+      $error("Calibrate start");
+      
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_RST_IDELAYCTRL );
+      write32( `ADDR_FPG_ODELAY_CALIB, 0 );
+
+      write32( `ADDR_FPG_ODELAY_CALIB, `FPG_ODELAY_CALIB_RST_OSERDES );
+      write32( `ADDR_FPG_ODELAY_CALIB, 0 );
+
+      #100ns;
+
+      while(1)
+	begin
+	   read32( `ADDR_FPG_ODELAY_CALIB, rv );
+	   $display("odelay = %x", rv);
+	   
+	   if ( rv & `FPG_ODELAY_CALIB_RDY )
+	     break;
+	   
+	end
+
+
+      m_delay_tap_size = 0.078 /*ns*/;
+            
+   endtask // calibrate
    
 
-   task automatic pulse( int out, int polarity, int cont, real delta, int tr_force = 0 );
+   task automatic pulse( int out, int polarity, int cont, real delta, int length = 0, int tr_force = 0 );
       uint64_t rv;
       
       int coarse_par = int'($floor (delta / 16.0));
       int coarse_ser = int'($floor (delta / 1.0) - coarse_par * 16);
       int fine = int'((delta / 1.0 - $floor(delta / 1.0)) * 1.0 / m_delay_tap_size);
-      int mask = coarse_ser;
       uint32_t ocr;
 
-      $display("Tapsize %.5f Fine %d", m_delay_tap_size, fine);
+//      $display("Tapsize %.5f Fine %d", m_delay_tap_size, fine);
       
 
       ocr = (coarse_par << `FPG_OCR0_PPS_OFFS_OFFSET)
-	| (mask << `FPG_OCR0_MASK_OFFSET)
+	| (coarse_ser << `FPG_OCR0_COARSE_OFFSET)
       | (fine << `FPG_OCR0_FINE_OFFSET)
       | (cont ? `FPG_OCR0_CONT : 0)
-      | (polarity ? `FPG_OCR0_POL : 0 );
+      | (polarity ? `FPG_OCR0_POL : 0 )
+      | (length << `FPG_OCR0_LENGTH_OFFSET);
       
       m_acc.write( m_base + `ADDR_FPG_OCR0 + 4 * out, ocr );
 
@@ -201,7 +231,7 @@ module main;
 
 	if( dlys.size() && t_pps_valid )
 	  begin
-	    automatic real t_req = dlys.pop_front();
+	     automatic real t_req = dlys.pop_front();
 	     automatic time dly = t_pulse - t_pps;
 
 	     t_pps_valid = 0;
@@ -233,10 +263,10 @@ module main;
    // the Device Under Test
    xwb_fine_pulse_gen
      #(
-       .g_target_platform("KintexUltrascale"),
+       .g_target_platform("Kintex7"),
        .g_use_external_serdes_clock(0),
        .g_num_channels(1),
-       .g_use_odelay(6'b1)
+       .g_use_odelay(6'b111111)
        )
    DUT
      (
@@ -279,7 +309,7 @@ module main;
       
       drv = new( acc, 0 );      
 
-      drv.calibrate();
+      drv.calibrate_k7();
       
       
 
@@ -292,10 +322,10 @@ module main;
 
       for (t = 1.0; t <= 200.9; t+=0.1)
 	begin
-	   $display("Pulse @ %f", t );
+//	   $display("Pulse @ %f", t );
 	   
 	   dlys.push_back(t);
-	   drv.pulse(0, 1, 0, t);
+	   drv.pulse(0, 0, 0, t, 4);
 	end
       
       

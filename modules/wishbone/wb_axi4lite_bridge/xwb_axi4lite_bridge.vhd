@@ -109,7 +109,7 @@ begin
             if (wb_master_i.stall = '0') then
               wb_master_o.stb <= '0';
               if (wb_master_i.ack = '1') then
-                state <= IDLE;
+                state <= RESPONSE_READ;
                 axi4_slave_o.RRESP <= c_AXI4_RESP_OKAY;
                 axi4_slave_o.RDATA <= wb_master_i.dat;
                 axi4_slave_o.RVALID <= '1';

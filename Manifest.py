@@ -4,6 +4,8 @@ modules = {
 	"modules/common",
 	"modules/genrams",
 	"modules/wishbone",
+	"modules/dsp",
+	"modules/radtol",
 	"platform"
     ]
 }

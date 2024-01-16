@@ -37,6 +37,19 @@ end fine_pulse_gen_kintexultrascale_shared;
 
 architecture rtl of fine_pulse_gen_kintexultrascale_shared is
 
+
+component IDELAYCTRL is
+  generic (
+    SIM_DEVICE : string := "7SERIES"
+  );
+
+  port(
+    RDY              : out std_ulogic;
+    REFCLK           : in  std_ulogic;
+    RST              : in  std_ulogic
+  );
+end component;
+
   component MMCME3_ADV
     generic (
       BANDWIDTH            : string  := "OPTIMIZED";
@@ -165,7 +178,7 @@ begin
       port map (
         RDY    => odelayctrl_rdy_o,
         REFCLK => clk_odelay,    
-        RST    => odelayctrl_rst_i
+        RST    => rst_synced
         );
     end block;
   end generate gen_use_odelay;

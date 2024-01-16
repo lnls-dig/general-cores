@@ -29,14 +29,14 @@ build:
   stage: build
   script:
     - yum install -y kernel-devel git
-    - export LINUX=/usr/src/kernels/*/
+    - export KERNELSRC=/usr/src/kernels/*/
     - make -C software
 
 build-dkms:
   stage: build
   script:
     - yum install -y kernel-devel lua git dkms
-    - export LINUX=/usr/src/kernels/*/
+    - export KERNELSRC=/usr/src/kernels/*/
     - export PREFIX=$(mktemp -d)
     - make -C software/ -f dkms.mk dkms_install
     - make -C ${PREFIX}/usr/src/${CI_PROJECT_NAME}*/
@@ -45,7 +45,7 @@ build_srpm:
   stage: srpm
   script:
     - yum-builddep -y ${DIST_PATH}/*.spec
-    - export LINUX=/usr/src/kernels/*/
+    - export KERNELSRC=/usr/src/kernels/*/
     - make -C distribution rpmbuild-source
   artifacts:
     paths:

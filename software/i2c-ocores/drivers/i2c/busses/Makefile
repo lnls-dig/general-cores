@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2019 CERN
 
-TOPDIR ?= ../../../../../
+TOPDIR ?= $(shell pwd)/../../../../../
 GCORES ?= $(abspath $(TOPDIR))
 
 #
@@ -16,7 +16,7 @@ include $(GCORES)/common.mk
 # Local variables
 #
 KVERSION ?= $(shell uname -r)
-LINUX ?= /lib/modules/$(KVERSION)/build
+KERNELSRC ?= /lib/modules/$(KVERSION)/build
 
 #
 # Local targets
@@ -26,12 +26,12 @@ all: modules
 install: modules_install
 
 clean coccicheck modules:
-	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) \
+	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) \
 		GIT_VERSION=$(GIT_VERSION) \
 		CONFIG_I2C_OCORES=m \
 		$@
 modules_install: modules
-	$(MAKE) -C $(LINUX) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
+	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
 
 
 .PHONY: all clean coccicheck modules modules_install install

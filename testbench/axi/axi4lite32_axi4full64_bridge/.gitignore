@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2023 CERN (home.cern)
+#
+# SPDX-License-Identifier: CERN-OHL-W-2.0+
+
+*
+!.gitignore
+!Manifest.py
+!*.vhd
+!*.cheby
+!run.sh

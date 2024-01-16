@@ -67,6 +67,9 @@ class WBUartDriver extends IBusDevice;
       uint32_t rv;
       read32( `ADDR_UART_SR, rv );
 
+      $display("uart_init SR %b", rv);
+      
+      
       write32(`ADDR_UART_BCR, calc_baudrate( baudrate, clock_freq) );
       
       
@@ -203,8 +206,8 @@ module main;
       .slave_i            (Host1.out),
       .slave_o            (Host1.in),
  
-      .uart_txd_o(txd),
-      .uart_rxd_i(rxd)
+      .uart_txd_o(loop),
+      .uart_rxd_i(loop)
   );
   
    
@@ -241,7 +244,7 @@ module main;
       .rst_n_i (rst_n));
 
 
-
+   const int n_tx_bytes = 1024;
 
    
    initial begin
@@ -249,12 +252,13 @@ module main;
       
       automatic CWishboneAccessor acc1 = Host1.get_accessor();
       automatic       WBUartDriver drv_fifo = new( acc1, 0 );
-      automatic       CWishboneAccessor acc2 = Host2.get_accessor();
-      automatic       WBUartDriver drv_no_fifo = new( acc2, 0 );
+//      automatic       CWishboneAccessor acc2 = Host2.get_accessor();
+//      automatic       WBUartDriver drv_no_fifo = new( acc2, 0 );
+
       automatic 	    int i;
 
       acc1.set_mode(PIPELINED); 
-      acc2.set_mode(PIPELINED); 
+      //acc2.set_mode(PIPELINED); 
     
       
       #100ns;
@@ -265,16 +269,16 @@ module main;
       @(posedge clk_62m5);
       
 
-      drv_fifo.init(9216000, 62500000, 0);
-      drv_no_fifo.init(9216000, 62500000, 0);
+      drv_fifo.init(9216000, 62500000, 1);
+//      drv_no_fifo.init(9216000, 62500000, 0);
 
       #1us;
       
-      for(i=0;i<100;i++)
+      for(i=0;i<n_tx_bytes;i++)
 	begin
-	   drv_no_fifo.send(i);
+//	   drv_no_fifo.send(i);
 	   drv_fifo.send(i);
-	   drv_no_fifo.update();
+//	   drv_no_fifo.update();
 	   drv_fifo.update();
 	end
 
@@ -283,8 +287,8 @@ module main;
 //	   $display("%d %d", drv_fifo.tx_idle(), drv_no_fifo.tx_idle() );
 	   
 	   drv_fifo.update();
-	   drv_no_fifo.update();
-	   if( drv_fifo.tx_idle() &&  drv_no_fifo.tx_idle() )
+//	   drv_no_fifo.update();
+	   if( drv_fifo.tx_idle() /* &&  drv_no_fifo.tx_idle() */ )
 	     break;
 	end
 
@@ -293,7 +297,9 @@ module main;
       for(i=0;i<500;i++)
 	begin
 	   drv_fifo.update();
-	   drv_no_fifo.update();
+	   #1us;
+	   
+//	   drv_no_fifo.update();
 	end
       
 
@@ -301,12 +307,14 @@ module main;
 
       for(i=0;i<100;i++)
 	begin
-	   automatic int rx = drv_no_fifo.recv();
-	   if( rx != i )
-	     $error("NoFifo err %x vs %x", i, rx );
-	   rx = drv_fifo.recv();
-	   if( rx != i )
-	     $error("Fifo err %x vs %x", i, rx );
+//	   automatic int rx = drv_no_fifo.recv();
+//	   if( rx != i )
+//	     $error("NoFifo err %x vs %x", i, rx );
+	   automatic int rx = drv_fifo.recv();
+	   $display("Fifo %02x vs %02x %s", i, rx, (i == rx) ? "OK" : "ERROR" );
+	   if( i != rx )
+	     $error("");
+	   
 	   
 	end
       

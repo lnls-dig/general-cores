@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2023 CERN (home.cern)
+--
+-- SPDX-License-Identifier: CERN-OHL-W-2.0+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -78,7 +82,7 @@ begin
   wready <= axi_wip and wr_ack_int;
   bvalid <= axi_wdone;
   process (aclk, areset_n) begin
-    if areset_n = '0' then 
+    if areset_n = '0' then
       axi_wip <= '0';
       axi_wdone <= '0';
     elsif rising_edge(aclk) then
@@ -93,7 +97,7 @@ begin
   arready <= axi_rip and rd_ack_int;
   rvalid <= axi_rdone;
   process (aclk, areset_n) begin
-    if areset_n = '0' then 
+    if areset_n = '0' then
       axi_rip <= '0';
       axi_rdone <= '0';
       rdata <= (others => '0');
@@ -117,7 +121,7 @@ begin
 
   -- Process for write requests.
   process (aclk, areset_n) begin
-    if areset_n = '0' then 
+    if areset_n = '0' then
       wr_ack_int <= '0';
       out_b0_reg <= "00000000000000000000000000000000";
       out_b1_reg <= "00000000000000000000000000000000";
@@ -128,41 +132,41 @@ begin
     elsif rising_edge(aclk) then
       wr_ack_int <= '0';
       case awaddr(15 downto 2) is
-      when "10100000010000" => 
+      when "10100000010000" =>
         -- Register out_b0
         if wr_int = '1' then
           out_b0_reg <= wdata;
         end if;
         wr_ack_int <= wr_int;
-      when "10100000010001" => 
+      when "10100000010001" =>
         -- Register out_b1
         if wr_int = '1' then
           out_b1_reg <= wdata;
         end if;
         wr_ack_int <= wr_int;
-      when "10100000011000" => 
+      when "10100000011000" =>
         -- Register in_b0
-      when "10100000011001" => 
+      when "10100000011001" =>
         -- Register in_b1
-      when "10100010000001" => 
+      when "10100010000001" =>
         -- Register dir_b0
         if wr_int = '1' then
           dir_b0_reg <= wdata;
         end if;
         wr_ack_int <= wr_int;
-      when "10100010000010" => 
+      when "10100010000010" =>
         -- Register oen_b0
         if wr_int = '1' then
           oen_b0_reg <= wdata;
         end if;
         wr_ack_int <= wr_int;
-      when "10100010010001" => 
+      when "10100010010001" =>
         -- Register dir_b1
         if wr_int = '1' then
           dir_b1_reg <= wdata;
         end if;
         wr_ack_int <= wr_int;
-      when "10100010010010" => 
+      when "10100010010010" =>
         -- Register oen_b1
         if wr_int = '1' then
           oen_b1_reg <= wdata;
@@ -176,36 +180,36 @@ begin
 
   -- Process for registers read.
   process (aclk, areset_n) begin
-    if areset_n = '0' then 
+    if areset_n = '0' then
       rd_ack1_int <= '0';
       reg_rdat_int <= (others => 'X');
     elsif rising_edge(aclk) then
       reg_rdat_int <= (others => '0');
       case araddr(15 downto 2) is
-      when "10100000010000" => 
+      when "10100000010000" =>
         -- out_b0
         rd_ack1_int <= rd_int;
-      when "10100000010001" => 
+      when "10100000010001" =>
         -- out_b1
         rd_ack1_int <= rd_int;
-      when "10100000011000" => 
+      when "10100000011000" =>
         -- in_b0
         reg_rdat_int <= in_b0_i;
         rd_ack1_int <= rd_int;
-      when "10100000011001" => 
+      when "10100000011001" =>
         -- in_b1
         reg_rdat_int <= in_b1_i;
         rd_ack1_int <= rd_int;
-      when "10100010000001" => 
+      when "10100010000001" =>
         -- dir_b0
         rd_ack1_int <= rd_int;
-      when "10100010000010" => 
+      when "10100010000010" =>
         -- oen_b0
         rd_ack1_int <= rd_int;
-      when "10100010010001" => 
+      when "10100010010001" =>
         -- dir_b1
         rd_ack1_int <= rd_int;
-      when "10100010010010" => 
+      when "10100010010010" =>
         -- oen_b1
         rd_ack1_int <= rd_int;
       when others =>
@@ -219,35 +223,35 @@ begin
     -- By default ack read requests
     dato <= (others => '0');
     case araddr(15 downto 2) is
-    when "10100000010000" => 
+    when "10100000010000" =>
       -- out_b0
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100000010001" => 
+    when "10100000010001" =>
       -- out_b1
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100000011000" => 
+    when "10100000011000" =>
       -- in_b0
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100000011001" => 
+    when "10100000011001" =>
       -- in_b1
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100010000001" => 
+    when "10100010000001" =>
       -- dir_b0
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100010000010" => 
+    when "10100010000010" =>
       -- oen_b0
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100010010001" => 
+    when "10100010010001" =>
       -- dir_b1
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;
-    when "10100010010010" => 
+    when "10100010010010" =>
       -- oen_b1
       dato <= reg_rdat_int;
       rd_ack_int <= rd_ack1_int;

@@ -67,6 +67,7 @@ architecture arch of gc_sync_word_rd is
   signal d_ready : std_logic;
   signal wr_in   : std_logic;
   signal rd_out  : std_logic;
+
 begin
   cmp_pulse_sync : entity work.gc_pulse_synchronizer2
     port map (
@@ -88,16 +89,18 @@ begin
     end if;
   end process;
 
-  p_writer : process (clk_out_i)
+  p_writer : process(clk_out_i)
   begin
     if rising_edge(clk_out_i) then
-      if rst_in_n_i = '0' then
-        ack_out_o <= '0';
-      elsif wr_in = '1' then
+      if wr_in = '1' then
         --  Data is stable.
         data_out_o <= gc_sync_word_data;
-        ack_out_o    <= '1';
+        ack_out_o  <= '1';
       else
+        ack_out_o <= '0';
+      end if;
+
+      if rst_out_n_i = '0' then
         ack_out_o <= '0';
       end if;
     end if;

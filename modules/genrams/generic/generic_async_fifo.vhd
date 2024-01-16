@@ -52,8 +52,10 @@ entity generic_async_fifo is
     g_with_wr_almost_full  : boolean := false;
     g_with_wr_count        : boolean := false;
 
-    g_almost_empty_threshold : integer;  -- threshold for almost empty flag
-    g_almost_full_threshold  : integer   -- threshold for almost full flag
+    g_almost_empty_threshold : integer := 0;  -- threshold for almost empty flag
+    g_almost_full_threshold  : integer := 0;   -- threshold for almost full flag
+
+    g_memory_implementation_hint : string := "auto"
     );
 
   port (
@@ -87,48 +89,9 @@ end generic_async_fifo;
 
 
 architecture syn of generic_async_fifo is
-  
-  component inferred_async_fifo
-    generic (
-      g_data_width             : natural;
-      g_size                   : natural;
-      g_show_ahead             : boolean;
-      g_with_rd_empty          : boolean;
-      g_with_rd_full           : boolean;
-      g_with_rd_almost_empty   : boolean;
-      g_with_rd_almost_full    : boolean;
-      g_with_rd_count          : boolean;
-      g_with_wr_empty          : boolean;
-      g_with_wr_full           : boolean;
-      g_with_wr_almost_empty   : boolean;
-      g_with_wr_almost_full    : boolean;
-      g_with_wr_count          : boolean;
-      g_almost_empty_threshold : integer;
-      g_almost_full_threshold  : integer);
-    port (
-      rst_n_i           : in  std_logic := '1';
-      clk_wr_i          : in  std_logic;
-      d_i               : in  std_logic_vector(g_data_width-1 downto 0);
-      we_i              : in  std_logic;
-      wr_empty_o        : out std_logic;
-      wr_full_o         : out std_logic;
-      wr_almost_empty_o : out std_logic;
-      wr_almost_full_o  : out std_logic;
-      wr_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0);
-      clk_rd_i          : in  std_logic;
-      q_o               : out std_logic_vector(g_data_width-1 downto 0);
-      rd_i              : in  std_logic;
-      rd_empty_o        : out std_logic;
-      rd_full_o         : out std_logic;
-      rd_almost_empty_o : out std_logic;
-      rd_almost_full_o  : out std_logic;
-      rd_count_o        : out std_logic_vector(f_log2_size(g_size)-1 downto 0));
-  end component;
-
-
 begin  -- syn
 
-  U_Inferred_FIFO : inferred_async_fifo
+  U_Inferred_FIFO : entity work.inferred_async_fifo
     generic map (
       g_data_width             => g_data_width,
       g_size                   => g_size,
@@ -144,7 +107,8 @@ begin  -- syn
       g_with_wr_almost_full    => g_with_wr_almost_full,
       g_with_wr_count          => g_with_wr_count,
       g_almost_empty_threshold => g_almost_empty_threshold,
-      g_almost_full_threshold  => g_almost_full_threshold)
+      g_almost_full_threshold  => g_almost_full_threshold,
+      g_memory_implementation_hint => g_memory_implementation_hint )
     port map (
       rst_n_i           => rst_n_i,
       clk_wr_i          => clk_wr_i,

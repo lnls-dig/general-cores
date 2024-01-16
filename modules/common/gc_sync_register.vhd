@@ -50,6 +50,7 @@ architecture rtl of gc_sync_register is
   attribute shreg_extract of sync1               : signal is "no";
 
   attribute keep                        : string;
+  attribute keep of clk_i               : signal is "true";
   attribute keep of gc_sync_register_in : signal is "true";
   attribute keep of sync0               : signal is "true";
   attribute keep of sync1               : signal is "true";

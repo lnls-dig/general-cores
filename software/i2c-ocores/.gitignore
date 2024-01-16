@@ -1,9 +1,7 @@
 *.o
 *.ko
-*.mod.c
-.*.o.cmd
-.*.ko.cmd
-*.mod.d
+*.mod*
+.*cmd
 *.o.d
 *.tmp
 .tmp_versions
@@ -11,3 +9,7 @@ modules.order
 Module.symvers
 \#*
 *~
+*.a
+*.new
+*.swp
+*.so

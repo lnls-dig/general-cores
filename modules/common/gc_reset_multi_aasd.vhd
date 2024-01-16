@@ -54,7 +54,8 @@ architecture arch of gc_reset_multi_aasd is
   attribute keep : string;
 
   attribute keep of gc_reset_async_in : signal is "TRUE";
-
+  attribute keep of rst_chains : signal is "TRUE";
+  
 begin
 
   gc_reset_async_in <= arst_i;

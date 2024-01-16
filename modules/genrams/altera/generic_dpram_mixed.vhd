@@ -6,7 +6,7 @@
 -- Author     : C. Prados
 -- Company    : GSI
 -- Created    : 2014-08-25
--- Last update: 
+-- Last update: 2022-07-25
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -38,7 +38,9 @@ entity generic_dpram_mixed is
     g_size                     : natural;
     g_addr_conflict_resolution : string := "dont_care";
     g_init_file                : string := "none";
-    g_dual_clock               : boolean := true);
+    g_dual_clock               : boolean := true;
+    g_implementation_hint      : string  := "auto"
+    );
   port(
     rst_n_i : in std_logic := '1';      -- synchronous reset, active LO
 
