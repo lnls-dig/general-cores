@@ -9,3 +9,9 @@ description: https://ohwr.org/project/general-cores/wikis/home
 website: https://ohwr.org/project/general-cores
 documentation: https://ohwr.org/project/general-cores/wikis
 issues: https://ohwr.org/project/general-cores/issues
+licenses:
+  - CC0-1.0
+  - CERN-OHL-W-2.0
+  - GPL-2.0
+  - GPL-3.0
+  - GPL-3.0-or-later
