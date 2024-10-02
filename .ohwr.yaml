@@ -3,15 +3,16 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-version: 1.0.0
-name: Platform-independent core collection
-description: https://ohwr.org/project/general-cores/wikis/home
-website: https://ohwr.org/project/general-cores
-documentation: https://ohwr.org/project/general-cores/wikis
-issues: https://ohwr.org/project/general-cores/issues
+version: '1.0.0'
+name: 'Platform-independent core collection'
+description: 'https://ohwr.org/project/general-cores/wikis/home'
+website: 'https://ohwr.org/project/general-cores'
+documentation: 'https://ohwr.org/project/general-cores/wikis'
+issues: 'https://ohwr.org/project/general-cores/issues'
 licenses:
-  - CC0-1.0
-  - CERN-OHL-W-2.0
-  - GPL-2.0
-  - GPL-3.0
-  - GPL-3.0-or-later
+  - 'CC0-1.0'
+  - 'CERN-OHL-W-2.0'
+  - 'GPL-2.0'
+  - 'GPL-3.0'
+  - 'GPL-3.0-or-later'
+forum: 'https://forums.ohwr.org/c/general-cores'
