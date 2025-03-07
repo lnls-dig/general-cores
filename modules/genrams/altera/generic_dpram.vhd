@@ -43,8 +43,10 @@ entity generic_dpram is
     g_with_byte_enable         : boolean := false;
     g_addr_conflict_resolution : string := "dont_care";
     g_init_file                : string := "none";
-    g_fail_if_file_not_found   : boolean := true; -- dummy (exists in Xilinx/generic)
+    g_fail_if_file_not_found   : boolean := true;      -- dummy (exists in Xilinx/generic)
     g_dual_clock               : boolean := true;
+    g_fpga_family              : string  := "arria10"; -- dummy (exists in Xilinx/generic)
+    g_use_bram_macros          : boolean := false;     -- dummy (exists in Xilinx/generic)
     g_implementation_hint      : string  := "auto"
     );
   port(
