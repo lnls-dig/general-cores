@@ -5,10 +5,10 @@
 
 version: '1.0.0'
 name: 'Platform-independent core collection'
-description: 'https://ohwr.org/project/general-cores/wikis/home'
-website: 'https://ohwr.org/project/general-cores'
-documentation: 'https://ohwr.org/project/general-cores/wikis'
-issues: 'https://ohwr.org/project/general-cores/issues'
+description: 'https://gitlab.com/ohwr/project/general-cores/wikis/home'
+website: 'https://gitlab.com/ohwr/project/general-cores'
+documentation: 'https://gitlab.com/ohwr/project/general-cores/wikis'
+issues: 'https://gitlab.com/ohwr/project/general-cores/issues'
 licenses:
   - 'CC0-1.0'
   - 'CERN-OHL-W-2.0'
