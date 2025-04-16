@@ -9,7 +9,7 @@ Name: dkms-%{project_name}
 Version: %{?_build_version}
 License: GPL-2.0
 Release: 1%{?dist}
-URL: https://www.ohwr.org/projects/general-cores/
+URL: https://gitlab.com/ohwr/project/general-cores/
 
 BuildRequires: make, gcc, git
 Requires: dkms

@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN BE-CO-HT
--- WR2RF_VME core
--- https://ohwr.org/project/vme-rf-wr-bobr
+-- General Cores Library
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   wb16_to_wb32

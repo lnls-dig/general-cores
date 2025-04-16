@@ -2,7 +2,7 @@
 ##-------------------------------------------------------------------------------
 ## CERN BE-CO-HT
 ## General Cores
-## https://www.ohwr.org/projects/general-cores
+## https://gitlab.com/ohwr/project/general-cores
 ##-------------------------------------------------------------------------------
 ##
 ## Python script to generate an init file for block rams. Input file should be
@@ -125,7 +125,7 @@ if args.oformat == 'VHD':
     print ( '--  {0}'.format ( vars(args) ) )
     print ( '--' )
     print ( '-- {0} is part of OHWR general-cores:'.format ( parser.prog ) )
-    print ( '-- https://www.ohwr.org/projects/general-cores/wiki' )
+    print ( '-- https://gitlab.com/ohwr/project/general-cores/wikis' )
     print ( '-' * 80 )
     print ( )
     print ( 'library ieee;' )

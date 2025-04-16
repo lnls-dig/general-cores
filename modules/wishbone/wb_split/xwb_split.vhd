@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN BE-CO-HT
 -- xwb_split
--- https://ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   xwb_split

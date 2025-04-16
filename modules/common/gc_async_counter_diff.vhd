@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN
 -- general-cores
--- https://www.ohwr.org/project/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name  : gc_async_counter_diff.vhd

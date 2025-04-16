@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN BE-CEM-EDL
 -- General Cores Library
--- https://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   xwb_lm32_mcs
