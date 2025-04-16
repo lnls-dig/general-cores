@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN (BE-CO-HT)
 -- Bi-color LED controller
--- http://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name: bicolor_led_ctrl

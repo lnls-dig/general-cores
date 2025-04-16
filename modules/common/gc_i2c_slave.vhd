@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- Title      : I2C Slave Core
 -- Project    : OHWR General Cores
--- URL        : http://www.ohwr.org/projects/general-cores
+-- URL        : https://gitlab.com/ohwr/project/general-cores
 -------------------------------------------------------------------------------
 -- File       : gc_i2c_slave.vhd
 -- Author(s)  : Theodor Stana <t.stana@cern.ch>

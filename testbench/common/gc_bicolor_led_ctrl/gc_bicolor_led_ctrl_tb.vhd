@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN (BE-CO-HT)
 -- Bi-color LED controller testbench
--- http://www.ohwr.org/projects/svec
+-- https://gitlab.com/ohwr/project/svec
 --------------------------------------------------------------------------------
 --
 -- unit name: gc_bicolor_led_ctrl_tb

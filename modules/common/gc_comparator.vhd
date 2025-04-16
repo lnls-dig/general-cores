@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN (BE-CO-HT)
 -- General-Purpose Comparator
--- https://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:     gc_comparator

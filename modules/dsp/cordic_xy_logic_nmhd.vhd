@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN SY-RF-FB
 -- General Cores Library
--- https://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   cordic_xy_logic_nmhd

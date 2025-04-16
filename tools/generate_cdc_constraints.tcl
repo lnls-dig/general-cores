@@ -1,7 +1,7 @@
 ##-------------------------------------------------------------------------------
 ## CERN BE-CEM-EDL
 ## General Cores
-## https://www.ohwr.org/projects/general-cores
+## https://gitlab.com/ohwr/project/general-cores
 ##-------------------------------------------------------------------------------
 ##
 ## Tcl script to produce CDC (Clock Domain Crossing) constraints for the CDC primitives

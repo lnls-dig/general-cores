@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN BE-CO-HT
 -- General cores: Indirect Wishbone Slave
--- https://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   xwb_indirect

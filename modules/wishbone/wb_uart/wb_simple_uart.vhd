@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- CERN BE-CO-HT
 -- General cores: Simple Wishbone UART
--- https://www.ohwr.org/projects/general-cores
+-- https://gitlab.com/ohwr/project/general-cores
 --------------------------------------------------------------------------------
 --
 -- unit name:   wb_simple_uart

@@ -11,7 +11,7 @@ Change Log
 
 1.1.4 - 2023-10-18
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.4
+https://gitlab.com/ohwr/project/general-cores/tags/v1.1.4
 
 Fixed
 -----
@@ -20,7 +20,7 @@ Fixed
 
 1.1.3 - 2021-08-23
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.3
+https://gitlab.com/ohwr/project/general-cores/tags/v1.1.3
 
 Fixed
 -----
@@ -28,7 +28,7 @@ Fixed
 
 1.1.2 - 2021-07-29
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.2
+https://gitlab.com/ohwr/project/general-cores/tags/v1.1.2
 
 Fixed
 -----
@@ -36,7 +36,7 @@ Fixed
 
 1.1.1 - 2020-09-14
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.1
+https://gitlab.com/ohwr/project/general-cores/tags/v1.1.1
 
 Fixed
 -----
@@ -44,7 +44,7 @@ Fixed
 
 1.1.0 - 2020-07-24
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.1.0
+https://gitlab.com/ohwr/project/general-cores/tags/v1.1.0
 
 Added
 -----
@@ -68,7 +68,7 @@ Fixed
 
 1.0.4 - 2020-03-26
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.0.4
+https://gitlab.com/ohwr/project/general-cores/tags/v1.0.4
 
 Added
 -----
@@ -90,7 +90,7 @@ Fixed
 
 1.0.3 - 2020-01-15
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.0.3
+https://gitlab.com/ohwr/project/general-cores/tags/v1.0.3
 
 Changed
 -----
@@ -98,7 +98,7 @@ Changed
 
 1.0.2 - 2019-10-24
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.0.2
+https://gitlab.com/ohwr/project/general-cores/tags/v1.0.2
 
 Fixed
 -----
@@ -106,7 +106,7 @@ Fixed
 
 1.0.1 - 2019-10-24
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.0.1
+https://gitlab.com/ohwr/project/general-cores/tags/v1.0.1
 
 Added
 -----
@@ -118,7 +118,7 @@ Changed
 
 1.0.0 - 2019-10-21
 ==================
-https://www.ohwr.org/project/general-cores/tags/v1.0.0
+https://gitlab.com/ohwr/project/general-cores/tags/v1.0.0
 
 Added
 -----
