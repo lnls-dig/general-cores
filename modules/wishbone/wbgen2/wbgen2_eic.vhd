@@ -161,7 +161,7 @@ begin  -- syn
     if(rst_n_i = '0') then
       irq_i_d0    <= (others => '0');
       irq_i_d1    <= (others => '0');
-      irq_i_d1    <= (others => '0');
+      irq_i_d2    <= (others => '0');
       irq_pending <= (others => '0');
       irq_mask    <= (others => '0');
       
