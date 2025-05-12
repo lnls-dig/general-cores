@@ -34,7 +34,7 @@
 -- 2010-02-25  1.1      twlostow        Modified for rev 1.1 switch
 -- 2016-08-24  1.2      jpospisi        removed synchronous reset from
 --                                        sensitivity lists
--- 2023-11-29  1.3      lihm             added select to support
+-- 2023-11-29  1.3      lihm            added select to support wrslj
 -------------------------------------------------------------------------------
 
 library IEEE;
@@ -94,6 +94,19 @@ architecture syn of gc_serial_dac is
   signal sendingData    : std_logic;
   signal iDacClk        : std_logic;
   signal iValidValue    : std_logic;
+
+  function compute_width(num_bits : integer) return integer is
+  begin
+      if num_bits >= 9 then
+          return num_bits;
+      else
+          return 9;
+      end if;
+  end function;
+
+  constant num_extra_extend_width : integer := compute_width(g_num_extra_bits);
+
+  signal num_extra_extend : std_logic_vector(g_num_data_bits + num_extra_extend_width - 1 downto 0);
 
   signal divider_muxed : std_logic;
 
@@ -178,6 +191,9 @@ begin
     end if;
   end process;
 
+  num_extra_extend(num_extra_extend'left downto g_num_data_bits + 8) <= (others => '0');
+  num_extra_extend(g_num_data_bits + 8 - 1 downto 0) <= "0011" & value_i & "0000";
+
   process(clk_i)
   begin
     if rising_edge(clk_i) then
@@ -187,9 +203,7 @@ begin
         if iValidValue = '1' and sendingData = '0' then
           cs_sel_reg                                 <= cs_sel_i;
           if(dac_sel = b"001") then -- AD5683R
-            dataSh(dataSh'left downto g_num_data_bits+4)<= "0011";
-            dataSh(g_num_data_bits+4-1 downto 4)        <= value_i;
-            dataSh(3 downto 0)                          <= (others => '0');
+            dataSh <= num_extra_extend(g_num_data_bits + g_num_extra_bits - 1 downto 0);
           else -- AD5662
             dataSh(g_num_data_bits-1 downto 0)         <= value_i;
             dataSh(dataSh'left downto g_num_data_bits) <= (others => '0');
