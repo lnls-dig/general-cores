@@ -185,7 +185,7 @@ architecture structural of i2c_master_top is
 
     signal scl_in, scl_out, scl_oen : std_logic;
     signal sda_in, sda_out, sda_oen : std_logic;
-    signal if_num   : std_logic_vector(3 downto 0) := (others => '0');
+    signal if_num   : std_logic_vector(4 downto 0) := (others => '0');
     signal if_busy  : std_logic := '0';
 
 begin
@@ -214,7 +214,7 @@ begin
                 when "010"  => wb_dat_o <= ctr;
                 when "011"  => wb_dat_o <= rxr; -- write is transmit register TxR
                 when "100"  => wb_dat_o <= sr;  -- write is command register CR
-                when "101"  => wb_dat_o <= if_busy & "000" & if_num;
+                when "101"  => wb_dat_o <= if_busy & "00" & if_num;
 
                 -- Debugging registers:
                 -- These registers are not documented.
@@ -252,7 +252,7 @@ begin
                        when "100" => null; --write to CR, avoid executing the others clause
                        when "101" => if_busy <= wb_dat_i(7);
                                      if(if_busy='0') then --change i/f number only if previous was released
-                                       if_num  <= wb_dat_i(3 downto 0);
+                                       if_num  <= wb_dat_i(4 downto 0);
                                      end if;
 
                       -- illegal cases, for simulation only
