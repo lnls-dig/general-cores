@@ -8,8 +8,6 @@ GCORES ?= $(abspath $(TOPDIR))
 #
 # External variables and targets
 #
--include Makefile.specific
--include $(REPO_PARENT)/parent_common.mk
 include $(GCORES)/common.mk
 
 #

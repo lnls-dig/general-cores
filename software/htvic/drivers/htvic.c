@@ -651,5 +651,3 @@ MODULE_AUTHOR("Federico Vaga <federico.vaga@cern.ch>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("CERN BECOHT VHDL Vector Interrupt Controller - HTVIC");
 MODULE_DEVICE_TABLE(platform, htvic_id_table);
-
-ADDITIONAL_VERSIONS;
