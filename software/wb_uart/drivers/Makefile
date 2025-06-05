@@ -25,6 +25,12 @@ wb_uart.h: $(TOPDIR)/modules/wishbone/wb_uart/simple_uart_wb.wb
 clean help modules:
 	$(MAKE) -C $(KERNELSRC) M=$(shell pwd) GIT_VERSION=$(GIT_VERSION) $@
 
+DESTDIR ?=
+INSTALL_MOD_PATH ?= $(DESTDIR)
+INSTALL_MOD_DIR ?= extra/general-cores
+export INSTALL_MOD_PATH
+export INSTALL_MOD_DIR
+
 modules_install: modules
 	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) $@
 

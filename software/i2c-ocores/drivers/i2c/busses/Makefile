@@ -28,8 +28,15 @@ clean coccicheck modules:
 		GIT_VERSION=$(GIT_VERSION) \
 		CONFIG_I2C_OCORES=m \
 		$@
+
+DESTDIR ?=
+INSTALL_MOD_PATH ?= $(DESTDIR)
+INSTALL_MOD_DIR ?= extra/general-cores
+export INSTALL_MOD_PATH
+export INSTALL_MOD_DIR
+
 modules_install: modules
-	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
+	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) $@
 
 
 .PHONY: all clean coccicheck modules modules_install install
