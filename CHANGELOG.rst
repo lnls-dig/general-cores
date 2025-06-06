@@ -9,6 +9,41 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+2.0.0 - 2025-06-06
+==================
+https://gitlab.com/ohwr/project/general-cores/tags/v2.0.0
+
+Added
+-----
+- tools: add new OHWR yaml project description
+- hdl: add input port to gc_dac to select between different DAC models
+- hdl: add gc_argb_led_drv module
+- hdl/genrams: Add instantiated BRAM implementation for 7Series
+- hdl: add f_log2 and f_max in gencores_pkg
+- hdl/genrams: add generic_async_fifo with mixed width [#49]
+- hdl/wb_uart: add RX/TX interrupt enable [#50]
+- hdl/wb_uart: add Physical/Virtual status bits [#44]
+- sw/tools: add support for verilog to gen_sourceid [#54]
+- sw: add driver for wb_uart [#53]
+
+Changed
+-------
+- hdl: increase max number of i2c slave interfaces in i2c_master
+- sw: improve Makefiles to build/install drivers
+
+Fixed
+-----
+- Update all OHWR links to point to gitlab
+- doc: links to files in top-level README [#57]
+- hdl: fix initialisation  of FF chain in wb_eic
+- hdl/genrams: add missing generics to altera/generic_dpram [#58]
+- hdl: fix axi3/4 widths in axi4_pkg **BREAKING CHANGE** [#56]
+- hdl: get minimum PERIOD property for clock in syncrhonisers
+- hdl: fix xdc constraints for synchronisers
+- hdl/wb_uart: fix handling of s_rx_interrupt [#50]
+- hdl/genrams: minor cleanup to fifos [#48]
+- hdl/wb_axi4lite_bridge: fix handling of WREADY
+
 1.1.4 - 2023-10-18
 ==================
 https://gitlab.com/ohwr/project/general-cores/tags/v1.1.4
