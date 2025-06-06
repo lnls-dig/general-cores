@@ -8,8 +8,6 @@ GCORES ?= $(abspath $(TOPDIR))
 #
 # External variables and targets
 #
--include Makefile.specific
--include $(REPO_PARENT)/parent_common.mk
 include $(GCORES)/common.mk
 
 #
@@ -30,8 +28,18 @@ clean coccicheck modules:
 		GIT_VERSION=$(GIT_VERSION) \
 		CONFIG_I2C_OCORES=m \
 		$@
-modules_install: modules
-	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
 
+DESTDIR ?=
+prefix ?= /usr/local
+includedir ?= $(prefix)/include
+INSTALL_MOD_PATH ?= $(DESTDIR)
+INSTALL_MOD_DIR ?= extra/general-cores
+export INSTALL_MOD_PATH
+export INSTALL_MOD_DIR
+
+modules_install: modules
+	mkdir -m 0775 -p $(DESTDIR)$(includedir)/linux/platform_data
+	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) $@
+	install -D -t $(DESTDIR)$(includedir)/linux/platform_data ../../../include/linux/platform_data/i2c-ocores.h
 
 .PHONY: all clean coccicheck modules modules_install install

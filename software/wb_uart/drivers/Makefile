@@ -2,12 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
--include Makefile.specific
-# include parent_common.mk for buildsystem's defines
-#use absolute path for REPO_PARENT
 TOPDIR ?= $(shell /bin/pwd)/../../..
-REPO_PARENT ?= $(TOPDIR)/..
--include $(REPO_PARENT)/parent_common.mk
 
 CPPCHECK ?= cppcheck
 FLAWFINDER ?= flawfinder
@@ -30,8 +25,18 @@ wb_uart.h: $(TOPDIR)/modules/wishbone/wb_uart/simple_uart_wb.wb
 clean help modules:
 	$(MAKE) -C $(KERNELSRC) M=$(shell pwd) GIT_VERSION=$(GIT_VERSION) $@
 
+DESTDIR ?=
+prefix ?= /usr/local
+includedir ?= $(prefix)/include
+INSTALL_MOD_PATH ?= $(DESTDIR)
+INSTALL_MOD_DIR ?= extra/general-cores
+export INSTALL_MOD_PATH
+export INSTALL_MOD_DIR
+
 modules_install: modules
+	mkdir -m 0775 -p $(DESTDIR)$(includedir)/linux/platform_data
 	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) $@
+	install -D -t $(DESTDIR)$(includedir)/linux/platform_data ../include/linux/platform_data/wb_uart_pdata.h
 
 cppcheck:
 	$(CPPCHECK) -q -I. --enable=all *.c *.h

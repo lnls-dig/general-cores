@@ -8,8 +8,6 @@ GCORES ?= $(abspath $(TOPDIR))
 #
 # External variables and targets
 #
--include Makefile.specific
--include $(REPO_PARENT)/parent_common.mk
 include $(GCORES)/common.mk
 
 #
@@ -29,8 +27,15 @@ clean coccicheck modules:
 	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) \
 		GIT_VERSION=$(GIT_VERSION) \
 		$@
+
+DESTDIR ?=
+INSTALL_MOD_PATH ?= $(DESTDIR)
+INSTALL_MOD_DIR ?= extra/general-cores
+export INSTALL_MOD_PATH
+export INSTALL_MOD_DIR
+
 modules_install: modules
-	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) INSTALL_MOD_PATH=$(PREFIX) $@
+	$(MAKE) -C $(KERNELSRC) M=$(shell /bin/pwd) $@
 
 
 .PHONY: all clean coccicheck modules modules_install install
