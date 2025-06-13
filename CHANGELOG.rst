@@ -9,6 +9,14 @@ Change Log
 - Format inspired by: `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_
 - Versioning scheme follows: `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_
 
+2.0.1 - 2025-06-13
+==================
+https://gitlab.com/ohwr/project/general-cores/tags/v2.0.1
+
+Changed
+-------
+- sw: platform_data header files prefix changed to `/usr/src/general-cores-<VERSION>`
+
 2.0.0 - 2025-06-06
 ==================
 https://gitlab.com/ohwr/project/general-cores/tags/v2.0.0
