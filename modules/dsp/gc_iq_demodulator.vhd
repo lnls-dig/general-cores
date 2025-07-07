@@ -50,11 +50,9 @@ entity gc_iq_demodulator is
     );
 end gc_iq_demodulator;
 
-
 architecture rtl of gc_iq_demodulator is
 
   type t_IQ_STATE is (S_0, S_PI2, S_PI, S_3PI2);
-
 
   signal iacc, qacc : signed(g_N downto 0);
   signal state      : t_IQ_STATE;
