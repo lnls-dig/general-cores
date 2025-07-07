@@ -54,8 +54,8 @@ architecture rtl of gc_iq_demodulator is
 
   type t_IQ_STATE is (S_0, S_PI2, S_PI, S_3PI2);
 
-  signal iacc, qacc : signed(g_N downto 0);
-  signal state      : t_IQ_STATE;
+  signal i, q   : signed(g_N downto 0);
+  signal state  : t_IQ_STATE;
 
 begin
 
@@ -64,36 +64,36 @@ begin
     if rising_edge(clk_i) then
       if rst_i = '1' then
         state <= S_0;
-        iacc  <= (others => '0');
-        qacc  <= (others => '0');
+        i     <= (others => '0');
+        q     <= (others => '0');
       elsif sync_p1_i = '1' then
         state <= S_PI2;
-        iacc  <= resize(signed(adc_data_i), g_N + 1);
-        qacc  <= (others => '0');
+        i     <= resize(signed(adc_data_i), g_N + 1);
+        q     <= (others => '0');
       else
         case state is
           when S_0 =>
             state <= S_PI2;
-            iacc  <= resize(signed(adc_data_i), g_N + 1);
-            qacc  <= (others => '0');
+            i     <= resize(signed(adc_data_i), g_N + 1);
+            q     <= (others => '0');
           when S_PI2 =>
             state <= S_PI;
-            iacc  <= (others => '0');
-            qacc  <= resize(-signed(adc_data_i), g_N + 1);
+            i     <= (others => '0');
+            q     <= resize(-signed(adc_data_i), g_N + 1);
           when S_PI =>
             state <= S_3PI2;
-            iacc  <= resize(-signed(adc_data_i), g_N + 1);
-            qacc  <= (others => '0');
+            i     <= resize(-signed(adc_data_i), g_N + 1);
+            q     <= (others => '0');
           when S_3PI2 =>
             state <= S_0;
-            iacc  <= (others => '0');
-            qacc  <= resize(signed(adc_data_i), g_N + 1);
+            i     <= (others => '0');
+            q     <= resize(signed(adc_data_i), g_N + 1);
         end case;
       end if;
     end if;
   end process;
 
-  i_o <= std_logic_vector(iacc);
-  q_o <= std_logic_vector(qacc);
+  i_o <= std_logic_vector(i);
+  q_o <= std_logic_vector(q);
 
 end rtl;
