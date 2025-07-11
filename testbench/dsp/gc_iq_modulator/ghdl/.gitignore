@@ -1,0 +1,6 @@
+gc_iq_modulator_tb
+gc_iq_modulator_tb.ghw
+*.cf
+*.o
+Makefile
+work/
