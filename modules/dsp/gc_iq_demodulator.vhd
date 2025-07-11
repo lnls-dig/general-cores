@@ -39,6 +39,8 @@ entity gc_iq_demodulator is
     clk_i : in std_logic;
     rst_i : in std_logic;
 
+    -- Restarts the demodulation state machine
+    -- Demodulation order is I, -Q, -I, Q
     sync_p1_i : in std_logic;
 
     -- ADC data input, 2's complement
