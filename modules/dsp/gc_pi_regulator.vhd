@@ -38,22 +38,23 @@ entity gc_pi_regulator is
     );
 
   port (
+    -- Global clock and reset
     clk_i       : in std_logic;
     rst_i       : in std_logic;
-
+    -- Enable
     en_i        : in std_logic;
-
+    -- Setpoint signal
     setpoint_i  : in std_logic_vector(g_DATA_BITS-1 downto 0);
-
+    -- Input signal (measured value to be compared with the setpoint)
     x_valid_i   : in std_logic;
     x_i         : in std_logic_vector(g_DATA_BITS-1 downto 0);
-
+    -- Output signal (controller output)
     y_valid_o   : out std_logic;
     y_o         : out std_logic_vector(g_OUTPUT_BITS-1 downto 0);
-
+    -- Controller gains
     kp_i        : in std_logic_vector(g_GAIN_BITS-1 downto 0);
     ki_i        : in std_logic_vector(g_GAIN_BITS-1 downto 0);
-
+    -- Flag to indicate overflow
     lim_o       : out std_logic
     );
 end gc_pi_regulator;
@@ -61,6 +62,7 @@ end gc_pi_regulator;
 architecture rtl of gc_pi_regulator is
 
   -------- Procedure declarations --------
+  -- Procedure to saturate the sum and raise a flag to indicate so
   procedure f_clamp_add (
               x     :     signed;
               y     :     signed;
@@ -87,17 +89,17 @@ architecture rtl of gc_pi_regulator is
   end f_clamp_add;
 
   -------- Constants declarations --------
-  constant c_MUL_BITS : integer := g_DATA_BITS + g_GAIN_BITS + 1;
+  constant c_MUL_BITS : integer := g_DATA_BITS + g_GAIN_BITS + 1; -- Data len after control gains
 
   -------- Signals declarations --------
-  signal xerror                 : signed(g_DATA_BITS downto 0);
-  signal setpoint               : signed(g_DATA_BITS downto 0);
-  signal pmul, pmul_d           : signed(c_MUL_BITS-1 downto 0);
-  signal imul                   : signed(c_MUL_BITS-1 downto 0);
-  signal integ                  : signed(g_INTEGRATOR_BITS-1 downto 0);
-  signal mults_valid            : std_logic;
-  signal integ_valid            : std_logic;
-  signal limit_sum1, limit_sum2 : std_logic;
+  signal xerror                 : signed(g_DATA_BITS downto 0); -- setpoint-x_i
+  signal setpoint               : signed(g_DATA_BITS downto 0); -- Setpoint Register
+  signal pmul, pmul_d           : signed(c_MUL_BITS-1 downto 0); -- Error*Kp
+  signal imul                   : signed(c_MUL_BITS-1 downto 0); -- Error*Ki
+  signal integ                  : signed(g_INTEGRATOR_BITS-1 downto 0); -- Accumulator
+  signal mults_valid            : std_logic; -- "multiplication done" flag
+  signal integ_valid            : std_logic; -- "integration done" flag
+  signal limit_sum1, limit_sum2 : std_logic; -- Overflow Flags
 
 begin
 
