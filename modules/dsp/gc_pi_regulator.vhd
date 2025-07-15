@@ -112,20 +112,20 @@ begin
   begin
     if rising_edge(clk_i) then
       if rst_i = '1' then
-        y_o <= (others => '0');
-        y_valid_o <= '0';
+        y_o         <= (others => '0');
+        y_valid_o   <= '0';
         mults_valid <= '0';
         integ_valid <= '0';
-        integ <= (others => '0');
-        imul <= (others => '0');
-        pmul <= (others => '0');
-        pmul_d <= (others => '0');
-        limit_sum1 <= '0';
-        limit_sum2 <= '0';
+        integ       <= (others => '0');
+        imul        <= (others => '0');
+        pmul        <= (others => '0');
+        pmul_d      <= (others => '0');
+        limit_sum1  <= '0';
+        limit_sum2  <= '0';
       else
         mults_valid <= '0';
         integ_valid <= '0';
-        y_valid_o <= '0';
+        y_valid_o   <= '0';
         if en_i = '1' then
           if x_valid_i = '1' then
             mults_valid <= '1';
@@ -133,30 +133,30 @@ begin
             imul <= resize(xerror * signed(ki_i), imul'length);
           end if;
           if mults_valid = '1' then
-            pmul_d <= pmul;
+            pmul_d      <= pmul;
             integ_valid <= '1';
             if signed(ki_i) = 0 then
               integ <= (others => '0');
             else
               f_clamp_add(integ, imul, v_integ_next, v_integ_limit_hit);
-              integ <= v_integ_next;
+              integ      <= v_integ_next;
               limit_sum1 <= v_integ_limit_hit;
             end if;
           end if;
           if integ_valid = '1' then
-            y_valid_o <= '1';
             f_clamp_add(integ, pmul_d, v_sum_next, v_sum_limit_hit);
-            y_o <= std_logic_vector(v_sum_next(g_OUTPUT_BITS + g_GAIN_FRAC_BITS - 1 downto g_GAIN_FRAC_BITS));
+            y_valid_o  <= '1';
+            y_o        <= std_logic_vector(v_sum_next(g_OUTPUT_BITS + g_GAIN_FRAC_BITS - 1 downto g_GAIN_FRAC_BITS));
             limit_sum2 <= v_sum_limit_hit;
           end if;
         else
-          y_o <= (others => '0');
-          integ <= (others => '0');
-          pmul <= (others => '0');
-          imul <= (others => '0');
-          pmul_d <= (others => '0');
-          limit_sum1 <= '0';
-          limit_sum2 <= '0';
+          y_o         <= (others => '0');
+          integ       <= (others => '0');
+          pmul        <= (others => '0');
+          imul        <= (others => '0');
+          pmul_d      <= (others => '0');
+          limit_sum1  <= '0';
+          limit_sum2  <= '0';
         end if;
       end if;
     end if;
