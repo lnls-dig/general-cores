@@ -60,16 +60,7 @@ end gc_pi_regulator;
 
 architecture rtl of gc_pi_regulator is
 
-  constant c_MUL_BITS : integer := g_DATA_BITS + g_GAIN_BITS + 1;
-
-  signal xerror      : signed(g_DATA_BITS downto 0);
-  signal setpoint    : signed(g_DATA_BITS downto 0);
-  signal pmul, imul  : signed(c_MUL_BITS-1 downto 0);
-  signal pmul_d      : signed(c_MUL_BITS-1 downto 0);
-  signal integ       : signed(g_INTEGRATOR_BITS-1 downto 0);
-  signal mults_valid : std_logic;
-  signal integ_valid : std_logic;
-
+  -------- Procedure declarations --------
   procedure f_clamp_add (
               x     :     signed;
               y     :     signed;
@@ -95,6 +86,17 @@ architecture rtl of gc_pi_regulator is
     end if;
   end f_clamp_add;
 
+  -------- Constants declarations --------
+  constant c_MUL_BITS : integer := g_DATA_BITS + g_GAIN_BITS + 1;
+
+  -------- Signals declarations --------
+  signal xerror                 : signed(g_DATA_BITS downto 0);
+  signal setpoint               : signed(g_DATA_BITS downto 0);
+  signal pmul, pmul_d           : signed(c_MUL_BITS-1 downto 0);
+  signal imul                   : signed(c_MUL_BITS-1 downto 0);
+  signal integ                  : signed(g_INTEGRATOR_BITS-1 downto 0);
+  signal mults_valid            : std_logic;
+  signal integ_valid            : std_logic;
   signal limit_sum1, limit_sum2 : std_logic;
 
 begin
