@@ -1,0 +1,6 @@
+gc_pi_regulator_tb
+gc_pi_regulator_tb.ghw
+*.cf
+*.o
+Makefile
+work/
